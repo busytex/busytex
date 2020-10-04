@@ -32,7 +32,6 @@
 # $* is captured % (pattern)
 
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
-URL_diffutils = https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz
 URL_git = https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
 
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
@@ -66,7 +65,6 @@ AR_native = $(AR)
 TOTAL_MEMORY = 536870912
 SKIP = all install:
 
-CACHE_wasm_diffutils = $(ROOT)/build/wasm-diffutils.cache
 CACHE_native_texlive = $(ROOT)/build/native-texlive.cache
 CACHE_wasm_texlive = $(ROOT)/build/wasm-texlive.cache
 CACHE_native_fontconfig = $(ROOT)/build/native-fontconfig.cache
@@ -84,8 +82,6 @@ CFLAGS_XETEX_wasm = $(CFLAGS_XETEX) $(CFLAGS_wasm_OPT)
 CFLAGS_XDVIPDFMX_native = $(CFLAGS_XDVIPDFMX) $(CFLAGS_native_OPT)
 CFLAGS_BIBTEX_native = $(CFLAGS_BIBTEX) $(CFLAGS_native_OPT)
 CFLAGS_XETEX_native = $(CFLAGS_XETEX) $(CFLAGS_native_OPT)
-
-CFLAGS_wasm_diffutils = -s ERROR_ON_UNDEFINED_SYMBOLS=0 -lidbfs.js -s WASM=1 -s SINGLE_FILE=1 -s MODULARIZE=1 -s EXPORT_NAME=busy -s FORCE_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[\"FS\"] -s INVOKE_RUN=0 $(CFLAGS_wasm_OPT)
 
 CFLAGS_wasm_bibtex = -s TOTAL_MEMORY=$(TOTAL_MEMORY) $(CFLAGS_wasm_OPT)
 CFLAGS_wasm_texlive = -s ERROR_ON_UNDEFINED_SYMBOLS=0 -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_wasm_OPT) 
@@ -134,12 +130,6 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded :
 	mkdir -p $(basename $@)
 	wget --no-clobber $(URL_$(notdir $(basename $@))) -O "$(basename $@).tar.gz" || true
 	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory="$(basename $@)"
-	touch $@
-
-source/diffutils.downloaded:
-	mkdir -p $(basename $@)
-	wget --no-clobber $(URL_$(notdir $(basename $@))) -O "$(basename $@).tar.xz" || true
-	tar -xf "$(basename $@).tar.xz" --strip-components=1 --directory="$(basename $@)"
 	touch $@
 
 source/fontconfig.patched: source/fontconfig.downloaded
@@ -470,18 +460,7 @@ dist:
 	cp build/wasm/busytex.js build/wasm/busytex.wasm $@
 	#cp build/wasm/texlive-*.js build/wasm/texlive-*.data $@
 	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@
-	cp build/wasm/diffutils/src/diff3 dist/busy.js
-	#cp build/wasm/diffutils/src/diff3.wasm dist/diff3.wasm
 
 	#cp build/native/busytex dist
 	#cp -r build/native/busytex build/texlive build/texmf.cnf build/fontconfig $@
 
-################################################################################################################
-
-build/wasm/diffutils/src/diff3: source/diffutils.downloaded
-	mkdir -p build/wasm/diffutils
-	cd build/wasm/diffutils && \
-	CONFIG_SITE=$(ROOT)/diffutils.site $(CONFIGURE_wasm) $(ROOT)/source/diffutils/configure --cache-file=$(CACHE_wasm_diffutils) CFLAGS="$(CFLAGS_wasm_diffutils)"
-	$(MAKE_wasm) -C build/wasm/diffutils
-
-################################################################################################################
