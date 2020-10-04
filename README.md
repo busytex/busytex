@@ -72,6 +72,8 @@ python3.8 serve.py
 7. [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
 
 ### Links
+https://stackoverflow.com/questions/1114789/how-can-i-convert-perl-to-c
+
 https://tug.org/TUGboat/tb40-1/tb124hagen-lmtx.pdf
 
 https://github.com/Sable/emscripten_malloc
