@@ -1,3 +1,12 @@
+*.log
+*.aux
+*.bbl
+*.blg
+*.fls
+*.xdv
+*.pdf
+
+example/bibtex/
 build/
 source/
 dist/

@@ -143,7 +143,7 @@ source/diffutils.downloaded:
 	touch $@
 
 source/fontconfig.patched: source/fontconfig.downloaded
-	#patch -d $(basename $<) -Np1 -i $(ROOT)/fontconfig-fcstats-emscripten.patch
+	patch -d $(basename $<) -Np1 -i $(ROOT)/fontconfig_emcc.patch
 	echo "$(SKIP)" > source/fontconfig/test/Makefile.in 
 	touch $@
 
