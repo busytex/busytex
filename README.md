@@ -1,8 +1,11 @@
-# [WIP] xetex+bibtex compiled with Emscripten into a single WebAssembly file
+# xetex+bibtex from TexLive2020 compiled with Emscripten into a single WebAssembly file
 
-Currently compiles xetex + bibtex8
+Currently compiles:
+- xetex
+- bibtex8
 
 Future work:
+- tlmgr (web requests)
 - LuaTex / LMTX (lua)
 - Biber (perl)
 - pdftex (for completeness)

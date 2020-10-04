@@ -1,35 +1,21 @@
-#TODO: caching for cloning
-#TODO: rate limit error: documentation_url: "https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting"
-#TODO: message: "API rate limit exceeded for 92.169.44.67. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)"
-#TODO: https://microsoft.github.io/monaco-editor/playground.html#interacting-with-the-editor-adding-an-action-to-an-editor-instance
-#TODO: https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-custom-languages
-
 #TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
 #TODO: abspath/realpath instead of ROOT
-#TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
-# https://github.com/libgit2/libgit2/blob/96a5f38f51bc53895000787542f92d0a3352c026/src/merge_file.c
-# https://github.com/git/git/blob/master/xdiff/xdiff.h
-# do not pass .pdf and .log to compiler
-
 
 #TODO: custom binaries for install-tl
-#TODO: enable tlmgr customization
 #TODO: instruction for local tlmgr install tinytex
 #TODO: install-tl install from local full download
 
 #TODO: custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
 #TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
-# https://github.com/emscripten-core/emscripten/blob/master/src/library_idbfs.js#L21
 # https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
 # https://github.com/emscripten-core/emscripten/pull/4737
 
+#TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
 # https://ctan.crest.fr/tex-archive/macros/latex/contrib/
-# ftp://tug.org/texlive/Contents/live/texmf-dist/
 # http://tug.org/texmf-dist/
-
-# $@ is lhs
-# $< is rhs
-# $* is captured % (pattern)
+# ftp://tug.org/texlive/Contents/live/texmf-dist/
+# ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
+# ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
 
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 URL_git = https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
@@ -38,9 +24,7 @@ URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
 
-URL_TEXLIVE_TEXMF = ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
 URL_TEXLIVE_INSTALLER = http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
-URL_TEXLIVE_TLPDB = ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
