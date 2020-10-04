@@ -1,4 +1,11 @@
-# [WIP] TexLive 2020 compiled with Emscripten into WebAssembly and bundled into a single executable
+# [WIP] xetex+bibtex compiled with Emscripten into a single WebAssembly file
+
+Currently compiles xetex + bibtex8
+
+Future work:
+- LuaTex / LMTX (lua)
+- Biber (perl)
+- pdftex (for completeness)
 
 ### Dependencies
 ```shell
@@ -18,7 +25,7 @@ source emsdk_env.sh
 ```shell
 
 # clone busytex
-git clone https://github.com/vadimkantorov/busytex
+git clone https://github.com/busytex/busytex
 cd busytex
 
 # set make parallelism
