@@ -1,22 +1,3 @@
-#TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
-#TODO: abspath/realpath instead of ROOT
-
-#TODO: custom binaries for install-tl
-#TODO: instruction for local tlmgr install tinytex
-#TODO: install-tl install from local full download
-
-#TODO: custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
-#TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
-# https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
-# https://github.com/emscripten-core/emscripten/pull/4737
-
-#TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
-# https://ctan.crest.fr/tex-archive/macros/latex/contrib/
-# http://tug.org/texmf-dist/
-# ftp://tug.org/texlive/Contents/live/texmf-dist/
-# ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
-# ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
-
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 URL_git = https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
 

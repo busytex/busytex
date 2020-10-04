@@ -71,15 +71,29 @@ python3.8 serve.py
 6. fontconfig patch [1](https://github.com/Dador/JavascriptSubtitlesOctopus/blob/master/build/patches/fontconfig/0002-fix-fcstats-emscripten.patch) and [2](https://github.com/lyze/xetex-js/blob/master/fontconfig-fcstat.c.patch)
 7. [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
 
+### TODO
+```shell
+#TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
+#TODO: abspath/realpath instead of ROOT
+
+#TODO: custom binaries for install-tl
+#TODO: instruction for local tlmgr install tinytex
+#TODO: install-tl install from local full download
+
+#TODO: custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
+#TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
+# https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
+# https://github.com/emscripten-core/emscripten/pull/4737
+
+#TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
+# https://ctan.crest.fr/tex-archive/macros/latex/contrib/
+# http://tug.org/texmf-dist/
+# ftp://tug.org/texlive/Contents/live/texmf-dist/
+# ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
+# ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
+```
+
 ### Links
-https://stackoverflow.com/questions/1114789/how-can-i-convert-perl-to-c
-
-https://www.perlmonks.org/?node_id=1225490
-
-https://metacpan.org/pod/distribution/B-C/script/perlcc.PL
-
-https://www.youtube.com/watch?v=bT17TCMbsdc&feature=youtu.be
-
 https://tug.org/TUGboat/tb40-1/tb124hagen-lmtx.pdf
 
 https://github.com/Sable/emscripten_malloc
