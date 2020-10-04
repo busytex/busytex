@@ -1,0 +1,153 @@
+<html><head><title>busytex example</title></head><body style="width: 100%; height: 100%; overflow: hidden">
+<div style="width: 98%; height: 5%;" >
+<input type="checkbox" id="worker" name="worker" checked>
+<label for="worker">Use Worker</label>
+<input type="checkbox" id="exit_early" name="exit_early" checked>
+<label for="exit_early">Exit Early</label>
+<input type="checkbox" id="verbose" name="verbose">
+<label for="verbose">Verbose</label>
+<input type="checkbox" id="bibtex" name="bibtex" checked>
+<label for="bibtex">Run BibTeX</label>
+<select name="scheme" id="scheme">
+    <option value="basic">Basic Profile</option>
+    <option value="small">Small Profile</option>
+    <option value="medium">Medium Profile</option>
+</select>
+<input type="checkbox" id="texlive_latex_recommended" name="texlive_latex_recommended">
+<label for="texlive_latex_recommended">texlive-latex-recommended</label>
+<input type="checkbox" id="texlive_latex_extra" name="texlive_latex_extra">
+<label for="texlive_latex_extra">texlive-latex-extra</label>
+<button onclick="clearlog()">Clear Log</button>
+<label for="elapsed">Time elapsed:</label>
+<span id="elapsed" name="time_elapsed">0.00 sec</span>
+</div>
+<div><iframe style="width: 98%; height:25%" id="preview"></iframe></div>
+
+<div><textarea style="width: 98%; height: 25%" id="tex">
+\documentclass[11pt]{article}
+\begin{document}
+\title{My Article}
+\author{Nobody Jr.}
+\date{Today}
+\maketitle
+Blablabla said Nobody ~\cite{Nobody06}.
+\bibliography{example}{}
+\bibliographystyle{plain}
+\end{document}
+</textarea></div>
+<div><textarea style="width: 98%; height: 15%" id="bib">
+@misc{Nobody06,
+   author = "Nobody Jr",
+   title = "My Article",
+   year = "2006" 
+}
+</textarea></div>
+
+<div><textarea style="width: 98%; height: 20%" id="status"></textarea></div>
+<div><button style="width: 98%; height: 10%; font-size: x-large" onclick="onclick_()">Compile</button></div> 
+
+<script>
+
+const busytex_js = 'dist/busytex.js', busytex_wasm = 'dist/busytex.wasm', texlive_recommended_js = 'dist/texlive-latex-recommended.js', texlive_extra_js = 'dist/texlive-latex-extra.js', texlive_scheme_js = 'dist/texlive-{scheme}.js';//, '/dist/texlive-lazy.js'];
+const busytex_worker_js = 'busytex_worker.js', busytex_pipeline_js = 'busytex_pipeline.js';
+
+async function onclick_()
+{
+    const use_worker = document.getElementById('worker').checked;
+    const exit_early = document.getElementById('exit_early').checked;
+    const use_verbose = document.getElementById('verbose').checked;
+    const use_bibtex = document.getElementById('bibtex').checked;
+    const use_recommended = document.getElementById('texlive_latex_recommended').checked;
+    const use_extra = document.getElementById('texlive_latex_extra').checked; 
+    const scheme = document.getElementById('scheme').value
+    
+    let texlive_js = [texlive_scheme_js.replace('{scheme}', scheme)];
+    if(use_recommended)
+        texlive_js.push(texlive_recommended_js)
+    if(use_extra)
+        texlive_js.push(texlive_extra_js)
+
+    let tic = 0;
+    let worker = null;
+    
+    if(use_worker)
+    {
+        worker = new Worker(busytex_worker_js);
+    }
+    else
+    {
+        worker = 
+        {
+            async postMessage({files, main_tex_path, bibtex, verbose, busytex_js, busytex_wasm, texmf_local})
+            {
+                if(busytex_js && busytex_wasm && texlive_js && texmf_local)
+                {
+                    this.pipeline = new Promise(function (resolve, reject)
+                    {
+                        let s = document.createElement('script');
+                        s.src = busytex_pipeline_js;
+                        s.onload = resolve;
+                        s.onerror = reject;
+                        self.document.head.appendChild(s);
+                    }).then(_ => Promise.resolve(new BusytexPipeline(busytex_js, busytex_wasm, texlive_js, texmf_local, msg => this.onmessage({data: {log : msg}}), BusytexDefaultScriptLoader)));
+                }
+
+                else if(files && this.pipeline)
+                {
+                    const pipeline = await this.pipeline;
+                    const pdf = await pipeline.compile(files, main_tex_path, bibtex, exit_early, verbose);
+                    this.onmessage({data : {pdf : pdf}});
+                }
+            },
+
+            terminate()
+            {
+                this.onmessage({data : {log : 'Terminating dummy worker'}});
+            }
+        }
+    }
+
+    worker.onmessage = ({ data : {pdf, log, print} }) =>
+    {
+        if(pdf)
+        {
+            let previewElement = document.getElementById('preview');
+            previewElement.src = URL.createObjectURL(new Blob([pdf], {type: 'application/pdf'}));
+
+            let elapsedElement = document.getElementById('elapsed');
+            elapsedElement.innerText = ((performance.now() - tic) / 1000).toFixed(2) + ' sec';
+
+            worker.terminate();
+        }
+
+        if(print)
+        {
+            let statusElement = document.getElementById('status');
+            const ansi_reset_sequence = '\x1bc';
+            if(print == ansi_reset_sequence)
+                statusElement.value = '';
+            else
+            {
+                statusElement.value += print;
+                statusElement.value += '\n';
+                statusElement.scrollTop = statusElement.scrollHeight;
+            }
+        }
+    }
+    worker.postMessage({busytex_wasm : busytex_wasm, busytex_js : busytex_js, texlive_js : texlive_js, texmf_local : []});
+
+    tic = performance.now();
+    const tex = document.getElementById('tex').value, bib = document.getElementById('bib').value;
+    const files = [{path : 'example.tex', contents : tex}, {path : 'example.bib', contents : bib}];
+    worker.postMessage({files : files, main_tex_path : 'example.tex', bibtex : use_bibtex, exit_early : exit_early, verbose : use_verbose});
+}
+
+function clearlog()
+{
+    document.getElementById('status').value = '';
+}
+
+</script>
+
+
+</body></html>
