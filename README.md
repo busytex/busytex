@@ -3,6 +3,7 @@
 Currently compiles:
 - xetex
 - bibtex8
+- xdvipdfmx
 
 Future work:
 - tlmgr (web requests)
