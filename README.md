@@ -61,6 +61,9 @@ make clean
 ```shell
 # browser version, will serve index.html at http://localhost:8080
 python3.8 serve.py
+
+# native version
+bash example/example.sh
 ```
 
 ### References
@@ -74,6 +77,8 @@ python3.8 serve.py
 
 ### TODO
 ```shell
+https://github.com/rurban/perl-compiler
+http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 #TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
 #TODO: abspath/realpath instead of ROOT
 
@@ -92,6 +97,10 @@ python3.8 serve.py
 # ftp://tug.org/texlive/Contents/live/texmf-dist/
 # ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
 # ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
+# texmf-dist/scripts/texlive/tlmgr.pl
+# http://tug.org/texmf-dist/scripts/texlive/
+# https://fossies.org/linux/misc/install-tl-unx.tar.gz/
+# http://tug.ctan.org/systems/texlive/tlnet/tlpkg/
 ```
 
 ### Links

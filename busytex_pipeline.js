@@ -1,5 +1,7 @@
+//TODO: custom initialize / reload after a compilation
+//TODO: callMain hack: https://github.com/lyze/xetex-js/blob/master/post.worker.js
+//TODO: merge DataLoader / script loaders into Pipeline class
 //https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
-//kpathsea_debug
 
 function BusytexDefaultScriptLoader(src)
 {
@@ -105,7 +107,6 @@ class BusytexPipeline
     {
         const NOCLEANUP_callMain = (Module, args) =>
         {
-            //https://github.com/lyze/xetex-js/blob/master/post.worker.js
             Module.setPrefix(args[0]);
             const entryFunction = Module['_main'];
             const argc = args.length+1;
@@ -190,6 +191,8 @@ class BusytexPipeline
         };
 
         const Module_ = await busytex(Module);
+        //Module_.onExit = status => console.log('ONEXIT', status);
+        //Module['callMain'].apply(Module, data['arguments']);
         let exit_code = 0;
         const mem = Uint8Array.from(Module_.HEAPU8);
         for(let i = 0; i < arguments_array.length; i++)
