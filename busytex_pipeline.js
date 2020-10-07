@@ -105,6 +105,16 @@ class BusytexPipeline
 
     async run(arguments_array, init_env, init_fs, exit_early, verbose)
     {
+		const ASYNC_callMain = async (Module, args) => 
+		{
+			return new Promise(resolve =>
+			{
+				Module['onExit'] = status => resolve(status);
+				Module.callMain(args);
+            	//Module_['callMain'].apply(Module_, arguments_array[i]);
+			});
+		};
+
         const NOCLEANUP_callMain = (Module, args) =>
         {
             Module.setPrefix(args[0]);
@@ -137,6 +147,8 @@ class BusytexPipeline
         const Module =
         {
             noInitialRun : true,
+
+            //noExitRuntime : false,
 
             thisProgram : this.bin_busytex,
             
@@ -191,13 +203,14 @@ class BusytexPipeline
         };
 
         const Module_ = await busytex(Module);
-        //Module_.onExit = status => console.log('ONEXIT', status);
-        //Module['callMain'].apply(Module, data['arguments']);
         let exit_code = 0;
         const mem = Uint8Array.from(Module_.HEAPU8);
         for(let i = 0; i < arguments_array.length; i++)
         {
+            //exit_code = await ASYNC_callMain(Module_, arguments_array[i]);
+        	//Module_.onExit = status => console.log('ONEXIT', status);
             exit_code = NOCLEANUP_callMain(Module_, arguments_array[i], print);
+            
             Module_.setStatus(`EXIT_CODE: ${exit_code}`);
 
             if(exit_code != 0 && exit_early == true)
@@ -224,25 +237,30 @@ class BusytexPipeline
         // TEXMFLOG
         const verbose_args = 
         {
-            BusytexVerboseSilent : {
+            [BusytexVerboseSilent] : {
                 xetex : [],
                 bibtex8 : [],
                 xdvipdfmx : []
             },
-            BusytexVerboseInfo : {
+            [BusytexVerboseInfo] : {
                 xetex: ['-kpathsea-debug', '32'],
                 bibtex8 : ['--debug', 'search'],
                 xdvipdfmx : ['-v'],
             },
-            BusytexVerboseDebug : {
+            [BusytexVerboseDebug] : {
                 xetex : ['-recorder', '-kpathsea-debug', '63'],
                 bibtex8 : ['--debug', 'all'],
                 xdvipdfmx : ['-vv'],
+            },
+            '' : {
+                xetex : [],
+                bibtex8 : [],
+                xdvipdfmx : []
             }
         };
-        const xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat(verbose_args[verbose].xetex);
-        const bibtex8 = ['bibtex8', '--8bit', aux_path].concat(verbose_args[verbose].bibtex8);
-        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat(verbose_args[verbose].xdvipdfmx);
+        const xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((verbose_args[verbose] || verbose_args['']).xetex);
+        const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((verbose_args[verbose] || verbose_args['']).bibtex8);
+        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((verbose_args[verbose] || verbose_args['']).xdvipdfmx);
 
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
@@ -255,8 +273,8 @@ class BusytexPipeline
         const cmds = bibtex == true ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         const [FS, exit_code] = await this.run(cmds, this.init_env, this.init_project_dir(files, source_dir), exit_early, verbose);
 
-        const pdf = exit_code == 0 ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
-        const log = FS.readFile(log_path, {encoding : 'utf8'});
+        const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
+        const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
         
         return {pdf : pdf, log : log};
     }
