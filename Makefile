@@ -57,7 +57,7 @@ CFLAGS_wasm_texlive = -s ERROR_ON_UNDEFINED_SYMBOLS=0 -I$(ROOT)/build/wasm/texli
 CFLAGS_wasm_icu = -s ERROR_ON_UNDEFINED_SYMBOLS=0 $(CFLAGS_wasm_OPT)
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
 CFLAGS_wasm_fontconfig = -Duuid_generate_random=uuid_generate $(CFLAGS_wasm_OPT)
-CFLAGS_wasm_fontconfig_FREETYPE = $(addprefix -I$(ROOT)/build/wasm/texlive/libs/, freetype2/ freetype2/freetype2/) -
+CFLAGS_wasm_fontconfig_FREETYPE = $(addprefix -I$(ROOT)/build/wasm/texlive/libs/, freetype2/ freetype2/freetype2/)
 LIBS_wasm_fontconfig_FREETYPE = -L$(ROOT)/build/wasm/texlive/libs/freetype2/ -lfreetype
 PKGDATAFLAGS_wasm_icu = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
