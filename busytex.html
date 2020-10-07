@@ -4,7 +4,11 @@
 <label for="worker">Use Worker</label>
 <input type="checkbox" id="exit_early" name="exit_early" checked>
 <label for="exit_early">Exit Early</label>
-<input type="checkbox" id="verbose" name="verbose">
+<select name="verbose" id="verbose">
+    <option value="silent">Almost Silent</option>
+    <option value="info" selected="selected">Quite Talkative</option>
+    <option value="debug">Extremely Chatty</option>
+</select>
 <label for="verbose">Verbose</label>
 <input type="checkbox" id="bibtex" name="bibtex" checked>
 <label for="bibtex">Run BibTeX</label>
@@ -55,7 +59,7 @@ async function onclick_()
 {
     const use_worker = document.getElementById('worker').checked;
     const exit_early = document.getElementById('exit_early').checked;
-    const use_verbose = document.getElementById('verbose').checked;
+    const use_verbose = document.getElementById('verbose').value;
     const use_bibtex = document.getElementById('bibtex').checked;
     const use_recommended = document.getElementById('texlive_latex_recommended').checked;
     const use_extra = document.getElementById('texlive_latex_extra').checked; 

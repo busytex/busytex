@@ -23,6 +23,12 @@ function BusytexWorkerScriptLoader(src)
     return Promise.resolve(self.importScripts(src));
 }
 
+BusytexVerboseSilent = 'silent';
+
+BusytexVerboseInfo = 'info';
+
+BusytexVerboseDebug = 'debug';
+
 BusytexDataLoader = 
 {
     //https://emscripten.org/docs/api_reference/module.html#Module.getPreloadedPackage
@@ -95,7 +101,7 @@ class BusytexPipeline
         };
     }
 
-    async run(arguments_array, init_env, init_fs, exit_early)
+    async run(arguments_array, init_env, init_fs, exit_early, verbose)
     {
         const NOCLEANUP_callMain = (Module, args) =>
         {
@@ -155,6 +161,9 @@ class BusytexPipeline
             
             print(text) 
             {
+                if(verbose == BusytexVerboseSilent)
+                    return;
+
                 Module.setStatus(Module.prefix + ' | stdout: ' + (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text));
             },
 
@@ -204,14 +213,33 @@ class BusytexPipeline
         const source_dir = `${this.project_dir}/${dirname}`;
 
         const tex_path = source_name;
-        const xdv_path = source_name.replace('.tex', '.xdv');
-        const pdf_path = source_name.replace('.tex', '.pdf');
-        const log_path = source_name.replace('.tex', '.log');
-        const aux_path = source_name.replace('.tex', '.aux');
+        const xdv_path = tex_path.replace('.tex', '.xdv');
+        const pdf_path = tex_path.replace('.tex', '.pdf');
+        const log_path = tex_path.replace('.tex', '.log');
+        const aux_path = tex_path.replace('.tex', '.aux');
 
-        const cmd_xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path];
-        const cmd_bibtex8 = ['bibtex8', aux_path]; 
-        const cmd_xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat(verbose ? ['-vv'] : []);
+        // TEXMFLOG
+        const verbose_args = 
+        {
+            BusytexVerboseSilent : {
+                xetex : [],
+                bibtex8 : [],
+                xdvipdfmx : []
+            },
+            BusytexVerboseInfo : {
+                xetex: ['-kpathsea-debug', '32'],
+                bibtex8 : ['--debug', 'search'],
+                xdvipdfmx : ['-v'],
+            },
+            BusytexVerboseDebug : {
+                xetex : ['-recorder', '-kpathsea-debug', '63'],
+                bibtex8 : ['--debug', 'all'],
+                xdvipdfmx : ['-vv'],
+            }
+        };
+        const xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat(verbose_args[verbose].xetex);
+        const bibtex8 = ['bibtex8', '--8bit', aux_path].concat(verbose_args[verbose].bibtex8);
+        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat(verbose_args[verbose].xdvipdfmx);
 
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
@@ -221,8 +249,8 @@ class BusytexPipeline
         if(exit_early == null)
             exit_early = true;
 
-        const cmds = bibtex == true ? [cmd_xetex, cmd_bibtex8, cmd_xetex, cmd_xetex, cmd_xdvipdfmx] : [cmd_xetex, cmd_xdvipdfmx];
-        const [FS, exit_code] = await this.run(cmds, this.init_env, this.init_project_dir(files, source_dir), exit_early);
+        const cmds = bibtex == true ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
+        const [FS, exit_code] = await this.run(cmds, this.init_env, this.init_project_dir(files, source_dir), exit_early, verbose);
 
         const pdf = exit_code == 0 ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
         const log = FS.readFile(log_path, {encoding : 'utf8'});

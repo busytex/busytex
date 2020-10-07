@@ -1,3 +1,5 @@
+#TODO: replace install-tl by tlmgr
+
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 URL_git = https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
 
@@ -11,6 +13,8 @@ ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
 PYTHON = python3
 
+XETEX = build/native/busytex xetex
+
 TEXLIVE_BUILD_DIR=$(ROOT)/build/wasm/texlive
 WEB2C_NATIVE_TOOLS_DIR=$(ROOT)/build/native/texlive/texk/web2c
 FONTCONFIG_BUILD_DIR=$(ROOT)/build/wasm/fontconfig
@@ -19,11 +23,11 @@ EXPAT_BUILD_DIR=$(ROOT)/build/wasm/expat
 PREFIX_wasm = $(ROOT)/build/wasm/prefix
 PREFIX_native = $(ROOT)/build/native/prefix
 
-MAKE_wasm = emmake make
+MAKE_wasm = emmake $(MAKE)
 CMAKE_wasm = emcmake cmake
 CONFIGURE_wasm = emconfigure
 AR_wasm = emar
-MAKE_native = make
+MAKE_native = $(MAKE)
 CMAKE_native = cmake
 AR_native = $(AR)
 
@@ -86,10 +90,10 @@ INCLUDE_DEPS = texlive/libs/icu/include fontconfig
 
 .PHONY: all
 all:
-	make texlive
-	make native
-	make tds
-	make wasm
+	$(MAKE) texlive
+	$(MAKE) native
+	$(MAKE) tds
+	$(MAKE) wasm
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded :
 	mkdir -p $(basename $@)
@@ -185,7 +189,7 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	   --disable-docs \
 	   --with-expat-includes="$(ROOT)/source/expat/lib" \
 	   --with-expat-lib="$(ROOT)/build/$*/expat" \
-	   CFLAGS="$(CFLAGS_$*_fontconfig) $(CFLAGS_$*_OPT)" FREETYPE_CFLAGS="$(CFLAGS_$*_fontconfig_FREETYPE)" FREETYPE_LIBS="$(LIBS_$*_fontconfig_FREETYPE)"
+	   CFLAGS="$(CFLAGS_$*_fontconfig) $(CFLAGS_$*_OPT) -v" FREETYPE_CFLAGS="$(CFLAGS_$*_fontconfig_FREETYPE)" FREETYPE_LIBS="$(LIBS_$*_fontconfig_FREETYPE)"
 	$(MAKE_$*) -C build/$*/fontconfig
 
 ################################################################################################################
@@ -270,8 +274,8 @@ build/texlive-%/texmf-dist: build/install-tl/install-tl build/texlive-%.profile
 build/format-%/latex.fmt: build/native/busytex build/texlive-%/texmf-dist 
 	mkdir -p $(dir $@)
 	rm $(dir $@)/* || true
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $< xetex -interaction=nonstopmode -output-directory=$(dir $@) -kpathsea-debug=32 -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen/ TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $< xetex -interaction=nonstopmode -output-directory=$(dir $@) -kpathsea-debug=32 -ini -etex latex.ltx
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex unpack.ins
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex latex.ltx
 
 build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist build/wasm/fontconfig.conf 
 	#https://github.com/emscripten-core/emscripten/issues/12214
@@ -281,7 +285,7 @@ build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist bui
 		--lz4 --use-preload-cache \
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fontconfig.conf@/fontconfig/texlive.conf \
-		--preload build//texlive-$*/texmf-dist/web2c/texmf.cnf@/texmf.cnf \
+		--preload build/texlive-$*/texmf-dist/web2c/texmf.cnf@/texmf.cnf \
 		--preload build/texlive-$*@/texlive \
 		--preload build/format-$*/latex.fmt@/latex.fmt \
 		--preload source/texlive/texk/bibtex-x/csf@/bibtex
@@ -353,14 +357,13 @@ tds-%:
 .PHONY: tds
 tds:
 	$(MAKE) tds-basic
-	$(MAKE) tds-small
-	$(MAKE) tds-medium
-	$(MAKE) build/wasm/
+	#$(MAKE) tds-small
+	#$(MAKE) tds-medium
 	# $(MAKE) tds-full
 
 .PHONY: tds-wasm
 tds-wasm:
-	#$(MAKE) build/wasm/texlive-basic.js
+	$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) build/wasm/texlive-small.js
 	#$(MAKE) build/wasm/texlive-medium.js
 	$(MAKE) build/wasm/texlive-latex-recommended.js
