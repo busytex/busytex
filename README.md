@@ -137,3 +137,19 @@ https://adared.ch/unionfs_by_intercept/
 https://gist.github.com/przemoc/571086
 
 http://ordiluc.net/fs/libetc/
+
+```
+.PHONY: dist/texlive-lazy.js
+dist/texlive-lazy.js:
+    mkdir -p $(dir $@)
+    rm -rf dist/texmf || true
+    $(PYTHON) lazy_packager.py dist --js-output=$@ --export-name=BusytexPipeline \
+        --preload build/texlive-full/texmf-dist/tex/latex/titlesec@/texmf/texmf-dist/tex/latex/titlesec \
+        --preload build/texlive-full/texmf-dist/tex/latex/xcolor@/texmf/texmf-dist/tex/latex/xcolor \
+        --preload build/texlive-full/texmf-dist/tex/latex/etoolbox@/texmf/texmf-dist/tex/latex/etoolbox \
+        --preload build/texlive-full/texmf-dist/tex/latex/footmisc@/texmf/texmf-dist/tex/latex/footmisc \
+        --preload build/texlive-full/texmf-dist/tex/latex/textpos@/texmf/texmf-dist/tex/latex/textpos \
+        --preload build/texlive-full/texmf-dist/tex/latex/ms@/texmf/texmf-dist/tex/latex/ms \
+        --preload build/texlive-full/texmf-dist/tex/latex/parskip@/texmf/texmf-dist/tex/latex/parksip
+
+```
