@@ -1,6 +1,7 @@
 //TODO: custom initialize / reload after a compilation
 //TODO: callMain hack: https://github.com/lyze/xetex-js/blob/master/post.worker.js
-//TODO: merge DataLoader / script loaders into Pipeline class
+//https://emscripten.org/docs/api_reference/module.html#Module.getPreloadedPackage
+//https://github.com/emscripten-core/emscripten/blob/master/tests/manual_download_data.html
 
 function BusytexDefaultScriptLoader(src)
 {
@@ -24,46 +25,37 @@ function BusytexWorkerScriptLoader(src)
     return Promise.resolve(self.importScripts(src));
 }
 
-BusytexVerboseSilent = 'silent';
-
-BusytexVerboseInfo = 'info';
-
-BusytexVerboseDebug = 'debug';
-
-BusytexDataLoader = 
+class BusytexPipeline
 {
-    //https://emscripten.org/docs/api_reference/module.html#Module.getPreloadedPackage
-    //https://github.com/emscripten-core/emscripten/blob/master/tests/manual_download_data.html
+    static VerboseSilent = 'silent';
+    static VerboseInfo = 'info';
+    static VerboseDebug = 'debug';
 
-    preRun : [],
-
-    locateFile(remote_package_name)
+    static preRun = [];
+    static data_packages = [];
+    
+    static locateFile(remote_package_name)
     {
-        for(const data_package_js of this.data_packages)
+        for(const data_package_js of BusytexPipeline.data_packages)
         {
             const data_file = data_package_js.replace('.js', '.data');
             if(data_file.endsWith(remote_package_name))
                 return data_file;
         }
         return null;
-    },
+    }
 
-    data_packages : []
-};
-
-class BusytexPipeline
-{
     constructor(busytex_js, busytex_wasm, texlive_js, texmf_local, print, script_loader)
     {
         this.print = print;
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = script_loader(busytex_js);
         
-        BusytexDataLoader.data_packages = []
+        BusytexPipeline.data_packages = []
         for(const data_package_js of texlive_js)
         {
             this.em_module_promise = this.em_module_promise.then(_ => script_loader(data_package_js));
-            BusytexDataLoader.data_packages.push(data_package_js);
+            BusytexPipeline.data_packages.push(data_package_js);
         }
         
         this.ansi_reset_sequence = '\x1bc';
@@ -96,44 +88,12 @@ class BusytexPipeline
             }
             FS.chdir(source_dir);
         };
+
+        this.Module = this.reload_module();
     }
 
-    async run(arguments_array, init_env, init_fs, exit_early, verbose)
+    async reload_module()
     {
-		const ASYNC_callMain = async (Module, args) => 
-		{
-			return new Promise(resolve =>
-			{
-				Module['onExit'] = status => resolve(status);
-				Module.callMain(args);
-            	//Module_['callMain'].apply(Module_, arguments_array[i]);
-			});
-		};
-
-        const NOCLEANUP_callMain = (Module, args) =>
-        {
-            Module.setPrefix(args[0]);
-            const entryFunction = Module['_main'];
-            const argc = args.length+1;
-            const argv = Module.stackAlloc((argc + 1) * 4);
-            Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
-            for (let i = 1; i < argc; i++) 
-                Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
-            Module.HEAP32[(argv >> 2) + argc] = 0;
-
-            try
-            {
-                entryFunction(argc, argv);
-            }
-            catch(e)
-            {
-                this.print('callMain: ' + e.message);
-                return e.status;
-            }
-            
-            return 0;
-        }
-
         const print = this.print;
         //const wasm_module = await this.wasm_module_promise;
         //const em_module = await this.em_module_promise;
@@ -155,7 +115,7 @@ class BusytexPipeline
             {
                 Object.setPrototypeOf(BusytexDataLoader, Module);
                 self.LZ4 = Module.LZ4;
-                for(const preRun of BusytexDataLoader.preRun) 
+                for(const preRun of BusytexPipeline.preRun) 
                     preRun();
 
                 init_env(Module.ENV);
@@ -197,24 +157,65 @@ class BusytexPipeline
             },
         };
 
-        const Module_ = await busytex(Module);
+        return await busytex(Module);
+    }
+
+    async run(arguments_array, init_env, init_fs, exit_early, verbose)
+    {
+		const ASYNC_callMain = async (Module, args) => 
+		{
+			return new Promise(resolve =>
+			{
+				Module['onExit'] = status => resolve(status);
+				Module.callMain(args);
+            	//Module_['callMain'].apply(Module_, arguments_array[i]);
+			});
+		};
+
+        const NOCLEANUP_callMain = (Module, args) =>
+        {
+            Module.setPrefix(args[0]);
+            const entryFunction = Module['_main'];
+            const argc = args.length+1;
+            const argv = Module.stackAlloc((argc + 1) * 4);
+            Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
+            for (let i = 1; i < argc; i++) 
+                Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
+            Module.HEAP32[(argv >> 2) + argc] = 0;
+
+            try
+            {
+                entryFunction(argc, argv);
+            }
+            catch(e)
+            {
+                this.print('callMain: ' + e.message);
+                return e.status;
+            }
+            
+            return 0;
+        }
+        const Module = await this.Module;
         let exit_code = 0;
-        const mem = Uint8Array.from(Module_.HEAPU8);
+        const mem = Uint8Array.from(Module.HEAPU8);
         for(let i = 0; i < arguments_array.length; i++)
         {
             //exit_code = await ASYNC_callMain(Module_, arguments_array[i]);
         	//Module_.onExit = status => console.log('ONEXIT', status);
-            exit_code = NOCLEANUP_callMain(Module_, arguments_array[i], print);
+            exit_code = NOCLEANUP_callMain(Module, arguments_array[i], print);
             
-            Module_.setStatus(`EXIT_CODE: ${exit_code}`);
+            Module.setStatus(`EXIT_CODE: ${exit_code}`);
 
             if(exit_code != 0 && exit_early == true)
                 break;
             
             if(i < arguments_array.length - 1)
-                Module_.HEAPU8.set(mem);
+                Module.HEAPU8.set(mem);
         }
-        return [Module_.FS, exit_code];
+
+        this.Module = this.reload_module();
+        
+        return [Module.FS, exit_code];
     }
 
     async compile(files, main_tex_path, bibtex, exit_early, verbose)
@@ -232,17 +233,17 @@ class BusytexPipeline
         // TEXMFLOG
         const verbose_args = 
         {
-            [BusytexVerboseSilent] : {
+            [BusytexPipeline.VerboseSilent] : {
                 xetex : [],
                 bibtex8 : [],
                 xdvipdfmx : []
             },
-            [BusytexVerboseInfo] : {
+            [BusytexPipeline.VerboseInfo] : {
                 xetex: ['-kpathsea-debug', '32'],
                 bibtex8 : ['--debug', 'search'],
                 xdvipdfmx : ['-v'],
             },
-            [BusytexVerboseDebug] : {
+            [BusytexPipeline.VerboseDebug] : {
                 xetex : ['-recorder', '-kpathsea-debug', '63'],
                 bibtex8 : ['--debug', 'all'],
                 xdvipdfmx : ['-vv'],
