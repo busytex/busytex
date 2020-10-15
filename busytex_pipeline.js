@@ -95,15 +95,11 @@ class BusytexPipeline
     async reload_module()
     {
         const print = this.print;
-        //const wasm_module = await this.wasm_module_promise;
-        //const em_module = await this.em_module_promise;
         const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise]);
 
         const Module =
         {
             noInitialRun : true,
-
-            //noExitRuntime : false,
 
             thisProgram : this.bin_busytex,
             
@@ -162,16 +158,6 @@ class BusytexPipeline
 
     async run(arguments_array, init_env, init_fs, exit_early, verbose)
     {
-		const ASYNC_callMain = async (Module, args) => 
-		{
-			return new Promise(resolve =>
-			{
-				Module['onExit'] = status => resolve(status);
-				Module.callMain(args);
-            	//Module_['callMain'].apply(Module_, arguments_array[i]);
-			});
-		};
-
         const NOCLEANUP_callMain = (Module, args) =>
         {
             Module.setPrefix(args[0]);
@@ -195,13 +181,14 @@ class BusytexPipeline
             
             return 0;
         }
-        const Module = await this.Module;
+        
         let exit_code = 0;
+        
+        const Module = await this.Module;
         const mem = Uint8Array.from(Module.HEAPU8);
+        
         for(let i = 0; i < arguments_array.length; i++)
         {
-            //exit_code = await ASYNC_callMain(Module_, arguments_array[i]);
-        	//Module_.onExit = status => console.log('ONEXIT', status);
             exit_code = NOCLEANUP_callMain(Module, arguments_array[i], print);
             
             Module.setStatus(`EXIT_CODE: ${exit_code}`);
