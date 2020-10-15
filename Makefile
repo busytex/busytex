@@ -1,7 +1,6 @@
 #TODO: replace install-tl by tlmgr
 
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
-URL_git = https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz
 
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
@@ -13,7 +12,10 @@ ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
 PYTHON = python3
 
-XETEX = build/native/busytex xetex
+XETEX = $(ROOT)/build/native/busytex xetex
+
+#TEXMF_FULL = $(ROOT)/build/texlive-full
+TEXMF_FULL = $(ROOT)/source/texlive-20200406-texmf
 
 TEXLIVE_BUILD_DIR=$(ROOT)/build/wasm/texlive
 WEB2C_NATIVE_TOOLS_DIR=$(ROOT)/build/native/texlive/texk/web2c
@@ -201,7 +203,7 @@ build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/native/texlive.configured
 	$(AR_native) -crs $@ $(dir $@)/*.o
 
 build/native/texlive/texk/bibtex-x/bibtex8.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) CSFINPUT=/bibtex $(subst -Dmain, -Dbusymain, $(OPTS_native_bibtex))
+	$(MAKE_native) -C $(dir $@) $(subst -Dmain, -Dbusymain, $(OPTS_native_bibtex))
 	rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_native_bibtex)
 	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
@@ -229,7 +231,7 @@ build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/wasm/texlive.configured
 	$(AR_wasm) -crs $@ $(dir $@)/*.o
 
 build/wasm/texlive/texk/bibtex-x/bibtex8.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C $(dir $@) CSFINPUT=/bibtex $(OPTS_wasm_bibtex)
+	$(MAKE_wasm) -C $(dir $@) $(OPTS_wasm_bibtex)
 	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
 
 build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured
@@ -244,9 +246,9 @@ build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured
 build/install-tl/install-tl:
 	mkdir -p $(dir $@)
 	wget --no-clobber $(URL_TEXLIVE_INSTALLER) -P source || true
-	tar -xf "source/$(notdir $(URL_TEXLIVE_INSTALLER))" --strip-components=1 --directory="$(dir $@)"
+	tar -xf source/$(notdir $(URL_TEXLIVE_INSTALLER)) --strip-components=1 --directory="$(dir $@)"
 
-build/wasm/fontconfig.conf:
+build/wasm/fonts.conf:
 	mkdir -p $(dir $@)
 	echo '<?xml version="1.0"?>' > $@
 	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
@@ -255,19 +257,16 @@ build/wasm/fontconfig.conf:
 	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>' >> $@
 	echo '</fontconfig>' >> $@
 
-build/texlive-%.profile:
-	mkdir -p $(dir $@)
-	echo selected_scheme scheme-$* > $@
-	echo TEXDIR $(ROOT)/$(basename $@) >> $@
-	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-local >> $@
-	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-var >> $@
-	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-config >> $@
-	echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> $@
-
-build/texlive-%/texmf-dist: build/install-tl/install-tl build/texlive-%.profile
+build/texlive-%/texmf-dist: build/install-tl/install-tl 
 	# https://www.tug.org/texlive/doc/install-tl.html
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(dir $@)
+	echo selected_scheme scheme-$* > build/texlive-$*.profile
+	echo TEXDIR $(ROOT)/$(dir $@) >> build/texlive-$*.profile
+	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-local >> build/texlive-$*.profile
+	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-var >> build/texlive-$*.profile
+	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-config >> build/texlive-$*.profile
+	echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 $< -profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
 
@@ -275,16 +274,16 @@ build/format-%/latex.fmt: build/native/busytex build/texlive-%/texmf-dist
 	mkdir -p $(dir $@)
 	rm $(dir $@)/* || true
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex latex.ltx
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex latex.ltx
 
-build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist build/wasm/fontconfig.conf 
+build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	#https://github.com/emscripten-core/emscripten/issues/12214
 	mkdir -p $(dir $@)
 	echo > build/empty
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexDataLoader \
 		--lz4 --use-preload-cache \
 		--preload build/empty@/bin/busytex \
-		--preload build/wasm/fontconfig.conf@/fontconfig/texlive.conf \
+		--preload build/wasm/fonts.conf@/etc/fonts.conf \
 		--preload build/texlive-$*/texmf-dist/web2c/texmf.cnf@/texmf.cnf \
 		--preload build/texlive-$*@/texlive \
 		--preload build/format-$*/latex.fmt@/latex.fmt \
@@ -303,18 +302,18 @@ dist/texlive-lazy.js:
 		--preload build/texlive-full/texmf-dist/tex/latex/ms@/texmf/texmf-dist/tex/latex/ms \
 		--preload build/texlive-full/texmf-dist/tex/latex/parskip@/texmf/texmf-dist/tex/latex/parksip
 
-build/wasm/texlive-latex-%.js:
+build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexDataLoader \
 		--lz4 --use-preload-cache \
-		$(shell $(PYTHON) ubuntu_package_preload.py --texmf build/texlive-full --url $(URL_UBUNTU_RELEASE) --package texlive-latex-$*)
+		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_UBUNTU_RELEASE) --package $*)
 
 ################################################################################################################
 
 .PHONY:build/wasm/busytex.js
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
-	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PROXYFS", "PATH"]' -lproxyfs.js  -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(INCLUDE_DEPS)) busytex.c
+	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(INCLUDE_DEPS)) busytex.c
 
 ################################################################################################################
 
@@ -348,11 +347,10 @@ native:
 
 #.PHONY: tds-basic tds-small tds-full
 tds-%:
-	$(MAKE) build/install-tl/install-tl
-	$(MAKE) build/texlive-$*.profile
-	$(MAKE) build/texlive-$*/texmf-dist
+	#$(MAKE) build/install-tl/install-tl
+	#$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/latex.fmt
-	$(MAKE) build/wasm/fontconfig.conf
+	#$(MAKE) build/wasm/fonts.conf
 
 .PHONY: tds
 tds:
@@ -361,13 +359,18 @@ tds:
 	#$(MAKE) tds-medium
 	# $(MAKE) tds-full
 
+# https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
+.PHONY: ubuntu-wasm
+ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js
+
+
 .PHONY: tds-wasm
 tds-wasm:
-	$(MAKE) build/wasm/texlive-basic.js
+	#$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) build/wasm/texlive-small.js
 	#$(MAKE) build/wasm/texlive-medium.js
-	$(MAKE) build/wasm/texlive-latex-recommended.js
-	$(MAKE) build/wasm/texlive-latex-extra.js
+	
+	$(MAKE) ubuntu-wasm
 
 .PHONY: wasm
 wasm:

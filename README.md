@@ -82,14 +82,20 @@ http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 #TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
 #TODO: abspath/realpath instead of ROOT
 
+# https://ctan.tetaneutral.net/systems/texlive/Images/texlive2020-20200406.iso
+# http://www.tug.org/texlive/devsrc/Master/tlpkg/tlpsrc/collection-basic.tlpsrc
 #TODO: custom binaries for install-tl
 #TODO: instruction for local tlmgr install tinytex
 #TODO: install-tl install from local full download
 
 #TODO: custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
 #TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
+# https://github.com/erincandescent/lib9660/blob/master/tb9660.c
 # https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
 # https://github.com/emscripten-core/emscripten/pull/4737
+
+# https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/
+# http://www.xmailserver.org/xdiff-lib.html
 
 #TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
 # https://ctan.crest.fr/tex-archive/macros/latex/contrib/
@@ -129,3 +135,5 @@ https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
 https://adared.ch/unionfs_by_intercept/
 
 https://gist.github.com/przemoc/571086
+
+http://ordiluc.net/fs/libetc/

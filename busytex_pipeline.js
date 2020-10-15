@@ -1,7 +1,6 @@
 //TODO: custom initialize / reload after a compilation
 //TODO: callMain hack: https://github.com/lyze/xetex-js/blob/master/post.worker.js
 //TODO: merge DataLoader / script loaders into Pipeline class
-//https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
 
 function BusytexDefaultScriptLoader(src)
 {
@@ -75,16 +74,12 @@ class BusytexPipeline
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
         this.cnf_texlive = '/texmf.cnf';
         this.dir_cnf = '/';
-        this.dir_fontconfig = '/fontconfig';
-        this.conf_fontconfig = 'texlive.conf';
         this.dir_bibtexcsf = '/bibtex';
 
         this.init_env = ENV =>
         {
             ENV.TEXMFDIST = this.dir_texmfdist;
             ENV.TEXMFCNF = this.dir_cnf;
-            ENV.FONTCONFIG_PATH = this.dir_fontconfig;
-            ENV.FONTCONFIG_FILE = this.conf_fontconfig;
         };
 
         this.init_project_dir = (files, source_dir) => (PATH, FS) =>
