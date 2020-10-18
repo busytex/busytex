@@ -5,6 +5,7 @@ extern int optind;
 extern int busymain_xetex(int argc, char* argv[]);
 extern int busymain_xdvipdfmx(int argc, char* argv[]);
 extern int busymain_bibtex8(int argc, char* argv[]);
+extern int busymain_kpsewhich(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
@@ -28,5 +29,11 @@ int main(int argc, char* argv[])
         argv[1] = argv[0];
         optind = 1;
         return busymain_bibtex8(argc - 1, argv + 1);
+    }
+    else if(strcmp("kpsewhich", argv[1]) == 0)
+    {
+        argv[1] = argv[0];
+        optind = 1;
+        return busymain_kpsewhich(argc - 1, argv + 1);
     }
 }

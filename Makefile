@@ -1,3 +1,4 @@
+#TODO: refactor CLFAGS var names
 #TODO: replace install-tl by tlmgr
 
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
@@ -44,15 +45,19 @@ CONFIGSITE_BUSYTEX = $(ROOT)/busytex.site
 
 CFLAGS_native_OPT = -O3
 CFLAGS_wasm_OPT = -Oz
+
 CFLAGS_XDVIPDFMX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' -Dcheck_for_jpeg=dvipdfmx_check_for_jpeg -Dcheck_for_bmp=dvipdfmx_check_for_bmp -Dcheck_for_png=dvipdfmx_check_for_png -Dseek_absolute=dvidpfmx_seek_absolute -Dseek_relative=dvidpfmx_seek_relative -Dseek_end=dvidpfmx_seek_end -Dtell_position=dvidpfmx_tell_position -Dfile_size=dvidpfmx_file_size -Dmfgets=dvipdfmx_mfgets -Dwork_buffer=dvipdfmx_work_buffer -Dget_unsigned_byte=dvipdfmx_get_unsigned_byte -Dget_unsigned_pair=dvipdfmx_get_unsigned_pair 
 CFLAGS_BIBTEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8' -Dinitialize=bibtex_initialize -Deoln=bibtex_eoln -Dlast=bibtex_last -Dhistory=bibtex_history -Dbad=bibtex_bad -Dxchr=bibtex_xchr -Dbuffer=bibtex_buffer -Dclose_file=bibtex_close_file -Dusage=bibtex_usage 
 CFLAGS_XETEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
+CFLAGS_KPSEWHICH = -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
+
 CFLAGS_XDVIPDFMX_wasm = $(CFLAGS_XDVIPDFMX) $(CFLAGS_wasm_OPT)
 CFLAGS_BIBTEX_wasm = $(CFLAGS_BIBTEX) $(CFLAGS_wasm_OPT)
 CFLAGS_XETEX_wasm = $(CFLAGS_XETEX) $(CFLAGS_wasm_OPT)
 CFLAGS_XDVIPDFMX_native = $(CFLAGS_XDVIPDFMX) $(CFLAGS_native_OPT)
 CFLAGS_BIBTEX_native = $(CFLAGS_BIBTEX) $(CFLAGS_native_OPT)
 CFLAGS_XETEX_native = $(CFLAGS_XETEX) $(CFLAGS_native_OPT)
+CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_native_OPT)
 
 CFLAGS_wasm_bibtex = -s TOTAL_MEMORY=$(TOTAL_MEMORY) $(CFLAGS_wasm_OPT)
 CFLAGS_wasm_texlive = -s ERROR_ON_UNDEFINED_SYMBOLS=0 -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_wasm_OPT) 
@@ -81,10 +86,12 @@ OPTS_wasm_xdvipdfmx= CC="emcc $(CFLAGS_XDVIPDFMX_wasm)" CXX="em++ $(CFLAGS_XDVIP
 OPTS_native_xdvipdfmx= -e CFLAGS="$(CFLAGS_native_texlive) $(CFLAGS_XDVIPDFMX_native)" -e CPPFLAGS="$(CFLAGS_native_texlive) $(CFLAGS_XDVIPDFMX_native)"
 OPTS_native_bibtex = -e CFLAGS="$(CFLAGS_BIBTEX_native) $(CFLAGS_native_bibtex)" -e CXXFLAGS="$(CFLAGS_BIBTEX_native) $(CFLAGS_wasm_native)"
 OPTS_native_xetex = CC="$(CC) $(CFLAGS_XETEX_native)" CXX="$(CXX) $(CFLAGS_XETEX_native)"
+OPTS_native_kpsewhich = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/xdvipdfmx.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/bibtex8.a
+OBJ_KPATHSEA = kpsewhich.o .libs/libkpathsea.a
 
 #texlive/libs/icu/icu-build/lib/libicuio.a texlive/libs/icu/icu-build/lib/libicui18n.a 
 OBJ_DEPS = texlive/libs/harfbuzz/libharfbuzz.a texlive/libs/graphite2/libgraphite2.a texlive/libs/teckit/libTECkit.a texlive/libs/libpng/libpng.a  fontconfig/src/.libs/libfontconfig.a texlive/libs/freetype2/libfreetype.a texlive/libs/pplib/libpplib.a texlive/libs/zlib/libz.a texlive/libs/libpaper/libpaper.a texlive/libs/icu/icu-build/lib/libicuuc.a texlive/libs/icu/icu-build/lib/libicudata.a texlive/texk/kpathsea/.libs/libkpathsea.a expat/libexpat.a 
@@ -215,11 +222,16 @@ build/native/texlive/texk/web2c/libxetex.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o $(OPTS_native_xetex)
 	$(MAKE_native) -C $(dir $@) libxetex.a $(OPTS_native_xetex)
 
+.PHONY: build/native/texlive/texk/kpathsea/kpsewhich.o
+build/native/texlive/texk/kpathsea/kpsewhich.o: build/native/texlive.configured
+	rm $@ || true
+	$(MAKE_native) -C $(dir $@) kpsewhich.o $(OPTS_native_kpsewhich)
+
 .PHONY: build/native/busytex
 build/native/busytex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex.o
-	$(CXX)  $(CFLAGS_native_OPT) -o $@ -lm -pthread busytex.o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(INCLUDE_DEPS)) 
+	$(CXX)  $(CFLAGS_native_OPT) -o $@ -lm -pthread busytex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(INCLUDE_DEPS)) 
 
 #build/native/texlive/texk/web2c/xetex: 
 #	$(MAKE_native) -C $(dir $@) xetex 
@@ -256,6 +268,17 @@ build/wasm/fonts.conf:
 	echo '<dir>/texlive/texmf-dist/fonts/opentype</dir>' >> $@
 	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>' >> $@
 	echo '</fontconfig>' >> $@
+
+build/native/fonts.conf:
+	mkdir -p $(dir $@)
+	echo '<?xml version="1.0"?>' > $@
+	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
+	echo '<fontconfig>' >> $@
+	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/opentype</dir>
+	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/type1</dir>
+	#<cachedir prefix="relative">./cache</cachedir>
+	echo '</fontconfig>' >> $@
+
 
 build/texlive-%/texmf-dist: build/install-tl/install-tl 
 	# https://www.tug.org/texlive/doc/install-tl.html
@@ -330,12 +353,13 @@ native:
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
+	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/native/busytex
 
 #.PHONY: tds-basic tds-small tds-full
 tds-%:
-	#$(MAKE) build/install-tl/install-tl
-	#$(MAKE) build/texlive-$*/texmf-dist
+	$(MAKE) build/install-tl/install-tl
+	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/latex.fmt
 	#$(MAKE) build/wasm/fonts.conf
 
@@ -350,10 +374,9 @@ tds:
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js
 
-
 .PHONY: tds-wasm
 tds-wasm:
-	#$(MAKE) build/wasm/texlive-basic.js
+	$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) build/wasm/texlive-small.js
 	#$(MAKE) build/wasm/texlive-medium.js
 	
