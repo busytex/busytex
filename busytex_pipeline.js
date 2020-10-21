@@ -1,7 +1,4 @@
-//TODO: custom initialize / reload after a compilation
-//TODO: callMain hack: https://github.com/lyze/xetex-js/blob/master/post.worker.js
-//https://emscripten.org/docs/api_reference/module.html#Module.getPreloadedPackage
-//https://github.com/emscripten-core/emscripten/blob/master/tests/manual_download_data.html
+//TODO: preload mode
 
 function BusytexDefaultScriptLoader(src)
 {
@@ -94,9 +91,9 @@ class BusytexPipeline
 
     async reload_module()
     {
-        const print = this.print;
         const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise]);
 
+        const {print, init_env} = this;
         const Module =
         {
             noInitialRun : true,
@@ -109,13 +106,12 @@ class BusytexPipeline
             
             preRun : [() =>
             {
-                Object.setPrototypeOf(BusytexDataLoader, Module);
+                Object.setPrototypeOf(BusytexPipeline, Module);
                 self.LZ4 = Module.LZ4;
                 for(const preRun of BusytexPipeline.preRun) 
                     preRun();
 
                 init_env(Module.ENV);
-                init_fs(Module.PATH, Module.FS);
             }],
 
             instantiateWasm(imports, successCallback)
@@ -156,7 +152,7 @@ class BusytexPipeline
         return await busytex(Module);
     }
 
-    async run(arguments_array, init_env, init_fs, exit_early, verbose)
+    async run(arguments_array, init_fs, exit_early, verbose)
     {
         const NOCLEANUP_callMain = (Module, args) =>
         {
@@ -185,11 +181,12 @@ class BusytexPipeline
         let exit_code = 0;
         
         const Module = await this.Module;
+        init_fs(Module.PATH, Module.FS);
+
         const mem = Uint8Array.from(Module.HEAPU8);
-        
         for(let i = 0; i < arguments_array.length; i++)
         {
-            exit_code = NOCLEANUP_callMain(Module, arguments_array[i], print);
+            exit_code = NOCLEANUP_callMain(Module, arguments_array[i], this.print);
             
             Module.setStatus(`EXIT_CODE: ${exit_code}`);
 
@@ -199,7 +196,6 @@ class BusytexPipeline
             if(i < arguments_array.length - 1)
                 Module.HEAPU8.set(mem);
         }
-
         this.Module = this.reload_module();
         
         return [Module.FS, exit_code];
@@ -254,7 +250,7 @@ class BusytexPipeline
             exit_early = true;
 
         const cmds = bibtex == true ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
-        const [FS, exit_code] = await this.run(cmds, this.init_env, this.init_project_dir(files, source_dir), exit_early, verbose);
+        const [FS, exit_code] = await this.run(cmds, this.init_project_dir(files, source_dir), exit_early, verbose);
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
         const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;

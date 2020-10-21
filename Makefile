@@ -393,8 +393,7 @@ ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-l
 .PHONY: tds-wasm
 tds-wasm:
 	$(MAKE) build/wasm/texlive-basic.js
-	#$(MAKE) build/wasm/texlive-small.js
-	#$(MAKE) build/wasm/texlive-medium.js
+	#$(MAKE) build/wasm/texlive-small.js build/wasm/texlive-medium.js
 
 .PHONY: wasm
 wasm:
@@ -456,13 +455,16 @@ clean_build:
 clean:
 	rm -rf build source
 
-.PHONY: dist
-dist:
-	mkdir -p $@
-	cp build/wasm/busytex.js build/wasm/busytex.wasm $@
-	#cp build/wasm/texlive-*.js build/wasm/texlive-*.data $@
-	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@
+.PHONY: dist-wasm
+dist-wasm:
+	mkdir -p dist
+	cp build/wasm/busytex.js build/wasm/busytex.wasm dist
+	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data dist
+	cp build/wasm/ubuntu-*.js build/wasm/ubuntu-*.data dist
 
-	#cp build/native/busytex dist
-	#cp -r build/native/busytex build/texlive build/texmf.cnf build/fontconfig $@
+.PHONY: dist-native
+dist-native:
+	mkdir -p dist
+	cp build/native/busytex dist
+	cp -r build/native/busytex build/texlive build/texmf.cnf build/fontconfig dist
 
