@@ -179,9 +179,9 @@ build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured b
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a : build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && \
 	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasme) 
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
 	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasme) 
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) 
@@ -228,18 +228,17 @@ build/%/texlive/texk/kpathsea/kpsewhich.o: build/%/texlive.configured
 
 ################################################################################################################
 
+build/native/texlive/texk/bibtex-x/bibtex8.a: build/native/texlive.configured
+	$(MAKE_native) -C $(dir $@) $(subst -Dmain, -Dbusymain, $(OPTS_BIBTEX_native))
+	rm $(dir $@)/bibtex8-bibtex.o
+	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
+	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
 
 build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) $(subst -Dmain, -Dbusymain, $(OPTS_XDVIPDFMX_native))
 	rm $(dir $@)/dvipdfmx.o
 	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
 	$(AR_native) -crs $@ $(dir $@)/*.o
-
-build/native/texlive/texk/bibtex-x/bibtex8.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain, -Dbusymain, $(OPTS_BIBTEX_native))
-	rm $(dir $@)/bibtex8-bibtex.o
-	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
-	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
 
 build/native/texlive/texk/web2c/libxetex.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain, -Dbusymain, $(OPTS_XETEX_native))
@@ -255,13 +254,13 @@ build/native/busytex:
 
 ################################################################################################################
 
-build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C $(dir $@) $(OPTS_XDVIPDFMX_wasm)
-	$(AR_wasm) -crs $@ $(dir $@)/*.o
-
 build/wasm/texlive/texk/bibtex-x/bibtex8.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_BIBTEX_wasm)
 	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
+
+build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/wasm/texlive.configured
+	$(MAKE_wasm) -C $(dir $@) $(OPTS_XDVIPDFMX_wasm)
+	$(AR_wasm) -crs $@ $(dir $@)/*.o
 
 build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured
 	# copying generated C files from native version, since string offsets are off
