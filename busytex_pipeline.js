@@ -45,7 +45,7 @@ class BusytexPipeline
         return Promise.resolve(self.importScripts(src));
     }
 
-    constructor(busytex_js, busytex_wasm, texlive_js, texmf_local, print, script_loader, preload)
+    constructor(busytex_js, busytex_wasm, texlive_js, texmf_local, print, preload, script_loader)
     {
         this.print = print;
         this.preload = preload;
@@ -209,7 +209,7 @@ class BusytexPipeline
         const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((verbose_args[verbose] || verbose_args['']).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((verbose_args[verbose] || verbose_args['']).xdvipdfmx);
 
-        FS.mount(Module.MEMFS, {}, this.project_dir)
+        FS.mount(FS.filesystems.MEMFS, {}, this.project_dir)
         const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
         const source_dir = PATH.join2(this.project_dir, dirname);
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
