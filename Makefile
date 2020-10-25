@@ -1,4 +1,7 @@
+#TODO: build/texlive-basic/texmf-dist/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+#TODO: build/texlive-basic/texmf-dist/texmf-var/fonts/map/dvipdfmx/updmap/kanjix.map
 #TODO: replace install-tl by tlmgr
+#TODO: fontconfig --sysconfdir=/etc --localstatedir=/var
 
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 
@@ -321,7 +324,7 @@ build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist bui
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
 		--preload build/empty@/bin/busytex \
-		--preload build/wasm/fonts.conf@/etc/fonts.conf \
+		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*/texmf-dist/web2c/texmf.cnf@/texmf.cnf \
 		--preload build/texlive-$*@/texlive \
 		--preload build/format-$*/latex.fmt@/latex.fmt \

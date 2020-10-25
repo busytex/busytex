@@ -1,6 +1,5 @@
 //TODO: work with only files paths (without dir paths)
 //TODO: what happens if creating another pipeline (waiting data error?)
-//TODO: terminate pipeline correctly?
 //TODO: TEXMFLOG?
 
 class BusytexPipeline
@@ -68,7 +67,8 @@ class BusytexPipeline
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
         this.cnf_texlive = '/texmf.cnf';
         this.dir_cnf = '/';
-        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFCNF : this.dir_cnf};
+        this.dir_fontconfig = '/etc/fonts';
+        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
 
         this.Module = this.preload ? this.reload_module(this.env, this.project_dir) : null;
     }
@@ -168,6 +168,9 @@ class BusytexPipeline
             return 0;
         }
         
+        this.print(this.ansi_reset_sequence);
+        this.print(`New compilation started: [${main_tex_path}]`);
+        
         if(this.Module == null)
             this.Module = this.reload_module(this.env, this.project_dir);
         
@@ -192,12 +195,12 @@ class BusytexPipeline
             [BusytexPipeline.VerboseInfo] : {
                 xetex: ['-kpathsea-debug', '32'],
                 bibtex8 : ['--debug', 'search'],
-                xdvipdfmx : ['-v'],
+                xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
             },
             [BusytexPipeline.VerboseDebug] : {
-                xetex : ['-recorder', '-kpathsea-debug', '63'],
+                xetex : ['-kpathsea-debug', '63', '-recorder'],
                 bibtex8 : ['--debug', 'all'],
-                xdvipdfmx : ['-vv'],
+                xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
             },
             '' : {
                 xetex : [],
@@ -228,8 +231,6 @@ class BusytexPipeline
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
         const cmds = bibtex == true ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         
-        this.print(this.ansi_reset_sequence);
-        this.print(`New compilation started: [${main_tex_path}]`);
         let exit_code = 0;
         for(let i = 0; i < cmds.length; i++)
         {
