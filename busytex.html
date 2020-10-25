@@ -1,29 +1,28 @@
 <html><head><title>busytex example</title></head><body style="width: 100%; height: 100%; overflow: hidden">
 <div style="width: 98%; height: 5%;" >
+<label for="elapsed">Time elapsed:</label>
+<span id="elapsed" name="time_elapsed">0.00 sec</span>
+<button onclick="terminate()">Terminate</button>
 <input type="checkbox" id="worker" name="worker" checked>
 <label for="worker">Use Worker</label>
-<input type="checkbox" id="exit_early" name="exit_early" checked>
-<label for="exit_early">Exit Early</label>
-<select name="verbose" id="verbose">
-    <option value="silent">Almost Silent</option>
-    <option value="info" selected="selected">Quite Talkative</option>
-    <option value="debug">Extremely Chatty</option>
-</select>
-<label for="verbose">Verbose</label>
+<input type="checkbox" id="preload" name="preload" checked>
+<label for="preload">Auto-Preload</label>
 <input type="checkbox" id="bibtex" name="bibtex" checked>
-<label for="bibtex">Run BibTeX</label>
+<label for="bibtex">Use BibTeX</label>
+<select name="verbose" id="verbose">
+    <option value="silent">Verbosity: Almost Silent</option>
+    <option value="info" selected="selected">Verbosity: Quite Talkative</option>
+    <option value="debug">Verbosity: Extremely Chatty</option>
+</select>
 <select name="scheme" id="scheme">
-    <option value="basic">Basic Profile</option>
-    <option value="small">Small Profile</option>
-    <option value="medium">Medium Profile</option>
+    <option value="basic">Scheme: Basic</option>
+    <option value="small">Scheme: Small</option>
+    <option value="medium">Scheme: Medium</option>
 </select>
 <input type="checkbox" id="texlive_latex_recommended" name="texlive_latex_recommended">
 <label for="texlive_latex_recommended">texlive-latex-recommended</label>
 <input type="checkbox" id="texlive_latex_extra" name="texlive_latex_extra">
 <label for="texlive_latex_extra">texlive-latex-extra</label>
-<button onclick="clearlog()">Clear Log</button>
-<label for="elapsed">Time elapsed:</label>
-<span id="elapsed" name="time_elapsed">0.00 sec</span>
 </div>
 <div><iframe style="width: 98%; height:25%" id="preview"></iframe></div>
 
@@ -54,11 +53,12 @@ Blablabla said Nobody ~\cite{Nobody06}.
 
 const busytex_js = 'dist/busytex.js', busytex_wasm = 'dist/busytex.wasm', texlive_recommended_js = 'dist/texlive-latex-recommended.js', texlive_extra_js = 'dist/texlive-latex-extra.js', texlive_scheme_js = 'dist/texlive-{scheme}.js';//, '/dist/texlive-lazy.js'];
 const busytex_worker_js = 'busytex_worker.js', busytex_pipeline_js = 'busytex_pipeline.js';
+let worker = null;
 
 async function onclick_()
 {
     const use_worker = document.getElementById('worker').checked;
-    const exit_early = document.getElementById('exit_early').checked;
+    const use_preload = document.getElementById('preload').checked;
     const use_verbose = document.getElementById('verbose').value;
     const use_bibtex = document.getElementById('bibtex').checked;
     const use_recommended = document.getElementById('texlive_latex_recommended').checked;
@@ -72,43 +72,45 @@ async function onclick_()
         texlive_js.push(texlive_extra_js)
 
     let tic = 0;
-    let worker = null;
     
+    const reload = worker == null;
     if(use_worker)
     {
-        worker = new Worker(busytex_worker_js);
+        if(reload)
+            worker = new Worker(busytex_worker_js);
     }
     else
     {
-        worker = 
-        {
-            async postMessage({files, main_tex_path, bibtex, verbose, busytex_js, busytex_wasm, texmf_local})
+        if(reload)
+            worker = 
             {
-                if(busytex_js && busytex_wasm && texlive_js && texmf_local)
+                async postMessage({files, main_tex_path, bibtex, preload, verbose, busytex_js, busytex_wasm, texmf_local})
                 {
-                    this.pipeline = new Promise(function (resolve, reject)
+                    if(busytex_js && busytex_wasm && texlive_js && texmf_local)
                     {
-                        let s = document.createElement('script');
-                        s.src = busytex_pipeline_js;
-                        s.onload = resolve;
-                        s.onerror = reject;
-                        self.document.head.appendChild(s);
-                    }).then(_ => Promise.resolve(new BusytexPipeline(busytex_js, busytex_wasm, texlive_js, texmf_local, msg => this.onmessage({data: {log : msg}}), BusytexDefaultScriptLoader)));
-                }
+                        this.pipeline = new Promise(function (resolve, reject)
+                        {
+                            let s = document.createElement('script');
+                            s.src = busytex_pipeline_js;
+                            s.onload = resolve;
+                            s.onerror = reject;
+                            self.document.head.appendChild(s);
+                        }).then(_ => Promise.resolve(new BusytexPipeline(busytex_js, busytex_wasm, texlive_js, texmf_local, msg => this.onmessage({data: {log : msg}}), preload, BusytexPipeline.ScriptLoaderDefault)));
+                    }
 
-                else if(files && this.pipeline)
+                    else if(files && this.pipeline)
+                    {
+                        const pipeline = await this.pipeline;
+                        const pdf = await pipeline.compile(files, main_tex_path, bibtex, verbose);
+                        this.onmessage({data : {pdf : pdf}});
+                    }
+                },
+
+                terminate()
                 {
-                    const pipeline = await this.pipeline;
-                    const pdf = await pipeline.compile(files, main_tex_path, bibtex, exit_early, verbose);
-                    this.onmessage({data : {pdf : pdf}});
+                    this.onmessage({data : {log : 'Terminating dummy worker'}});
                 }
-            },
-
-            terminate()
-            {
-                this.onmessage({data : {log : 'Terminating dummy worker'}});
             }
-        }
     }
 
     worker.onmessage = ({ data : {pdf, log, print} }) =>
@@ -120,8 +122,6 @@ async function onclick_()
 
             let elapsedElement = document.getElementById('elapsed');
             elapsedElement.innerText = ((performance.now() - tic) / 1000).toFixed(2) + ' sec';
-
-            worker.terminate();
         }
 
         if(print)
@@ -138,17 +138,21 @@ async function onclick_()
             }
         }
     }
-    worker.postMessage({busytex_wasm : busytex_wasm, busytex_js : busytex_js, texlive_js : texlive_js, texmf_local : []});
+    
+    if(reload)
+        worker.postMessage({busytex_wasm : busytex_wasm, busytex_js : busytex_js, texlive_js : texlive_js, preload : use_preload, texmf_local : []});
 
     tic = performance.now();
     const tex = document.getElementById('tex').value, bib = document.getElementById('bib').value;
     const files = [{path : 'example.tex', contents : tex}, {path : 'example.bib', contents : bib}];
-    worker.postMessage({files : files, main_tex_path : 'example.tex', bibtex : use_bibtex, exit_early : exit_early, verbose : use_verbose});
+    worker.postMessage({files : files, main_tex_path : 'example.tex', bibtex : use_bibtex, verbose : use_verbose});
 }
 
-function clearlog()
+function terminate()
 {
-    document.getElementById('status').value = '';
+    if(worker != null)
+        worker.terminate();
+    worker = null;
 }
 
 </script>

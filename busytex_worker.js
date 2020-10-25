@@ -1,9 +1,9 @@
 importScripts('busytex_pipeline.js');
 
-onmessage = async ({data : {files, main_tex_path, bibtex, busytex_wasm, busytex_js, texlive_js, texmf_local, exit_early, verbose}}) => 
+onmessage = async ({data : {files, main_tex_path, bibtex, busytex_wasm, busytex_js, texlive_js, texmf_local, preload, verbose}}) => 
 {
     if(busytex_wasm && busytex_js && texlive_js)
-        pipeline = new BusytexPipeline(busytex_js, busytex_wasm, texlive_js, texmf_local, msg => postMessage({print : msg}), BusytexWorkerScriptLoader);
+        pipeline = new BusytexPipeline(busytex_js, busytex_wasm, texlive_js, texmf_local, msg => postMessage({print : msg}), preload, BusytexPipeline.ScriptLoaderWorker);
     else if(files && pipeline)
-        postMessage(await pipeline.compile(files, main_tex_path, bibtex, exit_early, verbose))
+        postMessage(await pipeline.compile(files, main_tex_path, bibtex, verbose))
 };
