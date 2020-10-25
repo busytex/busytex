@@ -60,7 +60,6 @@ class BusytexPipeline
         
         this.ansi_reset_sequence = '\x1bc';
         
-        this.mem_header_size = 2 ** 25;
         this.project_dir = '/home/web_user/project_dir/';
         this.bin_busytex = '/bin/busytex';
         this.fmt_latex = '/latex.fmt';
@@ -68,8 +67,28 @@ class BusytexPipeline
         this.cnf_texlive = '/texmf.cnf';
         this.dir_cnf = '/';
         this.dir_fontconfig = '/etc/fonts';
-        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
 
+        this.verbose_args = 
+        {
+            [BusytexPipeline.VerboseSilent] : {
+                xetex : [],
+                bibtex8 : [],
+                xdvipdfmx : []
+            },
+            [BusytexPipeline.VerboseInfo] : {
+                xetex: ['-kpathsea-debug', '32'],
+                bibtex8 : ['--debug', 'search'],
+                xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
+            },
+            [BusytexPipeline.VerboseDebug] : {
+                xetex : ['-kpathsea-debug', '63', '-recorder'],
+                bibtex8 : ['--debug', 'all'],
+                xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
+            },
+        };
+
+        this.mem_header_size = 2 ** 25;
+        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.preload ? this.reload_module(this.env, this.project_dir) : null;
     }
 
@@ -173,48 +192,18 @@ class BusytexPipeline
         
         if(this.Module == null)
             this.Module = this.reload_module(this.env, this.project_dir);
-        
         const Module = await this.Module;
         const [FS, PATH] = [Module.FS, Module.PATH];
 
-        const source_name = main_tex_path.slice(main_tex_path.lastIndexOf('/') + 1);
-
+        const source_name = main_tex_path.slice(1 + main_tex_path.lastIndexOf('/'));
         const tex_path = source_name;
-        const xdv_path = tex_path.replace('.tex', '.xdv');
-        const pdf_path = tex_path.replace('.tex', '.pdf');
-        const log_path = tex_path.replace('.tex', '.log');
-        const aux_path = tex_path.replace('.tex', '.aux');
-
-        const verbose_args = 
-        {
-            [BusytexPipeline.VerboseSilent] : {
-                xetex : [],
-                bibtex8 : [],
-                xdvipdfmx : []
-            },
-            [BusytexPipeline.VerboseInfo] : {
-                xetex: ['-kpathsea-debug', '32'],
-                bibtex8 : ['--debug', 'search'],
-                xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
-            },
-            [BusytexPipeline.VerboseDebug] : {
-                xetex : ['-kpathsea-debug', '63', '-recorder'],
-                bibtex8 : ['--debug', 'all'],
-                xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
-            },
-            '' : {
-                xetex : [],
-                bibtex8 : [],
-                xdvipdfmx : []
-            }
-        };
-        const xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((verbose_args[verbose] || verbose_args['']).xetex);
-        const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((verbose_args[verbose] || verbose_args['']).bibtex8);
-        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((verbose_args[verbose] || verbose_args['']).xdvipdfmx);
+        const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
+        
+        const xetex = ['xetex', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+        const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
+        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir)
-        const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
-        const source_dir = PATH.join2(this.project_dir, dirname);
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
             const absolute_path = PATH.join2(this.project_dir, path);
@@ -223,22 +212,24 @@ class BusytexPipeline
             else
                 FS.writeFile(absolute_path, contents);
         }
+        
+        const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
+        const source_dir = PATH.join2(this.project_dir, dirname);
         FS.chdir(source_dir);
        
-        const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
-
         if(bibtex == null)
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
         const cmds = bibtex == true ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         
         let exit_code = 0;
-        for(let i = 0; i < cmds.length; i++)
+        const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
+        for(const cmd of cmds)
         {
-            exit_code = NOCLEANUP_callMain(Module, cmds[i], this.print);
+            exit_code = NOCLEANUP_callMain(Module, cmd, this.print);
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
             
-            Module.setStatus(`EXIT_CODE: ${exit_code}`);
+            Module.setStatus(`EXIT CODE: ${exit_code}`);
             if(exit_code != 0)
                 break;
         }
