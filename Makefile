@@ -112,8 +112,8 @@ OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 all:
 	$(MAKE) texlive
 	$(MAKE) native
-	$(MAKE) wasm
 	$(MAKE) tds
+	$(MAKE) wasm
 	$(MAKE) tds-wasm
 	$(MAKE) ubuntu-wasm
 
@@ -307,7 +307,7 @@ build/texlive-%/texmf-dist: build/install-tl/install-tl
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-local >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-config >> build/texlive-$*.profile
-	echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
+	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 $< -profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
 
@@ -381,7 +381,6 @@ tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/latex.fmt
-	$(MAKE) build/wasm/fonts.conf
 
 .PHONY: tds
 tds:
@@ -395,8 +394,13 @@ ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-l
 
 .PHONY: tds-wasm
 tds-wasm:
+	$(MAKE) build/wasm/fonts.conf
 	$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) build/wasm/texlive-small.js build/wasm/texlive-medium.js
+
+.PHONY: tds-native
+tds-native:
+	$(MAKE) build/native/fonts.conf
 
 .PHONY: wasm
 wasm:
@@ -466,8 +470,7 @@ dist-wasm:
 	cp build/wasm/ubuntu-*.js build/wasm/ubuntu-*.data dist
 
 .PHONY: dist-native
-dist-native:
+dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p dist
-	cp build/native/busytex dist
-	cp -r build/native/busytex build/texlive build/texmf.cnf build/fontconfig dist
-
+	cp build/native/busytex build/native/fonts.conf build/format-basic/latex.fmt dist
+	cp -r build/texlive-basic dist

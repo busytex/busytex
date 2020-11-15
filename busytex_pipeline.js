@@ -64,7 +64,7 @@ class BusytexPipeline
         this.bin_busytex = '/bin/busytex';
         this.fmt_latex = '/latex.fmt';
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
-        this.cnf_texlive = '/texmf.cnf';
+        this.dir_texmvar = '/texlive/texmf-var';
         this.dir_cnf = '/';
         this.dir_fontconfig = '/etc/fonts';
 
@@ -88,7 +88,7 @@ class BusytexPipeline
         };
 
         this.mem_header_size = 2 ** 25;
-        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
+        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.preload ? this.reload_module(this.env, this.project_dir) : null;
     }
 
@@ -115,9 +115,7 @@ class BusytexPipeline
                 for(const preRun of BusytexPipeline.preRun) 
                     preRun();
 
-                for(const k in env)
-                    Module.ENV[k] = env[k];
-
+                Object.assign(Module.ENV, env);
                 Module.FS.mkdir(project_dir);
             }],
 
@@ -203,7 +201,7 @@ class BusytexPipeline
         const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
-        FS.mount(FS.filesystems.MEMFS, {}, this.project_dir)
+        FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
             const absolute_path = PATH.join2(this.project_dir, path);
@@ -219,7 +217,7 @@ class BusytexPipeline
        
         if(bibtex == null)
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
-        const cmds = bibtex == true ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
+        const cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         
         let exit_code = 0;
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));

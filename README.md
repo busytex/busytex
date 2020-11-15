@@ -42,13 +42,16 @@ make texlive
 make native
 
 # build TeX Directory Structure (TDS) and latex format file (latex.fmt)
-# make tds-basic
-make tds-small
-# make tds-medium
-# make tds-full
+make tds-basic
 
 # build wasm tools
 make wasm
+
+# pack TDS into wasm data files
+make tds-wasm
+
+# reproduce and pack Ubuntu TexLive packages into wasm data files
+make ubuntu-wasm
 
 # copies binaries and TexLive TDS into ./dist
 make dist
