@@ -1,6 +1,8 @@
 //TODO: work with only files paths (without dir paths)
 //TODO: what happens if creating another pipeline (waiting data error?)
 //TODO: TEXMFLOG?
+//TODO: put texlive into /opt/texlive/2020 or ~/.texlive2020?
+//TODO: configure fontconfig to use /etc/fonts
 
 class BusytexPipeline
 {
@@ -8,19 +10,18 @@ class BusytexPipeline
     static VerboseInfo = 'info';
     static VerboseDebug = 'debug';
 
+    //FIXME begin: have to do static to execute LZ4 data packages: https://github.com/emscripten-core/emscripten/issues/12347
     static preRun = [];
+
     static data_packages = [];
     
-    static locateFile(remote_package_name)
+    static locateFile(remote_package_name) 
     {
-        for(const data_package_js of BusytexPipeline.data_packages)
-        {
-            const data_file = data_package_js.replace('.js', '.data');
-            if(data_file.endsWith(remote_package_name))
-                return data_file;
-        }
-        return null;
+        return BusytexPipeline.data_packages
+            .map(data_package_js => data_package_js.replace('.js', '.data'))
+            .find(data_file => data_file.endsWith(remote_package_name));
     }
+    //FIXME end
 
     static ScriptLoaderDocument(src)
     {
@@ -65,8 +66,8 @@ class BusytexPipeline
         this.fmt_latex = '/latex.fmt';
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
         this.dir_texmvar = '/texlive/texmf-var';
-        this.dir_cnf = '/';
         this.dir_fontconfig = '/etc/fonts';
+        this.dir_cnf = '/';
 
         this.verbose_args = 
         {
