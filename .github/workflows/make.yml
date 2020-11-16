@@ -1,0 +1,18 @@
+# https://www.freecodecamp.org/news/a-lightweight-tool-agnostic-ci-cd-flow-with-github-actions/
+# https://github.com/actions/upload-release-asset
+
+name: make
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+
+      - name: Run Makefile
+        run: make texlive native 

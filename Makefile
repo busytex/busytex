@@ -1,5 +1,3 @@
-#TODO: build/texlive-basic/texmf-dist/texmf-var/fonts/map/pdftex/updmap/pdftex.map
-#TODO: build/texlive-basic/texmf-dist/texmf-var/fonts/map/dvipdfmx/updmap/kanjix.map
 #TODO: replace install-tl by tlmgr
 #TODO: fontconfig --sysconfdir=/etc --localstatedir=/var
 
