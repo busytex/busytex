@@ -34,7 +34,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist_native.zip
-          path: dist/busytex dist/texlive dist/fonts.conf example/example.pdf
+          path: |
+              dist/busytex
+              dist/texlive
+              dist/fonts.conf
+              example/example.pdf
 
       - uses: mymindstorm/setup-emsdk@v7 
 
@@ -47,4 +51,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist_wasm.zip
-          path: dist/*.wasm dist/*.data dist/*.js
+          path: dist/{*.wasm,*.data,*.js}
