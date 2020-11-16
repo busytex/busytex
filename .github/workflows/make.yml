@@ -9,10 +9,12 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-
       - uses: actions/checkout@main
         with:
           fetch-depth: 1
+
+      - name: Install Prerequisites
+        run: sudo apt-get install -y gperf
 
       - name: Run Makefile
         run: make texlive native 

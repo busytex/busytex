@@ -1,13 +1,12 @@
 #TODO: replace install-tl by tlmgr
 #TODO: fontconfig --sysconfdir=/etc --localstatedir=/var
 
-URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
-
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
-
 URL_TEXLIVE_INSTALLER = http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+
+URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
@@ -69,6 +68,8 @@ CFLAGS_KPSEWHICH = -Dmain='__attribute__((visibility(\"default\"))) busymain_kps
 ##############################################################################################################################
 
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
+CFLAGS_FONTCONFIG_wasm = -Duuid_generate_random=uuid_generate $(CFLAGS_OPT_wasm)
+CFLAGS_FONTCONFIG_native = $(CFLAGS_OPT_native)
 CFLAGS_XDVIPDFMX_wasm = $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_wasm)
 CFLAGS_BIBTEX_wasm = $(CFLAGS_BIBTEX) $(CFLAGS_OPT_wasm) -s TOTAL_MEMORY=$(TOTAL_MEMORY) $(CFLAGS_OPT_wasm)
 CFLAGS_XETEX_wasm = $(CFLAGS_XETEX) $(CFLAGS_OPT_wasm)
@@ -78,8 +79,6 @@ CFLAGS_XETEX_native = $(CFLAGS_XETEX) $(CFLAGS_OPT_native)
 CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
-CFLAGS_FONTCONFIG_wasm = -Duuid_generate_random=uuid_generate $(CFLAGS_OPT_wasm)
-CFLAGS_FONTCONFIG_native = $(CFLAGS_OPT_native)
 CFLAGS_ICU_wasm = $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 CFLAGS_FONTCONFIGFREETYPE_wasm = $(addprefix -I$(ROOT)/build/wasm/texlive/libs/, freetype2/ freetype2/freetype2/)
 CFLAGS_FONTCONFIGFREETYPE_native = $(addprefix -I$(ROOT)/build/native/texlive/libs/, freetype2/ freetype2/freetype2/)
@@ -269,6 +268,9 @@ build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured
 	cp build/native/texlive/texk/web2c/*.c build/wasm/texlive/texk/web2c
 	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(OPTS_XETEX_wasm)
 
+build/wasm/busytex.js: 
+	mkdir -p $(dir $@)
+	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) busytex.c
 
 ################################################################################################################
 
@@ -276,25 +278,6 @@ build/install-tl/install-tl:
 	mkdir -p $(dir $@)
 	wget --no-clobber $(URL_TEXLIVE_INSTALLER) -P source || true
 	tar -xf source/$(notdir $(URL_TEXLIVE_INSTALLER)) --strip-components=1 --directory="$(dir $@)"
-
-build/wasm/fonts.conf:
-	mkdir -p $(dir $@)
-	echo '<?xml version="1.0"?>' > $@
-	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
-	echo '<fontconfig>' >> $@
-	echo '<dir>/texlive/texmf-dist/fonts/opentype</dir>' >> $@
-	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>' >> $@
-	echo '</fontconfig>' >> $@
-
-build/native/fonts.conf:
-	mkdir -p $(dir $@)
-	echo '<?xml version="1.0"?>' > $@
-	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
-	echo '<fontconfig>' >> $@
-	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/opentype</dir>
-	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/type1</dir>
-	#<cachedir prefix="relative">./cache</cachedir>
-	echo '</fontconfig>' >> $@
 
 build/texlive-%/texmf-dist: build/install-tl/install-tl 
 	# https://www.tug.org/texlive/doc/install-tl.html
@@ -316,17 +299,14 @@ build/format-%/latex.fmt: build/native/busytex build/texlive-%/texmf-dist
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex latex.ltx
 
 build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
-	#https://github.com/emscripten-core/emscripten/issues/12214
 	mkdir -p $(dir $@)
 	echo > build/empty
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
-		--preload build/texlive-$*/texmf-dist/web2c/texmf.cnf@/texmf.cnf \
 		--preload build/texlive-$*@/texlive \
-		--preload build/format-$*/latex.fmt@/latex.fmt \
-		--preload source/texlive/texk/bibtex-x/csf@/bibtex
+		--preload build/format-$*/latex.fmt@/latex.fmt 
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
@@ -334,14 +314,28 @@ build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 		--lz4 --use-preload-cache \
 		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_UBUNTU_RELEASE) --package $*)
 
-################################################################################################################
 
-.PHONY:build/wasm/busytex.js
-build/wasm/busytex.js: 
+build/wasm/fonts.conf:
 	mkdir -p $(dir $@)
-	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) busytex.c
+	echo '<?xml version="1.0"?>' > $@
+	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
+	echo '<fontconfig>' >> $@
+	echo '<dir>/texlive/texmf-dist/fonts/opentype</dir>' >> $@
+	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>' >> $@
+	echo '</fontconfig>' >> $@
+
+build/native/fonts.conf:
+	mkdir -p $(dir $@)
+	echo '<?xml version="1.0"?>' > $@
+	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
+	echo '<fontconfig>' >> $@
+	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/opentype</dir>
+	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/type1</dir>
+	#<cachedir prefix="relative">./cache</cachedir>
+	echo '</fontconfig>' >> $@
 
 ################################################################################################################
+
 
 .PHONY: texlive
 texlive:
