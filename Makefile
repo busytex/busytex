@@ -220,9 +220,7 @@ build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
 build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/texk/kpathsea
 
-.PHONY: build/native/texlive/texk/kpathsea/kpsewhich.o build/wasm/texlive/texk/kpathsea/kpsewhich.o
 build/%/texlive/texk/kpathsea/kpsewhich.o: build/%/texlive.configured
-	rm $@ || true
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_KPSEWHICH_$*)
 
 
@@ -264,8 +262,8 @@ build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/wasm/texlive.configured
 
 build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured
 	# copying generated C files from native version, since string offsets are off
-	mkdir -p build/wasm/texlive/texk/web2c
-	cp build/native/texlive/texk/web2c/*.c build/wasm/texlive/texk/web2c
+	mkdir -p $(dir $@)
+	cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(OPTS_XETEX_wasm)
 
 build/wasm/busytex.js: 
@@ -362,6 +360,7 @@ native:
 	# 
 	$(MAKE) build/native/texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) build/native/texlive/texk/web2c/lib/lib.a
+	rm build/native/texlive/texk/kpathsea/kpsewhich.o || true
 	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
@@ -412,6 +411,7 @@ wasm:
 	#
 	$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
+	rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
 	$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
