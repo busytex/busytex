@@ -68,7 +68,7 @@ class BusytexPipeline
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
         this.dir_texmvar = '/texlive/texmf-var';
         this.dir_cnf = this.dir_texmfdist[0] + '/web2c';
-        this.dir_fontconfig = '/etc/fonts';
+        this.dir_fontconfig = '/usr/share/fonts';
 
         this.verbose_args = 
         {
