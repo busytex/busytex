@@ -2,7 +2,7 @@ set -e
 
 export DIST=$PWD/dist
 export TEXMFDIST=$DIST/texlive/texmf-dist
-export TEXMFVAR=$DIST/texlive/texmf-var
+export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
 export TEXMFCNF=$TEXMFDIST/web2c
 export FONTCONFIG_PATH=$DIST
 

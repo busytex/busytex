@@ -66,8 +66,8 @@ class BusytexPipeline
         this.bin_busytex = '/bin/busytex';
         this.fmt_latex = '/latex.fmt';
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
-        this.dir_texmvar = '/texlive/texmf-var';
-        this.dir_cnf = this.dir_texmfdist[0] + '/web2c';
+        this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
+        this.dir_cnf = '/texlive/texmf-dist/web2c';
         this.dir_fontconfig = '/usr/share/fonts';
 
         this.verbose_args = 
@@ -90,7 +90,7 @@ class BusytexPipeline
         };
 
         this.mem_header_size = 2 ** 25;
-        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
+        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf};//, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.preload ? this.reload_module(this.env, this.project_dir) : null;
     }
 

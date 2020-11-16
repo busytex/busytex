@@ -206,6 +206,8 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	$(CONFIGURE_$*) $(ROOT)/$(basename $<)/configure \
 	   --cache-file=$(CACHE_FONTCONFIG_$*)		 \
 	   --prefix=$(PREFIX_$*) \
+	   --sysconfdir=/etc     \
+	   --localstatedir=/var  \
 	   --enable-static \
 	   --disable-shared \
 	   --disable-docs \
@@ -293,8 +295,8 @@ build/texlive-%/texmf-dist: build/install-tl/install-tl
 build/format-%/latex.fmt: build/native/busytex build/texlive-%/texmf-dist 
 	mkdir -p $(dir $@)
 	rm $(dir $@)/* || true
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) --kpathsea-debug=32 -ini -etex latex.ltx
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex unpack.ins
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex latex.ltx
 
 build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	mkdir -p $(dir $@)
@@ -311,7 +313,6 @@ build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
 		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_UBUNTU_RELEASE) --package $*)
-
 
 build/wasm/fonts.conf:
 	mkdir -p $(dir $@)
@@ -449,6 +450,10 @@ clean_dist:
 .PHONY: clean_build
 clean_build:
 	rm -rf build
+
+.PHONY: clean_example
+clean_example:
+	rm -rf example/*.aux example/*.bbl example/*.blg example/*.log example/*.xdv
 
 .PHONY: clean
 clean:
