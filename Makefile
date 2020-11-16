@@ -304,7 +304,7 @@ build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist bui
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
 		--preload build/empty@/bin/busytex \
-		--preload build/wasm/fonts.conf@/usr/share/fonts/fonts.conf \
+		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive \
 		--preload build/format-$*/latex.fmt@/latex.fmt 
 
