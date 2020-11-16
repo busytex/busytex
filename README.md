@@ -41,6 +41,9 @@ make texlive
 # build native tools
 make native
 
+# build native fonts file
+make tds-native
+
 # build TeX Directory Structure (TDS) and latex format file (latex.fmt)
 make tds-basic
 

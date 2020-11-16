@@ -15,6 +15,25 @@ jobs:
 
       - name: Install Prerequisites
         run: sudo apt-get install -y gperf
+      
+      - name: Clone TexLive and dependencies
+        run: make texlive 
 
-      - name: Run Makefile
-        run: make texlive native 
+      - name: Build native busytex
+        run: make native tds-native
+      
+      - name: Install TexLive scheme-basic
+        run: make tds-basic
+      
+      - name: Test native busytex xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
+        run: bash example/example.sh
+
+      - name: Archive native busytex test
+        uses: actions/upload-artifact@v2
+        with:
+          name: example_example.pdf
+          path: example/example.pdf
+ 
+#      - name: Build wasm busytex
+#        run: make wasm tds-wasm
+
