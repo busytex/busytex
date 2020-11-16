@@ -178,7 +178,7 @@ build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured b
 
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a : build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && \
-	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
+	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
 	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
