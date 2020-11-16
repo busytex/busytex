@@ -49,7 +49,7 @@ jobs:
       
       - name: Back-up build/wasm
         uses: actions/upload-artifact@v2
-        if: always()
+        if: ${{ always() }}
         with:
           name: build_wasm
           path: build/wasm
