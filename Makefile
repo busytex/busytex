@@ -177,7 +177,10 @@ build/native/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configur
 build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured build/native/texlive/libs/freetype2/libfreetype.a
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_FREETYPE_wasm)
 
-build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+#build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+
+build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured
+	echo LIBICUUC_CONFIGURE
 	cd build/wasm/texlive/libs/icu && \
 	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
 	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
