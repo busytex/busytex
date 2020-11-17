@@ -183,7 +183,9 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 	echo LIBICUUC_CONFIGURE
 	cd build/wasm/texlive/libs/icu && \
 	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
+	echo LIBICUUC_MAKE
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu 
+	#$(OPTS_ICU_make_wasm) 
 	#echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build #$(OPTS_ICU_make_wasm) 
 
