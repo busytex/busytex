@@ -179,10 +179,9 @@ build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured b
 
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	echo LIBICUUC_MAKE
-	#$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/icu-src/source/configure --enable-static --disable-shared --disable-extras --disable-samples --disable-tests --disable-dyload --disable-layout --disable-strict --build=x86_64-pc-linux-gnu 'CC=/home/runner/work/_temp/bde926b5-511c-47c4-ab06-39d4fcd228e1/emsdk-master/upstream/emscripten/emcc' 'CXX=/home/runner/work/_temp/bde926b5-511c-47c4-ab06-39d4fcd228e1/emsdk-master/upstream/emscripten/em++
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) -e icu_config="$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu/icu-src/source/configure --enable-static --disable-shared --disable-extras --disable-samples --disable-tests --disable-dyload --disable-layout" 
+	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
+	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) -e icu_config="$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu/icu-src/source/configure --enable-static --disable-shared --disable-extras --disable-samples --disable-tests --disable-dyload --disable-layout" 
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu'" 
 	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
@@ -346,6 +345,7 @@ texlive:
 .PHONY: native
 native: 
 	$(MAKE) build/native/texlive.configured
+	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/native/texlive/libs/libpng/libpng.a 
 	$(MAKE) build/native/texlive/libs/libpaper/libpaper.a 
 	$(MAKE) build/native/texlive/libs/zlib/libz.a 
@@ -354,7 +354,7 @@ native:
 	$(MAKE) build/native/texlive/libs/graphite2/libgraphite2.a 
 	$(MAKE) build/native/texlive/libs/pplib/libpplib.a 
 	$(MAKE) build/native/texlive/libs/freetype2/libfreetype.a 
-	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	#$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
 	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/icupkg 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/pkgdata 
@@ -370,7 +370,6 @@ native:
 	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
 	$(MAKE) build/native/busytex
 
-#.PHONY: tds-basic tds-small tds-full
 tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
@@ -396,14 +395,14 @@ wasm:
 	$(MAKE) build/wasm/expat/libexpat.a
 	$(MAKE) build/wasm/fontconfig/src/.libs/libfontconfig.a
 	#
-	#$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
-	#$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
-	#rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
-	#$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
-	#$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
-	#$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
-	#$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
-	#$(MAKE) build/wasm/busytex.js
+	$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
+	rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
+	$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
+	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
+	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
+	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
+	$(MAKE) build/wasm/busytex.js
 
 .PHONY: example
 example:
