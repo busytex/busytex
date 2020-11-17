@@ -56,13 +56,13 @@ jobs:
         #            make wasm tds-wasm
         #            make dist-wasm
       
-      - name: Back-up build/wasm
-        uses: actions/upload-artifact@v2
-        if: ${{ always() }}
-        with:
-          name: build_wasm
-          path: build/wasm
-
+          #      - name: Back-up build/wasm
+          #        uses: actions/upload-artifact@v2
+          #        if: ${{ always() }}
+          #        with:
+          #          name: build_wasm
+          #          path: build/wasm
+          #
           #      - name: Archive wasm busytex dist
           #        uses: actions/upload-artifact@v2
           #        with:
