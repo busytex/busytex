@@ -93,6 +93,7 @@ CCSKIP_FREETYPE_wasm = $(PYTHON) $(ROOT)/busytex_emcc_wrapper.py $(ROOT)/build/n
 CCSKIP_XETEX_wasm = $(PYTHON) $(ROOT)/busytex_emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
 OPTS_ICU_configure_wasm = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
+OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu'"
 OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_BIBTEX_wasm)"
 OPTS_FREETYPE_wasm = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 OPTS_XETEX_wasm = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX_wasm)"
@@ -180,8 +181,7 @@ build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured b
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && \
 	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) -e icu_config="$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu/icu-src/source/configure --enable-static --disable-shared --disable-extras --disable-samples --disable-tests --disable-dyload --disable-layout" 
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu'" 
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
 	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
