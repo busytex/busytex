@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+        
       - uses: actions/checkout@main
         with:
           fetch-depth: 1
@@ -19,9 +20,9 @@ jobs:
       - name: Clone/patch TexLive and dependencies
         run: make texlive 
 
-        #      - name: Build native busytex
-        #        run: make native build/native/fonts.conf
-        #
+      - name: Build native busytex
+        run: make native build/native/fonts.conf
+        
         #      - name: Install TexLive scheme-basic
         #        run: make tds-basic
         #      
