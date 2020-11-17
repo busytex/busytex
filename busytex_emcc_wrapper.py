@@ -15,7 +15,7 @@ if copy:
     shutil.copy2(*copy[0])
     sys.exit(0)
 else:
-    print('busytex_emcc_wrapper.py', 'calling', sys.argv[1 + K:])
+    #print('busytex_emcc_wrapper.py', 'calling', sys.argv[1 + K:], file = sys.stderr)
     return_code = subprocess.call(sys.argv[1 + K:])
-    print('busytex_emcc_wrapper.py', 'return_code', return_code)
+    #print('busytex_emcc_wrapper.py', 'return_code', return_code, file = sys.stderr)
     sys.exit(return_code)

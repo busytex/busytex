@@ -40,7 +40,10 @@ jobs:
               dist/fonts.conf
               example/example.pdf
 
-      - uses: mymindstorm/setup-emsdk@v7 
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 2.0.5
 
       - name: Build wasm busytex
         run: |
@@ -54,8 +57,8 @@ jobs:
           name: build_wasm
           path: build/wasm
 
-      - name: Archive wasm busytex dist
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist_wasm.zip
-          path: dist/{*.wasm,*.data,*.js}
+          #      - name: Archive wasm busytex dist
+          #        uses: actions/upload-artifact@v2
+          #        with:
+          #          name: dist_wasm
+          #          path: dist/{*.wasm,*.data,*.js}

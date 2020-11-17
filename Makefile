@@ -176,7 +176,7 @@ build/native/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configur
 build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured build/native/texlive/libs/freetype2/libfreetype.a
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_FREETYPE_wasm)
 
-build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a : build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && \
 	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
@@ -397,27 +397,28 @@ tds-native:
 .PHONY: wasm
 wasm:
 	$(MAKE) build/wasm/texlive.configured
-	$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
-	$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
-	$(MAKE) build/wasm/texlive/libs/zlib/libz.a 
-	$(MAKE) build/wasm/texlive/libs/teckit/libTECkit.a 
-	$(MAKE) build/wasm/texlive/libs/harfbuzz/libharfbuzz.a 
-	$(MAKE) build/wasm/texlive/libs/graphite2/libgraphite2.a 
-	$(MAKE) build/wasm/texlive/libs/pplib/libpplib.a 
-	$(MAKE) build/wasm/texlive/libs/freetype2/libfreetype.a 
 	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) build/wasm/expat/libexpat.a
-	$(MAKE) build/wasm/fontconfig/src/.libs/libfontconfig.a
-	#
-	$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
-	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
-	rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
-	$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
-	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
-	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
-	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
-	$(MAKE) build/wasm/busytex.js
+	#$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
+	#$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
+	#$(MAKE) build/wasm/texlive/libs/zlib/libz.a 
+	#$(MAKE) build/wasm/texlive/libs/teckit/libTECkit.a 
+	#$(MAKE) build/wasm/texlive/libs/harfbuzz/libharfbuzz.a 
+	#$(MAKE) build/wasm/texlive/libs/graphite2/libgraphite2.a 
+	#$(MAKE) build/wasm/texlive/libs/pplib/libpplib.a 
+	#$(MAKE) build/wasm/texlive/libs/freetype2/libfreetype.a 
+	#$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	#$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicudata.a
+	#$(MAKE) build/wasm/expat/libexpat.a
+	#$(MAKE) build/wasm/fontconfig/src/.libs/libfontconfig.a
+	##
+	#$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
+	#$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
+	#rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
+	#$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
+	#$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
+	#$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
+	#$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
+	#$(MAKE) build/wasm/busytex.js
 
 .PHONY: example
 example:
