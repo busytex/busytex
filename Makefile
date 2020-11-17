@@ -1,5 +1,4 @@
 #TODO: replace install-tl by tlmgr
-#TODO: fontconfig --sysconfdir=/etc --localstatedir=/var
 
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
@@ -180,10 +179,10 @@ build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured b
 
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
-	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
+	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure # $(OPTS_ICU_configure_wasm)
+	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) 
+	#echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
+	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build #$(OPTS_ICU_make_wasm) 
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) 
@@ -382,7 +381,7 @@ ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-l
 .PHONY: wasm
 wasm:
 	$(MAKE) build/wasm/texlive.configured
-	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	#$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	#$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
 	#$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
 	#$(MAKE) build/wasm/texlive/libs/zlib/libz.a 

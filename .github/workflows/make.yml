@@ -19,26 +19,26 @@ jobs:
       - name: Clone/patch TexLive and dependencies
         run: make texlive 
 
-      - name: Build native busytex
-        run: make native build/native/fonts.conf
-      
-      - name: Install TexLive scheme-basic
-        run: make tds-basic
-      
-      - name: Test native busytex with a xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
-        run: |
-            make dist-native
-            bash example/example.sh
-
-      - name: Archive native busytex test
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist_native
-          path: |
-              dist/busytex
-              dist/texlive
-              dist/fonts.conf
-              example/example.pdf
+        #      - name: Build native busytex
+        #        run: make native build/native/fonts.conf
+        #
+        #      - name: Install TexLive scheme-basic
+        #        run: make tds-basic
+        #      
+        #      - name: Test native busytex with a xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
+        #        run: |
+        #            make dist-native
+        #            bash example/example.sh
+        #
+        #      - name: Archive native busytex test
+        #        uses: actions/upload-artifact@v2
+        #        with:
+        #          name: dist_native
+        #          path: |
+        #              dist/busytex
+        #              dist/texlive
+        #              dist/fonts.conf
+        #              example/example.pdf
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v7
@@ -46,9 +46,10 @@ jobs:
           version: 2.0.5
 
       - name: Build wasm busytex
-        run: |
-            make wasm tds-wasm
-            make dist-wasm
+        run: make wasm
+        #        run: |
+        #            make wasm tds-wasm
+        #            make dist-wasm
       
       - name: Back-up build/wasm
         uses: actions/upload-artifact@v2
