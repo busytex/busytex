@@ -22,6 +22,8 @@ jobs:
 
       - name: Build native busytex
         run: make native build/native/fonts.conf
+        env:
+            MAKEFLAGS: -j2
         
         #      - name: Install TexLive scheme-basic
         #        run: make tds-basic
@@ -48,6 +50,8 @@ jobs:
 
       - name: Build wasm busytex
         run: make wasm
+        env:
+            MAKEFLAGS: -j2
         #        run: |
         #            make wasm tds-wasm
         #            make dist-wasm

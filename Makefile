@@ -383,20 +383,19 @@ ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-l
 .PHONY: wasm
 wasm:
 	$(MAKE) build/wasm/texlive.configured
+	$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
+	$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
+	$(MAKE) build/wasm/texlive/libs/zlib/libz.a 
+	$(MAKE) build/wasm/texlive/libs/teckit/libTECkit.a 
+	$(MAKE) build/wasm/texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) build/wasm/texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) build/wasm/texlive/libs/pplib/libpplib.a 
+	$(MAKE) build/wasm/texlive/libs/freetype2/libfreetype.a 
 	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	#$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
-	#$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
-	#$(MAKE) build/wasm/texlive/libs/zlib/libz.a 
-	#$(MAKE) build/wasm/texlive/libs/teckit/libTECkit.a 
-	#$(MAKE) build/wasm/texlive/libs/harfbuzz/libharfbuzz.a 
-	#$(MAKE) build/wasm/texlive/libs/graphite2/libgraphite2.a 
-	#$(MAKE) build/wasm/texlive/libs/pplib/libpplib.a 
-	#$(MAKE) build/wasm/texlive/libs/freetype2/libfreetype.a 
-	#$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	#$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicudata.a
-	#$(MAKE) build/wasm/expat/libexpat.a
-	#$(MAKE) build/wasm/fontconfig/src/.libs/libfontconfig.a
-	##
+	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) build/wasm/expat/libexpat.a
+	$(MAKE) build/wasm/fontconfig/src/.libs/libfontconfig.a
+	#
 	#$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
 	#$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
 	#rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
