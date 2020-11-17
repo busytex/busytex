@@ -20,7 +20,7 @@ jobs:
         run: make texlive 
 
       - name: Build native busytex
-        run: make native tds-native
+        run: make native build/native/fonts.conf
       
       - name: Install TexLive scheme-basic
         run: make tds-basic
@@ -33,7 +33,7 @@ jobs:
       - name: Archive native busytex test
         uses: actions/upload-artifact@v2
         with:
-          name: dist_native.zip
+          name: dist_native
           path: |
               dist/busytex
               dist/texlive

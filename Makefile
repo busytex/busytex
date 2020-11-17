@@ -109,10 +109,12 @@ OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 all:
 	$(MAKE) texlive
 	$(MAKE) native
-	$(MAKE) tds
+	$(MAKE) tds-basic
 	$(MAKE) wasm
-	$(MAKE) tds-wasm
-	$(MAKE) ubuntu-wasm
+	$(MAKE) build/wasm/fonts.conf
+	$(MAKE) build/wasm/texlive-basic.js
+	#$(MAKE) tds-full
+	#$(MAKE) ubuntu-wasm
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
@@ -338,8 +340,7 @@ build/native/fonts.conf:
 
 .PHONY: texlive
 texlive:
-	$(MAKE) source/texlive.downloaded
-	$(MAKE) source/texlive.patched
+	$(MAKE) source/texlive.downloaded source/texlive.patched
 
 .PHONY: native
 native: 
@@ -374,25 +375,9 @@ tds-%:
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/latex.fmt
 
-.PHONY: tds
-tds:
-	$(MAKE) tds-basic
-	#$(MAKE) tds-small tds-medium
-	$(MAKE) tds-full
-
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js
-
-.PHONY: tds-wasm
-tds-wasm:
-	$(MAKE) build/wasm/fonts.conf
-	$(MAKE) build/wasm/texlive-basic.js
-	#$(MAKE) build/wasm/texlive-small.js build/wasm/texlive-medium.js
-
-.PHONY: tds-native
-tds-native:
-	$(MAKE) build/native/fonts.conf
 
 .PHONY: wasm
 wasm:

@@ -42,7 +42,7 @@ make texlive
 make native
 
 # build native fonts file
-make tds-native
+make build/native/fonts.conf
 
 # build TeX Directory Structure (TDS) and latex format file (latex.fmt)
 make tds-basic
