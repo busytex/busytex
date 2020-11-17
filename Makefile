@@ -182,11 +182,11 @@ build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured b
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured
 	echo LIBICUUC_CONFIGURE
 	cd build/wasm/texlive/libs/icu && \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure
-	#$(OPTS_ICU_configure_wasm)
+	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
 	echo LIBICUUC_MAKE
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu 
-	#$(OPTS_ICU_make_wasm) 
+	#mkdir -p build/wasm/texlive/libs/icu/icu-build
+	#$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/icu-src/source/configure --enable-static --disable-shared --disable-extras --disable-samples --disable-tests --disable-dyload --disable-layout --disable-strict --build=x86_64-pc-linux-gnu 'CC=/home/runner/work/_temp/bde926b5-511c-47c4-ab06-39d4fcd228e1/emsdk-master/upstream/emscripten/emcc' 'CXX=/home/runner/work/_temp/bde926b5-511c-47c4-ab06-39d4fcd228e1/emsdk-master/upstream/emscripten/em++
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_make_wasm) -e icu_config="$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/icu-src/source/configure --enable-static --disable-shared --disable-extras --disable-samples --disable-tests --disable-dyload --disable-layout" 
 	#echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	#$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build #$(OPTS_ICU_make_wasm) 
 
