@@ -1,6 +1,6 @@
 set -e
 
-export DIST=$PWD/dist
+export DIST=$PWD/dist-native
 export TEXMFDIST=$DIST/texlive/texmf-dist
 export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
 export TEXMFCNF=$TEXMFDIST/web2c
