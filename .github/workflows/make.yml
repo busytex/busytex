@@ -23,7 +23,7 @@ jobs:
       - name: Build native busytex
         run: make native build/native/fonts.conf
         env:
-            MAKEFLAGS: -j2
+            MAKEFLAGS: -j1
         
       - name: Install TexLive scheme-basic
         run: make tds-basic
@@ -53,10 +53,11 @@ jobs:
             make wasm tds-wasm
             make dist-wasm
         env:
-            MAKEFLAGS: -j2
+            MAKEFLAGS: -j1
       
       - name: Archive wasm busytex dist
         uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: dist_wasm
           path: dist/{*.wasm,*.data,*.js}
