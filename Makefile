@@ -412,6 +412,8 @@ example:
 	wget --no-clobber -O example/assets/test.svg https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg
 	wget --no-clobber -O example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
 
+################################################################################################################
+
 .PHONY: clean_tds
 clean_tds:
 	rm -rf build/texlive-*
@@ -443,6 +445,8 @@ clean_example:
 .PHONY: clean
 clean:
 	rm -rf build source
+
+################################################################################################################
 
 .PHONY: dist-wasm
 dist-wasm:
