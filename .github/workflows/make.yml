@@ -33,16 +33,6 @@ jobs:
             make dist-native
             bash example/example.sh
 
-      - name: Archive native busytex test
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist_native
-          path: |
-              dist/busytex
-              dist/texlive
-              dist/fonts.conf
-              example/example.pdf
-
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v7
         with:
@@ -57,9 +47,17 @@ jobs:
         env:
             MAKEFLAGS: -j1
       
+      - name: Archive native busytex test
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist_native
+          path: |
+              dist-native
+              example/example.pdf
+      
       - name: Archive wasm busytex dist
         uses: actions/upload-artifact@v2
         #if: ${{ always() }}
         with:
           name: dist_wasm
-          path: dist/{*.wasm,*.data,*.js}
+          path: dist-wasm

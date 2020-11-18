@@ -432,7 +432,7 @@ clean_format:
 
 .PHONY: clean_dist
 clean_dist:
-	rm -rf dist
+	rm -rf dist-wasm dist-native
 
 .PHONY: clean_build
 clean_build:
@@ -450,13 +450,13 @@ clean:
 
 .PHONY: dist-wasm
 dist-wasm:
-	mkdir -p dist
-	cp build/wasm/busytex.js build/wasm/busytex.wasm dist
-	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data dist
-	cp build/wasm/ubuntu-*.js build/wasm/ubuntu-*.data dist
+	mkdir -p $@
+	cp build/wasm/busytex.js build/wasm/busytex.wasm $@ || true
+	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@ || true
+	cp build/wasm/ubuntu-*.js build/wasm/ubuntu-*.data $@ || true
 
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
-	mkdir -p dist
-	cp build/native/busytex build/native/fonts.conf build/format-basic/latex.fmt dist
-	cp -r build/texlive-basic dist/texlive
+	mkdir -p $@
+	cp build/native/busytex build/native/fonts.conf build/format-basic/latex.fmt $@ || true
+	cp -r build/texlive-basic $@/texlive || true
