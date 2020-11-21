@@ -1,7 +1,3 @@
-# https://www.freecodecamp.org/news/a-lightweight-tool-agnostic-ci-cd-flow-with-github-actions/
-# https://github.com/actions/upload-release-asset
-# https://github.com/actions/upload-release-asset/issues/28
-
 name: ubuntupackages
 env:
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended
@@ -31,4 +27,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) -m "Ubuntu packages assets" release_${{github.sha}}
+        run: hub release create -m "Ubuntu packages assets" $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) release_${{github.sha}}
