@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 1
       
       - name: Install TexLive
-        run: make tds-basic
+        run: make build/install-tl/install-tl build/texlive-basic/texmf-dist
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v7
