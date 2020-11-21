@@ -19,10 +19,10 @@ jobs:
           fetch-depth: 1
       
       - name: Install TexLive
-        run: make build/install-tl/install-tl build/texlive-basic/texmf-dist
+        run: make build/install-tl/install-tl build/texlive-full/texmf-dist
 
       - name: Recreate Ubuntu packages
-        run: make -e TEXMF_FULL=build/texlive-basic $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES)
+        run: make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
 
       - name: Create Release
         env:
