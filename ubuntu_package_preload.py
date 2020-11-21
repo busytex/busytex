@@ -18,7 +18,7 @@ class UbuntuDebFileList(html.parser.HTMLParser):
             self.file_list.extend(list(filter(None, data.split('\n'))))
 
 def generate_preload(texmf_src, package_file_list, skip_log, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
-    print(f'Skip log in [{skip_log or "stderr"}]')
+    print(f'Skip log in [{skip_log or "stderr"}]', file = sys.stderr)
     skip_log = open(skip_log, 'w') if args.skip_log else sys.stderr
 
     preload = set()
