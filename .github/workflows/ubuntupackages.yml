@@ -1,0 +1,36 @@
+# https://www.freecodecamp.org/news/a-lightweight-tool-agnostic-ci-cd-flow-with-github-actions/
+# https://github.com/actions/upload-release-asset
+# https://github.com/actions/upload-release-asset/issues/28
+
+name: ubuntupackages
+
+on: workflow_dispatch
+
+jobs:
+
+  ubuntu-packages-wasm:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      
+      - name: Install TexLive
+        run: make tds-basic
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 2.0.5
+      
+      - name: Recreate Ubuntu packages
+        run: make build/wasm/ubuntu-texlive-latex-base.js -e TEXMF_FULL=build/wasm/texlive-basic
+
+      - name: Create Release
+        run: |
+          tag_name="${GITHUB_REF##*/}"
+          hub release create -a build/wasm/ubuntu-texlive-latex-base.js -a build/wasm/ubuntu-texlive-latex-base.data -m "$tag_name" "$tag_name" 
+          # ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.js
+          # ${{ github.ref }}
+
+######################################################################################

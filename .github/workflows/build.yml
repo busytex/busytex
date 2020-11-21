@@ -1,29 +1,30 @@
 # https://www.freecodecamp.org/news/a-lightweight-tool-agnostic-ci-cd-flow-with-github-actions/
 # https://github.com/actions/upload-release-asset
+# https://github.com/actions/upload-release-asset/issues/28
 
 name: make
 
 on: workflow_dispatch
 
 jobs:
+
   build:
     runs-on: ubuntu-20.04
     steps:
+      - name: Install Prerequisites
+        run: sudo apt-get install -y gperf
         
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - name: Install Prerequisites
-        run: sudo apt-get install -y gperf
-      
       - name: Clone/patch TexLive and dependencies
         run: make texlive 
 
       - name: Build native busytex
         run: make native build/native/fonts.conf
         env:
-            MAKEFLAGS: -j1
+            MAKEFLAGS: -j2
         
       - name: Install TexLive scheme-basic
         run: make tds-basic
@@ -45,7 +46,7 @@ jobs:
             make build/wasm/texlive-basic.js
             make dist-wasm
         env:
-            MAKEFLAGS: -j1
+            MAKEFLAGS: -j2
       
       - name: Archive native busytex test
         uses: actions/upload-artifact@v2
