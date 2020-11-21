@@ -32,5 +32,6 @@ jobs:
           hub release create -a build/wasm/ubuntu-texlive-latex-base.js -a build/wasm/ubuntu-texlive-latex-base.data -m "$tag_name" "$tag_name" 
           # ubuntu-texlive-latex-extra.js ubuntu-texlive-latex-recommended.js
           # ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-######################################################################################
