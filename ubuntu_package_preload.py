@@ -18,20 +18,20 @@ class UbuntuDebFileList(html.parser.HTMLParser):
             self.file_list.extend(list(filter(None, data.split('\n'))))
 
 def generate_preload(texmf_src, package_file_list, skip_log, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
-    if skip_log:
-        skip_log = open(skip_log, 'w') else sys.stderr
+    print(f'Skip log in [{skip_log or "stderr"}]')
+    skip_log = open(skip_log, 'w') if args.skip_log else sys.stderr
 
     preload = set()
     for path in package_file_list:
         if not path.startswith(texmf_dist):
-            print(f'Skipping [{path}]', file = skip_log)
+            print(path, file = skip_log)
             continue
 
         dirname = os.path.dirname(path)
         src_path = path.replace(texmf_ubuntu, texmf_src)
 
         if not os.path.exists(src_path):
-            print(f'Skipping [{path}]', file = skip_log)
+            print(path, file = skip_log)
             continue
         
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
