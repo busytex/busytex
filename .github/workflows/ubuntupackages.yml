@@ -32,7 +32,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          #tag_name="${GITHUB_REF##*/}"
-          #tag_name=${{ github.ref }}
-          hub release create $(printf -- "-a build/wasm/ubuntu-%s.js -a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) -m ${{ github.ref }} ${{ github.ref }}
+          echo $UBUNTUPACKAGES
+          echo $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES)
+          echo $(printf -- "-a build/wasm/ubuntu-%s.js -a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES)
+          tagname=$(basename ${{ github.ref }})
+          hub release create $(printf -- "-a build/wasm/ubuntu-%s.js -a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) -m $tagname $tagname
           
