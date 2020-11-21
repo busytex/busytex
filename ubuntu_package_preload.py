@@ -17,18 +17,21 @@ class UbuntuDebFileList(html.parser.HTMLParser):
         if self.file_list == []:
             self.file_list.extend(list(filter(None, data.split('\n'))))
 
-def generate_preload(texmf_src, package_file_list, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
+def generate_preload(texmf_src, package_file_list, skip_log, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
+    if skip_log:
+        skip_log = open(skip_log, 'w') else sys.stderr
+
     preload = set()
     for path in package_file_list:
         if not path.startswith(texmf_dist):
-            print(f'Skipping [{path}]', file = sys.stderr)
+            print(f'Skipping [{path}]', file = skip_log)
             continue
 
         dirname = os.path.dirname(path)
         src_path = path.replace(texmf_ubuntu, texmf_src)
 
         if not os.path.exists(src_path):
-            print(f'Skipping [{path}]', file = sys.stderr)
+            print(f'Skipping [{path}]', file = skip_log)
             continue
         
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
@@ -42,6 +45,7 @@ if __name__ == '__main__':
     parser.add_argument('--texmf', required = True)
     parser.add_argument('--package', required = True)
     parser.add_argument('--url', required = True)
+    parser.add_argument('--skip-log')
     args = parser.parse_args()
 
     filelist_url = os.path.join(args.url, 'all', args.package, 'filelist')
@@ -49,6 +53,6 @@ if __name__ == '__main__':
     
     html_parser = UbuntuDebFileList()
     html_parser.feed(page)
-    preload = generate_preload(args.texmf, html_parser.file_list)
+    preload = generate_preload(args.texmf, html_parser.file_list, args.skip_log)
 
     print(' '.join(f'--preload {src}@{dst}' for src, dst in preload))
