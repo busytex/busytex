@@ -28,11 +28,11 @@ jobs:
       - name: Recreate Ubuntu packages
         run: make -e TEXMF_FULL=build/texlive-basic $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES)
 
-        #- name: Create Release
-        #- env:
-        #-   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        #- run: |
-        #-   #tag_name="${GITHUB_REF##*/}"
-        #-   tag_name="${{github.ref}}"
-        #-   hub release create -a build/wasm/ubuntu-texlive-latex-base.js -a build/wasm/ubuntu-texlive-latex-base.data -m "$tag_name" "$tag_name" 
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          #tag_name="${GITHUB_REF##*/}"
+          #tag_name=${{ github.ref }}
+          hub release create $(printf -- "-a build/wasm/ubuntu-%s.js -a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) -m ${{ github.ref }} ${{ github.ref }}
           
