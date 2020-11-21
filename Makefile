@@ -1,4 +1,5 @@
 #TODO: replace install-tl by tlmgr
+# http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
