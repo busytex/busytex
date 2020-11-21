@@ -1,5 +1,7 @@
-#TODO: replace install-tl by tlmgr
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
+# TODO: ubuntu_package: extract iso (http://ctan.altspu.ru/systems/texlive/Images/) or tar.xz (ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz)
+# TODO: figure out install-tl xetex fmt 
+# TODO: rename busytex static libraries
 
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
@@ -64,6 +66,7 @@ CFLAGS_XDVIPDFMX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xdv
 CFLAGS_BIBTEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8' -Dinitialize=bibtex_initialize -Deoln=bibtex_eoln -Dlast=bibtex_last -Dhistory=bibtex_history -Dbad=bibtex_bad -Dxchr=bibtex_xchr -Dbuffer=bibtex_buffer -Dclose_file=bibtex_close_file -Dusage=bibtex_usage 
 CFLAGS_XETEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_KPSEWHICH = -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
+CFLAGS_BUSYTEX = -DBUSYTEX_XETEX -DBUSYTEX_XDVIPDFMX -DBUSYTEX_BIBTEX8 -DBUSYTEX_KPSEWHICH
 
 ##############################################################################################################################
 
@@ -252,8 +255,8 @@ build/native/texlive/texk/web2c/libxetex.a: build/native/texlive.configured
 .PHONY: build/native/busytex
 build/native/busytex: 
 	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o busytex.o
-	$(CXX)  $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
+	$(CC) -c busytex.c -o busytex.o $(CFLAGS_BUSYTEX)
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX))
 
 ################################################################################################################
 
@@ -273,7 +276,7 @@ build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured
 
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
-	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) busytex.c
+	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX) busytex.c
 
 ################################################################################################################
 
@@ -346,7 +349,6 @@ texlive:
 .PHONY: native
 native: 
 	$(MAKE) build/native/texlive.configured
-	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/native/texlive/libs/libpng/libpng.a 
 	$(MAKE) build/native/texlive/libs/libpaper/libpaper.a 
 	$(MAKE) build/native/texlive/libs/zlib/libz.a 
@@ -355,7 +357,7 @@ native:
 	$(MAKE) build/native/texlive/libs/graphite2/libgraphite2.a 
 	$(MAKE) build/native/texlive/libs/pplib/libpplib.a 
 	$(MAKE) build/native/texlive/libs/freetype2/libfreetype.a 
-	#$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
 	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/icupkg 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/pkgdata 
