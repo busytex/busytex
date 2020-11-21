@@ -26,15 +26,15 @@ jobs:
         run: make build/install-tl/install-tl build/texlive-basic/texmf-dist
 
       - name: Recreate Ubuntu packages
-        run: make -e TEXMF_FULL=build/texlive-basic $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES)
+        run: |
+          printenv
+          make -e TEXMF_FULL=build/texlive-basic $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES)
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo $UBUNTUPACKAGES
-          echo $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES)
-          echo $(printf -- "-a build/wasm/ubuntu-%s.js -a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES)
+          printenv
           tagname=$(basename ${{ github.ref }})
           hub release create $(printf -- "-a build/wasm/ubuntu-%s.js -a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) -m $tagname $tagname
           
