@@ -11,6 +11,11 @@ jobs:
   ubuntu-packages-wasm:
     runs-on: ubuntu-20.04
     steps:
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 2.0.5
+      
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
@@ -18,13 +23,8 @@ jobs:
       - name: Install TexLive
         run: make build/install-tl/install-tl build/texlive-basic/texmf-dist
 
-      - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v7
-        with:
-          version: 2.0.5
-      
       - name: Recreate Ubuntu packages
-        run: make build/wasm/ubuntu-texlive-latex-base.js -e TEXMF_FULL=build/wasm/texlive-basic
+        run: make build/wasm/ubuntu-texlive-latex-base.js -e TEXMF_FULL=build/texlive-basic
 
       - name: Create Release
         run: |
