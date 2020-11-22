@@ -11,13 +11,18 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: Install Prerequisites
-        run: sudo apt-get install -y gperf
-        
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: 2.0.5
+      
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-
+      
+      - name: Install Prerequisites
+        run: sudo apt-get install -y gperf
+        
       - name: Clone/patch TexLive and dependencies
         run: make texlive 
 
@@ -34,11 +39,6 @@ jobs:
             make dist-native
             bash example/example.sh
 
-      - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v7
-        with:
-          version: 2.0.5
-
       - name: Build wasm busytex
         run: |
             make wasm
@@ -48,17 +48,7 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
-      - name: Archive native busytex test
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist_native
-          path: |
-              dist-native
-              example/example.pdf
-      
-      - name: Archive wasm busytex dist
-        uses: actions/upload-artifact@v2
-        #if: ${{ always() }}
-        with:
-          name: dist_wasm
-          path: dist-wasm
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: hub release create -m "Build assets" -a build/format-basic/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf build_${{github.sha}}

@@ -6,7 +6,7 @@ export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
 export TEXMFCNF=$TEXMFDIST/web2c
 export FONTCONFIG_PATH=$DIST
 
-export LATEXFMT=$DIST/latex.fmt
+export LATEXFMT=$DIST/xelatex.fmt
 export BUSYTEX=$DIST/busytex
 
 cd example

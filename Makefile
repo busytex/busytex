@@ -311,13 +311,13 @@ build/texlive-%/texmf-dist: build/install-tl/install-tl
 	TEXLIVE_INSTALL_NO_RESUME=1 $< -profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
 
-build/format-%/latex.fmt: build/native/busytex build/texlive-%/texmf-dist 
+build/format-%/xelatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
 	mkdir -p $(dir $@)
 	rm $(dir $@)/* || true
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex unpack.ins
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex latex.ltx
 
-build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
+build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	mkdir -p $(dir $@)
 	echo > build/empty
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
@@ -325,7 +325,7 @@ build/wasm/texlive-%.js: build/format-%/latex.fmt build/texlive-%/texmf-dist bui
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive \
-		--preload build/format-$*/latex.fmt@/latex.fmt 
+		--preload build/format-$*/xelatex.fmt@/xelatex.fmt 
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
@@ -389,7 +389,7 @@ native:
 tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
-	$(MAKE) build/format-$*/latex.fmt
+	$(MAKE) build/format-$*/xelatex.fmt
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
@@ -474,5 +474,5 @@ dist-wasm:
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
-	cp build/native/busytex build/native/fonts.conf build/format-basic/latex.fmt $@ || true
+	cp build/native/busytex build/native/fonts.conf build/format-basic/xelatex.fmt $@ || true
 	cp -r build/texlive-basic $@/texlive || true

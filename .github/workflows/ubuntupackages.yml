@@ -27,4 +27,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Ubuntu packages assets" $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) release_${{github.sha}}
+        run: hub release create -m "Ubuntu packages assets" $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) ubuntupackages_${{github.sha}}
