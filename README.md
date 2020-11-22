@@ -83,6 +83,8 @@ bash example/example.sh
 
 ### TODO
 ```shell
+xpdf-src/xpdf/
+
 https://github.com/rurban/perl-compiler
 http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 #TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
