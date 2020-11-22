@@ -2,7 +2,7 @@
 # https://github.com/actions/upload-release-asset
 # https://github.com/actions/upload-release-asset/issues/28
 
-name: make
+name: build
 
 on: workflow_dispatch
 
