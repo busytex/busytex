@@ -1,7 +1,3 @@
-# https://www.freecodecamp.org/news/a-lightweight-tool-agnostic-ci-cd-flow-with-github-actions/
-# https://github.com/actions/upload-release-asset
-# https://github.com/actions/upload-release-asset/issues/28
-
 name: build
 
 on: workflow_dispatch
@@ -51,4 +47,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Build assets" -a build/format-basic/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf build_${{github.sha}}
+        run: hub release create -m "Build assets" -a busytex_pipeline.js -a busytex_worker.js -a build/format-basic/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf build_${{github.sha}}

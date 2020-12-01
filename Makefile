@@ -477,3 +477,8 @@ dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	cp build/native/busytex build/native/fonts.conf build/format-basic/xelatex.fmt $@ || true
 	cp -r build/texlive-basic $@/texlive || true
+
+.PHONY: dist
+dist:
+	mkdir -p $@
+	wget -P dist -nc $(addprefix $(URL_RELEASE), /busytex.wasm /busytex.js /texlive-basic.js /texlive-basic.data)

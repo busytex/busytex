@@ -204,13 +204,29 @@ class BusytexPipeline
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
+        let dirs = new Set(['/']);
+
+        const mkdir_p = dirpath =>
+        {
+            if(!dirs.has(dirpath))
+            {
+                mkdir_p(PATH.dirname(dirpath));
+                
+                FS.mkdir(dirpath);
+                dirs.add(dirpath);
+            }
+        };
+
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
             const absolute_path = PATH.join2(this.project_dir, path);
             if(contents == null)
-                FS.mkdir(absolute_path);
+                mkdir_p(absolute_path);
             else
+            {
+                mkdir_p(PATH.dirname(absolute_path));
                 FS.writeFile(absolute_path, contents);
+            }
         }
         
         const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
