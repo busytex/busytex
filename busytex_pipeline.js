@@ -91,7 +91,7 @@ class BusytexPipeline
 
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
-        this.Module = this.preload ? this.reload_module(this.env, this.project_dir) : null;
+        this.Module = this.preload == false ? null : this.reload_module(this.env, this.project_dir);
     }
 
     terminate()
@@ -254,8 +254,7 @@ class BusytexPipeline
         const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
         
         FS.unmount(this.project_dir);
-        if(!this.preload)
-            this.Module = null;
+        this.Module = this.preload == false ? null : this.Module;
         
         return {pdf : pdf, log : log};
     }
