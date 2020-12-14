@@ -62,7 +62,7 @@ class BusytexPipeline
         
         this.ansi_reset_sequence = '\x1bc';
         
-        this.project_dir = '/home/web_user/project_dir/';
+        this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt_latex = '/xelatex.fmt';
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
