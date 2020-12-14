@@ -204,7 +204,7 @@ class BusytexPipeline
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
-        let dirs = new Set(['/']);
+        let dirs = new Set(['/', this.project_dir]);
 
         const mkdir_p = dirpath =>
         {
