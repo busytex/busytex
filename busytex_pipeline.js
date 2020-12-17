@@ -65,7 +65,7 @@ class BusytexPipeline
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt_latex = '/xelatex.fmt';
-        this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : this.project_dir) + texmf + '/texmf-dist').join(':');
+        this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : (this.project_dir + '/')) + texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
         this.dir_cnf = '/texlive/texmf-dist/web2c';
         this.dir_fontconfig = '/etc/fonts';
