@@ -247,8 +247,8 @@ class BusytexPipeline
             Module.HEAPU8.set(mem_header);
             
             Module.setStatus(`EXIT CODE: ${exit_code}`);
-            if(exit_code != 0)
-                break;
+            //if(exit_code != 0)
+            //    break;
         }
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
