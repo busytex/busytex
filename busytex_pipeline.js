@@ -109,7 +109,7 @@ class BusytexPipeline
             thisProgram : this.bin_busytex,
             noInitialRun : true,
             totalDependencies: 0,
-            prefix : "",
+            prefix : '',
             
             preRun : [() =>
             {
@@ -147,7 +147,7 @@ class BusytexPipeline
             
             setStatus(text)
             {
-                print((this.statusPrefix || '') + text);
+                print(Module.thisProgram + ': ' + text);
             },
             
             monitorRunDependencies(left)
