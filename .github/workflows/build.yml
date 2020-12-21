@@ -23,7 +23,7 @@ jobs:
         run: make texlive 
 
       - name: Build native busytex
-        run: make native build/native/fonts.conf
+        run: make native build/native/fonts.conf && echo FIN && exit 1
         env:
             MAKEFLAGS: -j2
         

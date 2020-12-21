@@ -385,7 +385,8 @@ native:
 	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
-	$(MAKE) build/native/texlive/texk/web2c/libxetex.a build/native/texlive/texk/web2c/libpdftex.a
+	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
+	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex
 
 tds-%:
