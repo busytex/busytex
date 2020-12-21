@@ -53,6 +53,7 @@ CFLAGS_OPT_wasm = -Oz
 
 # OBJECT FILES
 
+OBJ_LUATEX = synctexdir/luatex-synctex.o luatex-luatexini.o luatex-luatex0.o luatex-luatex-pool.o luatexdir/luatex-luatexextra.o lib/lib.a libmd5.a libluatex.a
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/xdvipdfmx.a
@@ -69,6 +70,7 @@ CFLAGS_XDVIPDFMX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xdv
 CFLAGS_BIBTEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8' -Dinitialize=bibtex_initialize -Deoln=bibtex_eoln -Dlast=bibtex_last -Dhistory=bibtex_history -Dbad=bibtex_bad -Dxchr=bibtex_xchr -Dbuffer=bibtex_buffer -Dclose_file=bibtex_close_file -Dusage=bibtex_usage 
 CFLAGS_XETEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_PDFTEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'
+CFLAGS_LUATEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'
 CFLAGS_KPSEWHICH = -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
 CFLAGS_BUSYTEX =  -DBUSYTEX_XDVIPDFMX -DBUSYTEX_BIBTEX8 -DBUSYTEX_KPSEWHICH 
 
@@ -84,6 +86,7 @@ CFLAGS_XDVIPDFMX_native = $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_native)
 CFLAGS_BIBTEX_native = $(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)
 CFLAGS_XETEX_native = $(CFLAGS_XETEX) $(CFLAGS_OPT_native)
 CFLAGS_PDFTEX_native = $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)
+CFLAGS_LUATEX_native = $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)
 CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
@@ -111,6 +114,7 @@ OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_n
 OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX_native)"
 OPTS_XETEX_native = CC="$(CC) $(CFLAGS_XETEX_native)" CXX="$(CXX) $(CFLAGS_XETEX_native)"
 OPTS_PDFTEX_native = CC="$(CC) $(CFLAGS_PDFTEX_native)" CXX="$(CXX) $(CFLAGS_PDFTEX_native)"
+OPTS_LUATEX_native = CC="$(CC) $(CFLAGS_LUATEX_native)" CXX="$(CXX) $(CFLAGS_LUATEX_native)"
 OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 
 ##############################################################################################################################
@@ -264,15 +268,27 @@ build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured bui
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_native)
 
+build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
+	$(MAKE_native) -C $(dir $@) synctexdir/luatex-synctex.o luatex $(subst -Dmain, -Dbusymain, $(OPTS_LUATEX_native))
+	rm $(dir $@)/luatexdir/luatex-luatexextra.o
+	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatexextra.o $(OPTS_LUATEX_native)
+	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_native)
+
 build/native/busytex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_xetex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_xetex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX)
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_xetex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
 	
 build/native/busytex_pdftex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX)
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
+
+build/native/busytex_luatex: 
+	mkdir -p $(dir $@)
+	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_luatex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
+
 
 ################################################################################################################
 
@@ -391,6 +407,8 @@ native:
 	$(MAKE) build/native/busytex
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
+	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
+	$(MAKE) build/native/busytex_luatex
 
 tds-%:
 	$(MAKE) build/install-tl/install-tl
