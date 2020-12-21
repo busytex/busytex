@@ -267,8 +267,8 @@ build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured bui
 build/native/busytex: 
 	mkdir -p $(dir $@)
 	#$(CC) -c busytex.c -o busytex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex.c $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX))
-	$(CXX) $(CFLAGS_OPT_native) -o $@pdftex -lm -pthread $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX))
+	$(CXX) $(CFLAGS_OPT_native) -o $@       -lm -pthread $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS))                               $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX  busytex.c 
+	$(CXX) $(CFLAGS_OPT_native) -o $@pdftex -lm -pthread  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX busytex.c 
 
 ################################################################################################################
 
