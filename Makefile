@@ -199,7 +199,7 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
-build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a: build/%/texlive.configured
+build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) 
 
 build/%/expat/libexpat.a: source/expat.downloaded
@@ -241,6 +241,8 @@ build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 build/%/texlive/texk/kpathsea/kpsewhich.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_KPSEWHICH_$*)
 
+build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
+	$(MAKE_$*) -C build/$*/texlive/libs/lua53
 
 ################################################################################################################
 
@@ -268,10 +270,7 @@ build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured bui
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_native)
 
-build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
-	$(MAKE_native) -C $(dir $@) synctexdir/luatex-synctex.o luatex $(subst -Dmain, -Dbusymain, $(OPTS_LUATEX_native))
-	rm $(dir $@)/luatexdir/luatex-luatexextra.o
-	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatexextra.o $(OPTS_LUATEX_native)
+build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/zziplib/libzzip.a build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_native)
 
 build/native/busytex: 
@@ -283,12 +282,6 @@ build/native/busytex_pdftex:
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX
 	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
-
-build/native/busytex_luatex: 
-	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_luatex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
-
 
 ################################################################################################################
 
@@ -382,6 +375,7 @@ texlive:
 .PHONY: native
 native: 
 	$(MAKE) build/native/texlive.configured
+	$(MAKE) build/native/texlive/libs/zziplib/libzzip.a
 	$(MAKE) build/native/texlive/libs/libpng/libpng.a 
 	$(MAKE) build/native/texlive/libs/libpaper/libpaper.a 
 	$(MAKE) build/native/texlive/libs/zlib/libz.a 
@@ -407,8 +401,8 @@ native:
 	$(MAKE) build/native/busytex
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
+	$(MAKE) build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
-	$(MAKE) build/native/busytex_luatex
 
 tds-%:
 	$(MAKE) build/install-tl/install-tl
