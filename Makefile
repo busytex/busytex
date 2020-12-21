@@ -266,9 +266,13 @@ build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured bui
 
 build/native/busytex: 
 	mkdir -p $(dir $@)
-	#$(CC) -c busytex.c -o busytex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@       -lm -pthread $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS))                               $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX  busytex.c 
-	$(CXX) $(CFLAGS_OPT_native) -o $@pdftex -lm -pthread  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX busytex.c 
+	$(CC) -c busytex.c -o busytex_xetex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_xetex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX)
+	
+build/native/busytex_pdftex: 
+	mkdir -p $(dir $@)
+	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(CFLAGS_BUSYTEX)
 
 ################################################################################################################
 
@@ -384,8 +388,9 @@ native:
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
-	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex
+	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
+	$(MAKE) build/native/busytex_pdftex
 
 tds-%:
 	$(MAKE) build/install-tl/install-tl
