@@ -54,7 +54,7 @@ CFLAGS_OPT_wasm = -Oz
 # OBJECT FILES
 
 #OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
-#OBJ_PDFTEX = pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
+OBJ_PDFTEX =                              pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/xdvipdfmx.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/bibtex8.a
@@ -270,6 +270,7 @@ build/native/busytex:
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex.o $(CFLAGS_BUSYTEX)
 	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX))
+	$(CXX) $(CFLAGS_OPT_native) -o $@pdftex -lm -pthread busytex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX))
 
 ################################################################################################################
 
@@ -384,7 +385,7 @@ native:
 	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
-	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
+	$(MAKE) build/native/texlive/texk/web2c/libxetex.a build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex
 
 tds-%:
