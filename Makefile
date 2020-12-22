@@ -287,7 +287,7 @@ build/native/busytex_pdftex:
 build/native/busytex_luatex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
-	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/texlive/libs/, zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lua53/.libs/libtexlua53.a) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread busytex_luatex.o
+	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ busytex_luatex.o $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/texlive/libs/, zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lua53/.libs/libtexlua53.a) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX)) -ldl -lm -pthread
 
 ################################################################################################################
 
@@ -405,10 +405,13 @@ native:
 	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
+	echo BEFORE_XETEX && nm build/native/texlive/texk/web2c/lib/lib.a | grep main
 	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
 	$(MAKE) build/native/busytex
+	echo BEFORE_PDFTEX && nm build/native/texlive/texk/web2c/lib/lib.a | grep main
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
+	echo BEFORE_LUATEX && nm build/native/texlive/texk/web2c/lib/lib.a | grep main
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
 	nm build/native/texlive/texk/web2c/luatexdir/luatex-luatex.o | grep main
 	$(MAKE) build/native/busytex_luatex
