@@ -271,7 +271,7 @@ build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured bui
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_native)
 
 build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/zziplib/libzzip.a build/native/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o $(OPTS_LUATEX_native)
+	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_native)
 
 build/native/busytex: 
@@ -287,7 +287,7 @@ build/native/busytex_pdftex:
 build/native/busytex_luatex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
-	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a ) $(addprefix build/native/texlive/libs/, lua53/libtexlua53.la zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lib/lib.a) build/native/texlive/texk/kpathsea/libkpathsea.la -ldl -lm -pthread busytex_luatex.o
+	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/texlive/libs/, lua53/libtexlua53.la zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a) build/native/texlive/texk/kpathsea/libkpathsea.la -ldl -lm -pthread busytex_luatex.o
 
 ################################################################################################################
 
