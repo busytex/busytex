@@ -283,6 +283,11 @@ build/native/busytex_pdftex:
 	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX
 	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
 
+build/native/busytex_luatex: 
+	mkdir -p $(dir $@)
+	$(CC) -c busytex.c -o busytex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
+	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a $(addprefix build/native/texlive/libs/, lua53/libtexlua53.la zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lib/lib.a) build/native/texlive/texk/kpathsea/libkpathsea.la libmputil.a libunilib.a libmd5.a -ldl -lm 
+
 ################################################################################################################
 
 build/wasm/texlive/texk/bibtex-x/bibtex8.a: build/wasm/texlive.configured
@@ -384,6 +389,7 @@ native:
 	$(MAKE) build/native/texlive/libs/harfbuzz/libharfbuzz.a 
 	$(MAKE) build/native/texlive/libs/graphite2/libgraphite2.a 
 	$(MAKE) build/native/texlive/libs/pplib/libpplib.a 
+	$(MAKE) build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) build/native/texlive/libs/freetype2/libfreetype.a 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
@@ -402,8 +408,8 @@ native:
 	$(MAKE) build/native/busytex
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
-	$(MAKE) build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
+	$(MAKE) build/native/busytex_luatex
 
 tds-%:
 	$(MAKE) build/install-tl/install-tl
