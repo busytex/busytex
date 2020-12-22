@@ -402,6 +402,7 @@ native:
 	$(MAKE) build/native/texlive/libs/pplib/libpplib.a 
 	$(MAKE) build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) build/native/texlive/libs/freetype2/libfreetype.a 
+	$(MAKE) build/native/texlive/libs/xpdf/libxpdf.a
 	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
 	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/icupkg 
