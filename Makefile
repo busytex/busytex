@@ -373,7 +373,8 @@ texlive:
 	$(MAKE) source/texlive.downloaded source/texlive.patched
 
 .PHONY: native
-native: 
+native:
+	echo $(MAKE)
 	$(MAKE) build/native/texlive.configured
 	$(MAKE) build/native/texlive/libs/zziplib/libzzip.a
 	$(MAKE) build/native/texlive/libs/libpng/libpng.a 
