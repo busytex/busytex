@@ -297,7 +297,7 @@ build/native/busytex_xetex_pdftex:
 build/native/busytex_xetex_pdftex_luatex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_xetex_pdftex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_xetex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -ldl -pthread busytex_xetex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
 
 ################################################################################################################
 
