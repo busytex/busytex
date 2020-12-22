@@ -247,25 +247,25 @@ build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 ################################################################################################################
 
 build/native/texlive/texk/bibtex-x/bibtex8.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain, -Dbusymain, $(OPTS_BIBTEX_native))
+	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
 	rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
 	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
 
 build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain, -Dbusymain, $(OPTS_XDVIPDFMX_native))
+	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_native))
 	rm $(dir $@)/dvipdfmx.o
 	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
 	$(AR_native) -crs $@ $(dir $@)/*.o
 
 build/native/texlive/texk/web2c/libxetex.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain, -Dbusymain, $(OPTS_XETEX_native))
+	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
 	rm $(dir $@)/xetexdir/xetex-xetexextra.o
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o $(OPTS_XETEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_XETEX_native)
 
 build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
-	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain, -Dbusymain, $(OPTS_PDFTEX_native))
+	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_native)
