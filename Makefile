@@ -287,7 +287,7 @@ build/native/busytex_pdftex:
 build/native/busytex_luatex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
-	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/texlive/libs/, lua53/libtexlua53.la zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a) build/native/texlive/texk/kpathsea/libkpathsea.la -ldl -lm -pthread busytex_luatex.o
+	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/texlive/libs/, zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lua53/.libs/libtexlua53.a) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread busytex_luatex.o
 
 ################################################################################################################
 
