@@ -66,8 +66,8 @@ OBJ_DEPS = texlive/libs/harfbuzz/libharfbuzz.a texlive/libs/graphite2/libgraphit
 ##############################################################################################################################
 
 # TOOLS CFLAGS
-CFLAGS_XDVIPDFMX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' -Dcheck_for_jpeg=dvipdfmx_check_for_jpeg -Dcheck_for_bmp=dvipdfmx_check_for_bmp -Dcheck_for_png=dvipdfmx_check_for_png -Dseek_absolute=dvidpfmx_seek_absolute -Dseek_relative=dvidpfmx_seek_relative -Dseek_end=dvidpfmx_seek_end -Dtell_position=dvidpfmx_tell_position -Dfile_size=dvidpfmx_file_size -Dmfgets=dvipdfmx_mfgets -Dwork_buffer=dvipdfmx_work_buffer -Dget_unsigned_byte=dvipdfmx_get_unsigned_byte -Dget_unsigned_pair=dvipdfmx_get_unsigned_pair 
-CFLAGS_BIBTEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8' -Dinitialize=bibtex_initialize -Deoln=bibtex_eoln -Dlast=bibtex_last -Dhistory=bibtex_history -Dbad=bibtex_bad -Dxchr=bibtex_xchr -Dbuffer=bibtex_buffer -Dclose_file=bibtex_close_file -Dusage=bibtex_usage 
+CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell python3 redefine_sym.py dvipdfmx check_for_jpeg check_for_bmp check_for_png seek_absolute seek_relative seek_end tell_position file_size mfgets work_buffer get_unsigned_byte get_unsigned_pair      pdf_new_stream pdf_ref_obj pdf_add_stream pdf_release_obj ttc_read_offset cff_close cff_get_name cff_set_name cff_put_header cff_get_index_header cff_get_index cff_pack_index cff_index_size cff_new_index cff_release_index cff_get_string cff_stdstr cff_get_sid cff_update_string cff_add_string cff_release_encoding cff_read_charsets cff_pack_charsets cff_release_charsets cff_read_fdselect cff_pack_fdselect cff_release_fdselect cff_fdselect_lookup cff_read_fdarray cff_read_private cff_read_subrs get_signed_byte get_signed_pair get_unsigned_quad sfnt_open sfnt_close put_big_endian sfnt_set_table sfnt_find_table_len sfnt_find_table_pos sfnt_locate_table sfnt_read_table_directory sfnt_require_table sfnt_create_FontFile_stream )
+CFLAGS_BIBTEX := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8' $(shell python3 redefine_sym.py bibtex initialize eoln last history bad xchr buffer close_file usage      make_string str_eq_buf str_eq_str str_ptr char_width)
 CFLAGS_XETEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_PDFTEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'
 CFLAGS_LUATEX = -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'
@@ -286,8 +286,9 @@ build/native/busytex_pdftex:
 
 build/native/busytex_luatex: 
 	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o busytex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_LUATEX
-	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ busytex_luatex.o  $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX)) $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/texlive/libs/, zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lua53/.libs/libtexlua53.a) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread
+	$(CC) -c busytex.c -o busytex_luatex.o  -DBUSYTEX_KPSEWHICH -DBUSYTEX_LUATEX -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX
+	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ busytex_luatex.o    $(addprefix build/native/texlive/texk/web2c/, luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS))  $(addprefix build/native/texlive/libs/, zziplib/libzzip.a libpng/libpng.a pplib/libpplib.a zlib/libz.a lua53/.libs/libtexlua53.a) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread
+	
 
 ################################################################################################################
 
@@ -405,15 +406,11 @@ native:
 	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
-	echo BEFORE_XETEX && nm build/native/texlive/texk/web2c/lib/lib.a | grep main
 	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
 	$(MAKE) build/native/busytex
-	echo BEFORE_PDFTEX && nm build/native/texlive/texk/web2c/lib/lib.a | grep main
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
-	echo BEFORE_LUATEX && nm build/native/texlive/texk/web2c/lib/lib.a | grep main
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
-	nm build/native/texlive/texk/web2c/luatexdir/luatex-luatex.o | grep main
 	$(MAKE) build/native/busytex_luatex
 
 tds-%:
