@@ -409,6 +409,7 @@ native:
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
+	nm build/native/texlive/texk/web2c/luatexdir/luatex-luatex.o | grep main
 	$(MAKE) build/native/busytex_luatex
 
 tds-%:
