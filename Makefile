@@ -428,7 +428,7 @@ tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
-	$(MAKE) build/format-$*/pdflatex.fmt
+	#$(MAKE) build/format-$*/pdflatex.fmt
 	#$(MAKE) build/format-$*/lualatex.fmt
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
@@ -515,7 +515,8 @@ dist-wasm:
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	ls build build/format-basic
-	cp build/native/busytex build/native/busytex_xetex build/native/busytex_pdftex build/native/busytex_xetex_pdftex build/native/busytex_luatex build/native/fonts.conf build/format-basic/xelatex.fmt build/format-basic/pdflatex.fmt $@ || true
+	cp build/native/busytex build/native/busytex_xetex build/native/busytex_pdftex build/native/busytex_xetex_pdftex build/native/busytex_luatex build/native/fonts.conf build/format-basic/xelatex.fmt $@ || true
+	# build/format-basic/pdflatex.fmt
 	cp -r build/texlive-basic $@/texlive || true
 
 .PHONY: dist
