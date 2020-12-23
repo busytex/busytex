@@ -146,6 +146,8 @@ https://gist.github.com/przemoc/571086
 
 http://ordiluc.net/fs/libetc/
 
+https://meeting.contextgarden.net/2011/talks/day1_07_jean-michel_bibliography/hc-bb-1.pdf
+
 ```
 .PHONY: dist/texlive-lazy.js
 dist/texlive-lazy.js:

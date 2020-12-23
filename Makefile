@@ -14,8 +14,7 @@ ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
 PYTHON = python3
 
-XETEX = $(ROOT)/build/native/busytex xetex
-PDFTEX = $(ROOT)/build/native/busytex_xetex_pdftex_luatex pdftex
+BUSYTEX = $(ROOT)/build/native/busytex
 
 TEXMF_FULL = $(ROOT)/build/texlive-full
 #TEXMF_FULL = $(ROOT)/source/texlive-20200406-texmf
@@ -275,30 +274,30 @@ build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured bui
 	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_native)
 
-build/native/busytex: 
+build/native/busytex_xetex: 
 	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o busytex_xetex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_xetex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
+	$(CC) -c busytex.c -o $@.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread $@.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
 	
 build/native/busytex_pdftex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_PDFTEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
+	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread $@.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
 
 build/native/busytex_luatex: 
 	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o busytex_luatex.o  -DBUSYTEX_KPSEWHICH -DBUSYTEX_LUATEX -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX
-	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ busytex_luatex.o    $(addprefix build/native/texlive/texk/web2c/, $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS))  $(addprefix build/native/texlive/libs/, ) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread
+	$(CC) -c busytex.c -o $@.o  -DBUSYTEX_KPSEWHICH -DBUSYTEX_LUATEX -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX
+	$(CXX) -Wimplicit -Wreturn-type -Ibuild/native/texlive/libs/icu/include -Isource/fontconfig -O3 -export-dynamic -o $@ $@.o    $(addprefix build/native/texlive/texk/web2c/, $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS))  $(addprefix build/native/texlive/libs/, ) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread
 	
 build/native/busytex_xetex_pdftex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o busytex_xetex_pdftex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX
 	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread busytex_xetex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
 
-build/native/busytex_xetex_pdftex_luatex: 
+build/native/busytex: 
 	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o busytex_xetex_pdftex_luatex.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ busytex_xetex_pdftex.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) -ldl -lm -pthread 
+	$(CC) -c busytex.c -o $@.o $(CFLAGS_BUSYTEX) -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
+	$(CXX) $(CFLAGS_OPT_native) -o $@ $@.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) -ldl -lm -pthread 
 
 ################################################################################################################
 
@@ -340,18 +339,11 @@ build/texlive-%/texmf-dist: build/install-tl/install-tl
 	TEXLIVE_INSTALL_NO_RESUME=1 $< -profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
 
-build/format-%/xelatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
+build/format-%/xelatex.fmt build/format-%/pdflatex.fmt build/format-%/lualatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
-	mv $(basename $@)/latex.fmt $@
-
-build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
-	mkdir -p $(basename $@)
-	rm $(basename $@)/* || true
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(PDFTEX) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
 	mv $(basename $@)/latex.fmt $@
 
 build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
@@ -425,19 +417,19 @@ native:
 	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
-	$(MAKE) build/native/busytex
+	$(MAKE) build/native/busytex_xetex
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/native/busytex_luatex
-	$(MAKE) build/native/busytex_xetex_pdftex
-	$(MAKE) build/native/busytex_xetex_pdftex_luatex
+	$(MAKE) build/native/busytex
 
 tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
+	$(MAKE) build/format-$*/lualatex.fmt
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
