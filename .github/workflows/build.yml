@@ -35,6 +35,12 @@ jobs:
             make dist-native
             bash example/example.sh
 
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: native_test_example
+          path: example/example_*.pdf
+
       - name: Build wasm busytex
         run: |
             echo FIN && exit 1
