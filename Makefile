@@ -418,6 +418,7 @@ native:
 	$(MAKE) build/native/busytex_xetex
 	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) build/native/busytex_pdftex
+	$(MAKE) build/native/busytex_xetex_pdftex
 	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/native/busytex_luatex
 	$(MAKE) build/native/busytex
