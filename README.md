@@ -118,6 +118,8 @@ http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 ```
 
 ### Links
+https://www.overleaf.com/learn/latex/Articles/The_two_modes_of_TeX_engines:_INI_mode_and_production_mode
+
 https://tug.org/TUGboat/tb40-1/tb124hagen-lmtx.pdf
 
 https://github.com/Sable/emscripten_malloc

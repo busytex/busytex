@@ -9,21 +9,22 @@ export FONTCONFIG_PATH=$DIST
 export XETEXFMT=$DIST/xelatex.fmt
 export PDFTEXFMT=$DIST/pdflatex.fmt
 export LUATEXFMT=$DIST/lualatex.fmt
-export BUSYTEX=$DIST/busytex
+export BUSYXETEX=$DIST/busytex_xetex
+export BUSYPDFTEX=$DIST/busytex_pdftex
 
 cd example
 
-$BUSYTEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
-$BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
-$BUSYTEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
-$BUSYTEX xdvipdfmx -o example.pdf example.xdv
+$BUSYXETEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYXETEX bibtex8 --8bit example.aux
+$BUSYXETEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYXETEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYXETEX xdvipdfmx -o example.pdf example.xdv
 mv example.pdf example_xetex.pdf
 
-$BUSYTEX pdftex --interaction nonstopmode --halt-on-error --no-pdf --fmt $PDFTEXFMT example.tex
-$BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX pdftex --interaction nonstopmode --halt-on-error --no-pdf --fmt $PDFTEXFMT example.tex
-$BUSYTEX pdftex --interaction nonstopmode --halt-on-error --no-pdf --fmt $PDFTEXFMT example.tex
+$BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --no-pdf --fmt $PDFTEXFMT example.tex
+$BUSYPDFTEX bibtex8 --8bit example.aux
+$BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --no-pdf --fmt $PDFTEXFMT example.tex
+$BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --no-pdf --fmt $PDFTEXFMT example.tex
 mv example.pdf example_pdftex.pdf
 
 #$BUSYTEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LATEXFMT example.tex
