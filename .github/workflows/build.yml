@@ -23,7 +23,7 @@ jobs:
         run: make texlive 
 
       - name: Build native busytex
-        run: make native build/native/fonts.conf && echo FIN && exit 1
+        run: make native build/native/fonts.conf
         env:
             MAKEFLAGS: -j2
         
@@ -37,6 +37,7 @@ jobs:
 
       - name: Build wasm busytex
         run: |
+            echo FIN && exit 1
             make wasm
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js

@@ -15,6 +15,7 @@ EMROOT := $(dir $(shell which emcc))
 PYTHON = python3
 
 XETEX = $(ROOT)/build/native/busytex xetex
+PDFTEX = $(ROOT)/build/native/busytex_xetex_pdftex_luatex pdftex
 
 TEXMF_FULL = $(ROOT)/build/texlive-full
 #TEXMF_FULL = $(ROOT)/source/texlive-20200406-texmf
@@ -346,6 +347,13 @@ build/format-%/xelatex.fmt: build/native/busytex build/texlive-%/texmf-dist
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex latex.ltx
 	mv $(dir $@)/latex.fmt $@
 
+build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
+	mkdir -p $(dir $@)
+	rm $(dir $@)/* || true
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(PDFTEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex unpack.ins
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(XETEX) --interaction=nonstopmode --halt-on-error --output-directory=$(dir $@) -ini -etex latex.ltx
+	mv $(dir $@)/latex.fmt $@
+
 build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	mkdir -p $(dir $@)
 	echo > build/empty
@@ -429,6 +437,7 @@ tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
+	$(MAKE) build/format-$*/pdflatex.fmt
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
