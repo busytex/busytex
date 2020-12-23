@@ -522,7 +522,8 @@ dist-wasm:
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
-	cp build/native/busytex build/native/fonts.conf build/format-basic/xelatex.fmt $@ || true
+	ls build build/format-basic
+	cp build/native/busytex build/native/fonts.conf build/format-basic/xelatex.fmt build/format-basic/pdflatex.fmt $@ || true
 	cp -r build/texlive-basic $@/texlive || true
 
 .PHONY: dist
