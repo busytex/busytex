@@ -9,8 +9,8 @@ export FONTCONFIG_PATH=$DIST
 export XETEXFMT=$DIST/xelatex.fmt
 export PDFTEXFMT=$DIST/pdflatex.fmt
 export LUATEXFMT=$DIST/lualatex.fmt
-export BUSYXETEX=$DIST/busytex_xetex
-export BUSYPDFTEX=$DIST/busytex_pdftex
+export BUSYXETEX=$DIST/busytex_xetex_pdftex
+export BUSYPDFTEX=$DIST/busytex_xetex_pdftex
 
 cd example
 
