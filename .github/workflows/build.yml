@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: native_test_example
-          path: example/example_*.pdf
+          path: example/example_*.pdf build/format-basic/*.fmt
 
       - name: Build wasm busytex
         run: |
