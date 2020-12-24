@@ -296,8 +296,8 @@ build/native/busytex_xetex_pdftex:
 OBJ_LUATEX_REDUCED = luatexdir/luatex-luatex.o
 build/native/busytex: 
 	mkdir -p $(dir $@)
-	$(CC) --unresolved-symbols=ignore-all -c busytex.c -o $@.o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_LUATEX #-DBUSYTEX_PDFTEX 
-	$(CXX) $(CFLAGS_OPT_native) -o $@ $@.o -Wimplicit -Wreturn-type  -export-dynamic    $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_LUATEX_REDUCED)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
+	$(CC) -c busytex.c -o $@.o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_LUATEX #-DBUSYTEX_PDFTEX 
+	$(CXX) --unresolved-symbols=ignore-all $(CFLAGS_OPT_native) -o $@ $@.o -Wimplicit -Wreturn-type  -export-dynamic    $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_LUATEX_REDUCED)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
 	# $(OBJ_PDFTEX) 
 
 ################################################################################################################
