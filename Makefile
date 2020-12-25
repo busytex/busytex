@@ -513,10 +513,10 @@ dist-wasm:
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	ls build build/format-basic
-	cp build/native/busytex build/native/busytex_xetex build/native/busytex_pdftex build/native/busytex_xetex_pdftex build/native/busytex_luatex build/native/fonts.conf build/format-basic/xelatex.fmt build/format-basic/pdflatex.fmt $@ || true
+	cp $(addprefix build/native/, busytex busytex_xetex busytex_pdftex busytex_luatex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
 	cp -r build/texlive-basic $@/texlive || true
 
 .PHONY: dist
 dist:
 	mkdir -p $@
-	wget -P dist -nc $(addprefix $(URL_RELEASE), /busytex.wasm /busytex.js /texlive-basic.js /texlive-basic.data)
+	wget -P dist -nc $(addprefix $(URL_RELEASE)/, busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
