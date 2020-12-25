@@ -26,6 +26,14 @@ jobs:
         run: make native build/native/fonts.conf
         env:
             MAKEFLAGS: -j2
+      
+      - name: Archive native artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: native_build
+          path: |
+            built/native/busytex
+            build/native/fonts.conf
         
       - name: Install TexLive scheme-basic
         run: make tds-basic

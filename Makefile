@@ -395,45 +395,46 @@ texlive:
 .PHONY: native
 native:
 	echo MAKE=$(MAKE) MAKEFLAGS=$(MAKEFLAGS)
-	$(MAKE) build/native/texlive.configured
-	$(MAKE) build/native/texlive/libs/zziplib/libzzip.a
-	$(MAKE) build/native/texlive/libs/libpng/libpng.a 
-	$(MAKE) build/native/texlive/libs/libpaper/libpaper.a 
-	$(MAKE) build/native/texlive/libs/zlib/libz.a 
-	$(MAKE) build/native/texlive/libs/teckit/libTECkit.a 
-	$(MAKE) build/native/texlive/libs/harfbuzz/libharfbuzz.a 
-	$(MAKE) build/native/texlive/libs/graphite2/libgraphite2.a 
-	$(MAKE) build/native/texlive/libs/pplib/libpplib.a 
-	$(MAKE) build/native/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE) build/native/texlive/libs/freetype2/libfreetype.a 
-	$(MAKE) build/native/texlive/libs/xpdf/libxpdf.a
-	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	$(MAKE) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/icupkg 
-	$(MAKE) build/native/texlive/libs/icu/icu-build/bin/pkgdata 
-	$(MAKE) build/native/expat/libexpat.a
-	$(MAKE) build/native/fontconfig/src/.libs/libfontconfig.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive.configured
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/zziplib/libzzip.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/libpng/libpng.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/libpaper/libpaper.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/zlib/libz.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/teckit/libTECkit.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/pplib/libpplib.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/freetype2/libfreetype.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/xpdf/libxpdf.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/bin/icupkg 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/bin/pkgdata 
+	$(MAKE) $(MAKEFLAGS) build/native/expat/libexpat.a
+	$(MAKE) $(MAKEFLAGS) build/native/fontconfig/src/.libs/libfontconfig.a
 	# 
-	$(MAKE) build/native/texlive/texk/kpathsea/.libs/libkpathsea.a
-	$(MAKE) build/native/texlive/texk/web2c/lib/lib.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/lib/lib.a
 	rm build/native/texlive/texk/kpathsea/kpsewhich.o || true
-	$(MAKE) build/native/texlive/texk/kpathsea/kpsewhich.o 
-	$(MAKE) build/native/texlive/texk/bibtex-x/bibtex8.a
-	$(MAKE) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
-	$(MAKE) build/native/texlive/texk/web2c/libxetex.a
-	$(MAKE) build/native/busytex_xetex
-	$(MAKE) build/native/texlive/texk/web2c/libpdftex.a
-	$(MAKE) build/native/busytex_pdftex
-	$(MAKE) build/native/texlive/texk/web2c/libluatex.a
-	$(MAKE) build/native/busytex_luatex
-	$(MAKE) build/native/busytex
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/kpsewhich.o 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/bibtex8.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libxetex.a
+	$(MAKE) $(MAKEFLAGS) build/native/busytex_xetex
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
+	$(MAKE) $(MAKEFLAGS) build/native/busytex_pdftex
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
+	$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
+	$(MAKE) $(MAKEFLAGS) build/native/busytex
 
 tds-%:
 	$(MAKE) build/install-tl/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
-	$(MAKE) build/format-$*/lualatex.fmt
+	#$(MAKE) build/format-$*/lualatex.fmt
+	cp build/format-$*/pdflatex.fmt build/format-$*/lualatex.fmt
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
