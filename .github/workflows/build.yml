@@ -32,7 +32,7 @@ jobs:
         with:
           name: native_build
           path: |
-            built/native/busytex
+            build/native/busytex
             build/native/fonts.conf
         
       - name: Install TexLive scheme-basic
