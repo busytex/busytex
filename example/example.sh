@@ -11,6 +11,7 @@ export PDFTEXFMT=$DIST/pdflatex.fmt
 export LUATEXFMT=$DIST/lualatex.fmt
 export BUSYXETEX=$DIST/busytex
 export BUSYPDFTEX=$DIST/busytex
+export BUSYLUATEX=$DIST/busytex
 
 cd example
 
@@ -27,8 +28,8 @@ $BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf
 $BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
 mv example.pdf example_pdftex.pdf
 
-$BUSYTEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
-$BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
-$BUSYTEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX bibtex8 --8bit example.aux
+$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
 mv example.pdf example_luatex.pdf
