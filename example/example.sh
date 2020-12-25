@@ -28,8 +28,8 @@ $BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf
 $BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
 mv example.pdf example_pdftex.pdf
 
-$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
-$BUSYLUATEX bibtex8 --8bit example.aux
-$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
-$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --no-pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX bibtex8 --8bit example.aux                                           
+$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
 mv example.pdf example_luatex.pdf
