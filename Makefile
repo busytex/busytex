@@ -427,7 +427,7 @@ tds-%:
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
-	#$(MAKE) build/format-$*/lualatex.fmt
+	cp build/format-$*/pdflatex.fmt build/format-$*/lualatex.fmt
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
