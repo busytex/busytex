@@ -43,7 +43,7 @@ def generate_preload(texmf_src, package_file_list, skip, skip_log, varlog, texmf
             continue
         
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
-        dst_dir = dirname.replace(texmf_ubuntu, texmf)
+        dst_dir = dirname.replace(texmf_ubuntu, texmf_dst)
         preload.add((src_dir, dst_dir))
 
     return preload
