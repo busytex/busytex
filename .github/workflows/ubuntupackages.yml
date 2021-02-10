@@ -1,6 +1,6 @@
 name: ubuntupackages
 env:
-  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended
+  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
 
 on: workflow_dispatch
 

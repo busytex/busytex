@@ -317,7 +317,7 @@ build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured build/na
 
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
-	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX busytex.c
+	emcc $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX busytex.c
 
 ################################################################################################################
 
@@ -361,12 +361,14 @@ build/format-%/lualatex.fmt: build/native/busytex build/texlive-%/texmf-dist
 build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	mkdir -p $(dir $@)
 	echo > build/empty
+	echo 'web_user:x:0:0:emscripten:/home/web_user:/bin/false' > build/passwd
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
+		--preload build/passwd@/etc/passwd \
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive \
-		--preload build/format-$*/xelatex.fmt@/xelatex.fmt 
+		--preload build/format-$*/xelatex.fmt@/xelatex.fmt
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
@@ -446,7 +448,7 @@ tds-%:
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 .PHONY: ubuntu-wasm
-ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js
+ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
 
 .PHONY: wasm
 wasm:
