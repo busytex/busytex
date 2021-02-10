@@ -454,6 +454,7 @@ ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-l
 .PHONY: wasm
 wasm:
 	$(MAKE) build/wasm/texlive.configured
+	$(MAKE) build/wasm/texlive/libs/zziplib/libzzip.a
 	$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
 	$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
 	$(MAKE) build/wasm/texlive/libs/zlib/libz.a 
