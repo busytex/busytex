@@ -53,7 +53,7 @@ jobs:
 
       - name: Build wasm busytex
         run: |
-            echo FIN && exit 1
+            #echo FIN && exit 1
             make wasm
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js
