@@ -15,21 +15,26 @@ export BUSYLUATEX=$DIST/busytex
 
 cd example
 
-$BUSYXETEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYXETEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
 $BUSYXETEX bibtex8 --8bit example.aux
-$BUSYXETEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
-$BUSYXETEX xetex --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
-$BUSYXETEX xdvipdfmx -o example.pdf example.xdv
-mv example.pdf example_xetex.pdf
+$BUSYXETEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYXETEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYXETEX xdvipdfmx -o example_xetex.pdf example.xdv
+ls
+rm example.aux
 
-$BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
+$BUSYPDFTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
 $BUSYPDFTEX bibtex8 --8bit example.aux
-$BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
-$BUSYPDFTEX pdftex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
+$BUSYPDFTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
+$BUSYPDFTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
 mv example.pdf example_pdftex.pdf
+ls
+rm example.aux
 
-$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
 $BUSYLUATEX bibtex8 --8bit example.aux                                           
-$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-$BUSYLUATEX luatex --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
 mv example.pdf example_luatex.pdf
+ls
+rm example.aux
