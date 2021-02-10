@@ -181,6 +181,7 @@ build/%/texlive.configured: source/texlive.patched
 	  --without-system-freetype2				\
 	  --without-system-libpng					\
 	  --without-system-zlib						\
+	  --without-system-zziplib					\
 	  --with-banner-add="_busytex$*"			\
 		CFLAGS="$(CFLAGS_TEXLIVE_$*)"	     	\
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"           \
