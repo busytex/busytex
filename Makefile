@@ -462,7 +462,9 @@ wasm:
 	$(MAKE) build/wasm/texlive/libs/harfbuzz/libharfbuzz.a 
 	$(MAKE) build/wasm/texlive/libs/graphite2/libgraphite2.a 
 	$(MAKE) build/wasm/texlive/libs/pplib/libpplib.a 
+	$(MAKE) build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) build/wasm/texlive/libs/freetype2/libfreetype.a 
+	$(MAKE) build/native/texlive/libs/xpdf/libxpdf.a
 	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicudata.a
 	$(MAKE) build/wasm/expat/libexpat.a
