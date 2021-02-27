@@ -162,7 +162,7 @@ class BusytexPipeline
         return initialized_module;
     }
 
-    async compile(files, main_tex_path, bibtex, verbose)
+    async compile(files, main_tex_path, bibtex, verbose, driver)
     {
         const NOCLEANUP_callMain = (Module, args) =>
         {
