@@ -191,6 +191,9 @@ class BusytexPipeline
         
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
+        this.print(`REQUESTED PACKAGES: [${data_packages}]`);
+        
+        console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         
         if(this.Module == null)
             this.Module = this.reload_module(this.env, this.project_dir, data_packages);
@@ -238,7 +241,6 @@ class BusytexPipeline
         if(bibtex == null)
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
         
-        console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         const cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         
         let exit_code = 0;
