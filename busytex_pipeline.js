@@ -53,7 +53,8 @@ class BusytexPipeline
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = script_loader(busytex_js);
         
-        BusytexPipeline.data_packages = []
+        BusytexPipeline.data_packages = [];
+        this.texlive_js = texlive_js;
         for(const data_package_js of texlive_js)
         {
             this.em_module_promise = this.em_module_promise.then(_ => script_loader(data_package_js));
