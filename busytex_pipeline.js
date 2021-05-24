@@ -110,12 +110,14 @@ class BusytexPipeline
             noInitialRun : true,
             totalDependencies: 0,
             prefix : '',
+            preRuns : [],
             
             preRun : [() =>
             {
                 Object.setPrototypeOf(BusytexPipeline, Module);
                 self.LZ4 = Module.LZ4;
-                for(const preRun of BusytexPipeline.preRun) 
+                Module.preRuns = [...BusytexPipeline.preRun];
+                for(const preRun of Module.preRuns) 
                     preRun();
 
                 Object.assign(Module.ENV, env);
