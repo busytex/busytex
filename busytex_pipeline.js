@@ -100,7 +100,7 @@ class BusytexPipeline
         this.Module = null;
     }
 
-    async reload_module(env, project_dir)
+    async reload_module(env, project_dir, data_packages = [])
     {
         const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise]);
         const {print, init_env} = this;
@@ -162,7 +162,7 @@ class BusytexPipeline
         return initialized_module;
     }
 
-    async compile(files, main_tex_path, bibtex, verbose, driver)
+    async compile(files, main_tex_path, bibtex, verbose, driver, data_packages = [])
     {
         const NOCLEANUP_callMain = (Module, args) =>
         {
@@ -193,7 +193,7 @@ class BusytexPipeline
         this.print(`New compilation started: [${main_tex_path}]`);
         
         if(this.Module == null)
-            this.Module = this.reload_module(this.env, this.project_dir);
+            this.Module = this.reload_module(this.env, this.project_dir, data_packages);
         const Module = await this.Module;
         const [FS, PATH] = [Module.FS, Module.PATH];
 
