@@ -46,19 +46,30 @@ class BusytexPipeline
         return Promise.resolve(self.importScripts(src));
     }
 
+    load_package(data_package_js)
+    {
+        const promise = script_loader(data_package_js);
+        BusytexPipeline.data_packages.push(data_package_js);
+        this.texlive_js.push(data_package_js);
+        return promise;
+    }
+
     constructor(busytex_js, busytex_wasm, texlive_js, texmf_local, print, preload, script_loader)
     {
         this.print = print;
         this.preload = preload;
+        this.script_loader = script_loader;
+        
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
-        this.em_module_promise = script_loader(busytex_js);
+        this.em_module_promise = this.script_loader(busytex_js);
         
         BusytexPipeline.data_packages = [];
-        this.texlive_js = texlive_js;
+        this.texlive_js = [];
+
         for(const data_package_js of texlive_js)
         {
-            this.em_module_promise = this.em_module_promise.then(_ => script_loader(data_package_js));
-            BusytexPipeline.data_packages.push(data_package_js);
+            const promise = this.load_package(data_package_js); 
+            this.em_module_promise = this.em_module_promise.then(_ => promise);
         }
         
         this.ansi_reset_sequence = '\x1bc';
