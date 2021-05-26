@@ -20,7 +20,7 @@ jobs:
         run: sudo apt-get install -y gperf
         
       - name: Clone/patch TexLive and dependencies
-        run: make texlive 
+        run: make texlive build/versions.txt
 
       - name: Build native busytex
         run: make native build/native/fonts.conf
