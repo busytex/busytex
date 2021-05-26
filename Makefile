@@ -1,8 +1,14 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
-# TODO: ubuntu_package: extract iso (http://ctan.altspu.ru/systems/texlive/Images/) or tar.xz (ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz)
+# TODO: ubuntu_package: extract iso (http://ctan.altspu.ru/systems/texlive/Images/) or tar.xz ()
 # TODO: figure out install-tl xetex fmt 
 # TODO: rename busytex static libraries
+#
+#
 
+#https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2021/texlive-20210325-texmf.tar.xz
+
+URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
+URL_texlive_full = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
@@ -127,6 +133,7 @@ OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 
 .PHONY: all
 all:
+	$(MAKE) build/versions.txt
 	$(MAKE) texlive
 	$(MAKE) native
 	$(MAKE) tds-basic
@@ -486,6 +493,12 @@ example:
 	wget --no-clobber -O example/assets/test.png https://www.google.fr/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
 	wget --no-clobber -O example/assets/test.svg https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg
 	wget --no-clobber -O example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
+
+build/versions.txt:
+	echo 'Dependencies versions:' > $@
+	echo TexLive: $(URL_texlive) $(URL_texlive_full) $(URL_texlive_full_iso) >> $@
+	echo Expat: $(URL_expat) >> $@
+	echo FontConfig: $(URL_fontconfig) >> $@
 
 ################################################################################################################
 
