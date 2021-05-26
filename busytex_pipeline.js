@@ -178,7 +178,10 @@ class BusytexPipeline
         };
        
         const initialized_module = await busytex(Module);
+        
+        console.log('MODULE', initialized_module);
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
+        
         return initialized_module;
     }
 
