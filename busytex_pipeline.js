@@ -48,13 +48,16 @@ class BusytexPipeline
 
     load_package(data_package_js)
     {
+        if(data_package_js in this.package_promises)
+            return this.package_promises[data_package_js];
+
         const promise = script_loader(data_package_js);
         BusytexPipeline.data_packages.push(data_package_js);
-        this.texlive_js.push(data_package_js);
+        this.package_promises[data_package_js] = promise;
         return promise;
     }
 
-    constructor(busytex_js, busytex_wasm, texlive_js, texmf_local, print, preload, script_loader)
+    constructor(busytex_js, busytex_wasm, data_packages_js, texmf_local, print, preload, script_loader)
     {
         this.print = print;
         this.preload = preload;
@@ -64,13 +67,10 @@ class BusytexPipeline
         this.em_module_promise = this.script_loader(busytex_js);
         
         BusytexPipeline.data_packages = [];
-        this.texlive_js = [];
+        this.package_promises = [];
 
-        for(const data_package_js of texlive_js)
-        {
-            const promise = this.load_package(data_package_js); 
-            this.em_module_promise = this.em_module_promise.then(_ => promise);
-        }
+        for(const data_package_js of data_packages_js)
+            this.load_package(data_package_js); 
         
         this.ansi_reset_sequence = '\x1bc';
         
@@ -104,7 +104,7 @@ class BusytexPipeline
 
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
-        this.Module = this.preload == false ? null : this.reload_module(this.env, this.project_dir);
+        this.Module = this.preload == false ? null : this.reload_module(this.env, this.project_dir, data_packages_js);
     }
 
     terminate()
@@ -112,9 +112,13 @@ class BusytexPipeline
         this.Module = null;
     }
 
-    async reload_module(env, project_dir, data_packages = [])
+    async reload_module(env, project_dir, data_packages_js = [])
     {
-        const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise]);
+        let data_packages_js_promise = Promise.resolve(true);
+        for(const data_package_js of data_packages_js)
+            data_packages_promise = data_packages_js_promise.then(_ => this.load_package(data_package_js)); 
+        
+        const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise, data_packages_js_promise]);
         const {print, init_env} = this;
         const Module =
         {
@@ -123,13 +127,14 @@ class BusytexPipeline
             totalDependencies: 0,
             prefix : '',
             preRuns : [],
-            data_packages : data_packages,
+            data_packages_js : data_packages_js,
             
             preRun : [() =>
             {
                 Object.setPrototypeOf(BusytexPipeline, Module);
                 self.LZ4 = Module.LZ4;
                 Module.preRuns = [...BusytexPipeline.preRun];
+                console.log('PRERUNS', Module.preRuns);
                 for(const preRun of Module.preRuns) 
                     preRun();
 
@@ -177,7 +182,7 @@ class BusytexPipeline
         return initialized_module;
     }
 
-    async compile(files, main_tex_path, bibtex, verbose, driver, data_packages = [])
+    async compile(files, main_tex_path, bibtex, verbose, driver, data_packages_js = [])
     {
         const NOCLEANUP_callMain = (Module, args) =>
         {
@@ -211,8 +216,8 @@ class BusytexPipeline
         console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         
         if(this.Module == null)   // || this.Module.data_packages != data_packages)
-            this.Module = this.reload_module(this.env, this.project_dir, data_packages);
-        this.print(`this.Module.data_packages ${this.Module.data_packages} data_packages ${data_packages} FIN`);
+            this.Module = this.reload_module(this.env, this.project_dir, data_packages_js);
+        this.print(`this.Module.data_packages ${this.Module.data_packages_js} data_packages ${data_packages_js} FIN`);
 
         const Module = await this.Module;
         const [FS, PATH] = [Module.FS, Module.PATH];
