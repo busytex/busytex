@@ -123,6 +123,7 @@ class BusytexPipeline
             totalDependencies: 0,
             prefix : '',
             preRuns : [],
+            data_packages : data_packages,
             
             preRun : [() =>
             {
@@ -209,8 +210,10 @@ class BusytexPipeline
         
         console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         
-        if(this.Module == null)
+        if(this.Module == null)   // || this.Module.data_packages != data_packages)
             this.Module = this.reload_module(this.env, this.project_dir, data_packages);
+        this.print(`this.Module.data_packages ${this.Module.data_packages} data_packages ${data_packages} FIN`);
+
         const Module = await this.Module;
         const [FS, PATH] = [Module.FS, Module.PATH];
 
