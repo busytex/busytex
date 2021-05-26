@@ -116,7 +116,7 @@ class BusytexPipeline
     {
         let data_packages_js_promise = Promise.resolve(true);
         for(const data_package_js of data_packages_js)
-            data_packages_promise = data_packages_js_promise.then(_ => this.load_package(data_package_js)); 
+            data_packages_js_promise = data_packages_js_promise.then(_ => this.load_package(data_package_js)); 
         
         const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise, data_packages_js_promise]);
         const {print, init_env} = this;
@@ -211,12 +211,12 @@ class BusytexPipeline
         
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
-        this.print(`REQUESTED PACKAGES: [${data_packages}]`);
         
         console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         
         if(this.Module == null)   // || this.Module.data_packages != data_packages)
             this.Module = this.reload_module(this.env, this.project_dir, data_packages_js);
+        
         this.print(`this.Module.data_packages ${this.Module.data_packages_js} data_packages ${data_packages_js} FIN`);
 
         const Module = await this.Module;
