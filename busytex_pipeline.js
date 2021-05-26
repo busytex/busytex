@@ -48,12 +48,12 @@ class BusytexPipeline
 
     load_package(data_package_js)
     {
-        if(data_package_js in this.package_promises)
-            return this.package_promises[data_package_js];
+        if(data_package_js in this.data_package_promises)
+            return this.data_package_promises[data_package_js];
 
-        const promise = script_loader(data_package_js);
+        const promise = this.script_loader(data_package_js);
         BusytexPipeline.data_packages.push(data_package_js);
-        this.package_promises[data_package_js] = promise;
+        this.data_package_promises[data_package_js] = promise;
         return promise;
     }
 
@@ -67,7 +67,7 @@ class BusytexPipeline
         this.em_module_promise = this.script_loader(busytex_js);
         
         BusytexPipeline.data_packages = [];
-        this.package_promises = [];
+        this.data_package_promises = {};
 
         for(const data_package_js of data_packages_js)
             this.load_package(data_package_js); 
