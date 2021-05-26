@@ -221,9 +221,9 @@ class BusytexPipeline
             this.Module = this.reload_module(this.env, this.project_dir, data_packages_js);
         
         console.log('MODULE', this.Module);
-        this.print(`this.Module.data_packages ${this.Module.data_packages_js} data_packages ${data_packages_js} FIN`);
 
         const Module = await this.Module;
+        this.print(`Module.data_packages ${Module.data_packages_js} data_packages ${data_packages_js} FIN`);
         const [FS, PATH] = [Module.FS, Module.PATH];
 
         const source_name = main_tex_path.slice(1 + main_tex_path.lastIndexOf('/'));
