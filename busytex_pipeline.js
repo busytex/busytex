@@ -178,8 +178,8 @@ class BusytexPipeline
         };
        
         const initialized_module = await busytex(Module);
+        this.print(`INITIALIZED ${initialized_module.data_packages_js}`);
         
-        console.log('MODULE', initialized_module);
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
         
         return initialized_module;
@@ -220,6 +220,7 @@ class BusytexPipeline
         if(this.Module == null)   // || this.Module.data_packages != data_packages)
             this.Module = this.reload_module(this.env, this.project_dir, data_packages_js);
         
+        console.log('MODULE', this.Module);
         this.print(`this.Module.data_packages ${this.Module.data_packages_js} data_packages ${data_packages_js} FIN`);
 
         const Module = await this.Module;
