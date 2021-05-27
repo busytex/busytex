@@ -164,7 +164,7 @@ class BusytexPipeline
             data_packages_js : data_packages_js,
             pre_run_packages : pre_run_packages,
             
-            preRun : [pre_run_packages(Module)],
+            preRun : [() => pre_run_packages(Module)()],
 
             instantiateWasm(imports, successCallback)
             {
