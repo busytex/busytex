@@ -23,7 +23,6 @@ PYTHON = python3
 BUSYTEX = $(ROOT)/build/native/busytex
 
 TEXMF_FULL = $(ROOT)/build/texlive-full
-#TEXMF_FULL = $(ROOT)/source/texlive-20200406-texmf
 
 TEXLIVE_BUILD_DIR = $(ROOT)/build/wasm/texlive
 WEB2C_NATIVE_TOOLS_DIR = $(ROOT)/build/native/texlive/texk/web2c
@@ -554,3 +553,9 @@ dist-native: build/native/busytex build/native/fonts.conf
 dist:
 	mkdir -p $@
 	wget -P dist -nc $(addprefix $(URL_RELEASE)/, busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
+
+.PHONY: texmffull
+texmffull:
+	wget $(URL_texlive_full_iso) -O source/texlive_iso.iso 
+	wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
+	7z x source/texlive_iso.iso source/texlive_tar_xz.tar.xz -o source/*
