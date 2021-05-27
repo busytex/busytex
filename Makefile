@@ -328,6 +328,13 @@ build/wasm/busytex.js:
 
 ################################################################################################################
 
+.PHONY: texmffull
+texmffull:
+	mkdir -p source
+	wget $(URL_texlive_full_iso) -O source/texlive_iso.iso 
+	wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
+	7z x source/texlive_iso.iso source/texlive_tar_xz.tar.xz -o source/*
+
 build/install-tl/install-tl:
 	mkdir -p $(dir $@)
 	wget --no-clobber $(URL_TEXLIVE_INSTALLER) -P source || true
@@ -553,9 +560,3 @@ dist-native: build/native/busytex build/native/fonts.conf
 dist:
 	mkdir -p $@
 	wget -P dist -nc $(addprefix $(URL_RELEASE)/, busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
-
-.PHONY: texmffull
-texmffull:
-	wget $(URL_texlive_full_iso) -O source/texlive_iso.iso 
-	wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
-	7z x source/texlive_iso.iso source/texlive_tar_xz.tar.xz -o source/*
