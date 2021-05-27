@@ -124,7 +124,7 @@ class BusytexPipeline
             
             await Promise.all(new_data_packages_js.map(data_package_js => this.load_package(data_package_js)));
 
-            Module.preRun[0]();
+            Module.pre_run_packages(Module)();
 
             return Module;
         }
@@ -135,6 +135,25 @@ class BusytexPipeline
         const data_packages_js_promise = data_packages_js.map(data_package_js => this.load_package(data_package_js));
         const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise, ...data_packages_js_promise]);
         const {print, init_env} = this;
+        
+        const pre_run_packages = Module => () =>
+        {
+            Object.setPrototypeOf(BusytexPipeline, Module);
+            self.LZ4 = Module.LZ4;
+            
+            for(const preRun of BusytexPipeline.preRun)
+            {
+                if(Module.preRuns.includes(preRun))
+                    continue;
+
+                preRun();
+                Module.preRuns.push(preRun);
+            }
+
+            Object.assign(Module.ENV, env);
+            Module.FS.mkdir(project_dir);
+        }
+        
         const Module =
         {
             thisProgram : this.bin_busytex,
@@ -143,24 +162,9 @@ class BusytexPipeline
             prefix : '',
             preRuns : [],
             data_packages_js : data_packages_js,
+            pre_run_packages : pre_run_packages,
             
-            preRun : [() =>
-            {
-                Object.setPrototypeOf(BusytexPipeline, Module);
-                self.LZ4 = Module.LZ4;
-                
-                for(const preRun of BusytexPipeline.preRun)
-                {
-                    if(Module.preRuns.includes(preRun))
-                        continue;
-
-                    preRun();
-                    Module.preRuns.push(preRun);
-                }
-
-                Object.assign(Module.ENV, env);
-                Module.FS.mkdir(project_dir);
-            }],
+            preRun : [pre_run_packages(Module)],
 
             instantiateWasm(imports, successCallback)
             {
