@@ -112,19 +112,28 @@ class BusytexPipeline
         this.Module = null;
     }
 
-    reload_module_if_needed(cond, env, project_dir, data_packages_js)
+    async reload_module_if_needed(cond, env, project_dir, data_packages_js)
     {
-        console.log('DATAPACKAGES', (this.Module || {}).data_packages_js, data_packages_js);
-        return cond ? this.reload_module(env, project_dir, data_packages_js) : this.Module;
+        if(cond)
+            return this.reload_module(env, project_dir, data_packages_js);
+        else if(this.Module)
+        {
+            const Module = await this.Module;
+            const enabled_packages = Module.data_packages_js;
+            const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages.includes(data_package_js));
+            
+            await Promise.all(new_data_packages_js.map(data_package_js => this.load_package(data_package_js)));
+
+            Module.preRun[0]();
+
+            return Module;
+        }
     }
 
     async reload_module(env, project_dir, data_packages_js = [])
     {
-        let data_packages_js_promise = Promise.resolve(true);
-        for(const data_package_js of data_packages_js)
-            data_packages_js_promise = data_packages_js_promise.then(_ => this.load_package(data_package_js)); 
-        
-        const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise, data_packages_js_promise]);
+        const data_packages_js_promise = data_packages_js.map(data_package_js => this.load_package(data_package_js));
+        const [wasm_module, em_module] = await Promise.all([this.wasm_module_promise, this.em_module_promise, ...data_packages_js_promise]);
         const {print, init_env} = this;
         const Module =
         {
@@ -139,10 +148,15 @@ class BusytexPipeline
             {
                 Object.setPrototypeOf(BusytexPipeline, Module);
                 self.LZ4 = Module.LZ4;
-                Module.preRuns = [...BusytexPipeline.preRun];
-                console.log('PRERUNS', Module.preRuns);
-                for(const preRun of Module.preRuns) 
+                
+                for(const preRun of BusytexPipeline.preRun)
+                {
+                    if(Module.preRuns.includes(preRun))
+                        continue;
+
                     preRun();
+                    Module.preRuns.push(preRun);
+                }
 
                 Object.assign(Module.ENV, env);
                 Module.FS.mkdir(project_dir);
