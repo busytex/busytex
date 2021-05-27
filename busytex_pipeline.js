@@ -138,6 +138,7 @@ class BusytexPipeline
         
         const pre_run_packages = Module => () =>
         {
+            Object.setPrototypeOf(BusytexPipeline, Module);
             for(const preRun of BusytexPipeline.preRun)
             {
                 if(Module.preRuns.includes(preRun))
@@ -158,7 +159,7 @@ class BusytexPipeline
             data_packages_js : data_packages_js,
             pre_run_packages : pre_run_packages,
             
-            preRun : [() => { Object.setPrototypeOf(BusytexPipeline, Module); Object.assign(Module.ENV, env); Module.FS.mkdir(project_dir); self.LZ4 = Module.LZ4; }, () => pre_run_packages(Module)()],
+            preRun : [() => { Object.assign(Module.ENV, env); Module.FS.mkdir(project_dir); self.LZ4 = Module.LZ4; }, () => pre_run_packages(Module)()],
 
             instantiateWasm(imports, successCallback)
             {
