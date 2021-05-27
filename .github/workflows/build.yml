@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 1
       
       - name: Install Prerequisites
-        run: sudo apt-get install -y gperf
+        run: sudo apt-get install -y gperf p7zip-full
         
       - name: Clone/patch TexLive and dependencies
         run: make texlive build/versions.txt

@@ -104,12 +104,18 @@ class BusytexPipeline
 
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
-        this.Module = this.preload == false ? null : this.reload_module(this.env, this.project_dir, data_packages_js);
+        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, data_packages_js);
     }
 
     terminate()
     {
         this.Module = null;
+    }
+
+    reload_module_if_needed(cond, env, project_dir, data_packages_js)
+    {
+        console.log('DATAPACKAGES', (this.Module || {}).data_packages_js, data_packages_js);
+        return cond ? this.reload_module(env, project_dir, data_packages_js) : this.Module;
     }
 
     async reload_module(env, project_dir, data_packages_js = [])
@@ -217,8 +223,7 @@ class BusytexPipeline
         
         console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         
-        if(this.Module == null)   // || this.Module.data_packages != data_packages)
-            this.Module = this.reload_module(this.env, this.project_dir, data_packages_js);
+        this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
         console.log('MODULE', this.Module);
 
