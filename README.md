@@ -134,6 +134,8 @@ https://ctan.org/tex-archive/systems/unix/tex-fpc?lang=en
 
 https://www.tomaz.me/2014/01/08/detecting-which-process-is-creating-a-file-using-ld-preload-trick.html
 
+https://github.com/AppImage/AppImageKit/issues/267
+
 http://avf.sourceforge.net/
 
 https://arxiv.org/pdf/1908.10740.pdf
