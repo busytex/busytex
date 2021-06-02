@@ -7,6 +7,7 @@
 
 #https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2021/texlive-20210325-texmf.tar.xz
 
+URL_texlive_full_iso_torrent = https://www.tug.org/texlive/files/texlive2021-20210325.iso.torrent
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive_full = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
