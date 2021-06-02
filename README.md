@@ -132,6 +132,10 @@ https://github.com/skalogryz/wasmbin
 
 https://ctan.org/tex-archive/systems/unix/tex-fpc?lang=en
 
+https://github.com/mikix/deb2snap/blob/master/src/preload.c#L84
+
+https://lists.ubuntu.com/archives/snappy-devel/2015-February/000282.html
+
 https://www.tomaz.me/2014/01/08/detecting-which-process-is-creating-a-file-using-ld-preload-trick.html
 
 https://github.com/AppImage/AppImageKit/issues/267
