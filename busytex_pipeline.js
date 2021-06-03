@@ -139,6 +139,8 @@ class BusytexPipeline
         const pre_run_packages = Module => () =>
         {
             Object.setPrototypeOf(BusytexPipeline, Module);
+            console.log('pre_run_packages', BusytexPipeline.preRun);
+
             for(const preRun of BusytexPipeline.preRun)
             {
                 if(Module.preRuns.includes(preRun))
