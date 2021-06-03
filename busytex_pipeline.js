@@ -115,15 +115,20 @@ class BusytexPipeline
     async reload_module_if_needed(cond, env, project_dir, data_packages_js)
     {
         if(cond)
+        {
+            console.log('RELOADING');
             return this.reload_module(env, project_dir, data_packages_js);
+        }
         else if(this.Module)
         {
             const Module = await this.Module;
             const enabled_packages = Module.data_packages_js;
             const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages.includes(data_package_js));
             
+            console.log('LOADINGPACKAGES', new_data_packages_js);
             await Promise.all(new_data_packages_js.map(data_package_js => this.load_package(data_package_js)));
 
+            console.log('PRERUNNING');
             Module.pre_run_packages(Module)();
 
             return Module;
