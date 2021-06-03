@@ -14,6 +14,8 @@ class BusytexPipeline
     //FIXME begin: have to do static to execute LZ4 data packages: https://github.com/emscripten-core/emscripten/issues/12347
     static preRun = [];
 
+    static calledRun = false;
+
     static data_packages = [];
     
     static locateFile(remote_package_name) 
@@ -51,6 +53,7 @@ class BusytexPipeline
         if(data_package_js in this.data_package_promises)
             return this.data_package_promises[data_package_js];
 
+        BusytexPipeline.calledRun = false;
         const promise = this.script_loader(data_package_js);
         BusytexPipeline.data_packages.push(data_package_js);
         this.data_package_promises[data_package_js] = promise;
@@ -127,9 +130,10 @@ class BusytexPipeline
             
             console.log('LOADINGPACKAGES', new_data_packages_js);
             await Promise.all(new_data_packages_js.map(data_package_js => this.load_package(data_package_js)));
-
             console.log('PRERUNNING');
             Module.pre_run_packages(Module)();
+            
+            enabled_packages.push(...new_data_packages_js);
 
             return Module;
         }
