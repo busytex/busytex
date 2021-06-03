@@ -13,11 +13,8 @@ class BusytexPipeline
 
     //FIXME begin: have to do static to execute LZ4 data packages: https://github.com/emscripten-core/emscripten/issues/12347
     static preRun = [];
-
     static calledRun = false;
-
     static data_packages = [];
-    
     static locateFile(remote_package_name) 
     {
         return BusytexPipeline.data_packages.map(data_package_js => data_package_js.replace('.js', '.data')).find(data_file => data_file.endsWith(remote_package_name));
