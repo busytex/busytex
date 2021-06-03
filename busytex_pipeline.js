@@ -116,7 +116,7 @@ class BusytexPipeline
     {
         if(cond)
         {
-            console.log('RELOADING');
+            console.log('RELOADING', data_packages_js);
             return this.reload_module(env, project_dir, data_packages_js);
         }
         else if(this.Module)
