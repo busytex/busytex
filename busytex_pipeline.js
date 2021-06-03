@@ -20,9 +20,7 @@ class BusytexPipeline
     
     static locateFile(remote_package_name) 
     {
-        return BusytexPipeline.data_packages
-            .map(data_package_js => data_package_js.replace('.js', '.data'))
-            .find(data_file => data_file.endsWith(remote_package_name));
+        return BusytexPipeline.data_packages.map(data_package_js => data_package_js.replace('.js', '.data')).find(data_file => data_file.endsWith(remote_package_name));
     }
     //FIXME end
 
@@ -129,12 +127,16 @@ class BusytexPipeline
             const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages.includes(data_package_js));
             
             console.log('LOADINGPACKAGES', new_data_packages_js);
+            Module.calledRun = false;
+            const dependencies_fullfilled = new Promise(resolve => (Module.run = resolve));
+
             await Promise.all(new_data_packages_js.map(data_package_js => this.load_package(data_package_js)));
             console.log('PRERUNNING');
             Module.pre_run_packages(Module)();
             
             enabled_packages.push(...new_data_packages_js);
-
+            
+            await dependencies_fullfilled;
             return Module;
         }
     }
