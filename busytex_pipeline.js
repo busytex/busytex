@@ -124,7 +124,12 @@ class BusytexPipeline
             const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages.includes(data_package_js));
            
             if(new_data_packages_js.length > 0)
+            {
+                console.log('RELOADING', data_packages_js);
                 return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)));
+            }
+
+            console.log('NOT RELOADING');
             return Module;
 
             /*console.log('LOADINGPACKAGES', new_data_packages_js);
