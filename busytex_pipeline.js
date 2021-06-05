@@ -120,8 +120,8 @@ class BusytexPipeline
         else if(this.Module)
         {
             const Module = await this.Module;
-            const enabled_packages = Module.data_packages_js;
-            const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages.includes(data_package_js));
+            const enabled_packages_js = Module.data_packages_js;
+            const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages_js.includes(data_package_js));
            
             if(new_data_packages_js.length > 0)
             {
