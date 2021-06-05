@@ -122,8 +122,12 @@ class BusytexPipeline
             const Module = await this.Module;
             const enabled_packages = Module.data_packages_js;
             const new_data_packages_js = data_packages_js.filter(data_package_js => !enabled_packages.includes(data_package_js));
-            
-            console.log('LOADINGPACKAGES', new_data_packages_js);
+           
+            if(new_data_packages_js.length > 0)
+                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)));
+            return Module;
+
+            /*console.log('LOADINGPACKAGES', new_data_packages_js);
             Module.calledRun = false;
             const dependencies_fullfilled = new Promise(resolve => (Module.run = resolve));
 
@@ -134,7 +138,7 @@ class BusytexPipeline
             enabled_packages.push(...new_data_packages_js);
             
             await dependencies_fullfilled;
-            return Module;
+            return Module;*/
         }
     }
 
