@@ -26,6 +26,10 @@ extern int busymain_bibtex8(int argc, char* argv[]);
 extern int busymain_kpsewhich(int argc, char* argv[]);
 #endif
 
+#ifdef BUSYTEX_MKAEINDEX
+extern int busymain_makeindex(int argc, char* argv[]);
+#endif
+
 int main(int argc, char* argv[])
 {
     if(argc < 2)
@@ -82,6 +86,15 @@ int main(int argc, char* argv[])
         argv[1] = argv[0];
         optind = 1;
         return busymain_kpsewhich(argc - 1, argv + 1);
+    }
+#endif
+
+#ifdef BUSYTEX_MAKEINDEX
+    if(strcmp("makeindex", argv[1]) == 0)
+    {
+        argv[1] = argv[0];
+        optind = 1;
+        return busymain_makeindex(argc - 1, argv + 1);
     }
 #endif
 
