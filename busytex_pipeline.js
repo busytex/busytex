@@ -5,7 +5,7 @@
 //TODO: configure fontconfig to use /etc/fonts
 //TODO: move latex.fmt to /texlive
 
-class DataPackageResolver
+class BusytexDataPackageResolver
 {
     constructor(data_packages_js)
     {
@@ -66,7 +66,7 @@ class DataPackageResolver
     }
 }
 
-function BibtexResolver(files)
+function BusytexBibtexResolver(files)
 {
     const bib_commands = ['\\bibliography', '\\printbibliography'];
     return files.some(f => f.path.endsWith('.tex') && typeof(f.contents) == 'string' && bib_commands.some(b => f.contents.includes(b)));
