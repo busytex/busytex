@@ -502,6 +502,7 @@ example:
 	wget --no-clobber -O example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
 
 build/versions.txt:
+	mkdir -p build
 	echo 'Dependencies versions:' > $@
 	echo TexLive: $(URL_texlive) $(URL_texlive_full) $(URL_texlive_full_iso) >> $@
 	echo Expat: $(URL_expat) >> $@
