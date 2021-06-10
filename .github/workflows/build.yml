@@ -27,6 +27,9 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
+      - name: Download TexLive Full
+        run:  make texmffull
+      
       - name: Archive native artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -34,11 +37,10 @@ jobs:
           path: |
             build/native/busytex
             build/native/fonts.conf
+            source/texmfrepo.txt
         
       - name: Install TexLive scheme-basic
-        run: |
-            make texmffull
-            make tds-basic
+        run: make tds-basic
       
       - name: Test native busytex with a xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
         run: |
