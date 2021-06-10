@@ -7,9 +7,11 @@
 
 #https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2021/texlive-20210325-texmf.tar.xz
 
-URL_texlive_full_iso_torrent = https://www.tug.org/texlive/files/texlive2021-20210325.iso.torrent
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
+
+URL_texlive_full_iso_torrent = https://www.tug.org/texlive/files/texlive2021-20210325.iso.torrent
 URL_texlive_full = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz
+
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
@@ -331,17 +333,18 @@ build/wasm/busytex.js:
 
 .PHONY: texmffull
 texmffull:
-	mkdir -p source
-	wget $(URL_texlive_full_iso) -O source/texlive_iso.iso 
-	wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
-	7z x source/texlive_iso.iso source/texlive_tar_xz.tar.xz -o source/*
+	mkdir -p source/texmfrepo
+	wget -nc $(URL_texlive_full_iso) -P source
+	7z e source/$(notdir $(URL_texlive_full_iso)) -aoa -osource/texmfrepo || true
+	# wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
+	# source/texlive_tar_xz.tar.xz 
 
 build/install-tl/install-tl:
 	mkdir -p $(dir $@)
 	wget --no-clobber $(URL_TEXLIVE_INSTALLER) -P source || true
 	tar -xf source/$(notdir $(URL_TEXLIVE_INSTALLER)) --strip-components=1 --directory="$(dir $@)"
 
-build/texlive-%/texmf-dist: build/install-tl/install-tl 
+build/texlive-%/texmf-dist: build/install-tl/install-tl
 	# https://www.tug.org/texlive/doc/install-tl.html
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(dir $@)
@@ -351,7 +354,7 @@ build/texlive-%/texmf-dist: build/install-tl/install-tl
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-config >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
-	TEXLIVE_INSTALL_NO_RESUME=1 $< -profile build/texlive-$*.profile
+	TEXLIVE_INSTALL_NO_RESUME=1 $< --repository source/texmfrepo --profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
