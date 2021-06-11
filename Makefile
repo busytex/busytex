@@ -5,10 +5,13 @@
 #
 #
 
-#https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2021/texlive-20210325-texmf.tar.xz
+#
+
+#URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 
 URL_texlive_full_iso = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive2020-20200406.iso
-URL_texlive_full = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz
+
+#URL_texlive_full = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz
 #http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 #URL_texlive_full_iso_torrent = https://www.tug.org/texlive/files/texlive2021-20210325.iso.torrent
 
@@ -335,7 +338,8 @@ build/wasm/busytex.js:
 texmffull:
 	mkdir -p source/texmfrepo
 	wget -nc $(URL_texlive_full_iso) -P source
-	7z e source/$(notdir $(URL_texlive_full_iso)) -aoa -osource/texmfrepo || true
+	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
+	chmod +x ./source/texmfrepo/install-tl
 	find source/texmfrepo > source/texmfrepo.txt
 	# wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
 	# source/texlive_tar_xz.tar.xz 
