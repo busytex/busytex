@@ -30,8 +30,8 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
-      - name: Install TexLive scheme-basic
-        run: make tds-basic
+      - name: Install TexLive
+        run: make tds-basic tds-small
       
       - name: Archive native artifacts
         uses: actions/upload-artifact@v2
@@ -41,7 +41,8 @@ jobs:
             source/texmfrepo.txt
             build/native/busytex
             build/native/fonts.conf
-            build/texmfrepofull.txt
+            build/texmfrepo-basic.txt
+            build/texmfrepo-small.txt
       
       - name: Test native busytex with a xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
         run: |
@@ -54,7 +55,7 @@ jobs:
           name: native_test_example
           path: |
             example/example_*.pdf
-            build/format-basic/*.fmt
+            build/format-*/*.fmt
 
       - name: Build wasm busytex
         run: |

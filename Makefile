@@ -362,7 +362,7 @@ build/texlive-%/texmf-dist: #build/install-tl/install-tl
 	#TEXLIVE_INSTALL_NO_RESUME=1 $< --repository source/texmfrepo --profile build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
-	find $(ROOT)/$(dir $@) > build/texmfrepofull.txt
+	find $(ROOT)/$(dir $@) > build/texmfrepo-$*.txt
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
 	mkdir -p $(basename $@)
