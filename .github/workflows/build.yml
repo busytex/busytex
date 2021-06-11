@@ -22,10 +22,6 @@ jobs:
       - name: Clone/patch TexLive and dependencies
         run: make texlive build/versions.txt
 
-      - name: Build native busytex
-        run: make native build/native/fonts.conf
-        env:
-            MAKEFLAGS: -j2
       
       - name: Download TexLive Full
         run:  make texmffull
@@ -35,12 +31,19 @@ jobs:
         with:
           name: native_build
           path: |
-            build/native/busytex
-            build/native/fonts.conf
             source/texmfrepo.txt
-        
+
+#        
+#build/native/busytex
+#build/native/fonts.conf
+#
       - name: Install TexLive scheme-basic
         run: make tds-basic
+      
+      - name: Build native busytex
+        run: make native build/native/fonts.conf
+        env:
+            MAKEFLAGS: -j2
       
       - name: Test native busytex with a xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
         run: |
