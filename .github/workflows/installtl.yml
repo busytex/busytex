@@ -21,5 +21,5 @@ jobs:
             echo TEXMFSYSVAR $PWD/build/texlive-basic/texmf-var >> build/texlive.profile
             echo TEXMFSYSCONFIG $PWD/build/texlive-basic/texmf-config >> build/texlive.profile
             chmod +x ./source/texmfrepo/install-tl
-            TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive.profile
+            TEXLIVE_INSTALL_NO_RESUME=1 strace -ff ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive.profile
 
