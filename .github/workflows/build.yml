@@ -63,7 +63,7 @@ jobs:
             make wasm
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js
-            make build/wasm/texlive-small.js
+            #make build/wasm/texlive-small.js
             make dist-wasm
         env:
             MAKEFLAGS: -j2
