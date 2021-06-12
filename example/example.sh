@@ -31,10 +31,10 @@ mv example.pdf example_pdftex.pdf
 ls
 rm example.aux
 
-$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-$BUSYLUATEX bibtex8 --8bit example.aux                                           
-$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-mv example.pdf example_luatex.pdf
-ls
-rm example.aux
+#$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+#$BUSYLUATEX bibtex8 --8bit example.aux                                           
+#$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+#$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+#mv example.pdf example_luatex.pdf
+#ls
+#rm example.aux

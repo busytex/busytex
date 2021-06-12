@@ -436,7 +436,7 @@ tds-%:
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
-	$(MAKE) build/format-$*/lualatex.fmt
+	#$(MAKE) build/format-$*/lualatex.fmt
 	#cp build/format-$*/pdflatex.fmt build/format-$*/lualatex.fmt
 
 ################################################################################################################
@@ -473,8 +473,8 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/busytex_xetex
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
 	$(MAKE) $(MAKEFLAGS) build/native/busytex_pdftex
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
-	$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
+	#$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
+	#$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
 	$(MAKE) $(MAKEFLAGS) build/native/busytex
 
 .PHONY: wasm
@@ -575,7 +575,7 @@ dist-wasm:
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	ls build build/format-basic
-	cp $(addprefix build/native/, busytex busytex_xetex busytex_pdftex busytex_luatex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
+	cp $(addprefix build/native/, busytex busytex_xetex busytex_pdftex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
 	cp -r build/texlive-basic $@/texlive || true
 
 .PHONY: dist
