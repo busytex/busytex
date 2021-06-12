@@ -38,9 +38,9 @@ jobs:
         with:
           name: native_build
           path: |
-            source/texmfrepo.txt
             build/native/busytex
             build/native/fonts.conf
+            source/texmfrepo.txt
             build/texmfrepo-basic.txt
             build/texmfrepo-small.txt
       
@@ -71,4 +71,5 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Build assets" -a build/versions.txt -a busytex_pipeline.js -a busytex_worker.js -a build/texlive-small/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt -a build/format-basic/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/texlive-small.js -a build/wasm/texlive-small.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf build_${{github.sha}}
+        run: hub release create -m "Build assets" -a build/versions.txt -a busytex_pipeline.js -a busytex_worker.js -a build/texlive-basic/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/texlive-small.js -a build/wasm/texlive-small.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf -a source/texmfrepo.txt -a build/texmfrepo-basic.txt -a build/texmfrepo-small.txt build_${{github.sha}} # -a build/format-basic/xelatex.fmt
+

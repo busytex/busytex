@@ -330,7 +330,12 @@ build/wasm/texlive/texk/web2c/libpdftex.a: build/wasm/texlive.configured build/n
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
-	$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(OPTS_PDFTEX_wasm)
+	$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_wasm))
+	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
+	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
+	$(MAKE_wasm) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_wasm)
+	#cp build/native/texlive/texk/web2c/*.c $(dir $@)
+	#$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(OPTS_PDFTEX_wasm)
 
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
@@ -366,7 +371,7 @@ build/texlive-%/texmf-dist: #build/install-tl/install-tl
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 $< --repository source/texmfrepo --profile build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
-	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c readme-html.dir readme-txt.dir) || true
+	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(dir $@) > build/texmfrepo-$*.txt
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
@@ -504,7 +509,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
-	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
+	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a || true
 	#$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
 
