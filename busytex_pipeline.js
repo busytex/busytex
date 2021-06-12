@@ -141,8 +141,7 @@ class BusytexPipeline
         
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
-        this.fmt_latex = '/xelatex.fmt';
-        this.fmt_pdftex = '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt';
+        this.fmt = {xetex: '/xelatex.fmt', pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt'};
         //this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : (this.project_dir + '/')) + texmf + '/texmf-dist').join(':');
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
@@ -338,9 +337,9 @@ class BusytexPipeline
         const tex_path = source_name;
         const [dvi_path, xdv_path, pdf_path, log_path, aux_path] = ['.dvi', '.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
-        const pdftex = ['pdftex', '--output-format=dvi', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+        const pdftex = ['pdftex', '--output-format=dvi', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
 
-        const xetex = ['xetex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+        const xetex = ['xetex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt.xetex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
         const dvipdfmx = ['xdvipdfmx', '-o', pdf_path, dvi_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
