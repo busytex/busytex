@@ -480,9 +480,9 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libxetex.a
-	$(MAKE) $(MAKEFLAGS) build/native/busytex_xetex
+	#$(MAKE) $(MAKEFLAGS) build/native/busytex_xetex
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
-	$(MAKE) $(MAKEFLAGS) build/native/busytex_pdftex
+	#$(MAKE) $(MAKEFLAGS) build/native/busytex_pdftex
 	#$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
 	#$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
 	$(MAKE) $(MAKEFLAGS) build/native/busytex
