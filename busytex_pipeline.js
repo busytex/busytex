@@ -361,7 +361,7 @@ class BusytexPipeline
 
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
-            const absolute_path = PATH.join2(this.project_dir, path);
+            const absolute_path = PATH.join(this.project_dir, path);
             if(contents == null)
                 mkdir_p(absolute_path);
             else
@@ -372,9 +372,10 @@ class BusytexPipeline
         }
         
         const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
-        const source_dir = PATH.join2(this.project_dir, dirname);
+        const source_dir = PATH.join(this.project_dir, dirname);
         FS.chdir(source_dir);
        
+        //TODO: merge with Resolvers
         if(bibtex == null)
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
         
@@ -388,6 +389,7 @@ class BusytexPipeline
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         for(const cmd of cmds)
         {
+            this.print('$ busytex ' + cmd.join(' '));
             exit_code = NOCLEANUP_callMain(Module, cmd, this.print);
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
