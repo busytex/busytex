@@ -63,6 +63,7 @@ jobs:
             make wasm
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js
+            make build/wasm/texlive-small.js
             make dist-wasm
         env:
             MAKEFLAGS: -j2
@@ -70,4 +71,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Build assets" -a build/versions.txt -a busytex_pipeline.js -a busytex_worker.js -a build/format-basic/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf build_${{github.sha}}
+        run: hub release create -m "Build assets" -a build/versions.txt -a busytex_pipeline.js -a busytex_worker.js -a build/format-basic/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/texlive-small.js -a build/wasm/texlive-small.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf build_${{github.sha}}
