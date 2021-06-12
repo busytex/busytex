@@ -141,8 +141,8 @@ class BusytexPipeline
         
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
-        //this.fmt = {xetex: '/xelatex.fmt', pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt'};
-        this.fmt = {xetex: '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt', pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt'};
+        this.fmt = {xetex: '/xelatex.fmt', pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt'};
+        //this.fmt = {xetex: '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt', pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt'};
         //this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : (this.project_dir + '/')) + texmf + '/texmf-dist').join(':');
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
