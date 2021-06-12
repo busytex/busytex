@@ -142,6 +142,7 @@ class BusytexPipeline
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt_latex = '/xelatex.fmt';
+        this.fmt_pdftex = '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt';
         //this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => (texmf.startsWith('/') ? '' : (this.project_dir + '/')) + texmf + '/texmf-dist').join(':');
         this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
@@ -151,16 +152,19 @@ class BusytexPipeline
         this.verbose_args = 
         {
             [BusytexPipeline.VerboseSilent] : {
+                pdftex : [],
                 xetex : [],
                 bibtex8 : [],
                 xdvipdfmx : []
             },
             [BusytexPipeline.VerboseInfo] : {
+                pdftex: ['-kpathsea-debug', '32'],
                 xetex: ['-kpathsea-debug', '32'],
                 bibtex8 : ['--debug', 'search'],
                 xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
             },
             [BusytexPipeline.VerboseDebug] : {
+                pdftex : ['-kpathsea-debug', '63', '-recorder'],
                 xetex : ['-kpathsea-debug', '63', '-recorder'],
                 bibtex8 : ['--debug', 'all'],
                 xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
@@ -320,7 +324,7 @@ class BusytexPipeline
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
         
-        console.assert(driver == 'xetex_bibtex8_dvipdfmx'); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
+        console.assert(['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8_dvipdfmx'].includes(driver)); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
         
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
@@ -332,11 +336,14 @@ class BusytexPipeline
 
         const source_name = main_tex_path.slice(1 + main_tex_path.lastIndexOf('/'));
         const tex_path = source_name;
-        const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
+        const [dvi_path, xdv_path, pdf_path, log_path, aux_path] = ['.dvi', '.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
+        const pdftex = ['pdftex', '--output-format=dvi', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+
         const xetex = ['xetex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt_latex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
+        const dvipdfmx = ['xdvipdfmx', '-o', pdf_path, dvi_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
         let dirs = new Set(['/', this.project_dir]);
@@ -371,7 +378,11 @@ class BusytexPipeline
         if(bibtex == null)
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
         
-        const cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
+        let cmds = [];
+        if(driver == 'xetex_bibtex8_dvipdfmx')
+            cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
+        else if(driver == 'pdftex_bibtex8_dvipdfmx')
+            cmds = bibtex ? [pdftex, bibtex8, pdftex, pdftex, dvipdfmx] : [pdftex, dvipdfmx];
         
         let exit_code = 0;
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
