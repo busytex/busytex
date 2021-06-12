@@ -116,8 +116,8 @@ class BusytexPipeline
             return this.data_package_promises[data_package_js];
 
         BusytexPipeline.calledRun = false;
-        const promise = this.script_loader(data_package_js);
         BusytexPipeline.data_packages.push(data_package_js);
+        const promise = this.script_loader(data_package_js);
         this.data_package_promises[data_package_js] = promise;
         return promise;
     }
