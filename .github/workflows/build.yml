@@ -44,7 +44,7 @@ jobs:
             build/texmfrepo-basic.txt
             build/texmfrepo-small.txt
       
-      - name: Test native busytex with a xetex+bibtex8+xetex+xetex+xdvidpfmx pipeline
+      - name: Test native busytex pipeline
         run: |
             make dist-native
             bash example/example.sh
