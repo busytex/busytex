@@ -1,11 +1,6 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
-# TODO: ubuntu_package: extract iso (http://ctan.altspu.ru/systems/texlive/Images/) or tar.xz ()
 # TODO: figure out install-tl xetex fmt 
 # TODO: rename busytex static libraries
-#
-#
-
-#
 
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 
@@ -436,6 +431,16 @@ build/native/fonts.conf:
 texlive:
 	$(MAKE) source/texlive.downloaded source/texlive.patched
 
+tds-%:
+	$(MAKE) build/install-tl/install-tl
+	$(MAKE) build/texlive-$*/texmf-dist
+	$(MAKE) build/format-$*/xelatex.fmt
+	$(MAKE) build/format-$*/pdflatex.fmt
+	$(MAKE) build/format-$*/lualatex.fmt
+	#cp build/format-$*/pdflatex.fmt build/format-$*/lualatex.fmt
+
+################################################################################################################
+
 .PHONY: native
 native:
 	echo MAKE=$(MAKE) MAKEFLAGS=$(MAKEFLAGS)
@@ -472,18 +477,6 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
 	$(MAKE) $(MAKEFLAGS) build/native/busytex
 
-tds-%:
-	$(MAKE) build/install-tl/install-tl
-	$(MAKE) build/texlive-$*/texmf-dist
-	$(MAKE) build/format-$*/xelatex.fmt
-	$(MAKE) build/format-$*/pdflatex.fmt
-	$(MAKE) build/format-$*/lualatex.fmt
-	#cp build/format-$*/pdflatex.fmt build/format-$*/lualatex.fmt
-
-# https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
-.PHONY: ubuntu-wasm
-ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
-
 .PHONY: wasm
 wasm:
 	$(MAKE) build/wasm/texlive.configured
@@ -510,9 +503,15 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
-	#$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
+	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
 	#$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
+
+# https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
+.PHONY: ubuntu-wasm
+ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
+
+################################################################################################################
 
 .PHONY: example
 example:
