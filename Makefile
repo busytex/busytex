@@ -509,7 +509,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
-	#$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a || true
+	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
 	#$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
 

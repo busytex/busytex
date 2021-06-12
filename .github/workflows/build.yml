@@ -61,12 +61,9 @@ jobs:
         run: |
             #echo FIN && exit 1
             make wasm
-            #
-            make build/wasm/texlive/texk/web2c/libpdftex.a || true
-            #
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js
-            #make build/wasm/texlive-small.js
+            make build/wasm/texlive-small.js
             make dist-wasm
         env:
             MAKEFLAGS: -j2
