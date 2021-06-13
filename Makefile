@@ -480,11 +480,8 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libxetex.a
-	#$(MAKE) $(MAKEFLAGS) build/native/busytex_xetex
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
-	#$(MAKE) $(MAKEFLAGS) build/native/busytex_pdftex
 	#$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
-	#$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
 	$(MAKE) $(MAKEFLAGS) build/native/busytex
 
 .PHONY: wasm
@@ -584,8 +581,7 @@ dist-wasm:
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
-	ls build build/format-basic
-	cp $(addprefix build/native/, busytex busytex_xetex busytex_pdftex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
+	cp $(addprefix build/native/, busytex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
 	cp -r build/texlive-basic $@/texlive || true
 
 .PHONY: dist
