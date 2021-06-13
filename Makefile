@@ -436,7 +436,7 @@ texlive:
 	$(MAKE) source/texlive.downloaded source/texlive.patched
 
 tds-%:
-	$(MAKE) source/temxfrepo/install-tl
+	$(MAKE) source/texmfrepo/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
