@@ -4,15 +4,21 @@
 
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 
-URL_texlive_full_iso = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive2020-20200406.iso
 
 #URL_texlive_full = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive-20200406-texmf.tar.xz
 #http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 #URL_texlive_full_iso_torrent = https://www.tug.org/texlive/files/texlive2021-20210325.iso.torrent
 
-URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
+#URL_texlive_full_iso = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive2020-20200406.iso
+#URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
+
+URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
+URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
+
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
+
+
 URL_TEXLIVE_INSTALLER = http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
 
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
