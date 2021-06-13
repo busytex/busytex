@@ -530,10 +530,10 @@ example:
 
 build/versions.txt:
 	mkdir -p build
-	echo 'Dependencies versions:' > $@
-	echo TexLive: $(URL_texlive) $(URL_texlive_full) $(URL_texlive_full_iso) >> $@
-	echo Expat: $(URL_expat) >> $@
-	echo FontConfig: $(URL_fontconfig) >> $@
+	echo 'busytex dependencies:' > $@
+	echo texlive: $(URL_texlive) $(URL_texlive_full_iso) >> $@
+	echo expat: $(URL_expat) >> $@
+	echo fontconfig: $(URL_fontconfig) >> $@
 
 ################################################################################################################
 
