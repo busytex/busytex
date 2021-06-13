@@ -23,7 +23,7 @@ jobs:
         run: make texlive build/versions.txt
 
       - name: Download TexLive Full
-        run:  make texmffull
+        run:  make source/texmfrepo/install-tl
       
       - name: Build native busytex
         run: make native build/native/fonts.conf

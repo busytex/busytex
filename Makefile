@@ -345,8 +345,7 @@ build/wasm/busytex.js:
 
 ################################################################################################################
 
-.PHONY: texmffull
-texmffull:
+source/texmfrepo/install-tl:
 	mkdir -p source/texmfrepo
 	wget -nc $(URL_texlive_full_iso) -P source
 	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
@@ -355,12 +354,7 @@ texmffull:
 	# wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
 	# source/texlive_tar_xz.tar.xz 
 
-build/install-tl/install-tl:
-	mkdir -p $(dir $@)
-	wget --no-clobber $(URL_TEXLIVE_INSTALLER) -P source || true
-	tar -xf source/$(notdir $(URL_TEXLIVE_INSTALLER)) --strip-components=1 --directory="$(dir $@)"
-
-build/texlive-%/texmf-dist: #build/install-tl/install-tl
+build/texlive-%/texmf-dist: source/texmfrepo/install-tl
 	# https://www.tug.org/texlive/doc/install-tl.html
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(dir $@)
@@ -442,7 +436,7 @@ texlive:
 	$(MAKE) source/texlive.downloaded source/texlive.patched
 
 tds-%:
-	$(MAKE) build/install-tl/install-tl
+	$(MAKE) source/temxfrepo/install-tl
 	$(MAKE) build/texlive-$*/texmf-dist
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
