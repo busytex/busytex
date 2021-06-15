@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 extern int optind;
@@ -29,6 +30,13 @@ extern int busymain_kpsewhich(int argc, char* argv[]);
 #ifdef BUSYTEX_MKAEINDEX
 extern int busymain_makeindex(int argc, char* argv[]);
 #endif
+
+void flush_streams()
+{
+    fputc('\n', stdout);
+    fputc('\n', stderr);
+    fflush(NULL);
+}
 
 int main(int argc, char* argv[])
 {
