@@ -4,16 +4,19 @@
 
 #URL_texlive_full_iso_torrent = https://www.tug.org/texlive/files/texlive2021-20210325.iso.torrent
 
-URL_texlive_full_iso = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive2020-20200406.iso
-URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
+#URL_texlive_full_iso = https://ftp.tu-chemnitz.de/pub/tug/historic/systems/texlive/2020/texlive2020-20200406.iso
+#URL_texlive = https://github.com/TeX-Live/texlive-source/archive/9ed922e7d25e41b066f9e6c973581a4e61ac0328.tar.gz
 
-#URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
-#URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
-
+URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
+URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
-
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
+
+TOTAL_MEMORY = 536870912
+
+CFLAGS_OPT_native = -O3
+CFLAGS_OPT_wasm = -Oz
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
@@ -39,7 +42,6 @@ MAKE_native = $(MAKE)
 CMAKE_native = cmake
 AR_native = $(AR)
 
-TOTAL_MEMORY = 536870912
 SKIP = all install:
 
 CACHE_TEXLIVE_native = $(ROOT)/build/native-texlive.cache
@@ -49,9 +51,6 @@ CACHE_FONTCONFIG_wasm = $(ROOT)/build/wasm-fontconfig.cache
 CONFIGSITE_BUSYTEX = $(ROOT)/busytex.site
 
 CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
-
-CFLAGS_OPT_native = -O3
-CFLAGS_OPT_wasm = -Oz
 
 ##############################################################################################################################
 
