@@ -299,7 +299,7 @@ class BusytexPipeline
         const NOCLEANUP_callMain = (Module, args) =>
         {
             Module.setPrefix(args[0]);
-            const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, NULL = 0;
+            const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, fputc = Module._fputc, fopen = Module._fopen, NULL = 0;
             const argc = args.length+1;
             const argv = Module.stackAlloc((argc + 1) * 4);
             Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
@@ -314,6 +314,7 @@ class BusytexPipeline
             catch(e)
             {
                 putchar('\n'.charCodeAt());
+                fputc('\n'.charCodeAt(), fopen('/dev/stderr', 'w'));
                 fflush(NULL);
                 this.print('callMain: ' + e.message);
                 return e.status;
