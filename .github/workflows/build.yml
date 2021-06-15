@@ -48,6 +48,7 @@ jobs:
             source/texmfrepo.txt
             build/texmfrepo-basic.txt
             build/texmfrepo-small.txt
+            build/texmfrepo-full.txt
       
       - name: Test native busytex pipeline
         run: |
