@@ -34,7 +34,7 @@ jobs:
             MAKEFLAGS: -j2
       
       - name: Install TexLive
-        run: make tds-basic tds-small tds-full
+        run: make tds-basic tds-full
         env:
             MAKEFLAGS: -j2
       
@@ -47,7 +47,6 @@ jobs:
             build/native/fonts.conf
             source/texmfrepo.txt
             build/texmfrepo-basic.txt
-            build/texmfrepo-small.txt
             build/texmfrepo-full.txt
       
       - name: Test native busytex pipeline
@@ -65,11 +64,9 @@ jobs:
 
       - name: Build wasm busytex
         run: |
-            #echo FIN && exit 1
             make wasm
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js
-            make build/wasm/texlive-small.js
             make dist-wasm
         env:
             MAKEFLAGS: -j2
@@ -80,5 +77,5 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Build assets" -a build/versions.txt -a busytex_pipeline.js -a busytex_worker.js -a build/texlive-basic/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data -a build/wasm/texlive-small.js -a build/wasm/texlive-small.data -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf -a source/texmfrepo.txt -a build/texmfrepo-basic.txt -a build/texmfrepo-small.txt $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) build_${{github.sha}} # -a build/format-basic/xelatex.fmt
+        run: hub release create -m "Build assets" -a build/versions.txt -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf -a source/texmfrepo.txt -a build/texmfrepo-basic.txt -a source/texmfrepo-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) build_${{github.sha}}
 
