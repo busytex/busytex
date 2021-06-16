@@ -354,17 +354,17 @@ source/texmfrepo/install-tl:
 build/texlive-%.txt: source/texmfrepo/install-tl
 	# https://www.tug.org/texlive/doc/install-tl.html
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
-	mkdir -p $(dir $@)
+	mkdir -p $(basename $@)
 	echo selected_scheme scheme-$* > build/texlive-$*.profile
 	echo TEXDIR $(ROOT)/$(basename $@) >> build/texlive-$*.profile
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo collection-xetex 1 >> build/texlive-$*.profile
+	#echo collection-xetex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
-	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
-	find $(ROOT)/$(dir $@) > build/texlive-$*.txt
+	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
+	find $(ROOT)/$(basename $@) > $@
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
