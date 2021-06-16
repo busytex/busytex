@@ -346,6 +346,7 @@ source/texmfrepo/install-tl:
 	mkdir -p source/texmfrepo
 	wget -nc $(URL_texlive_full_iso) -P source
 	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
+	rm source/$(notdir $(URL_texlive_full_iso))
 	chmod +x ./source/texmfrepo/install-tl
 	find source/texmfrepo > source/texmfrepo.txt
 	# wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
