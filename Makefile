@@ -351,7 +351,7 @@ source/texmfrepo/install-tl:
 	# wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
 	# source/texlive_tar_xz.tar.xz 
 
-build/texlive-%/texmf-dist: source/texmfrepo/install-tl
+build/texlive-%.txt: source/texmfrepo/install-tl
 	# https://www.tug.org/texlive/doc/install-tl.html
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(dir $@)
@@ -365,9 +365,9 @@ build/texlive-%/texmf-dist: source/texmfrepo/install-tl
 	#TEXLIVE_INSTALL_NO_RESUME=1 $< --repository source/texmfrepo --profile build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
-	find $(ROOT)/$(dir $@) > build/texmfrepo-$*.txt
+	find $(ROOT)/$(dir $@) > build/texlive-$*.txt
 
-build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
+build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
@@ -380,7 +380,7 @@ build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex bui
 #	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex xelatex.ini
 #	mv $(basename $@)/xelatex.fmt $@
 
-build/format-%/lualatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
+build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
 	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
@@ -434,7 +434,7 @@ texlive:
 
 tds-%:
 	$(MAKE) source/texmfrepo/install-tl
-	$(MAKE) build/texlive-$*/texmf-dist
+	$(MAKE) build/texlive-$*.txt
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
 	#$(MAKE) build/format-$*/lualatex.fmt
