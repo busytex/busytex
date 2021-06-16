@@ -356,7 +356,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(dir $@)
 	echo selected_scheme scheme-$* > build/texlive-$*.profile
-	echo TEXDIR $(ROOT)/$(basename $@)/temxf-dist >> build/texlive-$*.profile
+	echo TEXDIR $(ROOT)/$(basename $@) >> build/texlive-$*.profile
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
