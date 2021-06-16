@@ -356,13 +356,12 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(dir $@)
 	echo selected_scheme scheme-$* > build/texlive-$*.profile
-	echo TEXDIR $(ROOT)/$(dir $@) >> build/texlive-$*.profile
-	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-local >> build/texlive-$*.profile
-	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-var >> build/texlive-$*.profile
-	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-config >> build/texlive-$*.profile
+	echo TEXDIR $(ROOT)/$(basename $@)/temxf-dist >> build/texlive-$*.profile
+	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
+	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
+	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
 	echo collection-xetex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
-	#TEXLIVE_INSTALL_NO_RESUME=1 $< --repository source/texmfrepo --profile build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	rm -rf $(addprefix $(dir $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(dir $@) > build/texlive-$*.txt
