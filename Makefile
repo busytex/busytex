@@ -94,6 +94,7 @@ CFLAGS_BIBTEX_native = $(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)
 CFLAGS_XETEX_native = $(CFLAGS_XETEX) $(CFLAGS_OPT_native)
 CFLAGS_PDFTEX_native = $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)
 CFLAGS_LUATEX_native = $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)
+CFLAGS_KPSEWHICH_wasm = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
@@ -124,6 +125,7 @@ OPTS_XETEX_native = CC="$(CC) $(CFLAGS_XETEX_native)" CXX="$(CXX) $(CFLAGS_XETEX
 OPTS_PDFTEX_native = CC="$(CC) $(CFLAGS_PDFTEX_native)" CXX="$(CXX) $(CFLAGS_PDFTEX_native)"
 OPTS_LUATEX_native = CC="$(CC) $(CFLAGS_LUATEX_native)" CXX="$(CXX) $(CFLAGS_LUATEX_native)"
 OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
+OPTS_KPSEWHICH_wasm = CFLAGS="$(CFLAGS_KPSEWHICH_wasm)"
 
 ##############################################################################################################################
 
