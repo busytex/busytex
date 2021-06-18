@@ -523,10 +523,10 @@ example:
 build/versions.txt:
 	mkdir -p build
 	echo 'busytex dependencies:' > $@
-	echo texlive: $(URL_texlive) $(URL_texlive_full_iso) >> $@
-	echo ubuntu packages: $(URL_UBUNTU_RELEASE) >> $@
-	echo expat: $(URL_expat) >> $@
-	echo fontconfig: $(URL_fontconfig) >> $@
+	echo texlive: \\url{$(URL_texlive)} \\url{$(URL_texlive_full_iso)} >> $@
+	echo ubuntu packages: \url{$(URL_UBUNTU_RELEASE)} >> $@
+	echo expat: \\url{$(URL_expat)} >> $@
+	echo fontconfig: \\url{$(URL_fontconfig)} >> $@
 
 ################################################################################################################
 
