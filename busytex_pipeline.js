@@ -414,6 +414,6 @@ class BusytexPipeline
         FS.unmount(this.project_dir);
         this.Module = this.preload == false ? null : this.Module;
         
-        return {pdf : pdf, log : log};
+        return {pdf : pdf, log : log, exit_code : exit_code};
     }
 }
