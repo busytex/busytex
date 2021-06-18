@@ -155,8 +155,8 @@ source/fontconfig.patched: source/fontconfig.downloaded
 source/texlive.patched: source/texlive.downloaded
 	#rm -rf $(addprefix source/texlive/, texk/upmendex texk/dviout-util texk/dvipsk texk/xdvik texk/dviljk texk/dvipos texk/dvidvi texk/dvipng texk/dvi2tty texk/dvisvgm texk/dtl texk/gregorio texk/cjkutils texk/musixtnt texk/tests texk/ttf2pk2 texk/ttfdump texk/makejvf texk/lcdf-typetools) || true
 	#rm -rf source/texlive/texk/upmendex
-	rm -rf source/texlive/texk/upmendex/configure source/texlive/texk/upmendex/configure.ac
-	wget -P source/texlive/texk/upmendex/ https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure
+	rm -rf source/texlive/texk/upmendex/configure
+	wget -P source/texlive/texk/upmendex/ https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure 
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
