@@ -19,7 +19,7 @@ class BusytexDataPackageResolver
     {
         const entries = Object.entries(this.data_packages);
         const values = await Promise.all(entries.map((k, v) => v));
-        return Object.fromEntries(entries.map(((k, v), i) => (k, values[i]))); 
+        return Object.fromEntries(entries.map(([k, v], i) => [k, values[i])]); 
     }
     
     extract_tex_package_name(path)
