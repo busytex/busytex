@@ -14,6 +14,13 @@ class BusytexDataPackageResolver
         
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1]))))]);
     }
+
+    async resolve_data_packages()
+    {
+        const entries = Object.entries(this.data_packages);
+        const values = await Promise.all(entries.map((k, v) => v));
+        return Object.fromEntries(entries.map(((k, v), i) => (k, values[i]))); 
+    }
     
     extract_tex_package_name(path)
     {
