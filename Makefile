@@ -138,7 +138,7 @@ all:
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
-	wget --no-clobber $(URL_$(notdir $(basename $@))) -O "$(basename $@).tar.gz" || true
+	wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O "$(basename $@).tar.gz" || true
 	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory="$(basename $@)"
 	touch $@
 
@@ -331,7 +331,7 @@ build/wasm/busytex.js:
 
 source/texmfrepo/install-tl:
 	mkdir -p source/texmfrepo
-	wget -nc $(URL_texlive_full_iso) -P source
+	wget --no-verbose --no-clobber $(URL_texlive_full_iso) -P source
 	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
 	rm source/$(notdir $(URL_texlive_full_iso))
 	chmod +x ./source/texmfrepo/install-tl
@@ -418,7 +418,6 @@ tds-%:
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
 	#$(MAKE) build/format-$*/lualatex.fmt
-	#cp build/format-$*/pdflatex.fmt build/format-$*/lualatex.fmt
 
 ################################################################################################################
 
@@ -560,4 +559,4 @@ dist-native: build/native/busytex build/native/fonts.conf
 .PHONY: dist
 dist:
 	mkdir -p $@
-	wget -P dist -nc $(addprefix $(URL_RELEASE)/, busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
+	wget -P dist --no-clobber $(addprefix $(URL_RELEASE)/, busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
