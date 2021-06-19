@@ -338,8 +338,6 @@ source/texmfrepo/install-tl:
 	find source/texmfrepo > source/texmfrepo.txt
 
 build/texlive-%.txt: source/texmfrepo/install-tl
-	# https://www.tug.org/texlive/doc/install-tl.html
-	#TODO: find texlive-$*/ -executable -type f -exec rm {} +
 	mkdir -p $(basename $@)
 	echo selected_scheme scheme-$* > build/texlive-$*.profile
 	echo TEXDIR $(ROOT)/$(basename $@) >> build/texlive-$*.profile
@@ -351,6 +349,8 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
+	#find $(ROOT)/$(basename $@) -executable -type f -delete
+	# grep 'texlive-basic/bin' 8_Install\ TexLive.txt | grep -v 'No such' | grep -oP 'execve\(".+?",' | sort | uniq
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
