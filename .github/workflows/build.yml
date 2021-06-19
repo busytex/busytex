@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
-  EMSCRIPTEN_VERSION: 2.0.21
+  EMSCRIPTEN_VERSION: 2.0.5
 
 jobs:
 
