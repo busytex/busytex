@@ -5,8 +5,6 @@
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
-#URL_fontconfig = https://github.com/freedesktop/fontconfig/archive/refs/tags/2.13.93.tar.gz
-#URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 
@@ -381,7 +379,8 @@ build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist b
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
-	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ \
+	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data \
+		--js-output=$@ \
 		--export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
 		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_UBUNTU_RELEASE) --skip-log $(basename $@).skipped.txt --package $*)
@@ -498,7 +497,6 @@ example:
 	wget --no-clobber -O example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
 
 build/versions.txt:
-	printenv
 	mkdir -p build
 	echo 'busytex dependencies:' > $@
 	echo texlive: \\url{$(URL_texlive)} \\url{$(URL_texlive_full_iso)} >> $@
