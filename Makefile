@@ -4,8 +4,10 @@
 
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
-URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
-URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
+URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
+URL_fontconfig = https://github.com/freedesktop/fontconfig/archive/refs/tags/2.13.93.tar.gz
+#URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
+#URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
@@ -154,9 +156,9 @@ source/fontconfig.patched: source/fontconfig.downloaded
 
 source/texlive.patched: source/texlive.downloaded
 	#rm -rf $(addprefix source/texlive/, texk/upmendex texk/dviout-util texk/dvipsk texk/xdvik texk/dviljk texk/dvipos texk/dvidvi texk/dvipng texk/dvi2tty texk/dvisvgm texk/dtl texk/gregorio texk/cjkutils texk/musixtnt texk/tests texk/ttf2pk2 texk/ttfdump texk/makejvf texk/lcdf-typetools) || true
-	#rm -rf source/texlive/texk/upmendex
-	rm -rf source/texlive/texk/upmendex/configure
-	wget -P source/texlive/texk/upmendex/ https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure 
+	rm -rf source/texlive/texk/upmendex
+	#rm -rf source/texlive/texk/upmendex/configure
+	#wget -P source/texlive/texk/upmendex/ https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure 
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
