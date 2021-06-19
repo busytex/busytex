@@ -499,12 +499,14 @@ example:
 	wget --no-clobber -O example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
 
 build/versions.txt:
+	printenv
 	mkdir -p build
 	echo 'busytex dependencies:' > $@
 	echo texlive: \\url{$(URL_texlive)} \\url{$(URL_texlive_full_iso)} >> $@
-	echo ubuntu packages: \url{$(URL_UBUNTU_RELEASE)} >> $@
+	echo ubuntu packages: \\url{$(URL_UBUNTU_RELEASE)} >> $@
 	echo expat: \\url{$(URL_expat)} >> $@
 	echo fontconfig: \\url{$(URL_fontconfig)} >> $@
+	echo emscripten: $(EMSCRIPTEN_VERSION) >> $@
 
 ################################################################################################################
 
