@@ -5,9 +5,9 @@
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
-URL_fontconfig = https://github.com/freedesktop/fontconfig/archive/refs/tags/2.13.93.tar.gz
+#URL_fontconfig = https://github.com/freedesktop/fontconfig/archive/refs/tags/2.13.93.tar.gz
 #URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz
-#URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
+URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
