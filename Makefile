@@ -25,11 +25,6 @@ BUSYTEX = $(ROOT)/build/native/busytex
 
 TEXMF_FULL = $(ROOT)/build/texlive-full
 
-TEXLIVE_BUILD_DIR = $(ROOT)/build/wasm/texlive
-WEB2C_NATIVE_TOOLS_DIR = $(ROOT)/build/native/texlive/texk/web2c
-FONTCONFIG_BUILD_DIR = $(ROOT)/build/wasm/fontconfig
-EXPAT_BUILD_DIR = $(ROOT)/build/wasm/expat
-
 PREFIX_wasm = $(ROOT)/build/wasm/prefix
 PREFIX_native = $(ROOT)/build/native/prefix
 
@@ -52,8 +47,6 @@ CONFIGSITE_BUSYTEX = $(ROOT)/busytex.site
 CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
 ##############################################################################################################################
-
-# OBJECT FILES
 
 OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
@@ -157,8 +150,7 @@ source/fontconfig.patched: source/fontconfig.downloaded
 source/texlive.patched: source/texlive.downloaded
 	#rm -rf $(addprefix source/texlive/, texk/upmendex texk/dviout-util texk/dvipsk texk/xdvik texk/dviljk texk/dvipos texk/dvidvi texk/dvipng texk/dvi2tty texk/dvisvgm texk/dtl texk/gregorio texk/cjkutils texk/musixtnt texk/tests texk/ttf2pk2 texk/ttfdump texk/makejvf texk/lcdf-typetools) || true
 	rm -rf source/texlive/texk/upmendex
-	#rm -rf source/texlive/texk/upmendex/configure
-	#wget -P source/texlive/texk/upmendex/ https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure 
+	#wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure 
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
