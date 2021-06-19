@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 1
       
       - name: Install Prerequisites
-        run: sudo apt-get install -y gperf p7zip-full
+        run: sudo apt-get install -y gperf p7zip-full strace
         
       - name: Clone/patch TexLive and dependencies
         run: make texlive build/versions.txt
@@ -36,7 +36,7 @@ jobs:
       - name: Install TexLive
         run: |
             make tds-basic
-            make tds-full
+            #make tds-full
       
       - name: Archive native artifacts
         uses: actions/upload-artifact@v2
@@ -47,10 +47,11 @@ jobs:
             build/native/fonts.conf
             source/texmfrepo.txt
             build/texlive-basic.txt
-            build/texlive-full.txt
+            #build/texlive-full.txt
       
       - name: Test native busytex pipeline
         run: |
+            echo FIN && exit 1
             make dist-native
             bash example/example.sh
 
