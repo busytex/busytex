@@ -291,15 +291,6 @@ build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured bui
 	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_native)
 	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_native)
 
-build/native/busytex_xetex: 
-	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o $@.o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread $@.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
-build/native/busytex_pdftex: 
-	mkdir -p $(dir $@)
-	$(CC) -c busytex.c -o $@.o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_PDFTEX
-	$(CXX) $(CFLAGS_OPT_native) -o $@ -lm -pthread $@.o $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS) texlive/libs/xpdf/libxpdf.a) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) 
-
 build/native/busytex_luatex: 
 	mkdir -p $(dir $@)
 	$(CC) -c busytex.c -o $@.o  -DBUSYTEX_KPSEWHICH -DBUSYTEX_LUATEX -DBUSYTEX_BIBTEX8
@@ -353,8 +344,6 @@ source/texmfrepo/install-tl:
 	rm source/$(notdir $(URL_texlive_full_iso))
 	chmod +x ./source/texmfrepo/install-tl
 	find source/texmfrepo > source/texmfrepo.txt
-	# wget $(URL_texlive_full) -O source/texmf_tar_xz.tar.xz
-	# source/texlive_tar_xz.tar.xz 
 
 build/texlive-%.txt: source/texmfrepo/install-tl
 	# https://www.tug.org/texlive/doc/install-tl.html
@@ -378,12 +367,6 @@ build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex bui
 	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
 	mv $(basename $@)/latex.fmt $@
 
-#build/format-%/xelatex.fmt: build/native/busytex build/texlive-%/texmf-dist 
-#	mkdir -p $(basename $@)
-#	rm $(basename $@)/* || true
-#	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex xelatex.ini
-#	mv $(basename $@)/xelatex.fmt $@
-
 build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
@@ -406,7 +389,8 @@ build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist b
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
-	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
+	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ \
+		--export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
 		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_UBUNTU_RELEASE) --skip-log $(basename $@).skipped.txt --package $*)
 
