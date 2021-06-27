@@ -50,7 +50,7 @@ OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdf
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/busytex_bibtex8.a
-OBJ_KPATHSEA = kpsewhich.o .libs/libkpathsea.a
+OBJ_KPATHSEA = busytex_kpsewhich.o .libs/libkpathsea.a
 #texlive/libs/icu/icu-build/lib/libicuio.a texlive/libs/icu/icu-build/lib/libicui18n.a 
  
 OBJ_DEPS = $(addprefix texlive/libs/, harfbuzz/libharfbuzz.a graphite2/libgraphite2.a teckit/libTECkit.a libpng/libpng.a) fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, freetype2/libfreetype.a pplib/libpplib.a zlib/libz.a zziplib/libzzip.a libpaper/libpaper.a icu/icu-build/lib/libicuuc.a icu/icu-build/lib/libicudata.a lua53/.libs/libtexlua53.a xpdf/libxpdf.a) texlive/texk/kpathsea/.libs/libkpathsea.a expat/libexpat.a
@@ -250,8 +250,9 @@ build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
 build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/texk/kpathsea
 
-build/%/texlive/texk/kpathsea/kpsewhich.o: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_KPSEWHICH_$*)
+build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
+	cp $(notdir $@)/kpsewhich.o $@
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/libs/lua53
@@ -454,7 +455,7 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/lib/lib.a
 	rm build/native/texlive/texk/kpathsea/kpsewhich.o || true
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/kpsewhich.o 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a
@@ -484,7 +485,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
 	rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
-	$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
+	$(MAKE) build/wasm/texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
