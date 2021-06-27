@@ -46,7 +46,7 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 ##############################################################################################################################
 
 OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a
-OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
+OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a busytex_libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/busytex_bibtex8.a
@@ -277,11 +277,12 @@ build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configu
 	$(MAKE_native) -C $(dir $@) libxetex.a $(OPTS_XETEX_native)
 	mv $(dir $@)/libxetex.a $@
 
-build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
+build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
 	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
-	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_native)
+	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
+	mv $(dir $@)/libpdftex.a $@
 
 build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/zziplib/libzzip.a build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_native)
@@ -315,14 +316,15 @@ build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured 
 	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(OPTS_XETEX_wasm)
 	mv $(dir $@)/libxetex.a $@
 
-build/wasm/texlive/texk/web2c/libpdftex.a: build/wasm/texlive.configured build/native/busytex
+build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_wasm))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
-	$(MAKE_wasm) -C $(dir $@) $(notdir $@) $(OPTS_PDFTEX_wasm)
+	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
+	mv $(dir $@)/libpdftex.a $@
 	#cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	#$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(OPTS_PDFTEX_wasm)
 
@@ -456,7 +458,7 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libpdftex.a
 	#$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
 	$(MAKE) $(MAKEFLAGS) build/native/busytex
 
@@ -486,7 +488,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
-	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
+	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libpdftex.a
 	#$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
 
