@@ -50,7 +50,7 @@ OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libl
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/xdvipdfmx.a
-OBJ_BIBTEX = texlive/texk/bibtex-x/bibtex8.a
+OBJ_BIBTEX = texlive/texk/bibtex-x/busytex_bibtex8.a
 OBJ_KPATHSEA = kpsewhich.o .libs/libkpathsea.a
 #texlive/libs/icu/icu-build/lib/libicuio.a texlive/libs/icu/icu-build/lib/libicui18n.a 
  
@@ -253,7 +253,7 @@ build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 
 ################################################################################################################
 
-build/native/texlive/texk/bibtex-x/bibtex8.a: build/native/texlive.configured
+build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
 	rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
@@ -294,7 +294,7 @@ build/native/busytex:
 
 ################################################################################################################
 
-build/wasm/texlive/texk/bibtex-x/bibtex8.a: build/wasm/texlive.configured
+build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_BIBTEX_wasm)
 	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
 
@@ -446,7 +446,7 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/lib/lib.a
 	rm build/native/texlive/texk/kpathsea/kpsewhich.o || true
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/kpsewhich.o 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/bibtex8.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libxetex.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
@@ -476,7 +476,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
 	rm build/wasm/texlive/texk/kpathsea/kpsewhich.o || true
 	$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
-	$(MAKE) build/wasm/texlive/texk/bibtex-x/bibtex8.a
+	$(MAKE) build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
 	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
