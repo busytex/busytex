@@ -1,5 +1,4 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
-# TODO: figure out install-tl xetex fmt 
 
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
@@ -252,7 +251,7 @@ build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
-	cp $(notdir $@)/kpsewhich.o $@
+	cp $(dir $@)/kpsewhich.o $@
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/libs/lua53
