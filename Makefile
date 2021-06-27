@@ -47,7 +47,7 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
 OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a    libmputil.a libunilib.a libmd5.a  lib/lib.a
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a libpdftex.a
-OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a libxetex.a
+OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/busytex_bibtex8.a
 OBJ_KPATHSEA = kpsewhich.o .libs/libkpathsea.a
@@ -270,11 +270,12 @@ build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/native/texlive.co
 	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
 	$(AR_native) -crs $@ $(dir $@)/*.o
 
-build/native/texlive/texk/web2c/libxetex.a: build/native/texlive.configured
+build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
 	rm $(dir $@)/xetexdir/xetex-xetexextra.o
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o $(OPTS_XETEX_native)
-	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_XETEX_native)
+	$(MAKE_native) -C $(dir $@) libxetex.a $(OPTS_XETEX_native)
+	mv $(dir $@)/libxetex.a $@
 
 build/native/texlive/texk/web2c/libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
 	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
@@ -307,11 +308,12 @@ build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.config
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_XDVIPDFMX_wasm)
 	$(AR_wasm) -crs $@ $(dir $@)/*.o
 
-build/wasm/texlive/texk/web2c/libxetex.a: build/wasm/texlive.configured build/native/busytex
+build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(OPTS_XETEX_wasm)
+	mv $(dir $@)/libxetex.a $@
 
 build/wasm/texlive/texk/web2c/libpdftex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
@@ -453,7 +455,7 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libxetex.a
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libpdftex.a
 	#$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
 	$(MAKE) $(MAKEFLAGS) build/native/busytex
@@ -483,7 +485,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
-	$(MAKE) build/wasm/texlive/texk/web2c/libxetex.a
+	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) build/wasm/texlive/texk/web2c/libpdftex.a
 	#$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
