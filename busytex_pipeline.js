@@ -26,6 +26,9 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
+        if(his.isfile(path))
+            console.log(path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path);
+        
         return this.isfile(path) && path.startsWith('/texlive/texmf-dist/tex/') ? this.basename(this.dirname(path)) : null;
     }
     
