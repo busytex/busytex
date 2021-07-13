@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
-  EMSCRIPTEN_VERSION: 2.0.5
+  EMSCRIPTEN_VERSION: 2.0.26
 
 jobs:
 
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v9
+        uses: mymindstorm/setup-emsdk@v10
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
       
