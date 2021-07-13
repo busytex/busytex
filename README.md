@@ -1,9 +1,10 @@
-# xetex+bibtex from TexLive2020 compiled with Emscripten into a single WebAssembly file
+# xetex+bibtex from TexLive2021 compiled with Emscripten into a single WebAssembly file
 
 Currently compiles:
 - xetex
 - bibtex8
 - xdvipdfmx
+- kpsewhich
 
 Future work:
 - tlmgr (web requests)
