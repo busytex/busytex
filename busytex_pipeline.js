@@ -26,7 +26,7 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
-        if(his.isfile(path))
+        if(this.isfile(path))
             console.log(path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path);
         
         return this.isfile(path) && path.startsWith('/texlive/texmf-dist/tex/') ? this.basename(this.dirname(path)) : null;
@@ -230,7 +230,7 @@ class BusytexPipeline
     async reload_module(env, project_dir, data_packages_js = [])
     {
         const data_packages_js_promise = data_packages_js.map(data_package_js => this.load_package(data_package_js));
-        const [em_module, wasm_module] = await Promise.all([this.em_module_promise, WebAssembly.compileStreaming ? this.wasm_module_promise : Promise.resolve(this.wasm_module_promise),  ...data_packages_js_promise]);
+        const [em_module, wasm_module] = await Promise.all([this.em_module_promise, WebAssembly.compileStreaming ? this.wasm_module_promise : this.wasm_module_promise.then(r => r.arrayBuffer()),  ...data_packages_js_promise]);
         const {print, init_env} = this;
         
         const pre_run_packages = Module => () =>
@@ -262,10 +262,7 @@ class BusytexPipeline
 
             instantiateWasm(imports, successCallback)
             {
-                if(WebAssembly.compileStreaming)
-                    WebAssembly.instantiate(wasm_module, imports).then(successCallback);
-                else
-                    WebAssembly.instantiateStreaming(wasm_module, imports).then(successCallback);
+                WebAssembly.instantiate(wasm_module, imports).then(successCallback);
             },
             
             print(text) 
