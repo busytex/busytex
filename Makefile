@@ -159,7 +159,7 @@ build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
 	cd $(basename $@) &&                        \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(ROOT)/source/texlive/configure		\
+	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(ROOT)/source/texlive/configure	--enable-compiler-warnings=no	\
 	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
 	  --prefix="$(PREFIX_$*)"					\
 	  --enable-dump-share						\
