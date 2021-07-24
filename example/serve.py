@@ -5,7 +5,7 @@ PORT = 8080
 
 Handler = http.server.SimpleHTTPRequestHandler
 
-Handler.extensions_map={
+Handler.extensions_map = {
         '.manifest': 'text/cache-manifest',
 	'.html': 'text/html',
         '.png': 'image/png',
