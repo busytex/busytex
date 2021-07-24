@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-#test on python 3.4 ,python of lower version  has different module organization.
 import http.server
 import socketserver
 
