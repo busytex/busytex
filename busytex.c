@@ -27,7 +27,7 @@ extern int busymain_bibtex8(int argc, char* argv[]);
 extern int busymain_kpsewhich(int argc, char* argv[]);
 #endif
 
-#ifdef BUSYTEX_MKAEINDEX
+#ifdef BUSYTEX_MAKEINDEX
 extern int busymain_makeindex(int argc, char* argv[]);
 #endif
 
