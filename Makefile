@@ -150,7 +150,7 @@ source/fontconfig.patched: source/fontconfig.downloaded
 	touch $@
 
 source/texlive.patched: source/texlive.downloaded
-	wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/autoconf-fix/source/configure 
+	wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/207d40e/source/configure 
 	wget -O source/texlive/libs/harfbuzz/harfbuzz-src/hb-subset-cff1.cc https://raw.githubusercontent.com/harfbuzz/harfbuzz/2.8.2/src/hb-subset-cff1.cc
 	touch $@
 
