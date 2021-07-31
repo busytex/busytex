@@ -68,7 +68,7 @@ make clean
 ```shell
 # wasm version, download compiled assets, launch server.py and then go to http://localhost:8080/example/example.html
 mkdir -p dist
-wget -P dist $(printf "https://github.com/busytex/busytex/releases/%s " busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
+wget -P dist $(printf "https://github.com/busytex/busytex/releases/latest/%s " busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
 python3.8 serve.py
 
 # native version
@@ -76,13 +76,12 @@ bash example/example.sh
 ```
 
 ### References
-1. [texlive.js](https://github.com/manuels/texlive.js/)
-2. [xetex.js](https://github.com/lyze/xetex-js)
-3. [dvi2html](https://github.com/kisonecat/dvi2html), [web2js](https://github.com/kisonecat/web2js)
-4. [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
-5. [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
-6. fontconfig patch [1](https://github.com/Dador/JavascriptSubtitlesOctopus/blob/master/build/patches/fontconfig/0002-fix-fcstats-emscripten.patch) and [2](https://github.com/lyze/xetex-js/blob/master/fontconfig-fcstat.c.patch)
-7. [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
+- [texlive.js](https://github.com/manuels/texlive.js/)
+- [xetex.js](https://github.com/lyze/xetex-js)
+- [dvi2html](https://github.com/kisonecat/dvi2html), [web2js](https://github.com/kisonecat/web2js)
+- [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
+- [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
+- [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
 
 ### TODO
 ```shell
