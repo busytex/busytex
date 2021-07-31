@@ -7,10 +7,12 @@ Currently compiles:
 - kpsewhich
 
 Future work:
+- pdftex
+- kpsestat
+- makeindex
 - tlmgr (web requests)
 - LuaTex / LMTX (lua)
 - Biber (perl)
-- pdftex (for completeness)
 
 ### Dependencies
 ```shell
