@@ -66,7 +66,9 @@ make clean
 
 ### Usage
 ```shell
-# browser version, will serve index.html at http://localhost:8080
+# wasm version, download compiled assets, launch server.py and then go to http://localhost:8080/example/example.html
+mkdir -p dist
+wget -P dist $(printf "https://github.com/busytex/busytex/releases/%s " busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
 python3.8 serve.py
 
 # native version
