@@ -66,9 +66,9 @@ make clean
 
 ### Usage
 ```shell
-# wasm version, download compiled assets, launch server.py and then go to http://localhost:8080/example/example.html
+# wasm version, download latest compiled assets, launch server.py and then go to http://localhost:8080/example/example.html
 mkdir -p dist
-wget -P dist $(printf "https://github.com/busytex/busytex/releases/latest/%s " busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
+wget -P dist $(printf "https://github.com/busytex/busytex/releases/latest/download/%s " busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
 python3.8 serve.py
 
 # native version
