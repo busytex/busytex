@@ -1,4 +1,16 @@
-<html><head><title>busytex example</title></head><body style="width: 100%; height: 100%; overflow: hidden">
+<html>
+<head>
+<title>busytex example</title>
+<link rel="busytex" type="text/javascript" id="busytex_js" href="/dist/busytex.js"  />
+<link rel="busytex" type="application/wasm" id="busytex_wasm" href="/dist/busytex.wasm" />
+<link rel="busytex" type="text/javascript" id="busytex_worker_js" href="/dist/busytex_worker.js" /> 
+<link rel="busytex" type="text/javascript" id="busytex_pipeline_js" href="/dist/busytex_pipeline.js" />
+<link rel="busytex" id="texlive_basic" href="/dist/texlive-basic.js" />
+<link rel="busytex" id="texlive_ubuntu_science" href="/dist/ubuntu-texlive-science.js" />
+<link rel="busytex" id="texlive_ubuntu_recommended" href="/dist/ubuntu-texlive-latex-recommended.js" />
+<link rel="busytex" id="texlive_ubuntu_extra" href="/dist/ubuntu-texlive-latex-extra.js" />    
+</head>
+<body style="width: 100%; height: 100%; overflow: hidden">
 <div style="width: 98%; height: 5%;" >
 <label for="elapsed">Time elapsed:</label>
 <span id="elapsed" name="time_elapsed">0.00 sec</span>
