@@ -16,6 +16,7 @@ class BusytexDataPackageResolver
         this.isfile = path => this.basename(path).includes('.');
         
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
+        this.msgs = [];
     }
 
     async resolve_data_packages()
@@ -27,7 +28,11 @@ class BusytexDataPackageResolver
     extract_tex_package_name(path)
     {
         if(this.isfile(path))
-            console.log(path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path);
+        {
+            const msg = path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path;
+            this.msgs.push(msg);
+            console.log(msg);
+        }
         
         return this.isfile(path) && path.startsWith('/texlive/texmf-dist/tex/') ? this.basename(this.dirname(path)) : null;
     }
