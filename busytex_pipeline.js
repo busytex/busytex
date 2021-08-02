@@ -29,12 +29,12 @@ class BusytexDataPackageResolver
     {
         if(this.isfile(path))
         {
-            const msg = path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path;
+            const msg = path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path;
             this.msgs.push(msg);
             console.log(msg);
         }
         
-        return this.isfile(path) && path.startsWith('/texlive/texmf-dist/tex/') ? this.basename(this.dirname(path)) : null;
+        return this.isfile(path) && (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/')) ? this.basename(this.dirname(path)) : null;
     }
     
     async resolve(files, data_packages_js = null)
