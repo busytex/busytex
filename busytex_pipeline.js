@@ -34,6 +34,12 @@ class BusytexDataPackageResolver
             console.log(msg);
         }
         
+        // ignore /texmf/texmf-dist/fonts/
+        // ignore /texmf/texmf-dist/bibtex/
+        //
+        // TODO: "YES /texmf/texmf-dist/tex/latex/fithesis/locale/mu/ped/fithesis-slovak.def : ped",
+        // TODO:     "YES /texmf/texmf-dist/tex/latex/stex/mikoslides/dangerous-bend.png : mikoslides",
+        // TODO: "YES /texlive/texmf-dist/tex/generic/babel/locale/mgh/babel-mgh.ini : mgh",
         return this.isfile(path) && (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/')) ? this.basename(this.dirname(path)) : null;
     }
     
