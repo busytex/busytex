@@ -31,7 +31,7 @@ class BusytexDataPackageResolver
         
         if(this.isfile(path))
         {
-            const msg = ok ? 'YES ' + path + ' : ' + path.split('/')[6] + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path;
+            const msg = (ok ? 'YES ' : 'NO') + path + ' : ' + path.split('/')[5] + ' : ' + this.basename(this.dirname(path)) +' ' + path;
             this.msgs.push(msg);
             console.log(msg);
         }
@@ -41,8 +41,9 @@ class BusytexDataPackageResolver
         //
         // TODO: "YES /texmf/texmf-dist/tex/latex/fithesis/locale/mu/ped/fithesis-slovak.def : ped",
         // TODO:     "YES /texmf/texmf-dist/tex/latex/stex/mikoslides/dangerous-bend.png : mikoslides",
-        // TODO: "YES /texlive/texmf-dist/tex/generic/babel/locale/mgh/babel-mgh.ini : mgh",
-        return this.isfile(path) && ok ? path.split('/')[6] : null;
+        // TODO: " /texlive/ texmf-dist/tex/generic/   babel/locale/mgh/babel-mgh.ini : mgh",
+        // TODO: O /texmf  / texmf-dist/source/latex/  koma-script/scrkernel-version.dtx"
+        return this.isfile(path) && ok ? path.split('/')[5] : null;
     }
     
     async resolve(files, data_packages_js = null)
