@@ -27,9 +27,11 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
+        const ok = (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/'));
+        
         if(this.isfile(path))
         {
-            const msg = path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/') ? 'YES ' + path + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path;
+            const msg = ok ? 'YES ' + path + ' : ' + path.split('/')[6] + ' : ' + this.basename(this.dirname(path)) : 'NO ' + path;
             this.msgs.push(msg);
             console.log(msg);
         }
@@ -40,7 +42,7 @@ class BusytexDataPackageResolver
         // TODO: "YES /texmf/texmf-dist/tex/latex/fithesis/locale/mu/ped/fithesis-slovak.def : ped",
         // TODO:     "YES /texmf/texmf-dist/tex/latex/stex/mikoslides/dangerous-bend.png : mikoslides",
         // TODO: "YES /texlive/texmf-dist/tex/generic/babel/locale/mgh/babel-mgh.ini : mgh",
-        return this.isfile(path) && (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/')) ? this.basename(this.dirname(path)) : null;
+        return this.isfile(path) && ok ? path.split('/')[6] : null;
     }
     
     async resolve(files, data_packages_js = null)
