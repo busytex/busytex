@@ -27,18 +27,15 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
-        const ok = (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/'));
+        const ok = (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/')) && !(path.startsWith('/texmf/texmf-dist/fonts/') || path.startsWith('/texmf/texmf-dist/bibtex/') || path.startsWith('/texlive/texmf-dist/fonts/') || path.startsWith('/texlive/texmf-dist/bibtex/'));
         
         if(this.isfile(path))
         {
-            const msg = (ok ? 'YES ' : 'NO') + path + ' : ' + path.split('/')[5] + ' : ' + this.basename(this.dirname(path)) +' ' + path;
+            const msg = (ok ? 'YES ' : 'NO ') + path + ' : ' + path.split('/')[5] + ' : ' + this.basename(this.dirname(path)) +' ' + path;
             this.msgs.push(msg);
             console.log(msg);
         }
         
-        // ignore /texmf/texmf-dist/fonts/
-        // ignore /texmf/texmf-dist/bibtex/
-        //
         // TODO: "YES /texmf/texmf-dist/tex/latex/fithesis/locale/mu/ped/fithesis-slovak.def : ped",
         // TODO:     "YES /texmf/texmf-dist/tex/latex/stex/mikoslides/dangerous-bend.png : mikoslides",
         // TODO: " /texlive/ texmf-dist/tex/generic/   babel/locale/mgh/babel-mgh.ini : mgh",
