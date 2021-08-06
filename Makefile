@@ -147,7 +147,7 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 source/fontconfig.patched: source/fontconfig.downloaded
 	#patch -d $(basename $<) -Np1 -i $(ROOT)/fontconfig_emcc.patch
 	wget -O $(basename $<)/src/fcstat.c https://gitlab.freedesktop.org/fontconfig/fontconfig/-/raw/fd393c53d816653e525950b742d49b02d599260b/src/fcstat.c
-	echo "$(SKIP)" > source/fontconfig/test/Makefile.in
+	#echo "$(SKIP)" > source/fontconfig/test/Makefile.in
 	touch $@
 
 source/texlive.patched: source/texlive.downloaded
