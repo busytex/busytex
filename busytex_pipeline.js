@@ -36,10 +36,10 @@ class BusytexDataPackageResolver
             console.log(msg);
         }
         
-        // TODO: "YES /texmf/texmf-dist/tex/latex/fithesis/locale/mu/ped/fithesis-slovak.def : ped",
-        // TODO:     "YES /texmf/texmf-dist/tex/latex/stex/mikoslides/dangerous-bend.png : mikoslides",
-        // TODO: " /texlive/ texmf-dist/tex/generic/   babel/locale/mgh/babel-mgh.ini : mgh",
-        // TODO: O /texmf  / texmf-dist/source/latex/  koma-script/scrkernel-version.dtx"
+        // 404 https://ctan.org/pkg/config
+        // 404 https://ctan.org/pkg/zapfding
+        // /texmf/texmf-dist/tex/amstex/config/amstex.ini
+        // /texlive/texmf-dist/tex/latex/zapfding/uuzd.fd
         return this.isfile(path) && ok ? path.split('/')[5] : null;
     }
     
@@ -274,6 +274,7 @@ class BusytexPipeline
             instantiateWasm(imports, successCallback)
             {
                 WebAssembly.instantiate(wasm_module, imports).then(successCallback);
+                return {};
             },
             
             print(text) 
