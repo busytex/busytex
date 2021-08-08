@@ -16,8 +16,20 @@ class BusytexDataPackageResolver
         this.isfile = path => this.basename(path).includes('.');
         
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
-        this.msgs = [];
-        this.remap = {config : null,  plweb : 'pl', zapfding : null};
+        this.remap = {
+            config : null,
+            firstaid : 'latex-firstaid', 
+            hyphen : null,
+            jknapltx : null,
+            latexconfig : null,
+            pdfwin : null,
+            plweb : 'pl',
+            symbol : null,
+            syntax : null,
+            third : null,
+            twoup : null,
+            zapfding : null
+        };
     }
 
     async resolve_data_packages()
@@ -33,26 +45,13 @@ class BusytexDataPackageResolver
         if(this.isfile(path))
         {
             const msg = (ok ? 'YES ' : 'NO ') + path + ' : ' + path.split('/')[5] + ' : ' + this.basename(this.dirname(path)) +' ' + path;
-            this.msgs.push(msg);
-            console.log(msg);
+            if(!window.texmsgs)
+                window.texmsgs = [];
+            window.texmsgs.push(msg);
         }
 
-//404 https://ctan.org/pkg/config
-//404 https://ctan.org/pkg/firstaid
-//404 https://ctan.org/pkg/hyphen
-//404 https://ctan.org/pkg/jknapltx
-//404 https://ctan.org/pkg/latexconfig
-//404 https://ctan.org/pkg/pdfwin
-//404 https://ctan.org/pkg/plweb
-//404 https://ctan.org/pkg/symbol
-//404 https://ctan.org/pkg/syntax
-//404 https://ctan.org/pkg/third
-//404 https://ctan.org/pkg/twoup
-//404 https://ctan.org/pkg/zapfding
-//while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done <../urls.txt > log.txt
-//grep 404 log.txt | sort | uniq | wc -l
+        //cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
-        const ;
         if(this.isfile(path) && ok)
         {
             const tex_package_name = path.split('/')[5];
