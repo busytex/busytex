@@ -105,10 +105,14 @@ class BusytexDataPackageResolver
     }
 }
 
-function BusytexBibtexResolver(files)
+
+class BusytexBibtexResolver
 {
-    const bib_commands = ['\\bibliography', '\\printbibliography'];
-    return files.some(f => f.path.endsWith('.tex') && typeof(f.contents) == 'string' && bib_commands.some(b => f.contents.includes(b)));
+    resolve (files)
+    {
+        const bib_commands = ['\\bibliography', '\\printbibliography'];
+        return files.some(f => f.path.endsWith('.tex') && typeof(f.contents) == 'string' && bib_commands.some(b => f.contents.includes(b)));
+    }
 }
 
 class BusytexPipeline
@@ -167,7 +171,7 @@ class BusytexPipeline
         this.preload = preload;
         this.script_loader = script_loader;
         
-        //BusytexBibtexResolver(files)
+        this.bibtex_resolver = new BusytexBibtexResolver();
         //this.data_package_resolver = new BusytexDataPackageResolver(this.paths.texlive_data_packages_js);
 
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
@@ -367,7 +371,7 @@ class BusytexPipeline
             return 0;
         }
         
-        //BusytexBibtexResolver(files)
+        //const bibtex = this.bibtex_resolver.resolve(files);
         //const [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, this.ui.get_enabled_data_packages() !== null ? this.ui.get_enabled_data_packages().map(data_package => this.paths.texlive_data_packages_js.find(p => p.includes(data_package))) : null);
         
         this.print(this.ansi_reset_sequence);
