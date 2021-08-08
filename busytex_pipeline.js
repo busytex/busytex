@@ -371,7 +371,9 @@ class BusytexPipeline
             return 0;
         }
         
-        const bibtex_resolved = this.bibtex_resolver.resolve(files);
+        if(bibtex === null)
+            bibtex = this.bibtex_resolver.resolve(files);
+
         //const [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, this.ui.get_enabled_data_packages() !== null ? this.ui.get_enabled_data_packages().map(data_package => this.paths.texlive_data_packages_js.find(p => p.includes(data_package))) : null);
         
         this.print(this.ansi_reset_sequence);
