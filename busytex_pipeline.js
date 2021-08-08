@@ -17,6 +17,7 @@ class BusytexDataPackageResolver
         
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
         this.msgs = [];
+        this.remap = {config : null,  plweb : 'pl', zapfding : null};
     }
 
     async resolve_data_packages()
@@ -35,12 +36,31 @@ class BusytexDataPackageResolver
             this.msgs.push(msg);
             console.log(msg);
         }
-        
-        // 404 https://ctan.org/pkg/config
-        // 404 https://ctan.org/pkg/zapfding
-        // /texmf/texmf-dist/tex/amstex/config/amstex.ini
-        // /texlive/texmf-dist/tex/latex/zapfding/uuzd.fd
-        return this.isfile(path) && ok ? path.split('/')[5] : null;
+
+//404 https://ctan.org/pkg/config
+//404 https://ctan.org/pkg/firstaid
+//404 https://ctan.org/pkg/hyphen
+//404 https://ctan.org/pkg/jknapltx
+//404 https://ctan.org/pkg/latexconfig
+//404 https://ctan.org/pkg/pdfwin
+//404 https://ctan.org/pkg/plweb
+//404 https://ctan.org/pkg/symbol
+//404 https://ctan.org/pkg/syntax
+//404 https://ctan.org/pkg/third
+//404 https://ctan.org/pkg/twoup
+//404 https://ctan.org/pkg/zapfding
+//while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done <../urls.txt > log.txt
+//grep 404 log.txt | sort | uniq | wc -l
+
+        const ;
+        if(this.isfile(path) && ok)
+        {
+            const tex_package_name = path.split('/')[5];
+            if(tex_package_name in this.remap)
+                return this.remap[tex_package_name];
+            return tex_package_name;
+        }
+        return null;
     }
     
     async resolve(files, data_packages_js = null)

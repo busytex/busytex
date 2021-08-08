@@ -241,6 +241,7 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	   --with-expat-includes="$(ROOT)/source/expat/lib" \
 	   --with-expat-lib="$(ROOT)/build/$*/expat" \
 	   CFLAGS="$(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(CFLAGS_FONTCONFIGFREETYPE_$*)" FREETYPE_LIBS="$(LIBS_FONTCONFIGFREETYPE_$*)"
+	#  FREETYPE_LIBS="-L$PWD/build/wasm/texlive/libs/freetype2/ -lfreetype
 	$(MAKE_$*) -C build/$*/fontconfig
 
 build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
