@@ -167,6 +167,9 @@ class BusytexPipeline
         this.preload = preload;
         this.script_loader = script_loader;
         
+        //BusytexBibtexResolver(files)
+        //this.data_package_resolver = new BusytexDataPackageResolver(this.paths.texlive_data_packages_js);
+
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = this.script_loader(busytex_js);
         
@@ -363,6 +366,9 @@ class BusytexPipeline
             
             return 0;
         }
+        
+        //BusytexBibtexResolver(files)
+        //const [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, this.ui.get_enabled_data_packages() !== null ? this.ui.get_enabled_data_packages().map(data_package => this.paths.texlive_data_packages_js.find(p => p.includes(data_package))) : null);
         
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
