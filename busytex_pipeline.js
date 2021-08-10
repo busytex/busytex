@@ -7,16 +7,7 @@
 
 class BusytexDataPackageResolver
 {
-    constructor(data_packages_js)
-    {
-        this.regex_createPath = /"filename": "(.+?)"/g 
-        this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
-        this.basename = path => path.slice(path.lastIndexOf('/') + 1);
-        this.dirname = path => path.slice(0, path.lastIndexOf('/'));
-        this.isfile = path => this.basename(path).includes('.');
-        
-        this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
-        this.remap = {
+    constructor(data_packages_js, remap = {
             config : null,
             firstaid : 'latex-firstaid', 
             hyphen : null,
@@ -29,7 +20,16 @@ class BusytexDataPackageResolver
             third : null,
             twoup : null,
             zapfding : null
-        };
+        })
+    {
+        this.regex_createPath = /"filename": "(.+?)"/g 
+        this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
+        this.basename = path => path.slice(path.lastIndexOf('/') + 1);
+        this.dirname = path => path.slice(0, path.lastIndexOf('/'));
+        this.isfile = path => this.basename(path).includes('.');
+        
+        this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
+        this.remap = remap;
     }
 
     async resolve_data_packages()
@@ -366,7 +366,10 @@ class BusytexPipeline
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
-        //const [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, this.ui.get_enabled_data_packages() !== null ? this.ui.get_enabled_data_packages().map(data_package => this.paths.texlive_data_packages_js.find(p => p.includes(data_package))) : null);
+        let tex_packages_not_resolved = [];
+        [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, data_packages_js);
+        if(tex_packages_not_resolved)
+            throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
         
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);

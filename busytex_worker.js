@@ -2,6 +2,8 @@ importScripts('busytex_pipeline.js');
 
 self.pipeline = null;
 
+//TODO: handle exceptions and post back error log
+
 onmessage = async ({data : {files, main_tex_path, bibtex, busytex_wasm, busytex_js, preload_data_packages_js, data_packages_js, texmf_local, preload, verbose, driver}}) => 
 {
     if(busytex_wasm && busytex_js && preload_data_packages_js)
