@@ -291,7 +291,7 @@ class BusytexPipeline
 
             instantiateWasm(imports, successCallback)
             {
-                WebAssembly.instantiate(wasm_module, imports).then(output => successCallback(output.instance)).catch(err => {throw new Error('Error while initializing BusyTex!')});
+                WebAssembly.instantiate(wasm_module, imports).then(output => successCallback(output.instance)).catch(err => {throw new Error('Error while initializing BusyTex!\n\n' + err.toString())});
                 return {};
             },
             
