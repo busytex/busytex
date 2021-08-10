@@ -157,14 +157,14 @@ class BusytexPipeline
         return promise;
     }
 
-    constructor(busytex_js, busytex_wasm, data_packages_js, texmf_local, print, preload, script_loader)
+    constructor(busytex_js, busytex_wasm, data_packages_js, preload_data_packages_js, texmf_local, print, preload, script_loader)
     {
         this.print = print;
         this.preload = preload;
         this.script_loader = script_loader;
         
         this.bibtex_resolver = new BusytexBibtexResolver();
-        //this.data_package_resolver = new BusytexDataPackageResolver(this.paths.texlive_data_packages_js);
+        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js);
 
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = this.script_loader(busytex_js);
@@ -172,7 +172,7 @@ class BusytexPipeline
         BusytexPipeline.data_packages = [];
         this.data_package_promises = {};
 
-        for(const data_package_js of data_packages_js)
+        for(const data_package_js of preload_data_packages_js)
             this.load_package(data_package_js); 
         
         this.ansi_reset_sequence = '\x1bc';
@@ -211,7 +211,7 @@ class BusytexPipeline
 
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
-        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, data_packages_js);
+        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
     }
 
     terminate()
@@ -291,7 +291,7 @@ class BusytexPipeline
 
             instantiateWasm(imports, successCallback)
             {
-                WebAssembly.instantiate(wasm_module, imports).then(output => successCallback(output.instance)).catch(e => {throw new Error('Error while initializing BusyTex!')});
+                WebAssembly.instantiate(wasm_module, imports).then(output => successCallback(output.instance)).catch(err => {throw new Error('Error while initializing BusyTex!')});
                 return {};
             },
             
