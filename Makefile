@@ -32,8 +32,6 @@ MAKE_native = $(MAKE)
 CMAKE_native = cmake
 AR_native = $(AR)
 
-SKIP = all install:
-
 CACHE_TEXLIVE_native = $(ROOT)/build/native-texlive.cache
 CACHE_TEXLIVE_wasm = $(ROOT)/build/wasm-texlive.cache
 CACHE_FONTCONFIG_native = $(ROOT)/build/native-fontconfig.cache
@@ -96,10 +94,6 @@ CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
 CFLAGS_ICU_wasm = $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
-CFLAGS_FONTCONFIGFREETYPE_wasm = $(addprefix -I$(ROOT)/build/wasm/texlive/libs/, freetype2/ freetype2/freetype2/)
-CFLAGS_FONTCONFIGFREETYPE_native = $(addprefix -I$(ROOT)/build/native/texlive/libs/, freetype2/ freetype2/freetype2/)
-LIBS_FONTCONFIGFREETYPE_wasm = -L$(ROOT)/build/wasm/texlive/libs/freetype2/ -lfreetype
-LIBS_FONTCONFIGFREETYPE_native = -L$(ROOT)/build/native/texlive/libs/freetype2/ -lfreetype
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
 ##############################################################################################################################
@@ -145,9 +139,7 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	touch $@
 
 source/fontconfig.patched: source/fontconfig.downloaded
-	#patch -d $(basename $<) -Np1 -i $(ROOT)/fontconfig_emcc.patch
 	wget -O $(basename $<)/src/fcstat.c https://gitlab.freedesktop.org/fontconfig/fontconfig/-/raw/fd393c53d816653e525950b742d49b02d599260b/src/fcstat.c
-	#echo "$(SKIP)" > source/fontconfig/test/Makefile.in
 	touch $@
 
 source/texlive.patched: source/texlive.downloaded
@@ -207,7 +199,7 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 	cd build/wasm/texlive/libs/icu && \
 	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
-	echo "$(SKIP)" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
+	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a: build/%/texlive.configured
@@ -240,8 +232,7 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	   --disable-docs \
 	   --with-expat-includes="$(ROOT)/source/expat/lib" \
 	   --with-expat-lib="$(ROOT)/build/$*/expat" \
-	   CFLAGS="$(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(CFLAGS_FONTCONFIGFREETYPE_$*)" FREETYPE_LIBS="$(LIBS_FONTCONFIGFREETYPE_$*)"
-	#  FREETYPE_LIBS="-L$PWD/build/wasm/texlive/libs/freetype2/ -lfreetype
+	   CFLAGS="$(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
 	$(MAKE_$*) -C build/$*/fontconfig
 
 build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
@@ -331,7 +322,7 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
-	emcc -Wl,-error-limit=0 $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "___sys_statfs64", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX busytex.c
+	emcc -Wl,-error-limit=0 $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX busytex.c
 	#emcc -ferror-limit=0 $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush"]' -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX busytex.c
 	#$(CXX) -Wl,--unresolved-symbols=ignore-all $(CFLAGS_OPT_native) -o $@ $@.o -Wimplicit -Wreturn-type  -export-dynamic    $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
 
