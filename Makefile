@@ -146,6 +146,7 @@ source/fontconfig.patched: source/fontconfig.downloaded
 source/texlive.patched: source/texlive.downloaded
 	wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/207d40e/source/configure 
 	wget -O source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc https://raw.githubusercontent.com/harfbuzz/harfbuzz/2.8.2/src/hb-subset-cff1.cc
+	echo $(shell python3 -c $(REDEFINE_SYM) busybibtex $(BIBTEX_REDEFINE) )
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
