@@ -75,11 +75,14 @@ async function onclick_()
     const use_bibtex = document.getElementById('bibtex').checked;
     const use_recommended = document.getElementById('texlive_latex_recommended').checked;
     const use_extra = document.getElementById('texlive_latex_extra').checked; 
+    const use_science = document.getElementById('texlive_latex_science').checked; 
     
     if(use_recommended)
         texlive_js.push(texlive_recommended_js)
     if(use_extra)
         texlive_js.push(texlive_extra_js)
+    if(use_science)
+        texlive_js.push(texlive_science_js)
 
     let tic = 0;
     
