@@ -5,11 +5,12 @@
 <link rel="busytex" type="application/wasm" id="busytex_wasm" href="/dist/busytex.wasm" />
 <link rel="busytex" type="text/javascript" id="busytex_worker_js" href="/busytex_worker.js" /> 
 <link rel="busytex" type="text/javascript" id="busytex_pipeline_js" href="/busytex_pipeline.js" />
-<link rel="busytex" id="texlive_basic" href="/dist/texlive-basic.js" />
-<link rel="busytex" id="texlive_ubuntu_science" href="/dist/ubuntu-texlive-science.js" />
-<link rel="busytex" id="texlive_ubuntu_recommended" href="/dist/ubuntu-texlive-latex-recommended.js" />
-<link rel="busytex" id="texlive_ubuntu_extra" href="/dist/ubuntu-texlive-latex-extra.js" />    
+<link rel="busytex" type="text/javascript" id="texlive_basic" href="/dist/texlive-basic.js" />
+<link rel="busytex" type="text/javascript" id="texlive_ubuntu_science" href="/dist/ubuntu-texlive-science.js" />
+<link rel="busytex" type="text/javascript" id="texlive_ubuntu_recommended" href="/dist/ubuntu-texlive-latex-recommended.js" />
+<link rel="busytex" type="text/javascript" id="texlive_ubuntu_extra" href="/dist/ubuntu-texlive-latex-extra.js" />    
 </head>
+
 <body style="width: 100%; height: 100%; overflow: hidden">
 <div style="width: 98%; height: 5%;" >
 <label for="elapsed">Time elapsed:</label>
@@ -25,11 +26,6 @@
     <option value="silent" selected>Verbosity: Almost Silent</option>
     <option value="info">Verbosity: Quite Talkative</option>
     <option value="debug">Verbosity: Extremely Chatty</option>
-</select>
-<select name="scheme" id="scheme">
-    <option value="basic">Scheme: Basic</option>
-    <option value="small">Scheme: Small</option>
-    <option value="medium">Scheme: Medium</option>
 </select>
 <input type="checkbox" id="texlive_latex_recommended" name="texlive_latex_recommended">
 <label for="texlive_latex_recommended">texlive-latex-recommended</label>
@@ -63,8 +59,13 @@ Blablabla said Nobody ~\cite{Nobody06}.
 
 <script>
 
-const busytex_js = '/dist/busytex.js', busytex_wasm = '/dist/busytex.wasm', texlive_recommended_js = '/dist/texlive-latex-recommended.js', texlive_extra_js = 'dist/texlive-latex-extra.js', texlive_scheme_js = 'dist/texlive-{scheme}.js';//, '/dist/texlive-lazy.js'];
-const busytex_worker_js = 'busytex_worker.js', busytex_pipeline_js = 'busytex_pipeline.js';
+const busytex_js = '/dist/busytex.js', 
+    busytex_wasm = '/dist/busytex.wasm', 
+    texlive_recommended_js = '/dist/texlive-latex-recommended.js', 
+    texlive_extra_js = 'dist/texlive-latex-extra.js'; 
+const busytex_worker_js = 'busytex_worker.js', 
+    busytex_pipeline_js = 'busytex_pipeline.js';
+
 let worker = null;
 
 async function onclick_()
@@ -75,9 +76,7 @@ async function onclick_()
     const use_bibtex = document.getElementById('bibtex').checked;
     const use_recommended = document.getElementById('texlive_latex_recommended').checked;
     const use_extra = document.getElementById('texlive_latex_extra').checked; 
-    const scheme = document.getElementById('scheme').value
     
-    let texlive_js = [texlive_scheme_js.replace('{scheme}', scheme)];
     if(use_recommended)
         texlive_js.push(texlive_recommended_js)
     if(use_extra)
@@ -168,6 +167,5 @@ function terminate()
 }
 
 </script>
-
-
-</body></html>
+</body>
+</html>
