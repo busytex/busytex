@@ -71,7 +71,7 @@ make clean
 # wasm version, download latest compiled assets, launch server.py and then go to http://localhost:8080/example/example.html
 mkdir -p dist
 wget -P dist --backups=1 $(printf "https://github.com/busytex/busytex/releases/latest/download/%s " busytex_pipeline.js busytex_worker.js    busytex.wasm busytex.js texlive-basic.js texlive-basic.data)
-python3.8 example/serve.py
+python3 example/serve.py
 
 # native version
 bash example/example.sh
