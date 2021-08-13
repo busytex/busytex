@@ -8,6 +8,7 @@ URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
 
 # https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 
+PYTHON = python3
 TOTAL_MEMORY = 536870912
 
 CFLAGS_OPT_native = -O3
@@ -15,7 +16,6 @@ CFLAGS_OPT_wasm = -Oz
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
-PYTHON = python3
 
 BUSYTEX = $(ROOT)/build/native/busytex
 
@@ -68,13 +68,13 @@ DVIPDFMX_REDEFINE = cff_stdstr agl_chop_suffix agl_sput_UTF16BE agl_get_unicodes
 # grep extern source/texlive/texk/dvipdfm-x/*.h | grep -o '[0-9a-zA-Z_]\+\s\+(' | cut -d' ' -f1 | tr '\n' ' '
 #CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell python3 redefine_sym.py busydvipdfmx check_for_jpeg check_for_bmp check_for_png seek_absolute seek_relative seek_end tell_position file_size mfgets work_buffer get_unsigned_byte get_unsigned_pair      pdf_new_stream pdf_ref_obj pdf_add_stream pdf_release_obj ttc_read_offset cff_release_dict cff_new_dict cff_dict_unpack cff_dict_known cff_dict_get cff_dict_pack cff_dict_add cff_dict_remove cff_dict_set cff_dict_update cff_close cff_get_name cff_set_name cff_put_header cff_get_index_header cff_get_index cff_pack_index cff_index_size cff_new_index cff_release_index cff_get_string cff_stdstr cff_get_sid cff_update_string cff_add_string cff_release_encoding cff_read_charsets cff_pack_charsets cff_release_charsets cff_read_fdselect cff_pack_fdselect cff_release_fdselect cff_fdselect_lookup cff_read_fdarray cff_read_private cff_read_subrs get_signed_byte get_signed_pair get_unsigned_quad sfnt_open sfnt_close put_big_endian sfnt_set_table sfnt_find_table_len sfnt_find_table_pos sfnt_locate_table sfnt_read_table_directory sfnt_require_table sfnt_create_FontFile_stream )
 
-REDEFINE_SYM := python3 -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
+REDEFINE_SYM := $(PYTHON) -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
 CFLAGS_KPSEWHICH := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
-CFLAGS_XETEX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
-CFLAGS_BIBTEX := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'      $(shell $(REDEFINE_SYM) busybibtex $(BIBTEX_REDEFINE) )
+CFLAGS_XETEX :=     -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
+CFLAGS_BIBTEX :=    -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
-CFLAGS_PDFTEX := -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'       $(shell $(REDEFINE_SYM) busypdftex $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
-CFLAGS_LUATEX := -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'       $(shell $(REDEFINE_SYM) busyluatex $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_PDFTEX :=    -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'    $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUATEX :=    -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
 
 ##############################################################################################################################
 
