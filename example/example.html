@@ -31,6 +31,8 @@
 <label for="texlive_latex_recommended">texlive-latex-recommended</label>
 <input type="checkbox" id="texlive_latex_extra" name="texlive_latex_extra">
 <label for="texlive_latex_extra">texlive-latex-extra</label>
+<input type="checkbox" id="texlive_latex_science" name="texlive_latex_science">
+<label for="texlive_latex_science">texlive-latex-science</label>
 </div>
 <div><iframe style="width: 98%; height:25%" id="preview"></iframe></div>
 
@@ -59,12 +61,9 @@ Blablabla said Nobody ~\cite{Nobody06}.
 
 <script>
 
-const busytex_js = '/dist/busytex.js', 
-    busytex_wasm = '/dist/busytex.wasm', 
-    texlive_recommended_js = '/dist/texlive-latex-recommended.js', 
-    texlive_extra_js = 'dist/texlive-latex-extra.js'; 
-const busytex_worker_js = 'busytex_worker.js', 
-    busytex_pipeline_js = 'busytex_pipeline.js';
+const paths_list = Array.from(document.head.getElementsByTagName('link')).filter(link => link.rel == 'busytex').map(link => [link.id, link.href])
+const texlive_data_packages_js = paths_list.filter(([id, href]) => id.startsWith('texlive_')).map(([id, href]) => href);
+const paths = { ...Object.fromEntries(paths_list), texlive_data_packages_js : texlive_data_packages_js };
 
 let worker = null;
 
