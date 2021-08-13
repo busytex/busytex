@@ -100,9 +100,9 @@ PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/ic
 ##############################################################################################################################
 
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
-CCSKIP_ICU_wasm = $(PYTHON) $(ROOT)/busytex_emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
-CCSKIP_FREETYPE_wasm = $(PYTHON) $(ROOT)/busytex_emcc_wrapper.py $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
-CCSKIP_XETEX_wasm = $(PYTHON) $(ROOT)/busytex_emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
+CCSKIP_ICU_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
+CCSKIP_FREETYPE_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
+CCSKIP_XETEX_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
 OPTS_ICU_configure_wasm = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu'"
