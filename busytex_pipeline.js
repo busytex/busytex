@@ -369,6 +369,7 @@ class BusytexPipeline
         let tex_packages_not_resolved = [];
         [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, data_packages_js);
         if(tex_packages_not_resolved.length > 0)
+            //TODO: skip texmf-dist (texmf-local)? check only main_tex_path?
             throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
         
         this.print(this.ansi_reset_sequence);
