@@ -212,6 +212,7 @@ class BusytexPipeline
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
+        this.versions = this.Module.then(
     }
 
     terminate()
@@ -323,6 +324,34 @@ class BusytexPipeline
                 this.totalDependencies = Math.max(this.totalDependencies, left);
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
+
+            _NOCLEANUP_callMain(Module, args) 
+            {
+                Module.setPrefix(args[0]);
+                const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, fputc = Module._fputc, fopen = Module._fopen, flush_streams = Module._flush_streams, NULL = 0;
+                const argc = args.length+1;
+                const argv = Module.stackAlloc((argc + 1) * 4);
+                Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
+                for (let i = 1; i < argc; i++) 
+                    Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
+                Module.HEAP32[(argv >> 2) + argc] = NULL;
+
+                try
+                {
+                    main(argc, argv);
+                }
+                catch(err)
+                {
+                    flush_streams();
+                    //putchar('\n'.charCodeAt());
+                    //fputc('\n'.charCodeAt(), fopen('/dev/stderr', 'w'));
+                    //fflush(NULL);
+                    //this.print('callMain: ' + err.message);
+                    return err.status;
+                }
+                
+                return 0;
+            }
         };
        
         const initialized_module = await busytex(Module);
@@ -350,14 +379,14 @@ class BusytexPipeline
             {
                 main(argc, argv);
             }
-            catch(e)
+            catch(err)
             {
                 flush_streams();
                 //putchar('\n'.charCodeAt());
                 //fputc('\n'.charCodeAt(), fopen('/dev/stderr', 'w'));
                 //fflush(NULL);
-                this.print('callMain: ' + e.message);
-                return e.status;
+                this.print('callMain: ' + err.message);
+                return err.status;
             }
             
             return 0;
@@ -381,8 +410,6 @@ class BusytexPipeline
         
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
-        console.log('MODULE', this.Module);
-
         const Module = await this.Module;
         this.print(`Module.data_packages ${Module.data_packages_js} data_packages ${data_packages_js} FIN`);
         const [FS, PATH] = [Module.FS, Module.PATH];
