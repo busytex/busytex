@@ -41,7 +41,32 @@ void flush_streams()
 int main(int argc, char* argv[])
 {
     if(argc < 2)
+    {
+        printf(
+#ifdef BUSYTEX_PDFTEX
+            "pdftex\n"
+#endif
+#ifdef BUSYTEX_LUATEX
+            "luatex\n"
+#endif
+#ifdef BUSYTEX_XETEX
+            "xetex\n"
+#endif
+#ifdef BUSYTEX_XDVIPDFMX
+            "xdvipdfmx\n"
+#endif
+#ifdef BUSYTEX_BIBTEX8
+            "bibtex8\n"
+#endif
+#ifdef BUSYTEX_KPSEWHICH
+            "kpsewhich\n"
+#endif
+#ifdef BUSYTEX_MAKEINDEX
+            "makeindex\n"
+#endif
+        );
         return 0;
+    }
 
 #ifdef BUSYTEX_PDFTEX
     if(strcmp("pdftex", argv[1]) == 0 || strcmp("pdflatex", argv[1]) == 0)
