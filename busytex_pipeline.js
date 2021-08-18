@@ -366,8 +366,10 @@ class BusytexPipeline
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
+        const tex_packages_resolvable_files = files.filter(f => f.path == main_tex_path);
+        
         let tex_packages_not_resolved = [];
-        [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, data_packages_js);
+        [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(tex_packages_resolvable_files, data_packages_js);
         if(tex_packages_not_resolved.length > 0)
             //TODO: skip texmf-dist (texmf-local)? check only main_tex_path?
             throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
