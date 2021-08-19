@@ -324,11 +324,14 @@ class BusytexPipeline
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            _NOCLEANUP_callMain(Module, args) 
+            _NOCLEANUP_callMain(args) 
             {
+                const Module = this;
+                console.log(Module, args);
+
                 Module.setPrefix(args[0]);
                 const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, fputc = Module._fputc, fopen = Module._fopen, flush_streams = Module._flush_streams, NULL = 0;
-                const argc = args.length+1;
+                const argc = args.length + 1;
                 const argv = Module.stackAlloc((argc + 1) * 4);
                 Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
                 for (let i = 1; i < argc; i++) 
