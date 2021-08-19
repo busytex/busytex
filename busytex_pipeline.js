@@ -212,7 +212,6 @@ class BusytexPipeline
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
-        this.versions = this.Module.then(
     }
 
     terminate()
@@ -364,7 +363,7 @@ class BusytexPipeline
 
     async compile(files, main_tex_path, bibtex, verbose, driver, data_packages_js = [])
     {
-        const NOCLEANUP_callMain = (Module, args) =>
+        const NOCLEANUP_callMain = (Module, args, print) =>
         {
             Module.setPrefix(args[0]);
             const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, fputc = Module._fputc, fopen = Module._fopen, flush_streams = Module._flush_streams, NULL = 0;
@@ -385,7 +384,7 @@ class BusytexPipeline
                 //putchar('\n'.charCodeAt());
                 //fputc('\n'.charCodeAt(), fopen('/dev/stderr', 'w'));
                 //fflush(NULL);
-                this.print('callMain: ' + err.message);
+                print('callMain: ' + err.message);
                 return err.status;
             }
             
@@ -455,7 +454,6 @@ class BusytexPipeline
         const source_dir = PATH.join(this.project_dir, dirname);
         FS.chdir(source_dir);
        
-        //TODO: merge with Resolvers
         if(bibtex == null)
             bibtex = files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
         
