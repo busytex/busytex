@@ -1,12 +1,11 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
+# https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
 URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
-
-# https://packages.ubuntu.com/groovy/tex/ https://packages.ubuntu.com/source/groovy/texlive-extra
 
 PYTHON = python3
 TOTAL_MEMORY = 536870912

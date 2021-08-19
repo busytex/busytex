@@ -40,7 +40,16 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
-        const ok = (path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/')) && !(path.startsWith('/texmf/texmf-dist/fonts/') || path.startsWith('/texmf/texmf-dist/bibtex/') || path.startsWith('/texlive/texmf-dist/fonts/') || path.startsWith('/texlive/texmf-dist/bibtex/'));
+        const ok = (
+            path.startsWith('/texmf/texmf-dist/tex/') || 
+            path.startsWith('/texlive/texmf-dist/tex/')) && 
+            
+            !(
+                path.startsWith('/texmf/texmf-dist/fonts/') || 
+                path.startsWith('/texmf/texmf-dist/bibtex/') || 
+                path.startsWith('/texlive/texmf-dist/fonts/') || 
+                path.startsWith('/texlive/texmf-dist/bibtex/')
+            );
         
         //cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
@@ -324,7 +333,7 @@ class BusytexPipeline
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            NOCLEANUP_callMain(args, print = console.log) 
+            NOCLEANUP_callMain(args = [], print = console.log) 
             {
                 const Module = this;
 
@@ -379,7 +388,7 @@ class BusytexPipeline
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
         if(report_versions || true)
         {
-            console.log('APPLETS', initialized_module.NOCLEANUP_callMain([applet]))
+            console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
             const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
             const versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version'])])));
             console.log('VERSIONS', versions)
