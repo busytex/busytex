@@ -212,7 +212,6 @@ class BusytexPipeline
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
-        this.versions = {};
     }
 
     terminate()
@@ -257,7 +256,7 @@ class BusytexPipeline
         }
     }
 
-    async reload_module(env, project_dir, data_packages_js = [])
+    async reload_module(env, project_dir, data_packages_js = [], report_versions = false)
     {
         const data_packages_js_promise = data_packages_js.map(data_package_js => this.load_package(data_package_js));
         const [em_module, wasm_module] = await Promise.all([this.em_module_promise, WebAssembly.compileStreaming ? this.wasm_module_promise : this.wasm_module_promise.then(r => r.arrayBuffer()),  ...data_packages_js_promise]);
@@ -378,11 +377,13 @@ class BusytexPipeline
         this.print(`INITIALIZED ${initialized_module.data_packages_js}`);
         
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
-        
-        console.log('APPLETS', initialized_module.NOCLEANUP_callMain([applet]))
-        const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
-        const versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version'])])));
-        console.log('VERSIONS', versions)
+        if(report_versions || true)
+        {
+            console.log('APPLETS', initialized_module.NOCLEANUP_callMain([applet]))
+            const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
+            const versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version'])])));
+            console.log('VERSIONS', versions)
+        }
 
         return initialized_module;
     }
