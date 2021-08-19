@@ -352,7 +352,28 @@ class BusytexPipeline
                 return 0;
             }
         };
-       
+        
+        /*
+        
+        output_stdout : ''
+        stdout(ord)
+        {
+            const CR = 0x0D, LF = 0x0A;
+            if(Module.newline != '' || ord != LF)
+                Module.output_stdout += String.fromCharCode(ord);
+            //if(verbose && print) print(Module.thisProgram + ': ' + Module.prefix + ' | stdout: ' + text);
+        }
+
+        output_stderr : ''
+        printErr(text)
+        {
+            text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
+            Module.output_stderr += text + Module.newline;
+            Module.setStatus(' | stderr: ' + text);
+        }
+        
+        */
+
         const initialized_module = await busytex(Module);
         this.print(`INITIALIZED ${initialized_module.data_packages_js}`);
         
