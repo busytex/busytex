@@ -212,6 +212,7 @@ class BusytexPipeline
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
+        this.versions = {};
     }
 
     terminate()
@@ -324,13 +325,12 @@ class BusytexPipeline
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            _NOCLEANUP_callMain(args) 
+            NOCLEANUP_callMain(args, print = console.log) 
             {
                 const Module = this;
-                console.log(Module, args);
 
                 Module.setPrefix(args[0]);
-                const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, fputc = Module._fputc, fopen = Module._fopen, flush_streams = Module._flush_streams, NULL = 0;
+                const main = Module['_main'], flush_streams = Module._flush_streams, NULL = 0;
                 const argc = args.length + 1;
                 const argv = Module.stackAlloc((argc + 1) * 4);
                 Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
@@ -345,10 +345,7 @@ class BusytexPipeline
                 catch(err)
                 {
                     flush_streams();
-                    //putchar('\n'.charCodeAt());
-                    //fputc('\n'.charCodeAt(), fopen('/dev/stderr', 'w'));
-                    //fflush(NULL);
-                    //this.print('callMain: ' + err.message);
+                    print('callMain: ' + err.message);
                     return err.status;
                 }
                 
@@ -361,39 +358,16 @@ class BusytexPipeline
         
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
         
+        console.log('APPLETS', initialized_module.NOCLEANUP_callMain([applet]))
+        const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
+        const versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version'])])));
+        console.log('VERSIONS', versions)
+
         return initialized_module;
     }
 
     async compile(files, main_tex_path, bibtex, verbose, driver, data_packages_js = [])
     {
-        const NOCLEANUP_callMain = (Module, args, print) =>
-        {
-            Module.setPrefix(args[0]);
-            const main = Module['_main'], fflush = Module._fflush, putchar = Module._putchar, fputc = Module._fputc, fopen = Module._fopen, flush_streams = Module._flush_streams, NULL = 0;
-            const argc = args.length+1;
-            const argv = Module.stackAlloc((argc + 1) * 4);
-            Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
-            for (let i = 1; i < argc; i++) 
-                Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
-            Module.HEAP32[(argv >> 2) + argc] = NULL;
-
-            try
-            {
-                main(argc, argv);
-            }
-            catch(err)
-            {
-                flush_streams();
-                //putchar('\n'.charCodeAt());
-                //fputc('\n'.charCodeAt(), fopen('/dev/stderr', 'w'));
-                //fflush(NULL);
-                print('callMain: ' + err.message);
-                return err.status;
-            }
-            
-            return 0;
-        }
-        
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
@@ -471,7 +445,7 @@ class BusytexPipeline
         for(const cmd of cmds)
         {
             this.print('$ busytex ' + cmd.join(' '));
-            exit_code = NOCLEANUP_callMain(Module, cmd, this.print);
+            exit_code = Module.NOCLEANUP_callMain(cmd, this.print);
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
             
