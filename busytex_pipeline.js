@@ -303,19 +303,33 @@ class BusytexPipeline
                 WebAssembly.instantiate(wasm_module, imports).then(output => successCallback(WebAssembly.compileStreaming ? output : output.instance)).catch(err => {throw new Error('Error while initializing BusyTex!\n\n' + err.toString())});
                 return {};
             },
+
+            output_stdout : '',
+            stdout(ord)
+            {
+                const CR = 0x0D, LF = 0x0A;
+                if(Module.newline != '' || ord != LF)
+                    Module.output_stdout += String.fromCharCode(ord);
+                //if(verbose && print) print(Module.thisProgram + ': ' + Module.prefix + ' | stdout: ' + text);
+            },
+            output_stderr : ''
+            printErr(text)
+            {
+                text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
+                Module.output_stderr += text + Module.newline;
+                Module.setStatus(' | stderr: ' + text);
+            },
             
-            print(text) 
+            /*print(text) 
             {
                 if(verbose == BusytexVerboseSilent)
                     return;
-
                 Module.setStatus(Module.prefix + ' | stdout: ' + (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text));
             },
-
             printErr(text)
             {
                 Module.setStatus(Module.prefix + ' | stderr: ' + (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text));
-            },
+            },*/
             
             setPrefix(text)
             {
@@ -336,13 +350,15 @@ class BusytexPipeline
             NOCLEANUP_callMain(args = [], print = console.log) 
             {
                 const Module = this;
+                Module.output_stdout = '';
+                Module.output_stderr = '';
 
                 Module.setPrefix(args[0]);
-                const main = Module['_main'], flush_streams = Module._flush_streams, NULL = 0;
+                const main = Module._main, flush_streams = Module._flush_streams, NULL = 0;
                 const argc = args.length + 1;
                 const argv = Module.stackAlloc((argc + 1) * 4);
                 Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
-                for (let i = 1; i < argc; i++) 
+                for(let i = 1; i < argc; i++) 
                     Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
                 Module.HEAP32[(argv >> 2) + argc] = NULL;
 
@@ -353,7 +369,6 @@ class BusytexPipeline
                 catch(err)
                 {
                     flush_streams();
-                    print('callMain: ' + err.message);
                     return err.status;
                 }
                 
@@ -361,27 +376,6 @@ class BusytexPipeline
             }
         };
         
-        /*
-        
-        output_stdout : ''
-        stdout(ord)
-        {
-            const CR = 0x0D, LF = 0x0A;
-            if(Module.newline != '' || ord != LF)
-                Module.output_stdout += String.fromCharCode(ord);
-            //if(verbose && print) print(Module.thisProgram + ': ' + Module.prefix + ' | stdout: ' + text);
-        }
-
-        output_stderr : ''
-        printErr(text)
-        {
-            text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
-            Module.output_stderr += text + Module.newline;
-            Module.setStatus(' | stderr: ' + text);
-        }
-        
-        */
-
         const initialized_module = await busytex(Module);
         this.print(`INITIALIZED ${initialized_module.data_packages_js}`);
         
@@ -477,6 +471,9 @@ class BusytexPipeline
         {
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, this.print);
+            const [stdout, stderr] = [Module.output_stdout, Module.output_stderr];
+            console.log(cmd, stdout, stderr);
+
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
             
