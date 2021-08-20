@@ -312,12 +312,12 @@ class BusytexPipeline
                     Module.output_stdout += String.fromCharCode(ord);
                 //if(verbose && print) print(Module.thisProgram + ': ' + Module.prefix + ' | stdout: ' + text);
             },
-            output_stderr : ''
+            output_stderr : '',
             printErr(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stderr += text + Module.newline;
-                Module.setStatus(' | stderr: ' + text);
+                //Module.setStatus(' | stderr: ' + text);
             },
             
             /*print(text) 
