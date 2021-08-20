@@ -304,6 +304,7 @@ class BusytexPipeline
                 return {};
             },
 
+            newline : '\n',
             output_stdout : '',
             stdout(ord)
             {
