@@ -309,7 +309,8 @@ class BusytexPipeline
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stdout += text + '\n' ;
-                Module.setStatus(this.thisProgram + ' stdout: ' + text);
+                if(verbose != BusytexVerboseSilent)
+                    Module.setStatus(this.thisProgram + ' stdout: ' + text);
             },
             output_stderr : '',
             printErr(text)
@@ -335,8 +336,10 @@ class BusytexPipeline
                 this.prefix = text;
             },
             
-            setStatus : print,
-            print : print,
+            setStatus(text)
+            {
+                print(text);
+            }
 
             monitorRunDependencies(left)
             {
@@ -370,6 +373,7 @@ class BusytexPipeline
                     return err.status;
                 }
                 
+                flush_streams();
                 return 0;
             }
         };
