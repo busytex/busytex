@@ -340,7 +340,7 @@ class BusytexPipeline
             {
                 console.log('DOPRINT', this.do_print);
                 print(text);
-            }
+            },
 
             monitorRunDependencies(left)
             {
