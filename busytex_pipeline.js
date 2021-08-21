@@ -338,6 +338,7 @@ class BusytexPipeline
             
             setStatus(text)
             {
+                console.log('DOPRINT', this.do_print);
                 print(text);
             }
 
@@ -350,7 +351,13 @@ class BusytexPipeline
             NOCLEANUP_callMain(args = [], print = false) 
             {
                 const Module = this;
-                Module.setStatus = print === false ? text => null : this.print;
+                Module.do_print = !(print === false);
+                Module.setStatus = text => 
+                {
+                    if(print === false)
+                        return;
+                    this.print(text);
+                }
                 Module.output_stdout = '';
                 Module.output_stderr = '';
 
