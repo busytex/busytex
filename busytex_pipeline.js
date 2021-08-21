@@ -304,21 +304,17 @@ class BusytexPipeline
                 return {};
             },
 
-            newline : '\n',
             output_stdout : '',
-            stdout(ord)
+            print(ord)
             {
-                const CR = 0x0D, LF = 0x0A;
-                if(Module.newline != '' || ord != LF)
-                    Module.output_stdout += String.fromCharCode(ord);
-                //if(verbose && print) print(Module.thisProgram + ': ' + Module.prefix + ' | stdout: ' + text);
+                text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
+                Module.output_stdout += text + Module.newline;
             },
             output_stderr : '',
             printErr(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stderr += text + Module.newline;
-                //Module.setStatus(' | stderr: ' + text);
             },
             
             /*print(text) 
