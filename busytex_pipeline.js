@@ -309,12 +309,14 @@ class BusytexPipeline
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stdout += text + Module.newline;
+                Module.setStatus(this.thisProgram + ' stdout: ' + text);
             },
             output_stderr : '',
             printErr(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stderr += text + Module.newline;
+                Module.setStatus(this.thisProgram + ' stderr: ' + text);
             },
             
             /*print(text) 
@@ -333,20 +335,19 @@ class BusytexPipeline
                 this.prefix = text;
             },
             
-            setStatus(text)
-            {
-                print(Module.thisProgram + ': ' + text);
-            },
-            
+            setStatus : print,
+            print : print,
+
             monitorRunDependencies(left)
             {
                 this.totalDependencies = Math.max(this.totalDependencies, left);
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            NOCLEANUP_callMain(args = [], print = console.log) 
+            NOCLEANUP_callMain(args = [], print = false) 
             {
                 const Module = this;
+                Module.setStatus = print === false ? text => null : this.print;
                 Module.output_stdout = '';
                 Module.output_stderr = '';
 
@@ -381,7 +382,13 @@ class BusytexPipeline
         {
             console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
             const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
-            const versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version'])])));
+            const versions = Object.fromEntries(applets.map(applet => {
+                const return_code = initialized_module.NOCLEANUP_callMain([applet, '--version']);
+                const [stdout, stderr] = [initialized_module.output_stdout, initialized_module.output_stderr];
+                console.log(applet ,stdout , stderr);
+                return [applet, stdout];
+            }));
+            
             console.log('VERSIONS', versions)
         }
 
@@ -468,8 +475,8 @@ class BusytexPipeline
         {
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, this.print);
-            const [stdout, stderr] = [Module.output_stdout, Module.output_stderr];
-            console.log(cmd, stdout, stderr);
+            //const [stdout, stderr] = [Module.output_stdout, Module.output_stderr];
+            //console.log(cmd, stdout, stderr);
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
