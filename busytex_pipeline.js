@@ -305,17 +305,17 @@ class BusytexPipeline
             },
 
             output_stdout : '',
-            print(ord)
+            print(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
-                Module.output_stdout += text + Module.newline;
+                Module.output_stdout += text + '\n' ;
                 Module.setStatus(this.thisProgram + ' stdout: ' + text);
             },
             output_stderr : '',
             printErr(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
-                Module.output_stderr += text + Module.newline;
+                Module.output_stderr += text + '\n';
                 Module.setStatus(this.thisProgram + ' stderr: ' + text);
             },
             
@@ -385,8 +385,8 @@ class BusytexPipeline
             const versions = Object.fromEntries(applets.map(applet => {
                 const return_code = initialized_module.NOCLEANUP_callMain([applet, '--version']);
                 const [stdout, stderr] = [initialized_module.output_stdout, initialized_module.output_stderr];
-                console.log(applet ,stdout , stderr);
-                return [applet, stdout];
+                console.log(applet ,'stdout [', stdout, '] stderr [' , stderr, ']');
+                return [applet, stderr];
             }));
             
             console.log('VERSIONS', versions)
