@@ -311,14 +311,14 @@ class BusytexPipeline
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stdout += text + '\n' ;
                 if(verbose != BusytexVerboseSilent)
-                    Module.setStatus(this.thisProgram + ' stdout: ' + text);
+                    Module.setStatus(Module.thisProgram + ' stdout: ' + text);
             },
             output_stderr : '',
             printErr(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stderr += text + '\n';
-                Module.setStatus(this.thisProgram + ' stderr: ' + text);
+                Module.setStatus(Module.thisProgram + ' stderr: ' + text);
             },
             
             /*print(text) 
