@@ -304,6 +304,7 @@ class BusytexPipeline
                 return {};
             },
 
+            do_print : true,
             output_stdout : '',
             print(text)
             {
@@ -392,12 +393,13 @@ class BusytexPipeline
         if(report_versions || true)
         {
             console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
-            const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
-            const versions = Object.fromEntries(applets.map(applet => {
+            const applets = ['xetex', 'bibtex8'];//, 'xdvipdfmx'];
+            const versions = Object.fromEntries(applets.map(applet => 
+            {
                 const return_code = initialized_module.NOCLEANUP_callMain([applet, '--version']);
-                const [stdout, stderr] = [initialized_module.output_stdout, initialized_module.output_stderr];
+                const stdout = initialized_module.output_stdout;
                 console.log(applet ,'stdout [', stdout, '] stderr [' , stderr, ']');
-                return [applet, stderr];
+                return [applet, stdout];
             }));
             
             console.log('VERSIONS', versions)
