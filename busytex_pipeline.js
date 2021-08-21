@@ -340,7 +340,8 @@ class BusytexPipeline
             setStatus(text)
             {
                 console.log('DOPRINT', this.do_print);
-                print(text);
+                if(this.do_print)
+                    print(text);
             },
 
             monitorRunDependencies(left)
@@ -349,16 +350,10 @@ class BusytexPipeline
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            NOCLEANUP_callMain(args = [], print = false) 
+            NOCLEANUP_callMain(args = [], print = true) 
             {
                 const Module = this;
-                Module.do_print = !(print === false);
-                Module.setStatus = text => 
-                {
-                    if(print === false)
-                        return;
-                    this.print(text);
-                }
+                Module.do_print = print;
                 Module.output_stdout = '';
                 Module.output_stderr = '';
 
@@ -487,7 +482,7 @@ class BusytexPipeline
         for(const cmd of cmds)
         {
             this.print('$ busytex ' + cmd.join(' '));
-            exit_code = Module.NOCLEANUP_callMain(cmd, this.print);
+            exit_code = Module.NOCLEANUP_callMain(cmd, true);
             //const [stdout, stderr] = [Module.output_stdout, Module.output_stderr];
             //console.log(cmd, stdout, stderr);
 
