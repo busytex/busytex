@@ -343,9 +343,11 @@ class BusytexPipeline
                 }
                 catch(err)
                 {
-                    flush_streams();
                     if(err.name == 'ExitStatus')
+                    {
+                        flush_streams();
                         return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
+                    }
                     else
                         throw err;
                 }
@@ -363,13 +365,7 @@ class BusytexPipeline
         if(report_versions)
         {
             const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
-            versions = Object.fromEntries(applets.map(applet => 
-            {
-                const {stdout} = initialized_module.NOCLEANUP_callMain([applet, '--version']);
-                return [applet, stdout];
-            }));
-            
-            console.log('VERSIONS', versions);
+            versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version']).stdout])));
         }
 
         return initialized_module;
