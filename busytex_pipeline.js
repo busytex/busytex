@@ -372,12 +372,13 @@ class BusytexPipeline
                 }
                 catch(err)
                 {
+                    // TODO: check err type
                     flush_streams();
-                    return err.status;
+                    return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
                 }
                 
                 flush_streams();
-                return 0;
+                return {exit_code : 0, stdout : Module.output_stdout, stderr : Module.output_stderr};
             }
         };
         
@@ -387,12 +388,11 @@ class BusytexPipeline
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
         if(report_versions || true)
         {
-            console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
-            const applets = ['xetex', 'bibtex8'];//, 'xdvipdfmx'];
+            //console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
+            const applets = ['xetex'];//, 'bibtex8', 'xdvipdfmx'];
             const versions = Object.fromEntries(applets.map(applet => 
             {
-                const return_code = initialized_module.NOCLEANUP_callMain([applet, '--version']);
-                const stdout = initialized_module.output_stdout;
+                const {stdout, stderr} = initialized_module.NOCLEANUP_callMain([applet, '--version']);
                 console.log(applet ,'stdout [', stdout, '] stderr [' , stderr, ']');
                 return [applet, stdout];
             }));
@@ -408,13 +408,15 @@ class BusytexPipeline
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
-        const tex_packages_resolvable_files = files.filter(f => f.path == main_tex_path);
-        
         let tex_packages_not_resolved = [];
+        const tex_packages_resolvable_files = files.filter(f => f.path == main_tex_path);
         [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(tex_packages_resolvable_files, data_packages_js);
+        
         if(tex_packages_not_resolved.length > 0)
+        {
             //TODO: skip texmf-dist (texmf-local)? check only main_tex_path?
             throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
+        }
         
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
@@ -482,9 +484,7 @@ class BusytexPipeline
         for(const cmd of cmds)
         {
             this.print('$ busytex ' + cmd.join(' '));
-            exit_code = Module.NOCLEANUP_callMain(cmd, true);
-            //const [stdout, stderr] = [Module.output_stdout, Module.output_stderr];
-            //console.log(cmd, stdout, stderr);
+            exit_code = Module.NOCLEANUP_callMain(cmd, true).exit_code;
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -495,8 +495,11 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
+
+        // TODO: collect logs after every call?
         const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
         
+        // TODO: do unmount if not empty even if exceptions happened
         FS.unmount(this.project_dir);
         this.Module = this.preload == false ? null : this.Module;
         
