@@ -372,7 +372,8 @@ class BusytexPipeline
                 }
                 catch(err)
                 {
-                    // TODO: check err type
+                    // TODO: check err type?
+                    console.log(err, typeof(err), err.prototype, '' + err);
                     flush_streams();
                     return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
                 }
@@ -388,8 +389,8 @@ class BusytexPipeline
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
         if(report_versions || true)
         {
-            //console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
-            const applets = ['xetex'];//, 'bibtex8', 'xdvipdfmx'];
+            console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
+            const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
             const versions = Object.fromEntries(applets.map(applet => 
             {
                 const {stdout, stderr} = initialized_module.NOCLEANUP_callMain([applet, '--version']);
