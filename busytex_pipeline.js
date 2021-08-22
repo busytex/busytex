@@ -42,14 +42,16 @@ class BusytexDataPackageResolver
     {
         const ok = (
             path.startsWith('/texmf/texmf-dist/tex/') || 
-            path.startsWith('/texlive/texmf-dist/tex/')) && 
+            path.startsWith('/texlive/texmf-dist/tex/'))
             
-            !(
+            ;
+            
+            /*!(
                 path.startsWith('/texmf/texmf-dist/fonts/') || 
                 path.startsWith('/texmf/texmf-dist/bibtex/') || 
                 path.startsWith('/texlive/texmf-dist/fonts/') || 
                 path.startsWith('/texlive/texmf-dist/bibtex/')
-            );
+            );*/
         
         //cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
