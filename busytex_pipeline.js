@@ -310,7 +310,7 @@ class BusytexPipeline
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
                 Module.output_stdout += text + '\n' ;
-                if(verbose != BusytexVerboseSilent)
+                if(Module.do_print)
                     Module.setStatus(Module.thisProgram + ' stdout: ' + text);
             },
             output_stderr : '',
@@ -484,7 +484,7 @@ class BusytexPipeline
         for(const cmd of cmds)
         {
             this.print('$ busytex ' + cmd.join(' '));
-            exit_code = Module.NOCLEANUP_callMain(cmd, true).exit_code;
+            exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
