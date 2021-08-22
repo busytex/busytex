@@ -233,7 +233,7 @@ class BusytexPipeline
         if(cond)
         {
             console.log('RELOADING', data_packages_js);
-            return this.reload_module(env, project_dir, data_packages_js, report_versions)[0];
+            return this.reload_module(env, project_dir, data_packages_js, report_versions);
         }
         else if(this.Module)
         {
@@ -243,7 +243,7 @@ class BusytexPipeline
            
             if(new_data_packages_js.length > 0)
             {
-                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)), report_versions)[0];
+                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)), report_versions);
             }
 
             return Module;
@@ -386,10 +386,10 @@ class BusytexPipeline
                 return [applet, stdout];
             }));
             
-            console.log('VERSIONS', versions)
+            console.log('VERSIONS', versions);
         }
 
-        return [initialized_module, versions];
+        return initialized_module;
     }
 
     async compile(files, main_tex_path, bibtex, verbose, driver, data_packages_js = [])

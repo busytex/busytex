@@ -12,7 +12,7 @@ onmessage = async ({data : {files, main_tex_path, bibtex, busytex_wasm, busytex_
         }
         catch(err)
         {
-            postMessage({exception: 'Exception during initialization: ' + err.toString()});
+            postMessage({exception: 'Exception during initialization: ' + err.toString() + '\nStack:\n' + err.stack});
         }
     }
     else if(files && self.pipeline)
@@ -23,7 +23,7 @@ onmessage = async ({data : {files, main_tex_path, bibtex, busytex_wasm, busytex_
         }
         catch(err)
         {
-            postMessage({exception: 'Exception during compilation: ' + err.toString()});
+            postMessage({exception: 'Exception during compilation: ' + err.toString() + '\nStack:\n' + err.stack});
         }
     }
 };
