@@ -228,12 +228,12 @@ class BusytexPipeline
         this.Module = null;
     }
 
-    async reload_module_if_needed(cond, env, project_dir, data_packages_js)
+    async reload_module_if_needed(cond, env, project_dir, data_packages_js, report_versions = true)
     {
         if(cond)
         {
             console.log('RELOADING', data_packages_js);
-            return this.reload_module(env, project_dir, data_packages_js);
+            return this.reload_module(env, project_dir, data_packages_js, report_versions)[0];
         }
         else if(this.Module)
         {
@@ -243,11 +243,9 @@ class BusytexPipeline
            
             if(new_data_packages_js.length > 0)
             {
-                console.log('RELOADING', data_packages_js);
-                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)));
+                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)), report_versions)[0];
             }
 
-            console.log('NOT RELOADING');
             return Module;
 
             /*console.log('LOADINGPACKAGES', new_data_packages_js);
@@ -321,17 +319,6 @@ class BusytexPipeline
                 Module.setStatus(Module.thisProgram + ' stderr: ' + text);
             },
             
-            /*print(text) 
-            {
-                if(verbose == BusytexVerboseSilent)
-                    return;
-                Module.setStatus(Module.prefix + ' | stdout: ' + (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text));
-            },
-            printErr(text)
-            {
-                Module.setStatus(Module.prefix + ' | stderr: ' + (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text));
-            },*/
-            
             setPrefix(text)
             {
                 this.prefix = text;
@@ -372,10 +359,11 @@ class BusytexPipeline
                 }
                 catch(err)
                 {
-                    // TODO: check err type?
-                    console.log(err, typeof(err), err.prototype, '' + err);
                     flush_streams();
-                    return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
+                    if(err.name == 'ExitStatus')
+                        return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
+                    else
+                        throw err;
                 }
                 
                 flush_streams();
@@ -384,14 +372,14 @@ class BusytexPipeline
         };
         
         const initialized_module = await busytex(Module);
-        this.print(`INITIALIZED ${initialized_module.data_packages_js}`);
         
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
-        if(report_versions || true)
+        let versions = {};
+        if(report_versions)
         {
             console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
             const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
-            const versions = Object.fromEntries(applets.map(applet => 
+            versions = Object.fromEntries(applets.map(applet => 
             {
                 const {stdout, stderr} = initialized_module.NOCLEANUP_callMain([applet, '--version']);
                 console.log(applet ,'stdout [', stdout, '] stderr [' , stderr, ']');
@@ -401,7 +389,7 @@ class BusytexPipeline
             console.log('VERSIONS', versions)
         }
 
-        return initialized_module;
+        return [initialized_module, versions];
     }
 
     async compile(files, main_tex_path, bibtex, verbose, driver, data_packages_js = [])
