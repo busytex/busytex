@@ -228,12 +228,11 @@ class BusytexPipeline
         this.Module = null;
     }
 
-    async reload_module_if_needed(cond, env, project_dir, data_packages_js, report_versions = true)
+    async reload_module_if_needed(cond, env, project_dir, data_packages_js)
     {
         if(cond)
         {
-            console.log('RELOADING', data_packages_js);
-            return this.reload_module(env, project_dir, data_packages_js, report_versions);
+            return this.reload_module(env, project_dir, data_packages_js, true);
         }
         else if(this.Module)
         {
@@ -243,23 +242,10 @@ class BusytexPipeline
            
             if(new_data_packages_js.length > 0)
             {
-                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)), report_versions);
+                return this.reload_module(env, project_dir, Array.from(enabled_packages_js).concat(Array.from(new_data_packages_js)), false);
             }
 
             return Module;
-
-            /*console.log('LOADINGPACKAGES', new_data_packages_js);
-            Module.calledRun = false;
-            const dependencies_fullfilled = new Promise(resolve => (Module.run = resolve));
-
-            await Promise.all(new_data_packages_js.map(data_package_js => this.load_package(data_package_js)));
-            console.log('PRERUNNING');
-            Module.pre_run_packages(Module)();
-            
-            enabled_packages.push(...new_data_packages_js);
-            
-            await dependencies_fullfilled;
-            return Module;*/
         }
     }
 
@@ -272,7 +258,6 @@ class BusytexPipeline
         const pre_run_packages = Module => () =>
         {
             Object.setPrototypeOf(BusytexPipeline, Module);
-            console.log('pre_run_packages', BusytexPipeline.preRun);
 
             for(const preRun of BusytexPipeline.preRun)
             {
@@ -326,7 +311,6 @@ class BusytexPipeline
             
             setStatus(text)
             {
-                console.log('DOPRINT', this.do_print);
                 if(this.do_print)
                     print(text);
             },
@@ -374,15 +358,14 @@ class BusytexPipeline
         const initialized_module = await busytex(Module);
         
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
+        
         let versions = {};
         if(report_versions)
         {
-            console.log('APPLETS', initialized_module.NOCLEANUP_callMain())
-            const applets = ['xetex', 'bibtex8', 'xdvipdfmx'];
+            const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
             versions = Object.fromEntries(applets.map(applet => 
             {
-                const {stdout, stderr} = initialized_module.NOCLEANUP_callMain([applet, '--version']);
-                console.log(applet ,'stdout [', stdout, '] stderr [' , stderr, ']');
+                const {stdout} = initialized_module.NOCLEANUP_callMain([applet, '--version']);
                 return [applet, stdout];
             }));
             
