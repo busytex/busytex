@@ -8,7 +8,7 @@ onmessage = async ({data : {files, main_tex_path, bibtex, busytex_wasm, busytex_
     {
         try
         {
-            self.pipeline = new BusytexPipeline(busytex_js, busytex_wasm, data_packages_js, preload_data_packages_js, texmf_local, msg => postMessage({print : msg}), applet_versions => postMessage({ print : JSON.stringify(applet_verisons) }), preload, BusytexPipeline.ScriptLoaderWorker);
+            self.pipeline = new BusytexPipeline(busytex_js, busytex_wasm, data_packages_js, preload_data_packages_js, texmf_local, msg => postMessage({print : msg}), applet_versions => postMessage({ print : JSON.stringify(applet_versions) }), preload, BusytexPipeline.ScriptLoaderWorker);
         }
         catch(err)
         {
