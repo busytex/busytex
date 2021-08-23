@@ -168,7 +168,7 @@ class BusytexPipeline
         return promise;
     }
 
-    constructor(busytex_js, busytex_wasm, data_packages_js, preload_data_packages_js, texmf_local, print, preload, script_loader)
+    constructor(busytex_js, busytex_wasm, data_packages_js, preload_data_packages_js, texmf_local, print, on_initialized, preload, script_loader)
     {
         this.print = print;
         this.preload = preload;
@@ -226,7 +226,7 @@ class BusytexPipeline
         
         this.on_initialized = null;
         this.on_initialized_promise = new Promise(resolve => (this.on_initialized = resolve));
-        this.AppletVersions = this.on_initialized_promise.then(applet_versions => console.log('VERSIONS', applet_versions));
+        this.on_initialized_promise_notification = this.on_initialized_promise.then(on_initialized);
     }
 
     terminate()
