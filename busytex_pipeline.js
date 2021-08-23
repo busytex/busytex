@@ -223,6 +223,7 @@ class BusytexPipeline
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
+        //this.AppletVersions = this.Module.then(Module => Module.applet_versions);
     }
 
     terminate()
@@ -251,7 +252,7 @@ class BusytexPipeline
         }
     }
 
-    async reload_module(env, project_dir, data_packages_js = [], report_versions = false)
+    async reload_module(env, project_dir, data_packages_js = [], report_applet_versions = false)
     {
         const data_packages_js_promise = data_packages_js.map(data_package_js => this.load_package(data_package_js));
         const [em_module, wasm_module] = await Promise.all([this.em_module_promise, WebAssembly.compileStreaming ? this.wasm_module_promise : this.wasm_module_promise.then(r => r.arrayBuffer()),  ...data_packages_js_promise]);
@@ -323,7 +324,7 @@ class BusytexPipeline
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            NOCLEANUP_callMain(args = [], print = true) 
+            NOCLEANUP_callMain(args = [], print = false) 
             {
                 const Module = this;
                 Module.do_print = print;
@@ -363,12 +364,13 @@ class BusytexPipeline
         
         console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
         
-        let versions = {};
-        if(report_versions)
+        if(report_applet_versions)
         {
             const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
-            versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version']).stdout])));
+            initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version']).stdout])));
         }
+        else
+            initialized_module.applet_versions = {};
 
         return initialized_module;
     }
