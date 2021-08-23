@@ -223,7 +223,10 @@ class BusytexPipeline
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
-        //this.AppletVersions = this.Module.then(Module => Module.applet_versions);
+        
+        this.on_initialized = null;
+        this.on_initialized_promise = new Promise(resolve => (this.on_initialized = resolve));
+        this.AppletVersions = this.on_initialized_promise.then(applet_versions => console.log('VERSIONS', applet_versions));
     }
 
     terminate()
@@ -368,6 +371,7 @@ class BusytexPipeline
         {
             const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
             initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version']).stdout])));
+            this.on_initialized(initialized_module.applet_versions);
         }
         else
             initialized_module.applet_versions = {};
