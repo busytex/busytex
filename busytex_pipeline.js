@@ -472,7 +472,7 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
-        const log = logs.map(({cmd, temxflog, log}) => `$ ${cmd}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}======`).join('\n\n');
+        const log = logs.map(({cmd, texmflog, log}) => `$ ${cmd}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}======`).join('\n\n');
         
         // TODO: do unmount if not empty even if exceptions happened
         FS.unmount(this.project_dir);
