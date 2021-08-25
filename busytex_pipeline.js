@@ -457,8 +457,8 @@ class BusytexPipeline
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
         
-            const texmflog = FS.analyzePath(this.texmflog).exists ? FS.readFile(this.texmflog, {encoding : 'utf8'}) : null;
-            const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
+            const texmflog = FS.analyzePath(this.texmflog).exists ? FS.readFile(this.texmflog, {encoding : 'utf8'}) : '';
+            const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -469,7 +469,7 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
-        const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
+        const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
         
         // TODO: do unmount if not empty even if exceptions happened
         FS.unmount(this.project_dir);
