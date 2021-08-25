@@ -421,6 +421,9 @@ class BusytexPipeline
                 dirs.add(dirpath);
             }
         };
+        
+        const read_all_text = log_path => FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
+        const remove = log_path => FS.analyzePath(log_path).exists ? FS.unlink(log_path) : null;
 
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
@@ -451,14 +454,13 @@ class BusytexPipeline
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         for(const cmd of cmds)
         {
-            if(FS.analyzePath(this.texmflog).exists) FS.unlink(this.texmflog);
-            if(FS.analyzePath(log_path).exists) FS.unlink(log_path);
+            remove(this.texmflog);
+            remove(log_path);
 
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
         
-            const texmflog = FS.analyzePath(this.texmflog).exists ? FS.readFile(this.texmflog, {encoding : 'utf8'}) : '';
-            const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
+            const texmflog = read_all_text(this.texmflog), log = read_all_text(log_path);
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -469,7 +471,7 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
-        const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
+        const log = read_all_text(log_path);
         
         // TODO: do unmount if not empty even if exceptions happened
         FS.unmount(this.project_dir);
