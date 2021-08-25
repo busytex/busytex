@@ -1,4 +1,3 @@
-//TODO: work with only files paths (without dir paths)
 //TODO: what happens if creating another pipeline (waiting data error?)
 //TODO: put texlive into /opt/texlive/2020 or ~/.texlive2020?
 //TODO: configure fontconfig to use /etc/fonts
