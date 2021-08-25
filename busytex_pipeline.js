@@ -452,6 +452,7 @@ class BusytexPipeline
         
         let exit_code = 0;
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
+        const logs = [];
         for(const cmd of cmds)
         {
             remove(this.texmflog);
@@ -459,8 +460,8 @@ class BusytexPipeline
 
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
-        
-            const texmflog = read_all_text(this.texmflog), log = read_all_text(log_path);
+       
+            logs.push({cmd : cmd.join(' '), texmflog : read_all_text(this.texmflog), log : read_all_text(log_path)});
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -477,6 +478,6 @@ class BusytexPipeline
         FS.unmount(this.project_dir);
         this.Module = this.preload == false ? null : this.Module;
         
-        return {pdf : pdf, log : log, exit_code : exit_code};
+        return {pdf : pdf, log : log, exit_code : exit_code, logs : logs};
     }
 }
