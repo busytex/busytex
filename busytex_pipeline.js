@@ -213,6 +213,7 @@ class BusytexPipeline
         };
 
         this.mem_header_size = 2 ** 25;
+        //TODO: TEXMFLOG only if verbose
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
         
