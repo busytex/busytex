@@ -1,6 +1,5 @@
 //TODO: work with only files paths (without dir paths)
 //TODO: what happens if creating another pipeline (waiting data error?)
-//TODO: TEXMFLOG?
 //TODO: put texlive into /opt/texlive/2020 or ~/.texlive2020?
 //TODO: configure fontconfig to use /etc/fonts
 //TODO: move latex.fmt to /texlive
@@ -197,6 +196,7 @@ class BusytexPipeline
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
         this.dir_cnf = '/texlive/texmf-dist/web2c';
         this.dir_fontconfig = '/etc/fonts';
+        this.texmflog = '/tmp/texmf.log';
 
         this.verbose_args = 
         {
@@ -221,7 +221,7 @@ class BusytexPipeline
         };
 
         this.mem_header_size = 2 ** 25;
-        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, FONTCONFIG_PATH : this.dir_fontconfig};
+        this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog; FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
         
         this.on_initialized = null;
@@ -459,8 +459,14 @@ class BusytexPipeline
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         for(const cmd of cmds)
         {
+            if(FS.analyzePath(this.texmflog).exists) FS.unlink(this.texmflog);
+            if(FS.analyzePath(log_path).exists) FS.unlink(log_path);
+
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
+        
+            const texmflog = FS.analyzePath(this.texmflog).exists ? FS.readFile(this.texmflog, {encoding : 'utf8'}) : null;
+            const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -471,8 +477,6 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 && FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
-
-        // TODO: collect logs after every call?
         const log = FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : null;
         
         // TODO: do unmount if not empty even if exceptions happened
