@@ -15,6 +15,8 @@ cd example
 
 $BUSYTEX
 
+$BUSYTEX --version
+
 $BUSYTEX xetex --version
 $BUSYTEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
 $BUSYTEX bibtex8 --8bit example.aux
