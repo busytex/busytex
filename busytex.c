@@ -68,22 +68,6 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    if(strcmp("--version", argv[1]) == 0)
-    {
-#ifdef BUSYTEX_XETEX
-            printf("\n\nxetex --version\n");
-            argv[0] = "xetex";
-            optind = 1;
-            busymain_xetex(argc, argv);
-#endif
-#ifdef BUSYTEX_KPSEWHICH
-            printf("\n\nkpsewhich --version\n");
-            argv[0] = "kpsewhich";
-            optind = 1;
-            busymain_kpsewhich(argc, argv);
-#endif
-    }
-
 #ifdef BUSYTEX_PDFTEX
     if(strcmp("pdftex", argv[1]) == 0 || strcmp("pdflatex", argv[1]) == 0)
     {
