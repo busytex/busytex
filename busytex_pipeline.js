@@ -213,7 +213,6 @@ class BusytexPipeline
         };
 
         this.mem_header_size = 2 ** 25;
-        //TODO: TEXMFLOG only if verbose
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
         this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
         
@@ -462,7 +461,7 @@ class BusytexPipeline
             this.print('$ busytex ' + cmd.join(' '));
             exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
        
-            logs.push({cmd : cmd.join(' '), texmflog : read_all_text(this.texmflog), log : read_all_text(log_path)});
+            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(this.texmflog) : '', log : read_all_text(log_path)});
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
