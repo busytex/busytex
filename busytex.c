@@ -72,27 +72,15 @@ int main(int argc, char* argv[])
     {
 #ifdef BUSYTEX_XETEX
             printf("\n\nxetex --version\n");
-            argv[1] = argv[0];
+            argv[0] = "xetex";
             optind = 1;
-            busymain_xetex(argc - 1, argv + 1);
-#endif
-#ifdef BUSYTEX_XDVIPDFMX
-            printf("\n\nxdvipdfmx --version\n");
-            argv[1] = argv[0];
-            optind = 1;
-            busymain_xdvipdfmx(argc - 1, argv + 1);
-#endif
-#ifdef BUSYTEX_BIBTEX8
-            printf("\n\nbibtex8 --version\n");
-            argv[1] = argv[0];
-            optind = 1;
-            busymain_bibtex8(argc - 1, argv + 1);
+            busymain_xetex(argc, argv);
 #endif
 #ifdef BUSYTEX_KPSEWHICH
             printf("\n\nkpsewhich --version\n");
-            argv[1] = argv[0];
+            argv[0] = "kpsewhich";
             optind = 1;
-            busymain_kpsewhich(argc - 1, argv + 1);
+            busymain_kpsewhich(argc, argv);
 #endif
     }
 
