@@ -63,6 +63,9 @@ class BusytexDataPackageResolver
         const tex_packages = new Set(files.filter(f => typeof(f.contents) == 'string').map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages.has(tex_package)));
 
         const tex_packages_not_resolved = [];
+
+        // https://ctan.org/tex-archive/macros/latex/required/graphics, graphicx
+        //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
         
         let update_data_packages_js = false;
         let data_packages = [];
@@ -382,8 +385,9 @@ class BusytexPipeline
         
         if(tex_packages_not_resolved.length > 0)
         {
-            //TODO: skip texmf-dist (texmf-local)? check only main_tex_path?
-            throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
+            //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
+            // replace by regular return?
+            // throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
         }
         
         this.print(this.ansi_reset_sequence);
