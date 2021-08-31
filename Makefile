@@ -487,8 +487,8 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libpdftex.a
-	wasm2wat build/wasm/texlive/texk/web2c/xetexdir/xetex-xetexextra.o -o build/wasm/xetex-xetexextra.o.wat
-	wasm2wat build/wasm/texlive/texk/web2c/pdftexdir/pdftex-pdftexextra.o -o build/wasm/pdftex-pdftexextra.o.wat
+	#wasm2wat build/wasm/texlive/texk/web2c/xetexdir/xetex-xetexextra.o -o build/wasm/xetex-xetexextra.o.wat
+	#wasm2wat build/wasm/texlive/texk/web2c/pdftexdir/pdftex-pdftexextra.o -o build/wasm/pdftex-pdftexextra.o.wat
 	#$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
 
