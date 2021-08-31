@@ -214,6 +214,7 @@ class BusytexPipeline
                 xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
             },
         };
+        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8'];
 
         this.mem_header_size = 2 ** 25;
         this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
@@ -360,7 +361,8 @@ class BusytexPipeline
         
         const initialized_module = await busytex(Module);
         
-        console.assert(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0));
+        if(!(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0)))
+            throw new Error(`Memory header size [${this.mem_header_size}] must be divisible by 4`);
         
         if(report_applet_versions)
         {
@@ -393,7 +395,8 @@ class BusytexPipeline
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
         
-        console.assert(['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8'].includes(driver)); // TODO: support 'xetex_dvidpfmx', 'pdftex_bibtex8', 'luatex_bibtex8'
+        if(!this.supported_drivers.includes(driver))
+            throw new Error(`Driver [${driver}] is not supported, only [${this.supported_drivers}] are supported`);
         
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
