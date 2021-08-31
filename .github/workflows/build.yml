@@ -17,7 +17,7 @@ jobs:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
       - name: Setup WABT
-        uses: chiefbiiko/setup-wabt@1.0.0
+        uses: chiefbiiko/setup-wabt
       
       - uses: actions/checkout@v2
         with:
