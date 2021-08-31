@@ -15,6 +15,9 @@ jobs:
         uses: mymindstorm/setup-emsdk@v10
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
+
+      - name: Setup WABT
+        uses: chiefbiiko/setup-wabt@1.0.0
       
       - uses: actions/checkout@v2
         with:
@@ -78,5 +81,5 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Build assets" -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) build_${{github.sha}}
+        run: hub release create -m "Build assets" -a build/wasm/xetex-xetexextra.o.wat -a build/wasm/pdftex-pdftexextra.o.wat -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt -a build/wasm/busytex.js -a build/wasm/busytex.wasm -a build/native/busytex -a build/native/fonts.conf -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skipped.txt " $UBUNTUPACKAGES) build_${{github.sha}}
 
