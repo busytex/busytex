@@ -72,13 +72,13 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
-#      - name: Archive TexLive build files
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: build_texlive
-#          path: |
-#            build/wasm/texlive/
-#            build/native/texlive/
+      - name: Archive TexLive build files
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_texlive
+          path: |
+            build/wasm/texlive/
+            build/native/texlive/
       
       - name: Recreate Ubuntu packages
         run: make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 

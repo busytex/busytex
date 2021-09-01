@@ -281,6 +281,7 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
 	mv $(dir $@)/libpdftex.a $@
+	$(AR_native) t $@
 	mv source/texlive/texk/web2c/pdftexdir/pdftexextra.c.bak source/texlive/texk/web2c/pdftexdir/pdftexextra.c
 
 build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/zziplib/libzzip.a build/native/texlive/libs/lua53/.libs/libtexlua53.a
@@ -327,6 +328,7 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
+	$(AR_wasm) t $@
 	mv  source/texlive/texk/web2c/pdftexdir/pdftexextra.c.bak source/texlive/texk/web2c/pdftexdir/pdftexextra.c
 	#cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	#$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(OPTS_PDFTEX_wasm)
