@@ -34,17 +34,17 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
+      - name: Install TexLive
+        run: |
+            make tds-basic
+            make tds-full
+      
       - name: Archive TexLive native build
         uses: actions/upload-artifact@v2
         with:
           name: native_build_texlive
           path: |
             build/native/texlive/
-
-      - name: Install TexLive
-        run: |
-            make tds-basic
-            make tds-full
       
       - name: Archive native artifacts
         uses: actions/upload-artifact@v2
