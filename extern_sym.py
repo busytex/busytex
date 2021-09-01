@@ -4,7 +4,7 @@ lines = []
 
 with open(sys.argv[1]) as f:
     for l in f:
-        if any(' ' + sym + '  ;' in l for sym in sys.argv[2:]):
+        if l.startswith('EXTERN') and any(' ' + sym in l for sym in sys.argv[2:]):
             lines.append(l.replace('EXTERN', 'extern'))
         else:
             lines.append(l)
