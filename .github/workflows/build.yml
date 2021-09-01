@@ -55,6 +55,14 @@ jobs:
             make dist-native
             bash example/example.sh
 
+      - name: Archive native test artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: native_test_example
+          path: |
+            example/example_*.pdf
+            build/format-*/*.fmt
+
       - name: Build wasm busytex
         run: |
             make wasm
@@ -64,13 +72,11 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
-      - name: Archive test artifacts
+      - name: Archive TexLive build files
         uses: actions/upload-artifact@v2
         with:
-          name: native_test_example
+          name: build_texlive
           path: |
-            example/example_*.pdf
-            build/format-*/*.fmt
             build/wasm/texlive/
             build/native/texlive/
       
