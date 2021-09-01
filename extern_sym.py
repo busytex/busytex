@@ -1,10 +1,11 @@
 import sys;
 
-lines = []
+syms = list(filter(bool, sys.argv[2:]))
 
+lines = []
 with open(sys.argv[1]) as f:
     for l in f:
-        symok = any(' ' + sym in l for sym in sys.argv[2:])
+        symok = any((' ' + sym) in l for sym in syms)
         if l.startswith('EXTERN') and symok:
             lines.append(l.replace('EXTERN', 'extern'))
         elif symok:
