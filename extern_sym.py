@@ -15,7 +15,7 @@ with open(sys.argv[1]) as f:
         if symok and l.startswith('EXTERN'):
             lines.append(l.replace('EXTERN', 'extern'))
         elif symok:
-            lines.append(l.replace('  ', '  extern'))
+            lines.append(l.replace('  ', '  extern '))
         else:
             lines.append(l)
 
