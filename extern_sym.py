@@ -5,7 +5,6 @@ syms = set(filter(bool, sys.argv[2:]))
 lines = []
 with open(sys.argv[1]) as f:
     for l in f:
-
         symok = False
         for sym in syms:
             if (' ' + sym + ' ') in l or (' ' + sym + '[') in l:
