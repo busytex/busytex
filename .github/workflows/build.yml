@@ -30,13 +30,13 @@ jobs:
         run: make native build/native/fonts.conf
         env:
             MAKEFLAGS: -j2
-      
-      - name: Archive TexLive native build
-        uses: actions/upload-artifact@v2
-        with:
-          name: native_build_texlive
-          path: |
-            build/native/texlive/
+
+#      - name: Archive TexLive native build
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: native_build_texlive
+#          path: |
+#            build/native/texlive/
 
       - name: Download TexLive Full
         run:  make source/texmfrepo/install-tl
