@@ -17,7 +17,8 @@ with open(sys.argv[1]) as f:
             lines.append(l.replace('EXTERN', 'extern'))
         elif symok:
             print('REP2', sym, file = sys.stderr)
-            lines.append(l.replace(' ' + sym, ' extern ' + sym))
+            lines[-2] = lines[-2].replace('EXTERN', 'extern')
+            lines.append(l)
         else:
             lines.append(l)
 
