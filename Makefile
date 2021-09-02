@@ -278,12 +278,11 @@ build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configu
 build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
 	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
-	$(PYTHON) extern_sym.py build/native/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
+	$(PYTHON) extern_sym.py build/wasm/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
 	mv $(dir $@)/libpdftex.a $@
 	$(AR_native) t $@
-	#mv source/texlive/texk/web2c/pdftexdir/pdftexextra.c.bak source/texlive/texk/web2c/pdftexdir/pdftexextra.c
 
 build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/zziplib/libzzip.a build/native/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_native)
