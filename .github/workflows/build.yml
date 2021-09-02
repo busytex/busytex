@@ -46,16 +46,16 @@ jobs:
             make tds-basic
             make tds-full
       
-     - name: Archive native artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: native_build
-          path: |
-            build/native/busytex
-            build/native/fonts.conf
-            source/texmfrepo.txt
-            build/texlive-basic.txt
-            build/texlive-full.txt
+      - name: Archive native artifacts
+         uses: actions/upload-artifact@v2
+         with:
+           name: native_build
+           path: |
+             build/native/busytex
+             build/native/fonts.conf
+             source/texmfrepo.txt
+             build/texlive-basic.txt
+             build/texlive-full.txt
       
       - name: Test native busytex pipeline
         run: |
