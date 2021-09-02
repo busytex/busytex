@@ -8,7 +8,7 @@ with open(sys.argv[1]) as f:
 
         symok = False
         for sym in syms:
-            if ' ' + sym in l:
+            if (' ' + sym + ' ') in l or (' ' + sym + '[') in l:
                 print('SYM [', sym, '] in [', l, ']', file = sys.stderr)
                 symok = True
 
