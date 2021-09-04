@@ -372,7 +372,8 @@ class BusytexPipeline
         
         if(report_applet_versions)
         {
-            const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
+            //const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
+            const applets = ['xdvipdfmx', 'pdftex', 'xetex', 'bibtex8'];
             initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version']).stdout])));
             // TODO: exception here not caught?
             this.on_initialized(initialized_module.applet_versions);
