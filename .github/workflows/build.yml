@@ -31,12 +31,12 @@ jobs:
         env:
             MAKEFLAGS: -j2
 
-#      - name: Archive TexLive native build
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: native_build_texlive
-#          path: |
-#            build/native/texlive/
+      - name: Archive TexLive native build
+        uses: actions/upload-artifact@v2
+        with:
+          name: native_build_texlive
+          path: |
+            build/native/texlive/
 
       - name: Download TexLive Full
         run:  make source/texmfrepo/install-tl
@@ -79,12 +79,12 @@ jobs:
         env:
             MAKEFLAGS: -j2
       
-#      - name: Archive TexLive wasm build
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: wasm_build_texlive
-#          path: |
-#            build/wasm/texlive/
+      - name: Archive TexLive wasm build
+        uses: actions/upload-artifact@v2
+        with:
+          name: wasm_build_texlive
+          path: |
+            build/wasm/texlive/
       
       - name: Recreate Ubuntu packages
         run: make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 

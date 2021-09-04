@@ -57,6 +57,8 @@ OBJ_DEPS = $(addprefix texlive/libs/, harfbuzz/libharfbuzz.a graphite2/libgraphi
 
 ##############################################################################################################################
 
+# redefines needed until wasm-ld supports --localize-hidden: https://bugs.llvm.org/show_bug.cgi?id=51279
+
 BIBTEX_REDEFINE = initialize eoln last history bad xchr buffer close_file usage      make_string str_eq_buf str_eq_str str_ptr char_width
 
 SYNCTEX_REDEFINE = synctex_ctxt synctex_dot_open synctex_record_node_char synctex_record_node_kern synctex_record_node_math synctex_record_node_unknown synctexabort synctexchar synctexcurrent synctexhlist synctexhorizontalruleorglue synctexinitcommand synctexkern synctexmath synctexmrofxfdp synctexnode synctexoption synctexpdfrefxform synctexpdfxform synctexsheet synctexstartinput synctexteehs synctexterminate synctextsilh synctextsilv synctexvlist synctexvoidhlist synctexvoidvlist
@@ -340,7 +342,7 @@ build/wasm/busytex.js:
 	#$(CXX) -Wl,--unresolved-symbols=ignore-all $(CFLAGS_OPT_native) -o $@ $@.o -Wimplicit -Wreturn-type  -export-dynamic    $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
 	#emcc -Wl,-error-limit=0 $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX busytex.c
 	#emcc -Wl,-error-limit=0  $(CFLAGS_OPT) -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX busytex.c
-	$(CXX_wasm) -Wl,-error-limit=0 -Wl,--unresolved-symbols=ignore-all $(CFLAGS_OPT) -o $@ $(basename $@).o -export-dynamic -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]'  -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
+	$(CXX_wasm) -Wl,-error-limit=0 -Wl,--unresolved-symbols=ignore-all $(CFLAGS_OPT) -export-dynamic -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ $(basename $@).o  $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -lm
 	nm --print-file-name build/wasm/texlive/texk/kpathsea/busytex_kpsewhich.o build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
 	#em++ -Wl,-error-limit=0 -Wl,--unresolved-symbols=ignore-all $(CFLAGS_OPT) -o $@ $(basename $@).o -export-dynamic -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0  -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]'  -lm $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX) ) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX))
 	
@@ -386,7 +388,7 @@ build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 
 ################################################################################################################
 
-build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
+build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/format-%/pdflatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	mkdir -p $(dir $@)
 	echo > build/empty
 	echo 'web_user:x:0:0:emscripten:/home/web_user:/bin/false' > build/passwd
@@ -396,7 +398,8 @@ build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/texlive-%/texmf-dist b
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive \
-		--preload build/format-$*/xelatex.fmt@/xelatex.fmt
+		--preload build/format-$*/xelatex.fmt@/xelatex.fmt \
+		--preload build/format-$*/pdflatex.fmt@/pdflatex.fmt
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
