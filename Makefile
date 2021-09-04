@@ -329,6 +329,7 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_wasm))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
+	$(PYTHON) extern_sym.py build/wasm/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
