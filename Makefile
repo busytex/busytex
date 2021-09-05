@@ -331,6 +331,10 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	mv $(dir $@)/libpdftex.a $@
 	$(AR_wasm) t $@
 
+build/wasm/texlive/texk/web2c/libluatex.a: build/wasm/texlive.configured build/wasm/texlive/libs/zziplib/libzzip.a build/wasm/texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE_wasm) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_wasm)
+	$(MAKE_wasm) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_wasm)
+
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
 	$(CC_wasm) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX # -DBUSYTEX_LUATEX
@@ -495,6 +499,7 @@ wasm:
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libpdftex.a
+	$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
 	$(MAKE) build/wasm/busytex.js
 
 .PHONY: ubuntu-wasm
