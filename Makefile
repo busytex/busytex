@@ -304,9 +304,9 @@ build/native/busytex_luatex:
 	
 build/native/busytex: 
 	mkdir -p $(dir $@)
-	$(CC_native) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX  -DBUSYTEX_PDFTEX # -DBUSYTEX_LUATEX
-	$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
-	$(NM_native) --print-file-name build/native/texlive/texk/kpathsea/busytex_kpsewhich.o build/native/texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(CC_native) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX  -DBUSYTEX_PDFTEX  -DBUSYTEX_LUATEX
+	#$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
+	$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
 
 ################################################################################################################
 
@@ -380,7 +380,7 @@ build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex bui
 build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
-	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist build/native/busytex_luatex $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
+	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist build/native/busytex $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
 	mv $(basename $@)/lualatex.fmt $@
 
 ################################################################################################################

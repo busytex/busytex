@@ -5,7 +5,7 @@ XETEXFMT=$DIST/xelatex.fmt
 PDFTEXFMT=$DIST/pdflatex.fmt
 LUATEXFMT=$DIST/lualatex.fmt
 BUSYTEX=$DIST/busytex
-BUSYLUATEX=$DIST/busytex_luatex
+BUSYLUATEX=$DIST/busytex
 
 export TEXMFDIST=$DIST/texlive/texmf-dist
 export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
