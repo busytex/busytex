@@ -80,7 +80,7 @@ DVIPDFMX_REDEFINE = cff_stdstr agl_chop_suffix agl_sput_UTF16BE agl_get_unicodes
 # grep extern source/texlive/texk/dvipdfm-x/*.h | grep -o '[0-9a-zA-Z_]\+\s\+(' | cut -d' ' -f1 | tr '\n' ' '
 #CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell python3 redefine_sym.py busydvipdfmx check_for_jpeg check_for_bmp check_for_png seek_absolute seek_relative seek_end tell_position file_size mfgets work_buffer get_unsigned_byte get_unsigned_pair      pdf_new_stream pdf_ref_obj pdf_add_stream pdf_release_obj ttc_read_offset cff_release_dict cff_new_dict cff_dict_unpack cff_dict_known cff_dict_get cff_dict_pack cff_dict_add cff_dict_remove cff_dict_set cff_dict_update cff_close cff_get_name cff_set_name cff_put_header cff_get_index_header cff_get_index cff_pack_index cff_index_size cff_new_index cff_release_index cff_get_string cff_stdstr cff_get_sid cff_update_string cff_add_string cff_release_encoding cff_read_charsets cff_pack_charsets cff_release_charsets cff_read_fdselect cff_pack_fdselect cff_release_fdselect cff_fdselect_lookup cff_read_fdarray cff_read_private cff_read_subrs get_signed_byte get_signed_pair get_unsigned_quad sfnt_open sfnt_close put_big_endian sfnt_set_table sfnt_find_table_len sfnt_find_table_pos sfnt_locate_table sfnt_read_table_directory sfnt_require_table sfnt_create_FontFile_stream )
 
-EXTERN_SYM = "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
+EXTERN_SYM = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
 
 REDEFINE_SYM := $(PYTHON) -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
 CFLAGS_KPSEWHICH := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
@@ -294,7 +294,7 @@ build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configu
 build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
 	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
-	$(PYTHON) -c $(EXTERN_SYM) build/native/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
+	$(EXTERN_SYM) build/native/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
 	#$(PYTHON) extern_sym.py build/native/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
@@ -333,7 +333,7 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_wasm))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
-	$(PYTHON) -c $(EXTERN_SYM) build/wasm/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
+	$(EXTERN_SYM) build/wasm/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
