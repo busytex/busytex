@@ -46,30 +46,30 @@ jobs:
             make tds-basic
 #            make tds-full
       
-#      - name: Archive native artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: native_build
-#          path: |
-#            build/native/busytex
-#            build/native/fonts.conf
-#            source/texmfrepo.txt
-#            build/texlive-basic.txt
+      - name: Archive native artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: native_build
+          path: |
+            build/native/busytex
+            build/native/fonts.conf
+            source/texmfrepo.txt
+            build/texlive-basic.txt
 #            build/texlive-full.txt
-#      
+      
       - name: Test native busytex pipeline
         run: |
             make dist-native
             bash example/example.sh
 
-#      - name: Archive native test artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: native_test_example
-#          path: |
-#            example/example_*.pdf
-#            build/format-*/*.fmt
-#
+      - name: Archive native test artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: native_test_example
+          path: |
+            example/example_*.pdf
+            build/format-*/*.fmt
+
 #      - name: Build wasm busytex
 #        run: |
 #            make wasm
