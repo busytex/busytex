@@ -38,10 +38,7 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
-        const ok = (
-            path.startsWith('/texmf/texmf-dist/tex/') || 
-            path.startsWith('/texlive/texmf-dist/tex/')
-        );
+        const ok = path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/') || path.startsWith('.sty');
         // implicitly excludes /.../temxf-dist/{fonts,bibtex}    
         
         //cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
@@ -56,11 +53,11 @@ class BusytexDataPackageResolver
         return null;
     }
     
-    async resolve(files, data_packages_js = null)
+    async resolve(files, main_tex_path, data_packages_js = null)
     {
-        const texmf_packages = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
+        const texmf_packages = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/') || f.path.endswith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
         
-        const tex_packages = new Set(files.filter(f => typeof(f.contents) == 'string').map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages.has(tex_package)));
+        const tex_packages = new Set(files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages.has(tex_package)));
 
         const tex_packages_not_resolved = [];
 
@@ -389,8 +386,7 @@ class BusytexPipeline
             bibtex = this.bibtex_resolver.resolve(files);
 
         let tex_packages_not_resolved = [];
-        const tex_packages_resolvable_files = files.filter(f => f.path == main_tex_path);
-        [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(tex_packages_resolvable_files, data_packages_js);
+        [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
         
         if(tex_packages_not_resolved.length > 0)
         {
