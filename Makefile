@@ -471,9 +471,9 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) $(MAKEFLAGS) build/native/busytex
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
 	$(MAKE) $(MAKEFLAGS) build/native/busytex_luatex
+	$(MAKE) $(MAKEFLAGS) build/native/busytex
 
 .PHONY: wasm
 wasm:
