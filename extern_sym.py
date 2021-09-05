@@ -5,20 +5,8 @@ syms = set(filter(bool, sys.argv[2:]))
 lines = []
 with open(sys.argv[1]) as f:
     for l in f:
-        symok = False
-        for sym in syms:
-            if (' ' + sym + ' ') in l or (' ' + sym + '[') in l or (' ' + sym + ',') in l:
-                print('SYM [', sym, '] in [', l, ']', file = sys.stderr)
-                symok = True
-                break
-
-        if symok and l.startswith('EXTERN'):
-            print('REP1', sym, file = sys.stderr)
+        if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN'):
             lines.append(l.replace('EXTERN', 'extern'))
-        elif symok:
-            print('REP2', sym, file = sys.stderr)
-            lines[-2] = lines[-2].replace('EXTERN', 'extern')
-            lines.append(l)
         else:
             lines.append(l)
 
