@@ -52,7 +52,7 @@ class BusytexDataPackageResolver
                     return this.remap[tex_package_name];
                 return tex_package_name;
             }
-            else if(path.endsWith('.sty'))
+            else if((!path.startsWith('/texmf') && !path.startsWith('/texlive')) && path.endsWith('.sty'))
             {
                 const basename = this.basename(path);
                 const tex_package_name = basename.slice(0, basename.length - '.sty'.length);
@@ -65,7 +65,7 @@ class BusytexDataPackageResolver
     
     async resolve(files, main_tex_path, data_packages_js = null)
     {
-        const texmf_packages_local = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/') || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
+        const texmf_packages_local = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/tex/') || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
         
         const tex_packages_to_resolve = new Set(files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages_local.has(tex_package)));
 
