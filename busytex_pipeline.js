@@ -65,9 +65,9 @@ class BusytexDataPackageResolver
     
     async resolve(files, main_tex_path, data_packages_js = null)
     {
-        const texmf_packages = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/') || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
+        const texmf_packages_local = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/') || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
         
-        const tex_packages = new Set(files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages.has(tex_package)));
+        const tex_packages_to_resolve = new Set(files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages_local.has(tex_package)));
 
         const tex_packages_not_resolved = [];
 
@@ -89,7 +89,10 @@ class BusytexDataPackageResolver
             data_packages = this.data_packages.filter(([data_package_js, tex_packages]) => data_packages_js.includes(data_package_js));
         }
 
-        for(const tex_package of tex_packages)
+        console.log('TEXMFLOCAL', texmf_packages_local);
+        console.log('TORESOLVE', tex_packages_to_resolve);
+
+        for(const tex_package of tex_packages_to_resolve)
         {
             for(const [data_package_js, tex_packages] of [...data_packages, [null, null]])
             {
