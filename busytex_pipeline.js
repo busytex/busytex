@@ -390,6 +390,8 @@ class BusytexPipeline
         
         if(tex_packages_not_resolved.length > 0)
         {
+            console.log('DATA PACKAGES', data_packages_js, 'NOT RESOLVED', tex_packages_not_resolved);
+
             //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
             // replace by regular return?
             // throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
