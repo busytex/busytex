@@ -38,14 +38,14 @@ jobs:
 #          path: |
 #            build/native/texlive/
 
-#      - name: Download TexLive Full
-#        run:  make source/texmfrepo/install-tl
-#      
-#      - name: Install TexLive
-#        run: |
-#            make tds-basic
+      - name: Download TexLive Full
+        run:  make source/texmfrepo/install-tl
+      
+      - name: Install TexLive
+        run: |
+            make tds-basic
 #            make tds-full
-#      
+      
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
 #        with:
@@ -57,11 +57,11 @@ jobs:
 #            build/texlive-basic.txt
 #            build/texlive-full.txt
 #      
-#      - name: Test native busytex pipeline
-#        run: |
-#            make dist-native
-#            bash example/example.sh
-#
+      - name: Test native busytex pipeline
+        run: |
+            make dist-native
+            bash example/example.sh
+
 #      - name: Archive native test artifacts
 #        uses: actions/upload-artifact@v2
 #        with:

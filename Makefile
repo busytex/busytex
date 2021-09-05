@@ -380,7 +380,7 @@ build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex bui
 build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
-	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
+	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist build/native/busytex_luatex $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
 	mv $(basename $@)/lualatex.fmt $@
 
 ################################################################################################################
@@ -437,7 +437,7 @@ tds-%:
 	$(MAKE) build/texlive-$*.txt
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
-	#$(MAKE) build/format-$*/lualatex.fmt
+	$(MAKE) build/format-$*/lualatex.fmt
 
 ################################################################################################################
 

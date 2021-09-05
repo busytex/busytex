@@ -1,10 +1,11 @@
 set -e
 
-export DIST=$PWD/dist-native
-export XETEXFMT=$DIST/xelatex.fmt
-export PDFTEXFMT=$DIST/pdflatex.fmt
-export LUATEXFMT=$DIST/lualatex.fmt
-export BUSYTEX=$DIST/busytex
+DIST=$PWD/dist-native
+XETEXFMT=$DIST/xelatex.fmt
+PDFTEXFMT=$DIST/pdflatex.fmt
+LUATEXFMT=$DIST/lualatex.fmt
+BUSYTEX=$DIST/busytex
+BUSYTEX=$DIST/busytex_luatex
 
 export TEXMFDIST=$DIST/texlive/texmf-dist
 export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
@@ -36,9 +37,10 @@ $BUSYTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --ou
 mv example.pdf example_pdftex.pdf
 rm example.aux
 
-#$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-#$BUSYLUATEX bibtex8 --8bit example.aux                                           
-#$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-#$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
-#mv example.pdf example_luatex.pdf
-#rm example.aux
+$BUSYLUATEX luatex --version
+$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX bibtex8 --8bit example.aux                                           
+$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+$BUSYLUATEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT example.tex
+mv example.pdf example_luatex.pdf
+rm example.aux
