@@ -38,18 +38,28 @@ class BusytexDataPackageResolver
     
     extract_tex_package_name(path)
     {
-        const ok = path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/') || path.startsWith('.sty');
-        // implicitly excludes /.../temxf-dist/{fonts,bibtex}    
+        // implicitly excludes /.../temxf-dist/{fonts,bibtex}
         
         //cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
-        if(this.isfile(path) && ok)
+        if(this.isfile(path))
         {
-            const tex_package_name = path.split('/')[5];
-            if(tex_package_name in this.remap)
-                return this.remap[tex_package_name];
-            return tex_package_name;
+            // process texmf local
+            if(path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/'))
+            {
+                const tex_package_name = path.split('/')[5];
+                if(tex_package_name in this.remap)
+                    return this.remap[tex_package_name];
+                return tex_package_name;
+            }
+            else if(path.startsWith('.sty'))
+            {
+                const basename = this.basename(path);
+                const tex_package_name = basename.slice(0, basename.length - '.sty'.length);
+                return tex_package_name;
+            }
         }
+
         return null;
     }
     
