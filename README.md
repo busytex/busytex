@@ -1,17 +1,22 @@
-# xetex+bibtex from TexLive2021 compiled with Emscripten into a single WebAssembly file
+# Binaries from TexLive 2021 compiled with Emscripten into a single binary (native / WASM)
 
 Currently compiles:
 - xetex
+- pdftex
 - bibtex8
 - xdvipdfmx
 - kpsewhich
 
+Architecture targets:
+- linux_x86_64
+- WASM
+
 Future work:
-- pdftex
 - kpsestat
 - makeindex
+- LuaTex
+- LuaMetaTex / LMTX (lua)
 - tlmgr (web requests)
-- LuaTex / LMTX (lua)
 - Biber (perl)
 
 ### Dependencies
@@ -77,6 +82,9 @@ python3 example/example.py
 bash example/example.sh
 ```
 
+### Filed issues with other open-source projects
+- https://bugs.llvm.org/show_bug.cgi?id=51279
+
 
 ### References
 - [texlive.js](https://github.com/manuels/texlive.js/)
@@ -90,7 +98,7 @@ bash example/example.sh
 ```shell
 xpdf-src/xpdf/
 
-enable multi-driver via https://bugs.llvm.org/show_bug.cgi?id=51279
+enable multi-driver via 
 
 https://github.com/rurban/perl-compiler
 http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
