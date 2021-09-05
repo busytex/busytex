@@ -70,14 +70,14 @@ jobs:
             example/example_*.pdf
             build/format-*/*.fmt
 
-#      - name: Build wasm busytex
-#        run: |
-#            make wasm
-#            make build/wasm/fonts.conf
-#            make build/wasm/texlive-basic.js
-#            make dist-wasm
-#        env:
-#            MAKEFLAGS: -j2
+      - name: Build wasm busytex
+        run: |
+            make wasm
+            make build/wasm/fonts.conf
+            make build/wasm/texlive-basic.js
+            make dist-wasm
+        env:
+            MAKEFLAGS: -j2
 #      
 #      - name: Archive TexLive wasm build
 #        uses: actions/upload-artifact@v2
