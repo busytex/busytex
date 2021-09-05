@@ -44,7 +44,7 @@ class BusytexDataPackageResolver
 
         if(this.isfile(path))
         {
-            // process texmf local
+            //TODO: process texmf local
             if(path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/'))
             {
                 const tex_package_name = path.split('/')[5];
@@ -52,7 +52,7 @@ class BusytexDataPackageResolver
                     return this.remap[tex_package_name];
                 return tex_package_name;
             }
-            else if(path.startsWith('.sty'))
+            else if(path.endsWith('.sty'))
             {
                 const basename = this.basename(path);
                 const tex_package_name = basename.slice(0, basename.length - '.sty'.length);
