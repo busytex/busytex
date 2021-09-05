@@ -151,12 +151,15 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	touch $@
 
 source/fontconfig.patched: source/fontconfig.downloaded
-	wget -O $(basename $<)/src/fcstat.c https://gitlab.freedesktop.org/fontconfig/fontconfig/-/raw/fd393c53d816653e525950b742d49b02d599260b/src/fcstat.c
+	#wget -O $(basename $<)/src/fcstat.c https://gitlab.freedesktop.org/fontconfig/fontconfig/-/raw/fd393c53d816653e525950b742d49b02d599260b/src/fcstat.c
+	cp fcstat.c $(basename $<)/src/fcstat.c
 	touch $@
 
 source/texlive.patched: source/texlive.downloaded
-	wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/207d40e/source/configure 
-	wget -O source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc https://raw.githubusercontent.com/harfbuzz/harfbuzz/2.8.2/src/hb-subset-cff1.cc
+	#wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/207d40e/source/configure 
+	#wget -O source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc https://raw.githubusercontent.com/harfbuzz/harfbuzz/2.8.2/src/hb-subset-cff1.cc
+	cp configure source/texlive/texk/upmendex/configure
+	cp hb-subset-cff1.cc source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
