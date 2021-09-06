@@ -493,7 +493,7 @@ class BusytexPipeline
             this.print('$ busytex ' + cmd.join(' '));
             ({exit_code, stdout, stderr} = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent));
        
-            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : read_all_text(FS, log_path), stdout : stdout, stderr : stderr});
+            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : this.read_all_text(FS, log_path), stdout : stdout, stderr : stderr});
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
