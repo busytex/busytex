@@ -72,7 +72,7 @@ jobs:
 
       - name: Build wasm busytex
         run: |
-            make wasm || true
+            make wasm
             make build/wasm/fonts.conf
             make build/wasm/texlive-basic.js
             make dist-wasm
