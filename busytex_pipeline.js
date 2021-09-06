@@ -251,7 +251,7 @@ class BusytexPipeline
         
         this.remove = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.unlink(log_path) : null;
         this.read_all_text = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
-        this.read_all_bytes => (FS, pdf_path) =>FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
+        this.read_all_bytes = (FS, pdf_path) =>FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
         this.mkdir_p = (FS, PATH, dirpath, dirs = new Set()) =>
         {
             if(!dirs.has(dirpath))
