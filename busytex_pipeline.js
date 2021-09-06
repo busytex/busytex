@@ -212,23 +212,26 @@ class BusytexPipeline
             [BusytexPipeline.VerboseSilent] : {
                 pdftex : [],
                 xetex : [],
+                luatex : [],
                 bibtex8 : [],
-                xdvipdfmx : []
+                xdvipdfmx : [],
             },
             [BusytexPipeline.VerboseInfo] : {
                 pdftex: ['-kpathsea-debug', '32'],
                 xetex: ['-kpathsea-debug', '32'],
+                luatex: ['-kpathsea-debug', '32'],
                 bibtex8 : ['--debug', 'search'],
                 xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
             },
             [BusytexPipeline.VerboseDebug] : {
                 pdftex : ['-kpathsea-debug', '63', '-recorder'],
                 xetex : ['-kpathsea-debug', '63', '-recorder'],
+                luatex : ['-kpathsea-debug', '63', '-recorder'],
                 bibtex8 : ['--debug', 'all'],
                 xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
             },
         };
-        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8'];
+        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luatex_bibtex8'];
 
         this.mem_header_size = 2 ** 25;
         this.env = {
@@ -433,6 +436,9 @@ class BusytexPipeline
         const pdftex = ['pdftex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
 
         const xetex = ['xetex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt.xetex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+        
+        const luatex = ['luatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt.luatex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luatex);
+        
         const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
         const dvipdfmx = ['xdvipdfmx', '-o', pdf_path, dvi_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
@@ -478,6 +484,8 @@ class BusytexPipeline
             cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         else if(driver == 'pdftex_bibtex8')
             cmds = bibtex ? [pdftex, bibtex8, pdftex, pdftex] : [pdftex];
+        else if(driver == 'luatex_bibtex8')
+            cmds = bibtex ? [luatex, bibtex8, luatex, luatex] : [luatex];
         
         let exit_code = 0;
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
