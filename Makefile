@@ -387,7 +387,7 @@ build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
 	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
-	mv $(basename $@)/lualatex.fmt $@
+	mv $(basename $@)/latex.fmt $@
 
 ################################################################################################################
 
@@ -402,7 +402,8 @@ build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/format-%/pdflatex.fmt 
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive \
 		--preload build/format-$*/xelatex.fmt@/xelatex.fmt \
-		--preload build/format-$*/pdflatex.fmt@/pdflatex.fmt
+		--preload build/format-$*/pdflatex.fmt@/pdflatex.fmt \
+		--preload build/format-$*/lualatex.fmt@/lualatex.fmt
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
