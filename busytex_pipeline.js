@@ -487,7 +487,7 @@ class BusytexPipeline
         else if(driver == 'luatex_bibtex8')
             cmds = bibtex ? [luatex, bibtex8, luatex, luatex] : [luatex];
         
-        let exit_code = 0;
+        let exit_code = 0, stdout = '', stderr = '';
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         const logs = [];
         for(const cmd of cmds)
@@ -496,14 +496,15 @@ class BusytexPipeline
             remove(log_path);
 
             this.print('$ busytex ' + cmd.join(' '));
-            exit_code = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent).exit_code;
+            {exit_code, stdout, stderr} = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent);
        
-            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(this.texmflog) : '', log : read_all_text(log_path)});
+            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(this.texmflog) : '', log : read_all_text(log_path), stdout : stdout, stderr : stderr});
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
             
             Module.setStatus(`EXIT CODE: ${exit_code}`);
+            //No pages of output.
             //if(exit_code != 0)
             //    break;
         }
