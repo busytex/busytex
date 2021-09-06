@@ -271,6 +271,11 @@ build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/libs/lua53
 
+build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
+
+
 ################################################################################################################
 
 build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
@@ -296,15 +301,10 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
 	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
 	$(EXTERN_SYM) build/native/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
-	#$(PYTHON) extern_sym.py build/native/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
 	mv $(dir $@)/libpdftex.a $@
 	$(AR_native) t $@
-
-build/native/texlive/texk/web2c/libluatex.a: build/native/texlive.configured build/native/texlive/libs/zziplib/libzzip.a build/native/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_native) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_native)
-	$(MAKE_native) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_native)
 
 build/native/busytex: 
 	mkdir -p $(dir $@)
@@ -339,10 +339,6 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
 	$(AR_wasm) t $@
-
-build/wasm/texlive/texk/web2c/libluatex.a: build/wasm/texlive.configured build/wasm/texlive/libs/zziplib/libzzip.a build/wasm/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_wasm) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_wasm)
-	$(MAKE_wasm) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_wasm)
 
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
