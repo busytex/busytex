@@ -65,8 +65,8 @@ if __name__ == '__main__':
         try:
             page = urllib.request.urlopen(filelist_url).read().decode('utf-8')
             break
-        except Exception as e:
-            print('Retrying', e)
+        except Exception as err:
+            print('Retrying', err)
             time.sleep(args.retry)
     
     html_parser = UbuntuDebFileList()
