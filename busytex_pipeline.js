@@ -228,7 +228,7 @@ class BusytexPipeline
             [BusytexPipeline.VerboseDebug] : {
                 pdftex : ['-kpathsea-debug', '63', '-recorder'],
                 xetex : ['-kpathsea-debug', '63', '-recorder'],
-                luatex : ['-kpathsea-debug', '63', '-recorder'],
+                luatex : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
                 bibtex8 : ['--debug', 'all'],
                 xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
             },
@@ -451,9 +451,9 @@ class BusytexPipeline
         
         const xetex =  ['xetex' , '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const pdftex = ['pdftex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
-        const luatex = ['luatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luatex);
+        const luatex = ['luatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luatex);
         
-        const bibtex8 = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
+        const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
@@ -500,6 +500,8 @@ class BusytexPipeline
             
             this.print('$ echo $?');
             this.print(`${exit_code}\n`);
+
+            console.log(cmd.join(' '), 'EXITCODE', exit_code, logs[logs.length - 1].log.endsWith('No pages of output.\n'), 'stdout:', stdout, 'stderr:', stderr);
             //No pages of output.
             //if(exit_code != 0)
             //    break;
