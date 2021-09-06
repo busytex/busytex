@@ -364,6 +364,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
 	#echo collection-xetex 1 >> build/texlive-$*.profile
+	#echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
@@ -383,6 +384,7 @@ build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
 	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
+	mv $(basename $@)/lualatex.fmt $@
 
 ################################################################################################################
 

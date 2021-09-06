@@ -14,6 +14,7 @@ Architecture targets:
 Future work ( https://tex.stackexchange.com/questions/601061/compatibility-of-format-files-fmt#comment1509555_601061 ):
 - kpsestat, kpseaccess, kpsereadlink
 - makeindex
+- mktexfmt (for luatex)
 - mf-nowin, mktexlsr
 - luahbtex
 - LuaTex
