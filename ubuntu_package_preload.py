@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import argparse
 import urllib.request
 import html.parser
@@ -56,10 +57,17 @@ if __name__ == '__main__':
     parser.add_argument('--skip-log')
     parser.add_argument('--skip', nargs = '*', default = ['/usr/share/doc', '/usr/share/man'])
     parser.add_argument('--varlog', default = '/var/log')
+    parser.add_argument('--retry', type = int, default = 10)
     args = parser.parse_args()
 
     filelist_url = os.path.join(args.url, 'all', args.package, 'filelist')
-    page = urllib.request.urlopen(filelist_url).read().decode('utf-8')
+    for i in range(args.retry):
+        try:
+            page = urllib.request.urlopen(filelist_url).read().decode('utf-8')
+            break
+        except Exception as e:
+            print('Retrying', e)
+            time.sleep(args.retry)
     
     html_parser = UbuntuDebFileList()
     html_parser.feed(page)
