@@ -234,7 +234,7 @@ class BusytexPipeline
             },
         };
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luatex_bibtex8'];
-        this.error_messages = ['Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
+        this.error_messages = ['==> Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
 
         this.mem_header_size = 2 ** 25;
         this.env = {
