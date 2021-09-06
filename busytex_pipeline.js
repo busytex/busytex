@@ -401,7 +401,7 @@ class BusytexPipeline
         const initialized_module = await busytex(Module);
         
         if(!(this.mem_header_size % 4 == 0 && initialized_module.HEAP32.slice(this.mem_header_size / 4).every(x => x == 0)))
-            throw new Error(`Memory header size [${this.mem_header_size}] must be divisible by 4`);
+            throw new Error(`Memory header size [${this.mem_header_size}] must be divisible by 4, and remaining memory must be zero`);
         
         if(report_applet_versions)
         {
