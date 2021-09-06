@@ -158,6 +158,7 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	touch $@
 
 source/fontconfig.patched: source/fontconfig.downloaded
+	#TODO: https://superuser.com/questions/493640/how-to-retry-connections-with-wget
 	#wget -O $(basename $<)/src/fcstat.c https://gitlab.freedesktop.org/fontconfig/fontconfig/-/raw/fd393c53d816653e525950b742d49b02d599260b/src/fcstat.c
 	cp fcstat.c $(basename $<)/src/fcstat.c
 	touch $@
