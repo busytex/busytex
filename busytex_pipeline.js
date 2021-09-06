@@ -234,6 +234,7 @@ class BusytexPipeline
             },
         };
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luatex_bibtex8'];
+        this.error_messages = ['Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
 
         this.mem_header_size = 2 ** 25;
         this.env = {
@@ -501,8 +502,7 @@ class BusytexPipeline
             this.print('$ echo $?');
             this.print(`${exit_code}\n`);
 
-            console.log(cmd.join(' '), 'EXITCODE', exit_code, logs[logs.length - 1].log.endsWith('No pages of output.\n'), 'stdout:', stdout, 'stderr:', stderr);
-            //No pages of output.
+            console.log(cmd.join(' '), 'EXITCODE', exit_code, this.error_messages.some(err => stdout.includes(err)));
             //if(exit_code != 0)
             //    break;
         }
