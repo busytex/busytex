@@ -390,7 +390,16 @@ class BusytexPipeline
                         return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
                     }
                     else
+                    {
+                        try
+                        {
+                            flush_streams();
+                        }
+                        catch {}
+                        // TODO: add this info to thrown exception
+                        console.log('stderr', Module.output_stderr, 'stdout', Module.output_stdout);
                         throw err;
+                    }
                 }
                 
                 flush_streams();
