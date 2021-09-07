@@ -52,7 +52,7 @@ class BusytexDataPackageResolver
             if(prefix)
             {
                 tex_package_name = splitrootdir(splitrootdir(path.slice(prefix.length))[1])[0];
-                console.log('PREFIX', prefix, 'PACKAGE', tex_package_name);
+                console.log('PREFIX', prefix, 'PACKAGE', tex_package_name, 'PATH', path);
 
                 if(tex_package_name in this.remap)
                     tex_package_name = this.remap[tex_package_name];
