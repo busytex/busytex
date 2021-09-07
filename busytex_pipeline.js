@@ -240,7 +240,7 @@ class BusytexPipeline
         };
         
         this.remove = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.unlink(log_path) : null;
-        this.read_all_text = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
+        this.read_all_text = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}).trim() : '';
         this.read_all_bytes = (FS, pdf_path) =>FS.analyzePath(pdf_path).exists ? FS.readFile(pdf_path, {encoding: 'binary'}) : null;
         this.mkdir_p = (FS, PATH, dirpath, dirs = new Set()) =>
         {
@@ -507,7 +507,7 @@ class BusytexPipeline
             this.print('$ busytex ' + cmd.join(' '));
             ({exit_code, stdout, stderr} = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent));
        
-            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : this.read_all_text(FS, log_path), stdout : stdout, stderr : stderr});
+            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : this.read_all_text(FS, log_path), stdout : stdout.trim(), stderr : stderr.trim()});
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -515,9 +515,9 @@ class BusytexPipeline
             this.print('$ echo $?');
             this.print(`${exit_code}\n`);
 
-            console.log(cmd.join(' '), 'EXITCODE', exit_code, this.error_messages.some(err => stdout.includes(err)));
-            //if(exit_code != 0)
-            //    break;
+            exit_code = this.error_messages.some(err => stdout.includes(err)) ? exit_code : 0;
+            if(exit_code != 0)
+                break;
         }
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
