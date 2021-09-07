@@ -30,7 +30,9 @@ class BusytexDataPackageResolver
         this.data_packages_js = data_packages_js;
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
         this.remap = remap;
-        this.texmf_texmfdist_tex = [...texmf_system, ...texmf_local].map(t => t + '/texmf-dist/tex/');
+        this.texmf_local_texmfdist_tex = texmf_local.map(t => t + '/texmf-dist/tex/');
+        this.texmf_system_texmfdist_tex = texmf_system.map(t => t + '/texmf-dist/tex/');
+        this.texmf_texmfdist_tex = [this.texmf_system_texmfdist_tex, this.texmf_local_texmfdist_tex];
     }
 
     async resolve_data_packages()
@@ -71,7 +73,7 @@ class BusytexDataPackageResolver
     
     async resolve(files, main_tex_path, data_packages_js = null)
     {
-        const texmf_packages_local = new Set(files.filter(f => f.path.startsWith('texmf/texmf-dist/tex/') || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
+        const texmf_packages_local = new Set(files.filter(f => this.texmf_local_texmfdist_tex.some(t => f.path.startsWith(t)) || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
         
         const tex_packages_to_resolve = new Set(files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat().filter(tex_package => !texmf_packages_local.has(tex_package)));
 
