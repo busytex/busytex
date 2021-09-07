@@ -54,7 +54,7 @@ class BusytexDataPackageResolver
             {
                 tex_package_name = splitrootdir(splitrootdir(path.slice(prefix.length))[1])[0];
                 this.msgs.push([tex_package_name, path, 'https://ctan.org/pkg/' + tex_package_name]);
-                console.log('PREFIX', prefix, 'PACKAGE', tex_package_name, 'PATH', path, this.msgs);
+                console.log('PREFIX', prefix, 'PACKAGE', tex_package_name, 'PATH', path);
 
                 if(tex_package_name in this.remap)
                     tex_package_name = this.remap[tex_package_name];
