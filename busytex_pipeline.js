@@ -450,7 +450,8 @@ class BusytexPipeline
         let tex_packages_not_resolved = [];
         [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
         
-        //TODO: print tex packages that are not in default preload data packages
+        //TODO: print all used tex packages and local tex packages
+        //TODO: print tex packages that are not in default preload data packages and not in local
         
         if(tex_packages_not_resolved.length > 0)
         {
