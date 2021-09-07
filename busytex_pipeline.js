@@ -437,7 +437,7 @@ class BusytexPipeline
             // throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
             
             //TODO: fallback on all data-packages?
-            data_packages_js = data_packages_all;
+            data_packages_js = data_packages_js_all;
         }
         
         
