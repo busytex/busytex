@@ -5,7 +5,7 @@
 
 class BusytexDataPackageResolver
 {
-    constructor(data_packages_js, texmf = [], remap = {
+    constructor(data_packages_js, texmf_system = [], texmf_local = [], remap = {
             config : null,
             firstaid : 'latex-firstaid', 
             hyphen : null,
@@ -29,7 +29,9 @@ class BusytexDataPackageResolver
         this.data_packages_js = data_packages_js;
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
         this.remap = remap;
-        this.texmf_texmfdist_tex = texmf.map(t => t + '/texmf-dist/tex/');
+        this.texmf_texmfdist_tex = [...texmf_system, ...texmf_local].map(t => t + '/texmf-dist/tex/');
+
+        this.msgs = [];
     }
 
     async resolve_data_packages()
@@ -53,6 +55,7 @@ class BusytexDataPackageResolver
             {
                 tex_package_name = splitrootdir(splitrootdir(path.slice(prefix.length))[1])[0];
                 console.log('PREFIX', prefix, 'PACKAGE', tex_package_name, 'PATH', path);
+                this.msgs.push([tex_package_name, path, 'https://ctan.org/pkg/' + tex_package_name]);
 
                 if(tex_package_name in this.remap)
                     tex_package_name = this.remap[tex_package_name];
