@@ -179,18 +179,6 @@ class BusytexPipeline
         this.preload = preload;
         this.script_loader = script_loader;
         
-        this.bibtex_resolver = new BusytexBibtexResolver();
-        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, [...this.texmf_system, ...texmf_local]);
-
-        this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
-        this.em_module_promise = this.script_loader(busytex_js);
-        
-        BusytexPipeline.data_packages = [];
-        this.data_package_promises = {};
-
-        for(const data_package_js of preload_data_packages_js)
-            this.load_package(data_package_js); 
-        
         this.ansi_reset_sequence = '\x1bc';
         
         this.project_dir = '/home/web_user/project_dir';
@@ -242,11 +230,6 @@ class BusytexPipeline
             TEXMFLOG : this.texmflog, 
             FONTCONFIG_PATH : this.dir_fontconfig
         };
-        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
-        
-        this.on_initialized = null;
-        this.on_initialized_promise = new Promise(resolve => (this.on_initialized = resolve));
-        this.on_initialized_promise_notification = this.on_initialized_promise.then(on_initialized);
         
         this.remove = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.unlink(log_path) : null;
         this.read_all_text = (FS, log_path) => FS.analyzePath(log_path).exists ? FS.readFile(log_path, {encoding : 'utf8'}) : '';
@@ -260,6 +243,20 @@ class BusytexPipeline
                 dirs.add(dirpath);
             }
         };
+        
+        this.bibtex_resolver = new BusytexBibtexResolver();
+        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, [...this.texmf_system, ...texmf_local]);
+        this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
+        this.em_module_promise = this.script_loader(busytex_js);
+        BusytexPipeline.data_packages = [];
+        this.data_package_promises = {};
+        for(const data_package_js of preload_data_packages_js)
+            this.load_package(data_package_js); 
+        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
+        
+        this.on_initialized = null;
+        this.on_initialized_promise = new Promise(resolve => (this.on_initialized = resolve));
+        this.on_initialized_promise_notification = this.on_initialized_promise.then(on_initialized);
     }
 
     terminate()
@@ -454,7 +451,7 @@ class BusytexPipeline
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
         const Module = await this.Module;
-        const [FS, PATH] = [Module.FS, Module.PATH];
+        const {FS, PATH} = Module;
 
         const tex_path = PATH.basename(main_tex_path);
 
@@ -517,7 +514,7 @@ class BusytexPipeline
             //    break;
         }
 
-        const pdf = exit_code == 0 && this.read_all_bytes(FS, pdf_path);
+        const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
         const log = logs.map(({cmd, texmflog, log}) => `$ ${cmd}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}======`).join('\n\n');
         
         // TODO: do unmount if not empty even if exceptions happened
