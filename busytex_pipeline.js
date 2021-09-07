@@ -517,7 +517,6 @@ class BusytexPipeline
             this.print('$ busytex ' + cmd.join(' '));
             ({exit_code, stdout, stderr} = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent));
        
-            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : this.read_all_text(FS, log_path), stdout : stdout.trim(), stderr : stderr.trim()});
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -526,12 +525,14 @@ class BusytexPipeline
             this.print(`${exit_code}\n`);
 
             exit_code = this.error_messages.some(err => stdout.includes(err)) ? exit_code : 0;
+            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : this.read_all_text(FS, log_path), stdout : stdout.trim(), stderr : stderr.trim()});
+            
             if(exit_code != 0)
                 break;
         }
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
-        const log = logs.map(({cmd, texmflog, log}) => `$ ${cmd}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}======`).join('\n\n');
+        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => `$ ${cmd}\nEXITCODE: ${exit_code}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}\n==\nSTDOUT:\n${stdout}\n==\nSTDERR:\n${stderr}\n======`).join('\n\n');
         
         // TODO: do unmount if not empty even if exceptions happened
         FS.unmount(this.project_dir);
