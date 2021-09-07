@@ -258,9 +258,10 @@ class BusytexPipeline
         this.em_module_promise = this.script_loader(busytex_js);
         BusytexPipeline.data_packages = [];
         this.data_package_promises = {};
-        for(const data_package_js of preload_data_packages_js)
+        this.preload_data_packages_js = preload_data_packages_js;
+        for(const data_package_js of this.preload_data_packages_js)
             this.load_package(data_package_js); 
-        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, preload_data_packages_js);
+        this.Module = this.reload_module_if_needed(this.preload !== false, this.env, this.project_dir, this.preload_data_packages_js);
         
         this.on_initialized = null;
         this.on_initialized_promise = new Promise(resolve => (this.on_initialized = resolve));
@@ -373,6 +374,7 @@ class BusytexPipeline
                 Module.output_stderr = '';
 
                 Module.setPrefix(args[0]);
+                //TODO: remove custom impl of callMain? https://github.com/emscripten-core/emscripten/pull/14865
                 const main = Module._main, flush_streams = Module._flush_streams, NULL = 0;
                 const argc = args.length + 1;
                 const argv = Module.stackAlloc((argc + 1) * 4);
@@ -432,6 +434,8 @@ class BusytexPipeline
     {
         if(!this.supported_drivers.includes(driver))
             throw new Error(`Driver [${driver}] is not supported, only [${this.supported_drivers}] are supported`);
+        this.print(this.ansi_reset_sequence);
+        this.print(`New compilation started: [${main_tex_path}]`);
         
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
@@ -439,20 +443,18 @@ class BusytexPipeline
         let tex_packages_not_resolved = [];
         [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
         
+        //TODO: print tex packages that are not in default preload data packages
+        
         if(tex_packages_not_resolved.length > 0)
         {
             console.log('DATA PACKAGES', data_packages_js, 'NOT RESOLVED', tex_packages_not_resolved);
-
-            //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
-            // replace by regular return? override? 
+            
+            // TODO: replace by regular return? override? 
             // throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
             
             //TODO: fallback on all data-packages?
             data_packages_js = this.data_package_resolver.data_packages_js;
         }
-        
-        this.print(this.ansi_reset_sequence);
-        this.print(`New compilation started: [${main_tex_path}]`);
         
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
