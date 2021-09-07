@@ -45,7 +45,7 @@ class BusytexDataPackageResolver
         let tex_package_name = null;
         if(this.isfile(path))
         {
-            const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(texmf));
+            const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(t));
             if(prefix)
             {
                 tex_package_name = path.slice(prefix.length, prefix.length + path.indexOf('/', prefix.length));
