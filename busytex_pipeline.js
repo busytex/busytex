@@ -28,7 +28,7 @@ class BusytexDataPackageResolver
         
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
         this.remap = remap;
-        this.texmf = texmf;
+        this.texmf_texmfdist_tex = texmf.map(t => t + '/texmf-dist/tex/');
     }
 
     async resolve_data_packages()
@@ -40,14 +40,12 @@ class BusytexDataPackageResolver
     extract_tex_package_name(path)
     {
         // implicitly excludes /.../temxf-dist/{fonts,bibtex}
-        
-        //cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
+        // cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
         let tex_package_name = null;
         if(this.isfile(path))
         {
-            const suffix = '/texmf-dist/tex/';
-            const prefix = this.texmf.find(t => path.startsWith(texmf + suffix)) + suffix;
+            const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(texmf));
             if(prefix)
             {
                 tex_package_name = path.slice(prefix.length, prefix.length + path.indexOf('/', prefix.length));
@@ -182,7 +180,7 @@ class BusytexPipeline
         this.script_loader = script_loader;
         
         this.bibtex_resolver = new BusytexBibtexResolver();
-        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js);
+        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, [...this.texmf_system, ...texmf_local]);
 
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = this.script_loader(busytex_js);
