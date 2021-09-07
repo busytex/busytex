@@ -5,7 +5,7 @@
 
 class BusytexDataPackageResolver
 {
-    constructor(data_packages_js, remap = {
+    constructor(data_packages_js, texmf = [], remap = {
             config : null,
             firstaid : 'latex-firstaid', 
             hyphen : null,
@@ -28,6 +28,7 @@ class BusytexDataPackageResolver
         
         this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  ))]);
         this.remap = remap;
+        this.texmf = texmf;
     }
 
     async resolve_data_packages()
@@ -45,17 +46,15 @@ class BusytexDataPackageResolver
         let tex_package_name = null;
         if(this.isfile(path))
         {
-            //TODO: process texmf local
-            
-            if(path.startsWith('/texmf/texmf-dist/tex/') || path.startsWith('/texlive/texmf-dist/tex/'))
+            const suffix = '/texmf-dist/tex/';
+            const prefix = this.texmf.find(t => path.startsWith(texmf + suffix)) + suffix;
+            if(prefix)
             {
-                tex_package_name = path.split('/')[5];
+                tex_package_name = path.slice(prefix.length, prefix.length + path.indexOf('/', prefix.length));
+                console.log('PREFIX', prefix, 'PACKAGE', tex_package_name);
+
                 if(tex_package_name in this.remap)
-                    return this.remap[tex_package_name];
-            }
-            else if(path.startsWith('texmf/texmf-dist/tex/'))
-            {
-                tex_package_name = path.split('/')[4];
+                    tex_package_name = this.remap[tex_package_name];
             }
             else if(path.endsWith('.sty'))
             {
@@ -203,7 +202,8 @@ class BusytexPipeline
             xetex  : '/xelatex.fmt',  //'/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt'
             luatex : '/lualatex.fmt'
         };
-        this.dir_texmfdist = ['/texlive', '/texmf', ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
+        this.texmf_system = ['/texlive', '/texmf'];
+        this.dir_texmfdist = [...this.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
         this.dir_cnf = '/texlive/texmf-dist/web2c';
         this.dir_fontconfig = '/etc/fonts';
