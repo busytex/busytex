@@ -46,7 +46,8 @@ class BusytexDataPackageResolver
 
     cache_data_packages()
     {
-        this.data_packages_cache = Promise.all(this.data_packages_js.map(data_package_js => fetch(data_package_js.replace('.js', '.data'), {mode : 'no-cors'})));
+        if(!this.data_packages_cache)
+            this.data_packages_cache = Promise.all(this.data_packages_js.map(data_package_js => fetch(data_package_js.replace('.js', '.data'), {mode : 'no-cors'})));
     }
     
     extract_tex_package_name(path)
