@@ -423,6 +423,9 @@ class BusytexPipeline
 
     async compile(files, main_tex_path, bibtex, verbose, driver, data_packages_js = [])
     {
+        if(!this.supported_drivers.includes(driver))
+            throw new Error(`Driver [${driver}] is not supported, only [${this.supported_drivers}] are supported`);
+        
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
@@ -441,20 +444,15 @@ class BusytexPipeline
             data_packages_js = this.data_package_resolver.data_packages_js;
         }
         
-        
-        
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
-        
-        if(!this.supported_drivers.includes(driver))
-            throw new Error(`Driver [${driver}] is not supported, only [${this.supported_drivers}] are supported`);
         
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
         
         const Module = await this.Module;
         const {FS, PATH} = Module;
 
-        const tex_path = PATH.basename(main_tex_path);
+        const tex_path = PATH.basename(main_tex_path), dirname = PATH.dirname(main_tex_path);
 
         const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
