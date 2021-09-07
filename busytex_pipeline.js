@@ -430,7 +430,7 @@ class BusytexPipeline
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
-        let tex_packages_not_resolved = [];
+        let tex_packages_not_resolved = [], data_packages_js_all = data_packages_js;
         [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
         
         if(tex_packages_not_resolved.length > 0)
@@ -438,9 +438,14 @@ class BusytexPipeline
             console.log('DATA PACKAGES', data_packages_js, 'NOT RESOLVED', tex_packages_not_resolved);
 
             //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
-            // replace by regular return? override? fallback on all data-packages?
+            // replace by regular return? override? 
             // throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
+            
+            //TODO: fallback on all data-packages?
+            data_packages_js = data_packages_all;
         }
+        
+        
         
         this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
@@ -453,10 +458,8 @@ class BusytexPipeline
         const Module = await this.Module;
         const [FS, PATH] = [Module.FS, Module.PATH];
 
-        const source_name = main_tex_path.slice(1 + main_tex_path.lastIndexOf('/'));
-        const dirname = main_tex_path.slice(0, main_tex_path.length - source_name.length) || '.';
+        const tex_path = PATH.basename(main_tex_path);
 
-        const tex_path = source_name;
         const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
         const xetex =  ['xetex' , '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
