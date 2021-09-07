@@ -253,7 +253,7 @@ class BusytexPipeline
         };
         
         this.bibtex_resolver = new BusytexBibtexResolver();
-        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, [...BysytexTexmfSystem, ...texmf_local]);
+        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, BusytexPipeline.texmf_system, texmf_local);
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = this.script_loader(busytex_js);
         BusytexPipeline.data_packages = [];
