@@ -43,13 +43,15 @@ class BusytexDataPackageResolver
         // implicitly excludes /.../temxf-dist/{fonts,bibtex}
         // cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
+        const splitrootdir = path => { const splitted = path.split('/'); return [splitted[0], splitted[1].join('/')]; };
+
         let tex_package_name = null;
         if(this.isfile(path))
         {
             const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(t));
             if(prefix)
             {
-                tex_package_name = path.slice(prefix.length, prefix.length + path.indexOf('/', prefix.length));
+                tex_package_name = splitrootdir(splitrootdir(path.slice(prefix.length))[1])[0];
                 console.log('PREFIX', prefix, 'PACKAGE', tex_package_name);
 
                 if(tex_package_name in this.remap)
