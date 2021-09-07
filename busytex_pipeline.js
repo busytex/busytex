@@ -40,7 +40,7 @@ class BusytexDataPackageResolver
     async resolve_data_packages()
     {
         const values = await Promise.all(this.data_packages.map(([k, v]) => v));
-        return this.data_packages.map(([k, v], i) => [k, values[i]]);
+        return this.data_packages.map(([k, v], i) => [k, Array.from(values[i]).sort()]);
     }
     
     extract_tex_package_name(path)
