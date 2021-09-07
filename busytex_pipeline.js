@@ -32,7 +32,7 @@ class BusytexDataPackageResolver
         this.remap = remap;
         this.texmf_local_texmfdist_tex = texmf_local.map(t => t + '/texmf-dist/tex/');
         this.texmf_system_texmfdist_tex = texmf_system.map(t => t + '/texmf-dist/tex/');
-        this.texmf_texmfdist_tex = [this.texmf_system_texmfdist_tex, this.texmf_local_texmfdist_tex];
+        this.texmf_texmfdist_tex = [...this.texmf_system_texmfdist_tex, ...this.texmf_local_texmfdist_tex];
     }
 
     async resolve_data_packages()
