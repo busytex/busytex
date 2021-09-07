@@ -3,6 +3,8 @@
 //TODO: configure fontconfig to use /etc/fonts
 //TODO: move latex.fmt to /texlive
 
+
+
 class BusytexDataPackageResolver
 {
     constructor(data_packages_js, texmf_system = [], texmf_local = [], remap = {
@@ -132,6 +134,7 @@ class BusytexBibtexResolver
 
 class BusytexPipeline
 {
+    static texmf_system = ['/texlive', '/texmf'];
     static VerboseSilent = 'silent';
     static VerboseInfo = 'info';
     static VerboseDebug = 'debug';
@@ -195,8 +198,7 @@ class BusytexPipeline
             xetex  : '/xelatex.fmt',  //'/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt'
             luatex : '/lualatex.fmt'
         };
-        this.texmf_system = ['/texlive', '/texmf'];
-        this.dir_texmfdist = [...this.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
+        this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
         this.dir_cnf = '/texlive/texmf-dist/web2c';
         this.dir_fontconfig = '/etc/fonts';
@@ -252,7 +254,7 @@ class BusytexPipeline
         };
         
         this.bibtex_resolver = new BusytexBibtexResolver();
-        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, [...this.texmf_system, ...texmf_local]);
+        this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, [...BysytexTexmfSystem, ...texmf_local]);
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
         this.em_module_promise = this.script_loader(busytex_js);
         BusytexPipeline.data_packages = [];
