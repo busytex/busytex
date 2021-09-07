@@ -35,12 +35,18 @@ class BusytexDataPackageResolver
         this.texmf_local_texmfdist_tex = texmf_local.map(t => t + '/texmf-dist/tex/');
         this.texmf_system_texmfdist_tex = texmf_system.map(t => t + '/texmf-dist/tex/');
         this.texmf_texmfdist_tex = [...this.texmf_system_texmfdist_tex, ...this.texmf_local_texmfdist_tex];
+        this.data_packages_cache = null;
     }
 
     async resolve_data_packages()
     {
         const values = await Promise.all(this.data_packages.map(([k, v]) => v));
         return this.data_packages.map(([k, v], i) => [k, Array.from(values[i]).sort()]);
+    }
+
+    cache_data_packages()
+    {
+        this.data_packages_cache = Promise.all(this.data_packages_js.map(data_package_js => fetch(data_package_js.replace('.js', '.data'), {mode : 'no-cors'})));
     }
     
     extract_tex_package_name(path)
