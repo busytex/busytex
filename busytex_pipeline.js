@@ -469,7 +469,7 @@ class BusytexPipeline
         this.print('TeX packages unresolved: ' + resolved.tex_packages_not_resolved.toString());
         this.print('TeX packages unresolved in local or preloaded: ' + resolved.tex_packages_not_resolved_in_local_or_preloaded.toString());
         this.print('Data packages used: ' + resolved.data_packages_js.toString());
-        this.print('Data packages used (not preloaded): ' + resolved.data_packages_js.filter(data_package_js => !this.preload_data_packages_js.includes(data_pacakge_js)).toString());
+        this.print('Data packages used (not preloaded): ' + resolved.data_packages_js.filter(data_package_js => !this.preload_data_packages_js.includes(data_package_js)).toString());
         
         if(tex_packages_not_resolved.length > 0)
         {
