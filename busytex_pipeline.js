@@ -453,7 +453,7 @@ class BusytexPipeline
             bibtex = this.bibtex_resolver.resolve(files);
 
         const resolved = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
-        const filter_map = (f, return_tex_package) => Object.entries(resolved).filter(([tex_package, v]) => f(v)).map(([tex_package, v]) => return_tex_package ? tex_package : v.source);
+        const filter_map = (f, return_tex_package = true) => Object.entries(resolved).filter(([tex_package, v]) => f(v)).map(([tex_package, v]) => return_tex_package ? tex_package : v.source);
 
         data_packages_js = filter_map(v => v.used && v.source != 'local' && v.source != null, false);
         
