@@ -446,7 +446,7 @@ class BusytexPipeline
     {
         if(!this.supported_drivers.includes(driver))
             throw new Error(`Driver [${driver}] is not supported, only [${this.supported_drivers}] are supported`);
-        this.print(this.ansi_reset_sequence);
+        //this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
         
         if(bibtex === null)
@@ -491,10 +491,10 @@ class BusytexPipeline
         const xetex =  ['xetex' , '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const pdftex = ['pdftex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
         const luatex = ['luatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luatex);
-        
         const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
+        console.log('BEFOREMOUNT', FS.analyzePath(this.project_dir);)
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
         let dirs = new Set(['/', this.project_dir]);
 
@@ -550,6 +550,7 @@ class BusytexPipeline
         const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => `$ ${cmd}\nEXITCODE: ${exit_code}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}\n==\nSTDOUT:\n${stdout}\n==\nSTDERR:\n${stderr}\n======`).join('\n\n');
         
         // TODO: do unmount if not empty even if exceptions happened
+        console.log('AFTERMOUNT', FS.analyzePath(this.project_dir);)
         FS.unmount(this.project_dir);
         this.Module = this.preload == false ? null : this.Module;
         
