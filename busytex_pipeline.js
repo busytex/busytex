@@ -87,6 +87,13 @@ class BusytexDataPackageResolver
         
         const tex_packages_to_resolve = tex_packages.filter(tex_package => !tex_packages_local.has(tex_package));
 
+        const resolved = Object.fromEntries(tex_packages.map(tex_package => ([tex_package, {used: true, source : null}])));
+        for(const tex_package of tex_packages_local)
+        {
+            resolved[tex_package] = resolved[tex_package] || {};
+            resolved[tex_package].source = 'local';
+            resolved[tex_package].used = resolved[tex_package].used || false;
+        }
 
         // https://ctan.org/tex-archive/macros/latex/required/graphics, graphicx
         //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
@@ -94,7 +101,6 @@ class BusytexDataPackageResolver
         let update_data_packages_js = false;
         let data_packages = [];
         const tex_packages_not_resolved = [];
-        const tex_packages_not_resolved_in_local_or_preloaded = [];
         
         if(data_packages_js === null)
         {
@@ -112,13 +118,9 @@ class BusytexDataPackageResolver
         {
             for(const [data_package_js, tex_packages] of [...data_packages, [null, null]])
             {
-                if(tex_packages === null)
-                    tex_packages_not_resolved.push(tex_package);
-
                 else if((await tex_packages).has(tex_package))
                 {
-                    //if(!this.preload_data_packages_js.includes(data_package_js))
-                    //    tex_packages_not_resolved_in_local_or_preloaded.push(tex_package);
+                    resolved[tex_package].source = data_package_js;
 
                     if(update_data_packages_js)
                         data_packages_js.add(data_package_js);
@@ -126,16 +128,7 @@ class BusytexDataPackageResolver
                 }
             }
         }
-
-        return {
-            tex_packages : tex_packages,
-            tex_packages_local : tex_packages_local,
-            tex_packages_to_resolve : tex_packages_to_resolve,
-            tex_packages_not_resolved : tex_packages_not_resolved,
-            tex_packages_not_resolved_in_local_or_preloaded : tex_packages_not_resolved_in_local_or_preloaded,
-            
-            data_packages_js : Array.from(data_packages_js)
-        };
+        return resolved;
     }
 }
 
@@ -458,19 +451,18 @@ class BusytexPipeline
         if(bibtex === null)
             bibtex = this.bibtex_resolver.resolve(files);
 
-        let tex_packages_not_resolved = [];
         const resolved = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
-        ({data_packages_js, tex_packages_not_resolved} = resolved);
+        const filter_map = (f, return_tex_package) => Object.entries(resolved).filter(([tex_package, v]) => f(v)).map(([tex_package, v]) => return_tex_package ? tex_package : v.source);
+
+        const tex_packages_not_resolved = filter_map(v => v.source == null);
         
-        //TODO: print tex packages that are not in default preload data packages and not in local
-        
-        this.print('TeX packages: ' + resolved.tex_packages.toString());
-        this.print('TeX packages local: ' + resolved.tex_packages_local.toString());
-        this.print('TeX packages unresolved: ' + resolved.tex_packages_not_resolved.toString());
-        this.print('TeX packages unresolved in local or preloaded: ' + resolved.tex_packages_not_resolved_in_local_or_preloaded.toString());
-        this.print('Data packages used: ' + resolved.data_packages_js.toString());
-        this.print('Data packages used (not preloaded): ' + resolved.data_packages_js.filter(data_package_js => !this.preload_data_packages_js.includes(data_package_js)).toString());
-        
+        this.print('TeX packages: ' + filter_map(v => v.used).toString());
+        this.print('TeX packages local: ' + filter_map(v => v.source == 'local').toString());
+        this.print('TeX packages unresolved (in local or preloaded): ' + filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source)).toString()));
+        this.print('TeX packages unresolved: ' + + filter_map(v => v.source === null).toString());
+        this.print('Data packages used (not preloaded): ' + filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), ([tex_package, v]) => v.source).toString());
+        this.print('Data packages used: ' + filter_map(v => v.used && v.source != 'local' && v.source != null, false).toString());
+
         if(tex_packages_not_resolved.length > 0)
         {
             console.log('DATA PACKAGES', data_packages_js, 'NOT RESOLVED', tex_packages_not_resolved);
