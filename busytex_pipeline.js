@@ -494,7 +494,7 @@ class BusytexPipeline
         const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
-        console.log('BEFOREMOUNT', FS.analyzePath(this.project_dir);)
+        console.log('BEFOREMOUNT', FS.analyzePath(this.project_dir));
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
         let dirs = new Set(['/', this.project_dir]);
 
@@ -550,7 +550,7 @@ class BusytexPipeline
         const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => `$ ${cmd}\nEXITCODE: ${exit_code}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}\n==\nSTDOUT:\n${stdout}\n==\nSTDERR:\n${stderr}\n======`).join('\n\n');
         
         // TODO: do unmount if not empty even if exceptions happened
-        console.log('AFTERMOUNT', FS.analyzePath(this.project_dir);)
+        console.log('AFTERMOUNT', FS.analyzePath(this.project_dir));
         FS.unmount(this.project_dir);
         this.Module = this.preload == false ? null : this.Module;
         
