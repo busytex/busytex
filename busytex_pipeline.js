@@ -453,6 +453,9 @@ class BusytexPipeline
         //TODO: print all used tex packages and local tex packages
         //TODO: print tex packages that are not in default preload data packages and not in local
         
+        this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
+        this.print('Data packages used: ' + data_packages_js.toString());
+        
         if(tex_packages_not_resolved.length > 0)
         {
             console.log('DATA PACKAGES', data_packages_js, 'NOT RESOLVED', tex_packages_not_resolved);
