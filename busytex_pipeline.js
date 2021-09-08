@@ -459,9 +459,11 @@ class BusytexPipeline
         
         const tex_packages_not_resolved = filter_map(v => v.source == null);
         
+        console.log('RESOLVED', resolved, this.preload_data_packages_js);
+
         this.print('TeX packages: ' + filter_map(v => v.used).toString());
         this.print('TeX packages local: ' + filter_map(v => v.source == 'local').toString());
-        this.print('TeX packages unresolved (in local or preloaded): ' + filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source)).toString()));
+        this.print('TeX packages unresolved (in local or preloaded): ' + filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source))).toString());
         this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
         this.print('Data packages used (not preloaded): ' + filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), ([tex_package, v]) => v.source).toString());
         this.print('Data packages used: ' + data_packages_js.toString());
