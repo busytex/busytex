@@ -99,8 +99,8 @@ class BusytexDataPackageResolver
         //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
         
         let update_data_packages_js = false;
-        let data_packages = [];
         const tex_packages_not_resolved = [];
+        let data_packages = [];
         
         if(data_packages_js === null)
         {
@@ -118,6 +118,9 @@ class BusytexDataPackageResolver
         {
             for(const [data_package_js, tex_packages] of [...data_packages, [null, null]])
             {
+                if(tex_packages === null)
+                    tex_packages_not_resolved.push(tex_package);
+
                 else if((await tex_packages).has(tex_package))
                 {
                     resolved[tex_package].source = data_package_js;
@@ -128,6 +131,7 @@ class BusytexDataPackageResolver
                 }
             }
         }
+
         return resolved;
     }
 }
