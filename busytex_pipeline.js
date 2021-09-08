@@ -458,14 +458,14 @@ class BusytexPipeline
         const resolved = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
         const filter_map = (f, return_tex_package) => Object.entries(resolved).filter(([tex_package, v]) => f(v)).map(([tex_package, v]) => return_tex_package ? tex_package : v.source);
 
-        const tex_packages_not_resolved = filter_map(v => v.source == null);
+        const tex_packages_not_resolved = filter_map(v => v.source == null), data_packages_js = filter_map(v => v.used && v.source != 'local' && v.source != null, false);
         
         this.print('TeX packages: ' + filter_map(v => v.used).toString());
         this.print('TeX packages local: ' + filter_map(v => v.source == 'local').toString());
         this.print('TeX packages unresolved (in local or preloaded): ' + filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source)).toString()));
-        this.print('TeX packages unresolved: ' + + filter_map(v => v.source === null).toString());
+        this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
         this.print('Data packages used (not preloaded): ' + filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), ([tex_package, v]) => v.source).toString());
-        this.print('Data packages used: ' + filter_map(v => v.used && v.source != 'local' && v.source != null, false).toString());
+        this.print('Data packages used: ' + data_packages_js.toString());
 
         if(tex_packages_not_resolved.length > 0)
         {
