@@ -24,6 +24,7 @@ class BusytexDataPackageResolver
     {
         this.regex_createPath = /"filename": "(.+?)"/g 
         this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
+        // \ProvidesPackage \RequirePackage
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         this.dirname = path => path.slice(0, path.lastIndexOf('/'));
         this.isfile = path => this.basename(path).includes('.');
@@ -81,7 +82,7 @@ class BusytexDataPackageResolver
     
     async resolve(files, main_tex_path, data_packages_js = null)
     {
-        const tex_packages = files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim()[0] != '%' && l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat();
+        const tex_packages = files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat();
         
         const tex_packages_local = new Set(files.filter(f => this.texmf_local_texmfdist_tex.some(t => f.path.startsWith(t)) || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
         
