@@ -117,8 +117,8 @@ class BusytexDataPackageResolver
 
                 else if((await tex_packages).has(tex_package))
                 {
-                    if(!this.preload_data_packages_js.includes(data_package_js))
-                        tex_packages_not_resolved_in_local_or_preloaded.push(tex_package);
+                    //if(!this.preload_data_packages_js.includes(data_package_js))
+                    //    tex_packages_not_resolved_in_local_or_preloaded.push(tex_package);
 
                     if(update_data_packages_js)
                         data_packages_js.add(data_package_js);
