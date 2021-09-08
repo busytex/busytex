@@ -124,7 +124,10 @@ class BusytexDataPackageResolver
             }
         }
 
-        return [Array.from(data_packages_js), tex_packages_not_resolved];
+        return {
+            data_packages_js : Array.from(data_packages_js), 
+            tex_packages_not_resolved : tex_packages_not_resolved
+        };
     }
 }
 
@@ -448,13 +451,15 @@ class BusytexPipeline
             bibtex = this.bibtex_resolver.resolve(files);
 
         let tex_packages_not_resolved = [];
-        [data_packages_js, tex_packages_not_resolved] = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
+        const resolved = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
+        ({data_packages_js, tex_packages_not_resolved} = resolved);
         
         //TODO: print all used tex packages and local tex packages
         //TODO: print tex packages that are not in default preload data packages and not in local
         
         this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
         this.print('Data packages used: ' + data_packages_js.toString());
+        this.print('Data packages used (not preloaded): ' + data_packages_js.filter(data_package_js => !this.preload_data_packages_js.includes(data_pacakge_js)).toString();
         
         if(tex_packages_not_resolved.length > 0)
         {
