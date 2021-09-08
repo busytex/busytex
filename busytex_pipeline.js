@@ -118,10 +118,7 @@ class BusytexDataPackageResolver
         {
             for(const [data_package_js, tex_packages] of [...data_packages, [null, null]])
             {
-                if(tex_packages === null)
-                    tex_packages_not_resolved.push(tex_package);
-
-                else if((await tex_packages).has(tex_package))
+                if(tex_packages !== null && (await tex_packages).has(tex_package))
                 {
                     resolved[tex_package].source = data_package_js;
 
