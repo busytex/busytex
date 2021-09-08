@@ -11,7 +11,7 @@ PYTHON = python3
 TOTAL_MEMORY = 536870912
 
 CFLAGS_OPT_native = -O3
-CFLAGS_OPT_wasm = -Oz
+#CFLAGS_OPT_wasm = -Oz
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
