@@ -455,7 +455,9 @@ class BusytexPipeline
         const resolved = await this.data_package_resolver.resolve(files, main_tex_path, data_packages_js);
         const filter_map = (f, return_tex_package) => Object.entries(resolved).filter(([tex_package, v]) => f(v)).map(([tex_package, v]) => return_tex_package ? tex_package : v.source);
 
-        const tex_packages_not_resolved = filter_map(v => v.source == null), data_packages_js = filter_map(v => v.used && v.source != 'local' && v.source != null, false);
+        data_packages_js = filter_map(v => v.used && v.source != 'local' && v.source != null, false);
+        
+        const tex_packages_not_resolved = filter_map(v => v.source == null);
         
         this.print('TeX packages: ' + filter_map(v => v.used).toString());
         this.print('TeX packages local: ' + filter_map(v => v.source == 'local').toString());
