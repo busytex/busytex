@@ -298,7 +298,7 @@ build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	rm build/$*/texlive/texk/kpathsea/readlink.o || true
-	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEACCESS_$*)
+	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
