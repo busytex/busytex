@@ -51,6 +51,7 @@ OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libl
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a busytex_libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
+OBJ_MAKEINDEX = texlive/texk/makeindexk/busytex_makeindex.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/busytex_bibtex8.a
 OBJ_KPATHSEA = busytex_kpsewhich.o busytex_kpsestat.o busytex_kpseaccess.o busytex_kpsereadlink.o .libs/libkpathsea.a
 #texlive/libs/icu/icu-build/lib/libicuio.a texlive/libs/icu/icu-build/lib/libicui18n.a 
@@ -87,6 +88,7 @@ CFLAGS_KPSEWHICH := -Dmain='__attribute__((visibility(\"default\"))) busymain_kp
 CFLAGS_KPSESTAT := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsestat'
 CFLAGS_KPSEACCESS := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpseaccess'
 CFLAGS_KPSEREADLINK := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsereadlink'
+CFLAGS_MAKEINDEX := -Dmain='__attribute__((visibility(\"default\"))) busymain_makeindex'
 CFLAGS_XETEX     := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_BIBTEX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
@@ -117,6 +119,8 @@ CFLAGS_KPSEACCESS_wasm = $(CFLAGS_KPSEACCESS) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEACCESS_native = $(CFLAGS_KPSEACCESS) $(CFLAGS_OPT_native)
 CFLAGS_KPSEREADLINK_wasm = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEREADLINK_native = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_native)
+CFLAGS_MAKEINDEX_wasm = $(CFLAGS_MAKEINDEX) $(CFLAGS_OPT_wasm)
+CFLAGS_MAKEINDEX_native = $(CFLAGS_MAKEINDEX) $(CFLAGS_OPT_native)
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
@@ -153,6 +157,8 @@ OPTS_KPSEACCESS_native = CFLAGS="$(CFLAGS_KPSEACCESS_native)"
 OPTS_KPSEACCESS_wasm = CFLAGS="$(CFLAGS_KPSEACCESS_wasm)"
 OPTS_KPSEREADLINK_native = CFLAGS="$(CFLAGS_KPSEREADLINK_native)"
 OPTS_KPSEREADLINK_wasm = CFLAGS="$(CFLAGS_KPSEREADLINK_wasm)"
+OPTS_MAKEINDEX_native = CFLAGS="$(CFLAGS_MAKEINDEX_native)"
+OPTS_MAKEINDEX_wasm = CFLAGS="$(CFLAGS_MAKEINDEX_wasm)"
 
 ##############################################################################################################################
 
@@ -281,6 +287,10 @@ build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
 build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/texk/kpathsea
 
+build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) makeindex $(OPTS_MAKEINDEX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/
+
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
 	rm build/$*/texlive/texk/kpathsea/kpsewhich.o || true
 	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
@@ -341,8 +351,8 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 
 build/native/busytex: 
 	mkdir -p $(dir $@)
-	$(CC_native) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX  -DBUSYTEX_PDFTEX  -DBUSYTEX_LUATEX
-	$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
+	$(CC_native) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
+	$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
 
 ################################################################################################################
 
