@@ -3,6 +3,7 @@
 Currently compiles:
 - xetex
 - pdftex
+- luatex
 - bibtex8
 - xdvipdfmx
 - kpsewhich
