@@ -58,6 +58,7 @@ if __name__ == '__main__':
     parser.add_argument('--skip', nargs = '*', default = ['/usr/share/doc', '/usr/share/man'])
     parser.add_argument('--varlog', default = '/var/log')
     parser.add_argument('--retry', type = int, default = 10)
+    parser.add_argument('--retry-seconds', type = int, default = 60)
     args = parser.parse_args()
 
     filelist_url = os.path.join(args.url, 'all', args.package, 'filelist')
@@ -66,8 +67,11 @@ if __name__ == '__main__':
             page = urllib.request.urlopen(filelist_url).read().decode('utf-8')
             break
         except Exception as err:
+            if i == args.retry - 1:
+                sys.exit(1)
+
             print('Retrying', err)
-            time.sleep(args.retry)
+            time.sleep(args.retry_seconds)
     
     html_parser = UbuntuDebFileList()
     html_parser.feed(page)
