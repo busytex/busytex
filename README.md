@@ -18,7 +18,6 @@ Future work ( https://tex.stackexchange.com/questions/601061/compatibility-of-fo
 - mktexfmt (for luatex)
 - mf-nowin, mktexlsr
 - luahbtex
-- LuaTex
 - LuaMetaTex / LMTX (lua)
 - tlmgr (web requests)
 - Biber (perl)
