@@ -85,6 +85,7 @@ EXTERN_SYM = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f
 REDEFINE_SYM := $(PYTHON) -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
 CFLAGS_KPSEWHICH := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
 CFLAGS_KPSESTAT := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsestat'
+CFLAGS_KPSEACCESS := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpseaccess'
 CFLAGS_XETEX     := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_BIBTEX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
@@ -111,6 +112,8 @@ CFLAGS_KPSEWHICH_wasm = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
 CFLAGS_KPSESTAT_wasm = $(CFLAGS_KPSESTAT) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSESTAT_native = $(CFLAGS_KPSESTAT) $(CFLAGS_OPT_native)
+CFLAGS_KPSEACCESS_wasm = $(CFLAGS_KPSEACCESS) $(CFLAGS_OPT_wasm)
+CFLAGS_KPSEACCESS_native = $(CFLAGS_KPSEACCESS) $(CFLAGS_OPT_native)
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
@@ -143,6 +146,8 @@ OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 OPTS_KPSEWHICH_wasm = CFLAGS="$(CFLAGS_KPSEWHICH_wasm)"
 OPTS_KPSESTAT_native = CFLAGS="$(CFLAGS_KPSESTAT_native)"
 OPTS_KPSESTAT_wasm = CFLAGS="$(CFLAGS_KPSESTAT_wasm)"
+OPTS_KPSEACCESS_native = CFLAGS="$(CFLAGS_KPSEACCESS_native)"
+OPTS_KPSEACCESS_wasm = CFLAGS="$(CFLAGS_KPSEACCESS_wasm)"
 
 ##############################################################################################################################
 
@@ -280,6 +285,11 @@ build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
 	rm build/$*/texlive/texk/kpathsea/kpsestat.o || true
 	$(MAKE_$*) -C $(dir $@) kpsestat.o $(OPTS_KPSESTAT_$*)
 	cp $(dir $@)/kpsestat.o $@
+
+build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
+	rm build/$*/texlive/texk/kpathsea/access.o || true
+	$(MAKE_$*) -C $(dir $@) access.o $(OPTS_KPSEACCESS_$*)
+	cp $(dir $@)/access.o $@
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/libs/lua53
@@ -484,6 +494,7 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/lib/lib.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsestat.o 
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpseaccess.o 
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a

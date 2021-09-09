@@ -26,6 +26,7 @@ extern int busymain_bibtex8(int argc, char* argv[]);
 #ifdef BUSYTEX_KPSE
 extern int busymain_kpsewhich(int argc, char* argv[]);
 extern int busymain_kpsestat(int argc, char* argv[]);
+extern int busymain_kpseaccess(int argc, char* argv[]);
 #endif
 
 #ifdef BUSYTEX_MAKEINDEX
@@ -127,6 +128,12 @@ int main(int argc, char* argv[])
         argv[1] = argv[0];
         optind = 1;
         return busymain_kpsestat(argc - 1, argv + 1);
+    }
+    if(strcmp("kpseaccess", argv[1]) == 0)
+    {
+        argv[1] = argv[0];
+        optind = 1;
+        return busymain_kpseaccess(argc - 1, argv + 1);
     }
 #endif
 
