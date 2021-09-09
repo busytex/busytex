@@ -16,7 +16,7 @@ CFLAGS_OPT_native = -O3
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
 
-BUSYTEX = $(ROOT)/build/native/busytex
+BUSYTEX_native = $(ROOT)/build/native/busytex
 
 TEXMF_FULL = $(ROOT)/build/texlive-full
 
@@ -375,7 +375,7 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 
 build/wasm/busytex.js: 
 	mkdir -p $(dir $@)
-	$(CC_wasm) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
+	$(CC_wasm) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 	$(CXX_wasm) -Wl,--trace-symbol=setjmp -Wl,--trace-symbol=_setjmp -Wl,-error-limit=0 -Wl,--unresolved-symbols=ignore-all -export-dynamic $(CFLAGS_OPT) -s SUPPORT_LONGJMP=1 -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0 -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=$(notdir $(basename $@)) -s EXPORTED_FUNCTIONS='["_main", "_fflush", "_putchar", "_fopen", "_fputc", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain","FS", "ENV", "allocateUTF8OnStack", "LZ4", "PATH"]' -o $@ $(basename $@).o $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/wasm/, $(OBJ_DVIPDF) $(OBJ_BIBTEX) $(OBJ_DEPS)) $(addprefix -Ibuild/wasm/, $(CPATH_BUSYTEX)) $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -lm
 	
 
@@ -409,14 +409,14 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX_native) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
+	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX_native) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
 	mv $(basename $@)/latex.fmt $@
 
 build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
-	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
+	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX_native) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
 	mv $(basename $@)/lualatex.fmt $@
 
 ################################################################################################################
@@ -534,7 +534,10 @@ wasm:
 	#
 	$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
-	$(MAKE) build/wasm/texlive/texk/kpathsea/busytex_kpsewhich.o 
+	$(MAKE) build/native/texlive/texk/kpathsea/busytex_kpsewhich.o 
+	$(MAKE) build/native/texlive/texk/kpathsea/busytex_kpsestat.o 
+	$(MAKE) build/native/texlive/texk/kpathsea/busytex_kpseaccess.o 
+	$(MAKE) build/native/texlive/texk/kpathsea/busytex_kpsereadlink.o 
 	$(MAKE) build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
