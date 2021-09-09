@@ -23,8 +23,9 @@ extern int busymain_xdvipdfmx(int argc, char* argv[]);
 extern int busymain_bibtex8(int argc, char* argv[]);
 #endif
 
-#ifdef BUSYTEX_KPSEWHICH
+#ifdef BUSYTEX_KPSE
 extern int busymain_kpsewhich(int argc, char* argv[]);
+extern int busymain_kpsestat(int argc, char* argv[]);
 #endif
 
 #ifdef BUSYTEX_MAKEINDEX
@@ -58,8 +59,9 @@ int main(int argc, char* argv[])
 #ifdef BUSYTEX_BIBTEX8
             "bibtex8\n"
 #endif
-#ifdef BUSYTEX_KPSEWHICH
+#ifdef BUSYTEX_KPSE
             "kpsewhich\n"
+            "kpsestat\n"
 #endif
 #ifdef BUSYTEX_MAKEINDEX
             "makeindex\n"
@@ -113,12 +115,18 @@ int main(int argc, char* argv[])
     }
 #endif
 
-#ifdef BUSYTEX_KPSEWHICH
+#ifdef BUSYTEX_KPSE
     if(strcmp("kpsewhich", argv[1]) == 0)
     {
         argv[1] = argv[0];
         optind = 1;
         return busymain_kpsewhich(argc - 1, argv + 1);
+    }
+    if(strcmp("kpsestat", argv[1]) == 0)
+    {
+        argv[1] = argv[0];
+        optind = 1;
+        return busymain_kpsestat(argc - 1, argv + 1);
     }
 #endif
 

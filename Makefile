@@ -52,7 +52,7 @@ OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdf
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 OBJ_BIBTEX = texlive/texk/bibtex-x/busytex_bibtex8.a
-OBJ_KPATHSEA = busytex_kpsewhich.o .libs/libkpathsea.a
+OBJ_KPATHSEA = busytex_kpsewhich.o busytex_kpsestat.o .libs/libkpathsea.a
 #texlive/libs/icu/icu-build/lib/libicuio.a texlive/libs/icu/icu-build/lib/libicui18n.a 
  
 OBJ_DEPS = $(addprefix texlive/libs/, harfbuzz/libharfbuzz.a graphite2/libgraphite2.a teckit/libTECkit.a libpng/libpng.a) fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, freetype2/libfreetype.a pplib/libpplib.a zlib/libz.a zziplib/libzzip.a libpaper/libpaper.a icu/icu-build/lib/libicuuc.a icu/icu-build/lib/libicudata.a lua53/.libs/libtexlua53.a xpdf/libxpdf.a) texlive/texk/kpathsea/.libs/libkpathsea.a expat/libexpat.a
@@ -84,6 +84,7 @@ EXTERN_SYM = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f
 
 REDEFINE_SYM := $(PYTHON) -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
 CFLAGS_KPSEWHICH := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
+CFLAGS_KPSESTAT := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsestat'
 CFLAGS_XETEX     := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_BIBTEX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
@@ -108,6 +109,8 @@ CFLAGS_LUATEX_native = $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)
 CFLAGS_LUATEX_wasm = $(CFLAGS_LUATEX) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEWHICH_wasm = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
+CFLAGS_KPSESTAT_wasm = $(CFLAGS_KPSESTAT) $(CFLAGS_OPT_wasm)
+CFLAGS_KPSESTAT_native = $(CFLAGS_KPSESTAT) $(CFLAGS_OPT_native)
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
@@ -138,6 +141,8 @@ OPTS_LUATEX_native = CC="$(CC) $(CFLAGS_LUATEX_native)" CXX="$(CXX) $(CFLAGS_LUA
 OPTS_LUATEX_wasm = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX_wasm)"
 OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
 OPTS_KPSEWHICH_wasm = CFLAGS="$(CFLAGS_KPSEWHICH_wasm)"
+OPTS_KPSESTAT_native = CFLAGS="$(CFLAGS_KPSESTAT_native)"
+OPTS_KPSESTAT_wasm = CFLAGS="$(CFLAGS_KPSESTAT_wasm)"
 
 ##############################################################################################################################
 
@@ -270,6 +275,10 @@ build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
 	cp $(dir $@)/kpsewhich.o $@
 
+build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) kpsestat.o $(OPTS_KPSESTAT_$*)
+	cp $(dir $@)/kpsestat.o $@
+
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/libs/lua53
 
@@ -310,7 +319,7 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 
 build/native/busytex: 
 	mkdir -p $(dir $@)
-	$(CC_native) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSEWHICH -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX  -DBUSYTEX_PDFTEX  -DBUSYTEX_LUATEX
+	$(CC_native) -c busytex.c -o $(basename $@).o -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX  -DBUSYTEX_PDFTEX  -DBUSYTEX_LUATEX
 	$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
 
 ################################################################################################################
@@ -473,6 +482,8 @@ native:
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/lib/lib.a
 	rm build/native/texlive/texk/kpathsea/kpsewhich.o || true
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsewhich.o 
+	rm build/native/texlive/texk/kpathsea/kpsestat.o || true
+	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsestat.o 
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a

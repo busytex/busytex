@@ -24,7 +24,6 @@ class BusytexDataPackageResolver
     {
         this.regex_createPath = /"filename": "(.+?)"/g 
         this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
-        // \ProvidesPackage \RequirePackage
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         this.dirname = path => path.slice(0, path.lastIndexOf('/'));
         this.isfile = path => this.basename(path).includes('.');
@@ -56,6 +55,8 @@ class BusytexDataPackageResolver
         // implicitly excludes /.../temxf-dist/{fonts,bibtex}
         // cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
 
+        // https://ctan.org/tex-archive/macros/latex/required/graphics, graphicx
+
         const splitrootdir = path => { const splitted = path.split('/'); return [splitted[0], splitted.slice(1).join('/') ]; };
 
         let tex_package_name = null;
@@ -73,6 +74,7 @@ class BusytexDataPackageResolver
             else if(path.endsWith('.sty'))
             {
                 const basename = this.basename(path);
+                // \ProvidesPackage \RequirePackage
                 tex_package_name = basename.slice(0, basename.length - '.sty'.length);
             }
         }
@@ -95,9 +97,6 @@ class BusytexDataPackageResolver
             resolved[tex_package].source = 'local';
             resolved[tex_package].used = resolved[tex_package].used || false;
         }
-
-        // https://ctan.org/tex-archive/macros/latex/required/graphics, graphicx
-        //TODO: skip texmf-dist (texmf-local)? check only main_tex_path? process texmf-dist to find local packages
         
         let update_data_packages_js = false;
         const tex_packages_not_resolved = [];
@@ -379,7 +378,7 @@ class BusytexPipeline
                 Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
             },
 
-            NOCLEANUP_callMain(args = [], print = false) 
+            callMainWithRedirects(args = [], print = false) 
             {
                 const Module = this;
                 Module.do_print = print;
@@ -389,45 +388,8 @@ class BusytexPipeline
                 
                 const exit_code = Module.callMain(args);
                 Module._flush_streams();
-                return { exit_code : exit_code, stdout : Module.output_stdout, stderr : Module.output_stderr };
-
-                /*
-                //TODO: remove custom impl of callMain? https://github.com/emscripten-core/emscripten/pull/14865
-                const main = Module._main, flush_streams = Module._flush_streams, NULL = 0;
-                const argc = args.length + 1;
-                const argv = Module.stackAlloc((argc + 1) * 4);
-                Module.HEAP32[argv >> 2] = Module.allocateUTF8OnStack(Module.thisProgram);
-                for(let i = 1; i < argc; i++) 
-                    Module.HEAP32[(argv >> 2) + i] = Module.allocateUTF8OnStack(args[i - 1]);
-                Module.HEAP32[(argv >> 2) + argc] = NULL;
-
-                try
-                {
-                    main(argc, argv);
-                }
-                catch(err)
-                {
-                    if(err.name == 'ExitStatus')
-                    {
-                        flush_streams();
-                        return {exit_code : err.status, stdout : Module.output_stdout, stderr : Module.output_stderr};
-                    }
-                    else
-                    {
-                        try
-                        {
-                            flush_streams();
-                        }
-                        catch {}
-                        // TODO: add this info to thrown exception
-                        console.log('stderr', Module.output_stderr, 'stdout', Module.output_stdout);
-                        throw err;
-                    }
-                }
                 
-                flush_streams();
-                return {exit_code : 0, stdout : Module.output_stdout, stderr : Module.output_stderr};
-                */
+                return { exit_code : exit_code, stdout : Module.output_stdout, stderr : Module.output_stderr };
             }
         };
         
@@ -438,8 +400,8 @@ class BusytexPipeline
         
         if(report_applet_versions)
         {
-            const applets = initialized_module.NOCLEANUP_callMain().stdout.split('\n').filter(line => line.length > 0);
-            initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.NOCLEANUP_callMain([applet, '--version']).stdout])));
+            const applets = initialized_module.callMainWithRedirects().stdout.split('\n').filter(line => line.length > 0);
+            initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.callMainWithRedirects([applet, '--version']).stdout])));
             // TODO: exception here not caught?
             this.on_initialized(initialized_module.applet_versions);
         }
@@ -501,8 +463,10 @@ class BusytexPipeline
         const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
-        console.log('BEFOREMOUNT', FS.analyzePath(this.project_dir));
+        if(FS.analyzePath(this.project_dir).object.mount.mountpoint == this.project_dir)
+            FS.unmount(this.project_dir);
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
+
         let dirs = new Set(['/', this.project_dir]);
 
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
@@ -537,7 +501,7 @@ class BusytexPipeline
             this.remove(FS, log_path);
 
             this.print('$ busytex ' + cmd.join(' '));
-            ({exit_code, stdout, stderr} = Module.NOCLEANUP_callMain(cmd, verbose != BusytexPipeline.VerboseSilent));
+            ({exit_code, stdout, stderr} = Module.callMainWithRedirects(cmd, verbose != BusytexPipeline.VerboseSilent));
        
 
             Module.HEAPU8.fill(0);
@@ -558,7 +522,6 @@ class BusytexPipeline
         
         // TODO: do unmount if not empty even if exceptions happened
         console.log('AFTERMOUNT', FS.analyzePath(this.project_dir));
-        FS.unmount(this.project_dir);
         this.Module = this.preload == false ? null : this.Module;
         
         return {pdf : pdf, log : log, exit_code : exit_code, logs : logs};
