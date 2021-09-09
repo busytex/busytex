@@ -7,13 +7,13 @@ Currently compiles:
 - bibtex8
 - xdvipdfmx
 - kpsewhich, kpsestat, kpseaccess, kpsereadlink
+- makeindex
 
 Architecture targets:
 - linux_x86_64
 - WASM
 
 Future work ( https://tex.stackexchange.com/questions/601061/compatibility-of-format-files-fmt#comment1509555_601061 ):
-- makeindex
 - mktexfmt (for luatex)
 - mf-nowin, mktexlsr
 - luahbtex
