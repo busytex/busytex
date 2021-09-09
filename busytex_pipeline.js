@@ -385,8 +385,13 @@ class BusytexPipeline
                 Module.do_print = print;
                 Module.output_stdout = '';
                 Module.output_stderr = '';
-
                 Module.setPrefix(args[0]);
+                
+                const exit_code = Module.callMain(args);
+                Module._flush_streams();
+                return { exit_code : exit_code, stdout : Module.output_stdout, stderr : Module.output_stderr };
+
+                /*
                 //TODO: remove custom impl of callMain? https://github.com/emscripten-core/emscripten/pull/14865
                 const main = Module._main, flush_streams = Module._flush_streams, NULL = 0;
                 const argc = args.length + 1;
@@ -422,6 +427,7 @@ class BusytexPipeline
                 
                 flush_streams();
                 return {exit_code : 0, stdout : Module.output_stdout, stderr : Module.output_stderr};
+                */
             }
         };
         
