@@ -288,7 +288,7 @@ build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/texk/kpathsea
 
 build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) makeindex $(OPTS_MAKEINDEX_$*)
+	$(MAKE_$*) -C $(dir $@) genind.o mkind.o qsort.o scanid.o scanst.o sortid.o $(OPTS_MAKEINDEX_$*)
 	$(AR_$*) -crs $@ dir $@)/*.o
 
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
