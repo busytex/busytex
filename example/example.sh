@@ -14,8 +14,8 @@ export FONTCONFIG_PATH=$DIST
 cd example
 
 $BUSYTEX
-
-for applet in $($BUSYTEX); do
+# makeindex
+for applet in xetex pdftex luatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink; do
     echo $BUSYTEX $applet --version
     $BUSYTEX $applet --version
 done
