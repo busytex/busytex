@@ -108,6 +108,7 @@ CFLAGS_LUATEX_native = $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)
 CFLAGS_LUATEX_wasm = $(CFLAGS_LUATEX) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEWHICH_wasm = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEWHICH_native = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
+# _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
 CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
 #-fno-common 
