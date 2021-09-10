@@ -64,6 +64,8 @@ int main(int argc, char* argv[])
 #ifdef BUSYTEX_KPSE
             "kpsewhich\n"
             "kpsestat\n"
+            "kpseaccess\n"
+            "kpsereadlink\n"
 #endif
 #ifdef BUSYTEX_MAKEINDEX
             "makeindex\n"

@@ -24,6 +24,7 @@ class BusytexDataPackageResolver
     {
         this.regex_createPath = /"filename": "(.+?)"/g 
         this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
+        this.regex_providespackage = /\\ProvidesPackage(\[.*?\])?\{(.+?)\}/g;
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         this.dirname = path => path.slice(0, path.lastIndexOf('/'));
         this.isfile = path => this.basename(path).includes('.');
@@ -50,7 +51,7 @@ class BusytexDataPackageResolver
             this.data_packages_cache = Promise.all(this.data_packages_js.map(data_package_js => fetch(data_package_js.replace('.js', '.data'), {mode : 'no-cors'})));
     }
     
-    extract_tex_package_name(path)
+    extract_tex_package_name(path, contents = '')
     {
         // implicitly excludes /.../temxf-dist/{fonts,bibtex}
         // cat urls.txt | while read URL; do echo $(curl -sI ${URL%$'\r'} | head -n 1 | cut -d' ' -f2) $URL; done | grep 404 | sort | uniq
@@ -73,9 +74,18 @@ class BusytexDataPackageResolver
             }
             else if(path.endsWith('.sty'))
             {
-                const basename = this.basename(path);
-                // \ProvidesPackage \RequirePackage
-                tex_package_name = basename.slice(0, basename.length - '.sty'.length);
+                if(contents)
+                {
+                    const tex_packages = f.contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups.pop()  )  ).flat();
+                    if(tex_packages.length > 0)
+                        tex_package_name = tex_packages[0];
+                }
+                if(!tex_package_name)
+                {
+                    const basename = this.basename(path);
+                    // \RequirePackage
+                    tex_package_name = basename.slice(0, basename.length - '.sty'.length);
+                }
             }
         }
 
@@ -86,7 +96,7 @@ class BusytexDataPackageResolver
     {
         const tex_packages = files.filter(f => typeof(f.contents) == 'string' && f.path == main_tex_path).map(f => f.contents.split('\n').filter(l => l.trim().startsWith('\\usepackage')).map(l => Array.from(l.matchAll(this.regex_usepackage)).filter(groups => groups.length >= 2).map(groups => groups.pop().split(',')  )  )).flat().flat().flat();
         
-        const tex_packages_local = new Set(files.filter(f => this.texmf_local_texmfdist_tex.some(t => f.path.startsWith(t)) || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path)).filter(f => f));
+        const tex_packages_local = new Set(files.filter(f => this.texmf_local_texmfdist_tex.some(t => f.path.startsWith(t)) || f.path.endsWith('.sty')).map(f => this.extract_tex_package_name(f.path, typeof(f.contents) == 'string' ? f.contents : '')).filter(f => f));
         
         const tex_packages_to_resolve = tex_packages.filter(tex_package => !tex_packages_local.has(tex_package));
 
