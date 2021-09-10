@@ -60,32 +60,27 @@ class BusytexDataPackageResolver
 
         const splitrootdir = path => { const splitted = path.split('/'); return [splitted[0], splitted.slice(1).join('/') ]; };
 
-        let tex_package_name = null;
+        if(!path.endsWith('.sty'))
+            return null;
+
+        const basename = this.basename(path);
+        let tex_package_name = basename.slice(0, basename.length - '.sty'.length);
         if(this.isfile(path))
         {
             const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(t));
-            if(prefix)
+            if(contents)
+            {
+                const tex_packages = f.contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups.pop()  )  ).flat();
+                if(tex_packages.length > 0)
+                    tex_package_name = tex_packages[0];
+            }
+            else if(prefix)
             {
                 tex_package_name = splitrootdir(splitrootdir(path.slice(prefix.length))[1])[0];
                 this.msgs.push([tex_package_name, path, 'https://ctan.org/pkg/' + tex_package_name]);
 
                 if(tex_package_name in this.remap)
                     tex_package_name = this.remap[tex_package_name];
-            }
-            else if(path.endsWith('.sty'))
-            {
-                if(contents)
-                {
-                    const tex_packages = f.contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups.pop()  )  ).flat();
-                    if(tex_packages.length > 0)
-                        tex_package_name = tex_packages[0];
-                }
-                if(!tex_package_name)
-                {
-                    const basename = this.basename(path);
-                    // \RequirePackage
-                    tex_package_name = basename.slice(0, basename.length - '.sty'.length);
-                }
             }
         }
 
