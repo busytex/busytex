@@ -416,6 +416,13 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
 	# grep 'texlive-basic/bin' 8_Install\ TexLive.txt | grep -v 'No such' | grep -oP 'execve\(".+?",' | sort | uniq
 
+.PHONY: build/native/custom_bin
+build/native/custom_bin:
+	mkdir -p $@
+	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
+	echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
+	echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
+
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
 	rm $(basename $@)/* || true
@@ -481,6 +488,7 @@ texlive:
 
 tds-%:
 	$(MAKE) source/texmfrepo/install-tl
+	$(MAKE) build/native/custom_bin
 	$(MAKE) build/texlive-$*.txt
 	$(MAKE) build/format-$*/xelatex.fmt
 	$(MAKE) build/format-$*/pdflatex.fmt
