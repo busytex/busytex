@@ -70,7 +70,7 @@ class BusytexDataPackageResolver
             const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(t));
             if(contents)
             {
-                const tex_packages = f.contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups.pop()  )  ).flat();
+                const tex_packages = contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups.pop()  )  ).flat();
                 if(tex_packages.length > 0)
                     tex_package_name = tex_packages[0];
             }
