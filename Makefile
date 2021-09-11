@@ -418,15 +418,15 @@ build/native/custom_bin:
 	mkdir -p $@
 	echo "$(BUSYTEX_native) kpsewhich $$"@ > $@/kpsewhich; chmod +x $@/kpsewhich
 	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap-sys.sh $@
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap-sys.sh $@/updmap-sys
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl $@
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl $@/updmap
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl $@
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl $@/fmtutil
-	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
+	echo "#!/bin/bash" > $@/updmap-sys.sh
+	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys.sh
+	chmod +x $@/updmap-sys.sh $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
+	#
+	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@
+	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
+	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl $@
+	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl $@/fmtutil
+	#echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
 
