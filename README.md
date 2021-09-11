@@ -24,6 +24,17 @@ Future work ( https://tex.stackexchange.com/questions/601061/compatibility-of-fo
 Not:
 - fmtutil, updmap /-sys
 
+### Usage
+```shell
+# wasm version, download latest compiled assets, launch the web server example.py and then go to http://localhost:8080/example/example.html
+mkdir -p dist
+wget -P dist --backups=1 $(printf "https://github.com/busytex/busytex/releases/latest/download/%s " busytex_pipeline.js busytex_worker.js    busytex.wasm busytex.js texlive-basic.js texlive-basic.data    ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js    ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js    ubuntu-texlive-science.data ubuntu-texlive-science.js)
+python3 example/example.py
+
+# native version
+bash example/example.sh
+```
+
 ### Help needed
 - refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385
 - LLVM's support for localizing global system in WASM object files: https://bugs.llvm.org/show_bug.cgi?id=51279
@@ -42,7 +53,7 @@ Not:
 - test of WASM binaries using node.js
 - preloaded minimal single-file versions with just TexLive Basic and latex-base
 - explore creating LD_PRELOAD-based file system to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context)
- 
+
 ### Dependencies
 ```shell
 # install dependencies
@@ -57,7 +68,7 @@ cd emsdk
 source emsdk_env.sh
 ```
 
-### Installation
+### Building from source
 ```shell
 # clone busytex
 git clone https://github.com/busytex/busytex
@@ -94,27 +105,6 @@ make dist
 make clean
 ```
 
-### Usage
-```shell
-# wasm version, download latest compiled assets, launch the web server example.py and then go to http://localhost:8080/example/example.html
-mkdir -p dist
-wget -P dist --backups=1 $(printf "https://github.com/busytex/busytex/releases/latest/download/%s " busytex_pipeline.js busytex_worker.js    busytex.wasm busytex.js texlive-basic.js texlive-basic.data    ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js    ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js    ubuntu-texlive-science.data ubuntu-texlive-science.js)
-python3 example/example.py
-
-# native version
-bash example/example.sh
-```
-
-### References
-- [texlive.js](https://github.com/manuels/texlive.js/)
-- [xetex.js](https://github.com/lyze/xetex-js)
-- [dvi2html](https://github.com/kisonecat/dvi2html), [web2js](https://github.com/kisonecat/web2js)
-- [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
-- [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
-- [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
-- [pdftex.js](https://github.com/dmonad/pdftex.js)
-- [BLFS](http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html)
-
 ### ISO / ZIP / LD_PRELOAD FS
 - custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
 - https://github.com/erincandescent/lib9660/blob/master/tb9660.c
@@ -130,38 +120,32 @@ bash example/example.sh
 - https://arxiv.org/abs/1908.10740
 - http://ordiluc.net/fs/libetc/
 
-### TODO
-```shell
-#TODO: abspath/realpath instead of ROOT
-
-# https://ctan.tetaneutral.net/systems/texlive/Images/texlive2020-20200406.iso
-# http://www.tug.org/texlive/devsrc/Master/tlpkg/tlpsrc/collection-basic.tlpsrc
-#TODO: instruction for local tlmgr install tinytex
-#TODO: install-tl install from local full download
-
-#TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
-# https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
-# https://github.com/emscripten-core/emscripten/pull/4737
-
-#TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
-# https://ctan.crest.fr/tex-archive/macros/latex/contrib/
-# http://tug.org/texmf-dist/
-# ftp://tug.org/texlive/Contents/live/texmf-dist/
-# ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
-# ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
-# texmf-dist/scripts/texlive/tlmgr.pl
-# http://tug.org/texmf-dist/scripts/texlive/
-# https://fossies.org/linux/misc/install-tl-unx.tar.gz/
-# http://tug.ctan.org/systems/texlive/tlnet/tlpkg/
-```
-
-### Links
+### Random links
+- TODO: abspath/realpath instead of ROOT
+- TODO: instruction for local tlmgr install tinytex
+- TODO: install-tl install from local full download
+- TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
+- TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
+- https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
+- https://github.com/emscripten-core/emscripten/pull/4737
+- https://ctan.crest.fr/tex-archive/macros/latex/contrib/
+- https://ctan.tetaneutral.net/systems/texlive/Images/texlive2020-20200406.iso
+- https://fossies.org/linux/misc/install-tl-unx.tar.gz/
+- http://www.tug.org/texlive/devsrc/Master/tlpkg/tlpsrc/collection-basic.tlpsrc
+- http://tug.org/texmf-dist/
+- http://tug.org/texmf-dist/scripts/texlive/
+- http://tug.ctan.org/systems/texlive/tlnet/tlpkg/
+- ftp://tug.org/texlive/Contents/live/texmf-dist/
+- ftp://tug.org/texlive/historic/2020/texlive-20200406-texmf.tar.xz 
+- ftp://tug.org/texlive/historic/2020/texlive-20200406-tlpdb-full.tar.gz
+- texmf-dist/scripts/texlive/tlmgr.pl
 - LMTX: https://tug.org/TUGboat/tb40-1/tb124hagen-lmtx.pdf
 - Emscripten allocator: https://github.com/Sable/emscripten_malloc
 - String and pool files: http://www.readytext.co.uk/?p=3590
 - Pascal compiler: https://ctan.org/tex-archive/systems/unix/tex-fpc?lang=en
 - Biber: https://meeting.contextgarden.net/2011/talks/day1_07_jean-michel_bibliography/hc-bb-1.pdf
 
+### Example of lazy files
 ```
 dist/texlive-lazy.js:
     mkdir -p $(dir $@)
@@ -175,3 +159,13 @@ dist/texlive-lazy.js:
         --preload build/texlive-full/texmf-dist/tex/latex/ms@/texmf/texmf-dist/tex/latex/ms \
         --preload build/texlive-full/texmf-dist/tex/latex/parskip@/texmf/texmf-dist/tex/latex/parksip
 ```
+
+### References
+- [texlive.js](https://github.com/manuels/texlive.js/)
+- [xetex.js](https://github.com/lyze/xetex-js)
+- [dvi2html](https://github.com/kisonecat/dvi2html), [web2js](https://github.com/kisonecat/web2js)
+- [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
+- [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
+- [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
+- [pdftex.js](https://github.com/dmonad/pdftex.js)
+- [BLFS](http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html)
