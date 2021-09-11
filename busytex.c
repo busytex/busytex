@@ -60,14 +60,14 @@ int main(int argc, char* argv[])
 #ifdef BUSYTEX_BIBTEX8
             "bibtex8\n"
 #endif
+#ifdef BUSYTEX_MAKEINDEX
+            "makeindex\n"
+#endif
 #ifdef BUSYTEX_KPSE
             "kpsewhich\n"
             "kpsestat\n"
             "kpseaccess\n"
             "kpsereadlink\n"
-#endif
-#ifdef BUSYTEX_MAKEINDEX
-            "makeindex\n"
 #endif
         );
         return 0;
