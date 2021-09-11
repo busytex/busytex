@@ -24,6 +24,18 @@ Future work ( https://tex.stackexchange.com/questions/601061/compatibility-of-fo
 Not:
 - fmtutil, updmap /-sys
 
+### Help needed
+- refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385
+- various Emscripten improvements: https://github.com/emscripten-core/emscripten/issues/12093, https://github.com/emscripten-core/emscripten/issues/12256
+- LLVM's support for localizing global system in WASM object files: https://bugs.llvm.org/show_bug.cgi?id=51279
+- better error catching at all stages including WASM module initialization: https://github.com/emscripten-core/emscripten/issues/14777
+- complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338
+- review shipped TexLive packages in order to review useless files to save space
+- review fonts / fontmaps shipped in TexLive packages
+- upstream build steps to TexLive: https://tug.org/pipermail/tlbuild/2021q1/004806.html
+
+Useful backgrounds: Linux build pipelines / Tex / TexLive / JavaScript / Emscripten
+ 
 ### Dependencies
 ```shell
 # install dependencies

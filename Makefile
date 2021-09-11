@@ -231,22 +231,8 @@ build/%/texlive.configured: source/texlive.patched
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 
-build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
-	$(MAKE_native) -C build/native/texlive/libs/icu 
-	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build 
-
-build/native/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) 
-
-build/wasm/texlive/libs/freetype2/libfreetype.a: build/wasm/texlive.configured build/native/texlive/libs/freetype2/libfreetype.a
-	$(MAKE_wasm) -C $(dir $@) $(OPTS_FREETYPE_wasm)
-
-build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-	cd build/wasm/texlive/libs/icu && \
-	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
-	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
+build/%/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(OPTS_FREETYPE_$*) 
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) 
@@ -321,6 +307,10 @@ build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texli
 
 ################################################################################################################
 
+build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
+	$(MAKE_native) -C build/native/texlive/libs/icu 
+	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build 
+
 build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
 	rm $(dir $@)/bibtex8-bibtex.o
@@ -355,6 +345,13 @@ build/native/busytex:
 	$(CXX_native) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -export-dynamic $(CFLAGS_OPT_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/native/, $(CPATH_BUSYTEX)) $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread || true
 
 ################################################################################################################
+
+build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+	cd build/wasm/texlive/libs/icu && \
+	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
+	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
 build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_BIBTEX_wasm)
