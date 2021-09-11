@@ -415,7 +415,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 .PHONY: build/native/custom_bin
 build/native/custom_bin:
 	mkdir -p $@
-	echo "$(BUSYTEX_native) kpsewhich $$"@ > $@/kpsewhich; chmod +x $@/kpsewhich
+	echo "$(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
 	echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
 	echo "$(BUSYTEX_native) kpsestat $$"@ > $@/kpsestat; chmod +x $@/kpsestat
 	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
