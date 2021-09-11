@@ -31,10 +31,16 @@ Not:
 - better error catching at all stages including WASM module initialization: https://github.com/emscripten-core/emscripten/issues/14777
 - complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338
 - review shipped TexLive packages in order to review useless files to save space
+- optimization flags for binaries to make them smaller
+- compile for x86_64-linux with clang (to match WASM toolchain)
+- minimize shared library dependencies for x86_64-linux (build with musl, try building without pthreads etc) to obtain platform-independent binaries
+- set up x86_64-linux binaries Github Actions test for WSLv1
 - review fonts / fontmaps shipped in TexLive packages
-- upstream build steps to TexLive: https://tug.org/pipermail/tlbuild/2021q1/004806.html
+- minimize build sequence in Makefile
+- upstream build sequence to TexLive: https://tug.org/pipermail/tlbuild/2021q1/004806.html
+- preloaded minimal single-vile versions with just TexLive Basic and latex-base
 
-Useful backgrounds: Linux build pipelines / Tex / TexLive / JavaScript / Emscripten
+Useful backgrounds: Linux build pipelines / Makefile / Tex / TexLive / JavaScript / Emscripten
  
 ### Dependencies
 ```shell
