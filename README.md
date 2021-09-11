@@ -13,16 +13,13 @@ Architecture targets:
 - x86_64-linux
 - WASM
 
-Future work ( https://tex.stackexchange.com/questions/601061/compatibility-of-format-files-fmt#comment1509555_601061 ):
-- mktexfmt (for luatex)
-- mf-nowin, mktexlsr
-- luahbtex
-- LuaMetaTex / LMTX (lua)
-- tlmgr (web requests)
+Future work:
+- mktexfmt, mktexlsr from https://github.com/TeX-Live/texlive-source/tree/trunk/texk/kpathsea/win32
+- mf-nowin
+- luahbtex, LuaMetaTex / LMTX (lua)
+- tlmgr (perl, web requests)
 - Biber (perl)
-
-Not:
-- fmtutil, updmap /-sys
+- fmtutil, updmap (perl)
 
 ### Usage
 ```shell
