@@ -42,8 +42,6 @@ Not:
 - test of WASM binaries using node.js
 - preloaded minimal single-file versions with just TexLive Basic and latex-base
 - explore creating LD_PRELOAD-based file system to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context)
-
-Especially needed backgrounds: Linux build pipelines / Makefile / Tex / TexLive / JavaScript / Emscripten
  
 ### Dependencies
 ```shell
@@ -61,7 +59,6 @@ source emsdk_env.sh
 
 ### Installation
 ```shell
-
 # clone busytex
 git clone https://github.com/busytex/busytex
 cd busytex
