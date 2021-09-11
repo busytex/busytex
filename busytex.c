@@ -74,34 +74,28 @@ int main(int argc, char* argv[])
     }
 
 #ifdef BUSYTEX_PDFTEX
-    APPLET("pdftex", "pdflatex")
+    APPLET(pdftex, pdflatex)
 #endif
-
 #ifdef BUSYTEX_LUATEX
-    APPLET("luatex", "lualatex")
+    APPLET(luatex, lualatex)
 #endif
-
 #ifdef BUSYTEX_XETEX
-    APPLET("xetex", "xelatex")
+    APPLET(xetex, xelatex)
 #endif
-    
 #ifdef BUSYTEX_XDVIPDFMX
-    APPLET("xdvipdfmx", "xdvipdfmx")
+    APPLET(xdvipdfmx, xdvipdfmx)
 #endif
-    
 #ifdef BUSYTEX_BIBTEX8
-    APPLET("bibtex8", "bibtex8")
+    APPLET(bibtex8, bibtex8)
 #endif
-
-#ifdef BUSYTEX_KPSE
-    APPLET("kpsewhich", "kpsewhich")
-    APPLET("kpsestat", "kpsestat")
-    APPLET("kpseaccess", "kpseaccess")
-    APPLET("kpsereadlink", "kpsereadlink")
-#endif
-
 #ifdef BUSYTEX_MAKEINDEX
-    APPLET("makeindex", "makeindex")
+    APPLET(makeindex, makeindex)
+#endif
+#ifdef BUSYTEX_KPSE
+    APPLET(kpsewhich, kpsewhich)
+    APPLET(kpsestat, kpsestat)
+    APPLET(kpseaccess, kpseaccess)
+    APPLET(kpsereadlink, kpsereadlink)
 #endif
 
     return 1;
