@@ -419,8 +419,9 @@ build/native/custom_bin:
 	echo "$(BUSYTEX_native) kpsewhich $$"@ > $@/kpsewhich; chmod +x $@/kpsewhich
 	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
 	echo "#!/bin/bash" > $@/updmap-sys
+	echo "echo HIII $@ HIII" >> $@/updmap-sys
 	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
-	chmod +x $@/updmap-sys.sh $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
+	chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
 	#
 	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@
 	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
