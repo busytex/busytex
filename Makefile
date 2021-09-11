@@ -420,6 +420,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 build/native/custom_bin:
 	mkdir -p $@
 	echo "$(BUSYTEX_native) kpsewhich $$"@ > $@/kpsewhich; chmod +x $@/kpsewhich
+	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
 	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
