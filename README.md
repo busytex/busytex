@@ -26,7 +26,7 @@ Not:
 
 ### Help needed
 - refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385
-- various Emscripten improvements: https://github.com/emscripten-core/emscripten/issues/12093, https://github.com/emscripten-core/emscripten/issues/12256
+- various Emscripten improvements: https://github.com/emscripten-core/emscripten/issues/12093, https://github.com/emscripten-core/emscripten/issues/12256, https://github.com/emscripten-core/emscripten/issues/13466, https://github.com/emscripten-core/emscripten/issues/13219
 - LLVM's support for localizing global system in WASM object files: https://bugs.llvm.org/show_bug.cgi?id=51279
 - better error catching at all stages including WASM module initialization: https://github.com/emscripten-core/emscripten/issues/14777
 - complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338
