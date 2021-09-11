@@ -406,7 +406,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin build/native/custom_bin
+	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin build/native/custom_bin
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
@@ -417,15 +417,14 @@ build/native/custom_bin:
 	mkdir -p $@
 	echo "$(BUSYTEX_native) kpsewhich $$"@ > $@/kpsewhich; chmod +x $@/kpsewhich
 	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
+	#
 	echo "#!/bin/bash" > $@/updmap-sys
-	echo "echo HIII $@ HIII" >> $@/updmap-sys
 	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
 	chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
 	#
-	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@
-	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
-	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl $@
-	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl $@/fmtutil
+	echo "#!/bin/bash" > $@/fmtutil-sys
+	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
+	chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
 	#echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
