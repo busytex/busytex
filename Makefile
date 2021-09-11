@@ -419,6 +419,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 .PHONY: build/native/custom_bin
 build/native/custom_bin:
 	mkdir -p $@
+	echo "$(BUSYTEX_native) kpsewhich $$"@ > $@/kpsewhich; chmod +x $@/kpsewhich
 	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
