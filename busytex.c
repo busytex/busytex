@@ -1,39 +1,34 @@
 #include <stdio.h>
 #include <string.h>
 
-#define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_name1(argc - 1, argv + 1); } }
+#define CONCAT(a, b) a ## b
+#define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return CONCAT(busymain_,name1)(argc - 1, argv + 1); } }
 
 extern int optind;
 
-#ifdef BUSYTEX_PDFTEX
+#ifdef BUSYTEX_PDFTEX 
 extern int busymain_pdftex(int argc, char* argv[]);
 #endif
-
 #ifdef BUSYTEX_LUATEX
 extern int busymain_luatex(int argc, char* argv[]);
 #endif
-
 #ifdef BUSYTEX_XETEX
 extern int busymain_xetex(int argc, char* argv[]);
 #endif
-
 #ifdef BUSYTEX_XDVIPDFMX
 extern int busymain_xdvipdfmx(int argc, char* argv[]);
 #endif
-
 #ifdef BUSYTEX_BIBTEX8
 extern int busymain_bibtex8(int argc, char* argv[]);
 #endif
-
+#ifdef BUSYTEX_MAKEINDEX
+extern int busymain_makeindex(int argc, char* argv[]);
+#endif
 #ifdef BUSYTEX_KPSE
 extern int busymain_kpsewhich(int argc, char* argv[]);
 extern int busymain_kpsestat(int argc, char* argv[]);
 extern int busymain_kpseaccess(int argc, char* argv[]);
 extern int busymain_kpsereadlink(int argc, char* argv[]);
-#endif
-
-#ifdef BUSYTEX_MAKEINDEX
-extern int busymain_makeindex(int argc, char* argv[]);
 #endif
 
 void flush_streams()
