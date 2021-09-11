@@ -26,22 +26,24 @@ Not:
 
 ### Help needed
 - refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385
-- various Emscripten improvements: https://github.com/emscripten-core/emscripten/issues/12093, https://github.com/emscripten-core/emscripten/issues/12256, https://github.com/emscripten-core/emscripten/issues/13466, https://github.com/emscripten-core/emscripten/issues/13219
 - LLVM's support for localizing global system in WASM object files: https://bugs.llvm.org/show_bug.cgi?id=51279
-- explore defining DLLPROC instead of redefining main functions
+- upstream build sequence to TexLive: https://tug.org/pipermail/tlbuild/2021q1/004806.html
+- various Emscripten improvements: https://github.com/emscripten-core/emscripten/issues/12093, https://github.com/emscripten-core/emscripten/issues/12256, https://github.com/emscripten-core/emscripten/issues/13466, https://github.com/emscripten-core/emscripten/issues/13219
 - better error catching at all stages including WASM module initialization: https://github.com/emscripten-core/emscripten/issues/14777
-- complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338
+- explore defining DLLPROC instead of redefining main functions
+- complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338, https://github.com/vadimkantorov/buildbiber
 - review shipped TexLive packages in order to review useless files to save space
+- review fonts / fontmaps shipped in TexLive packages
 - optimization flags for binaries to make them smaller
 - compile for x86_64-linux with clang (to match WASM toolchain)
 - minimize shared library dependencies for x86_64-linux (build with musl, try building without pthreads etc) to obtain platform-independent binaries
-- set up x86_64-linux binaries Github Actions test for WSLv1
-- review fonts / fontmaps shipped in TexLive packages
 - minimize build sequence in Makefile
-- upstream build sequence to TexLive: https://tug.org/pipermail/tlbuild/2021q1/004806.html
-- preloaded minimal single-vile versions with just TexLive Basic and latex-base
+- set up x86_64-linux binaries Github Actions test for WSLv1
+- test of WASM binaries using node.js
+- preloaded minimal single-file versions with just TexLive Basic and latex-base
+- explore creating LD_PRELOAD-based file system to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context)
 
-Useful backgrounds: Linux build pipelines / Makefile / Tex / TexLive / JavaScript / Emscripten
+Especially needed backgrounds: Linux build pipelines / Makefile / Tex / TexLive / JavaScript / Emscripten
  
 ### Dependencies
 ```shell
@@ -106,10 +108,6 @@ python3 example/example.py
 bash example/example.sh
 ```
 
-### Filed issues with other open-source projects
-- https://bugs.llvm.org/show_bug.cgi?id=51279
-
-
 ### References
 - [texlive.js](https://github.com/manuels/texlive.js/)
 - [xetex.js](https://github.com/lyze/xetex-js)
@@ -117,32 +115,36 @@ bash example/example.sh
 - [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
 - [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
 - [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
+- [pdftex.js](https://github.com/dmonad/pdftex.js)
+- [BLFS](http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html)
+
+### ISO / ZIP / LD_PRELOAD FS
+- custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
+- https://github.com/erincandescent/lib9660/blob/master/tb9660.c
+- https://github.com/jacereda/fsatrace
+- https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
+- https://github.com/mikix/deb2snap/blob/master/src/preload.c#L84
+- https://lists.ubuntu.com/archives/snappy-devel/2015-February/000282.html
+- https://www.tomaz.me/2014/01/08/detecting-which-process-is-creating-a-file-using-ld-preload-trick.html
+- https://github.com/AppImage/AppImageKit/issues/267
+- http://avf.sourceforge.net/
+- https://gist.github.com/przemoc/571086
+- https://adared.ch/unionfs_by_intercept/
+- https://arxiv.org/abs/1908.10740
+- http://ordiluc.net/fs/libetc/
 
 ### TODO
 ```shell
-xpdf-src/xpdf/
-
-enable multi-driver via 
-
-https://github.com/rurban/perl-compiler
-http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
-#TODO: native busytex: + CSFINPUT/fontconfig.conf//'--csfile', '/bibtex/88591lat.csf'
 #TODO: abspath/realpath instead of ROOT
 
 # https://ctan.tetaneutral.net/systems/texlive/Images/texlive2020-20200406.iso
 # http://www.tug.org/texlive/devsrc/Master/tlpkg/tlpsrc/collection-basic.tlpsrc
-#TODO: custom binaries for install-tl
 #TODO: instruction for local tlmgr install tinytex
 #TODO: install-tl install from local full download
 
-#TODO: custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
 #TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
-# https://github.com/erincandescent/lib9660/blob/master/tb9660.c
 # https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
 # https://github.com/emscripten-core/emscripten/pull/4737
-
-# https://blog.jcoglan.com/2017/03/22/myers-diff-in-linear-space-theory/
-# http://www.xmailserver.org/xdiff-lib.html
 
 #TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
 # https://ctan.crest.fr/tex-archive/macros/latex/contrib/
@@ -157,46 +159,13 @@ http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 ```
 
 ### Links
-https://www.overleaf.com/learn/latex/Articles/The_two_modes_of_TeX_engines:_INI_mode_and_production_mode
-
-https://tug.org/TUGboat/tb40-1/tb124hagen-lmtx.pdf
-
-https://github.com/Sable/emscripten_malloc
-
-https://github.com/dmonad/pdftex.js
-
-http://www.readytext.co.uk/?p=3590
-
-https://github.com/skalogryz/wasmbin
-
-https://ctan.org/tex-archive/systems/unix/tex-fpc?lang=en
-
-https://github.com/mikix/deb2snap/blob/master/src/preload.c#L84
-
-https://lists.ubuntu.com/archives/snappy-devel/2015-February/000282.html
-
-https://www.tomaz.me/2014/01/08/detecting-which-process-is-creating-a-file-using-ld-preload-trick.html
-
-https://github.com/AppImage/AppImageKit/issues/267
-
-http://avf.sourceforge.net/
-
-https://arxiv.org/pdf/1908.10740.pdf
-
-https://github.com/jacereda/fsatrace
-
-https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
-
-https://adared.ch/unionfs_by_intercept/
-
-https://gist.github.com/przemoc/571086
-
-http://ordiluc.net/fs/libetc/
-
-https://meeting.contextgarden.net/2011/talks/day1_07_jean-michel_bibliography/hc-bb-1.pdf
+- LMTX: https://tug.org/TUGboat/tb40-1/tb124hagen-lmtx.pdf
+- Emscripten allocator: https://github.com/Sable/emscripten_malloc
+- String and pool files: http://www.readytext.co.uk/?p=3590
+- Pascal compiler: https://ctan.org/tex-archive/systems/unix/tex-fpc?lang=en
+- Biber: https://meeting.contextgarden.net/2011/talks/day1_07_jean-michel_bibliography/hc-bb-1.pdf
 
 ```
-.PHONY: dist/texlive-lazy.js
 dist/texlive-lazy.js:
     mkdir -p $(dir $@)
     rm -rf dist/texmf || true
@@ -208,5 +177,4 @@ dist/texlive-lazy.js:
         --preload build/texlive-full/texmf-dist/tex/latex/textpos@/texmf/texmf-dist/tex/latex/textpos \
         --preload build/texlive-full/texmf-dist/tex/latex/ms@/texmf/texmf-dist/tex/latex/ms \
         --preload build/texlive-full/texmf-dist/tex/latex/parskip@/texmf/texmf-dist/tex/latex/parksip
-
 ```
