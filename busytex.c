@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_name1(argc - 1, argv + 1); } }
+
 extern int optind;
 
 #ifdef BUSYTEX_PDFTEX
@@ -75,84 +77,34 @@ int main(int argc, char* argv[])
     }
 
 #ifdef BUSYTEX_PDFTEX
-    if(strcmp("pdftex", argv[1]) == 0 || strcmp("pdflatex", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_pdftex(argc - 1, argv + 1);
-    }
+    APPLET("pdftex", "pdflatex")
 #endif
 
 #ifdef BUSYTEX_LUATEX
-    if(strcmp("luatex", argv[1]) == 0 || strcmp("lualatex", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_luatex(argc - 1, argv + 1);
-    }
+    APPLET("luatex", "lualatex")
 #endif
 
 #ifdef BUSYTEX_XETEX
-    if(strcmp("xetex", argv[1]) == 0 || strcmp("xelatex", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_xetex(argc - 1, argv + 1);
-    }
+    APPLET("xetex", "xelatex")
 #endif
     
 #ifdef BUSYTEX_XDVIPDFMX
-    if(strcmp("xdvipdfmx", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_xdvipdfmx(argc - 1, argv + 1);
-    }
+    APPLET("xdvipdfmx", "xdvipdfmx")
 #endif
     
 #ifdef BUSYTEX_BIBTEX8
-    if(strcmp("bibtex8", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_bibtex8(argc - 1, argv + 1);
-    }
+    APPLET("bibtex8", "bibtex8")
 #endif
 
 #ifdef BUSYTEX_KPSE
-    if(strcmp("kpsewhich", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_kpsewhich(argc - 1, argv + 1);
-    }
-    if(strcmp("kpsestat", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_kpsestat(argc - 1, argv + 1);
-    }
-    if(strcmp("kpseaccess", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_kpseaccess(argc - 1, argv + 1);
-    }
-    if(strcmp("kpsereadlink", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_kpsereadlink(argc - 1, argv + 1);
-    }
+    APPLET("kpsewhich", "kpsewhich")
+    APPLET("kpsestat", "kpsestat")
+    APPLET("kpseaccess", "kpseaccess")
+    APPLET("kpsereadlink", "kpsereadlink")
 #endif
 
 #ifdef BUSYTEX_MAKEINDEX
-    if(strcmp("makeindex", argv[1]) == 0)
-    {
-        argv[1] = argv[0];
-        optind = 1;
-        return busymain_makeindex(argc - 1, argv + 1);
-    }
+    APPLET("makeindex", "makeindex")
 #endif
 
     return 1;
