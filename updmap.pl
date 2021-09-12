@@ -16,6 +16,7 @@
 
 my $svnid = '$Id: updmap.pl 59152 2021-05-09 21:49:52Z karl $';
 print "HELLOUPDMAP1\n";
+print("HELLOWHICH: " . `which kpsewhich` . "\n"); 
 
 my $TEXMFROOT;
 BEGIN {
