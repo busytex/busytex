@@ -403,6 +403,9 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	find $(ROOT)/build/texlive-$*/texmf-dist/web2c -name texmf.cnf || true
 	TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c $(BUSYTEX_native) kpsewhich --all texmf.cnf || true
 	#
+	echo BEFORESEARCHINGTexLive
+	find source/texmfrepo -name TLUtils.pm
+	echo AFTERSEARCHINGTexLive
 	cp ./install-tl ./source/texmfrepo/install-tl
 	PATH=$(ROOT)/build/native/custom_bin:$(PATH) KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1  TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist   ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin || true
 	echo AFTER
