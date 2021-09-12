@@ -41,11 +41,18 @@ jobs:
       - name: Download TexLive Full
         run:  make source/texmfrepo/install-tl
       
+      - name: Archive native artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: install-tl
+          path: |
+            source/texmfrepo/install-tl
+      
       - name: Install TexLive
         run: |
             make tds-basic
 #            make tds-full
-#      
+      
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
 #        with:
