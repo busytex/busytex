@@ -1169,6 +1169,7 @@ operations might be disturbed.\n\n";
   if (-x "$plat_bindir/updmap-sys$progext") {
     info("HELLOFROMINSTALLTL\n");
     info(`which updmap-sys`."\n");
+    info(`cat /home/runner/work/busytex/busytex/build/texlive-basic/bin/custom/updmap-sys`."\n");
     $errcount += run_postinst_cmd("updmap-sys --nohash");
   } else {
     info("not running updmap-sys (not installed)\n");
