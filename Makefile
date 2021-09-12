@@ -403,6 +403,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	find $(ROOT)/build/texlive-$*/texmf-dist/web2c -name texmf.cnf || true
 	TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c $(BUSYTEX_native) kpsewhich --all texmf.cnf || true
 	#
+	cp ./install-tl ./source/texmfrepo/install-tl
 	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1  TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist   ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin || true
 	echo AFTER
 	find $(ROOT)/build/texlive-$*/texmf-dist/web2c -name texmf.cnf || true
@@ -416,19 +417,19 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 .PHONY: build/native/custom_bin
 build/native/custom_bin:
 	mkdir -p $@
-	echo "$(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
+	echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
 	echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
 	echo "$(BUSYTEX_native) kpsestat $$"@ > $@/kpsestat; chmod +x $@/kpsestat
 	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
 	#
 	cp updmap.pl source/texlive/texk/texlive/linked_scripts/texlive/
 	echo "#!/bin/bash" > $@/updmap-sys
-	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
+	echo "echo HELLOFROMUPDMAPSH 1>&2; $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
 	chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
 	#
 	cp fmtutil.pl source/texlive/texk/texlive/linked_scripts/texlive/
 	echo "#!/bin/bash" > $@/fmtutil-sys
-	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
+	echo "echo HELLOFROMFMTUTILSH 1>&2; $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
 	chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
 	#echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
