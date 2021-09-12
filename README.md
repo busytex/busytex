@@ -49,7 +49,7 @@ bash example/example.sh
 - set up x86_64-linux binaries Github Actions test for WSLv1
 - test of WASM binaries using node.js
 - preloaded minimal single-file versions with just TexLive Basic and latex-base
-- explore creating LD_PRELOAD-based file system to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context)
+- explore creating virtual and LD_PRELOAD-based file systems: to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context); to embed Tex packages / Perl scripts in the native build 
 
 ### Dependencies
 ```shell
