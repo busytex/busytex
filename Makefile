@@ -424,12 +424,12 @@ build/native/custom_bin:
 	#
 	cp updmap.pl source/texlive/texk/texlive/linked_scripts/texlive/
 	echo "#!/bin/bash" > $@/updmap-sys
-	echo "echo HELLOFROMUPDMAPSH 1>&2; $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
+	echo "echo HELLOFROMUPDMAPSH 1>&2; perl $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
 	chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
 	#
 	cp fmtutil.pl source/texlive/texk/texlive/linked_scripts/texlive/
 	echo "#!/bin/bash" > $@/fmtutil-sys
-	echo "echo HELLOFROMFMTUTILSH 1>&2; $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
+	echo "echo HELLOFROMFMTUTILSH 1>&2; perl $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
 	chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
 	#echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex

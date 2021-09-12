@@ -1018,7 +1018,8 @@ sub run_postinst_cmd {
   
   info ("running $cmd ...");
   my ($out,$ret) = TeXLive::TLUtils::run_cmd ("$cmd 2>&1");
-  print("running $cmd ... HELLOOUTPUT: ". $out . "\n"); 
+  print("running $cmd ... HELLOOUTPUTBEGIN: ". $out . "\n"); 
+  print("running $cmd ... HELLOOUTPUTEND\n"); 
   if ($ret == 0) {
     info ("done\n");
   } else {
