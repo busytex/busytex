@@ -45,7 +45,7 @@ bash example/example.sh
 - optimization flags for binaries to make them smaller
 - compile for x86_64-linux with clang (to match WASM toolchain)
 - minimize shared library dependencies for x86_64-linux (build with musl, try building without pthreads etc) to obtain platform-independent binaries
-- minimize build sequence in Makefile
+- minimize build sequence in Makefile and merge native / WASM steps as much as possible
 - set up x86_64-linux binaries Github Actions test for WSLv1
 - test of WASM binaries using node.js
 - preloaded minimal single-file versions with just TexLive Basic and latex-base
