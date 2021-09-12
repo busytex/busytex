@@ -9,7 +9,7 @@ Currently compiles:
 - kpsewhich, kpsestat, kpseaccess, kpsereadlink
 - makeindex
 
-Architecture targets:
+Supported architecture targets:
 - x86_64-linux
 - WASM
 
