@@ -1167,6 +1167,7 @@ operations might be disturbed.\n\n";
   && exit(1);
 
   if (-x "$plat_bindir/updmap-sys$progext") {
+    info("HELLOFROMINSTALLTL\n");
     $errcount += run_postinst_cmd("updmap-sys --nohash");
   } else {
     info("not running updmap-sys (not installed)\n");
