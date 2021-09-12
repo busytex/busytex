@@ -407,6 +407,8 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	#  strace -f -v -s 1024 -e trace=execve
+	find $(ROOT)/build/texlive-$*/texmf-dist/web2c -name texmf.cnf
+	TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c $(BUSYTEX_native) kpsewhich --all texmf.cnf
 	KPATHSEA_DEBUG=104 TEXLIVE_INSTALL_NO_RESUME=1  TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist   ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
