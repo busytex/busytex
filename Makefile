@@ -429,10 +429,12 @@ build/native/custom_bin:
 	echo "$(BUSYTEX_native) kpsestat $$"@ > $@/kpsestat; chmod +x $@/kpsestat
 	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
 	#
+	cp updmap.pl source/texlive/texk/texlive/linked_scripts/texlive/
 	echo "#!/bin/bash" > $@/updmap-sys
 	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
 	chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
 	#
+	cp fmtutil.pl source/texlive/texk/texlive/linked_scripts/texlive/
 	echo "#!/bin/bash" > $@/fmtutil-sys
 	echo "$(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
 	chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
