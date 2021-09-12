@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# $Id$
+# $Id: install-tl 58690 2021-03-24 22:12:09Z preining $
 # Copyright 2007-2021
 # Reinhard Kotucha, Norbert Preining, Karl Berry, Siep Kroonenberg.
 # This file is licensed under the GNU General Public License version 2
@@ -8,7 +8,7 @@
 # Be careful when changing wording: *every* normal informational message
 # output here must be recognized by the long grep in tl-update-tlnet.
 
-my $svnrev = '$Revision$';
+my $svnrev = '$Revision: 58690 $';
 $svnrev =~ m/: ([0-9]+) /;
 $::installerrevision = ($1 ? $1 : 'unknown');
 
@@ -109,7 +109,7 @@ if (($^O !~ /^MSWin/i) &&
         }
       }
     } else {
-      for my $q (qw/in-place profile help print-arch print-platform version no-gui/) {
+      for my $q (qw/in-place profile help print-platform version no-gui/) {
         if ($p eq "-$q") {
           # ignore gui mode
           $want_tcl = 0;
@@ -181,6 +181,8 @@ binmode (STDERR, ':encoding(console_out)');
 if (win32) {
   require TeXLive::TLWinGoo;
   TeXLive::TLWinGoo->import( qw(
+    &is_vista
+    &is_seven
     &admin
     &non_admin
     &reg_country
@@ -746,9 +748,9 @@ sub only_load_remote {
     $location =~ s,/(tlpkg(/texlive\.tlpdb)?|archive)?/*$,,;
     if ($location =~ m/^ctan$/i) {
       $location = TeXLive::TLUtils::give_ctan_mirror();
-    } elsif ($location =~ m/^$TeXLiveServerURLRegexp/) {
+    } elsif ($location =~ m/^$TeXLiveServerURL/) {
       my $mirrorbase = TeXLive::TLUtils::give_ctan_mirror_base();
-      $location =~ s,^($TeXLiveServerURLRegexp|ctan$),$mirrorbase,;
+      $location =~ s,^($TeXLiveServerURL|ctan$),$mirrorbase,;
     }
     $TeXLiveURL = $location;
     $media = 'NET';
@@ -1165,7 +1167,6 @@ operations might be disturbed.\n\n";
   && exit(1);
 
   if (-x "$plat_bindir/updmap-sys$progext") {
-    info("HELLOFROMINSTALLTL\n");
     $errcount += run_postinst_cmd("updmap-sys --nohash");
   } else {
     info("not running updmap-sys (not installed)\n");
@@ -1228,10 +1229,8 @@ operations might be disturbed.\n\n";
       $errcount += run_postinst_cmd(
                      "fmtutil-sys $common_fmtutil_args --no-strict --all");
     } else {
-      info("not running fmtutil-sys (script not installed)\n");
+      info("not running fmtutil-sys (not installed)\n");
     }
-  } else {
-    info("not running fmtutil-sys (user option create_formats=0)\n");
   }
 
   # do path adjustments: On Windows add/remove to PATH etc,
@@ -2311,23 +2310,30 @@ sub import_settings_from_old_tlpdb {
   #
   # now for the settings
   # set the defaults to what is specified in the tlpdb
-  $vars{'tlpdbopt_install_docfiles'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "install_docfiles");
-  $vars{'tlpdbopt_install_srcfiles'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "install_srcfiles");
-  $vars{'tlpdbopt_create_formats'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "create_formats");
+  $vars{'tlpdbopt_install_docfiles'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "install_docfiles");
+  $vars{'tlpdbopt_install_srcfiles'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "install_srcfiles");
+  $vars{'tlpdbopt_create_formats'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "create_formats");
   $vars{'tlpdbopt_desktop_integration'} = 1 if win32();
-  $vars{'instopt_adjustpath'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "path");
+  $vars{'instopt_adjustpath'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "path");
   $vars{'instopt_adjustpath'} = 0 if !defined($vars{'instopt_adjustpath'});
   $vars{'instopt_adjustpath'} = 1 if win32();
-  $vars{'tlpdbopt_sys_bin'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "sys_bin");
-  $vars{'tlpdbopt_sys_man'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "sys_man");
-  $vars{'sys_info'}
-    = $previoustlpdb->option_pkg("00texlive.installation", "sys_info");
+  $vars{'tlpdbopt_sys_bin'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "sys_bin");
+  $vars{'tlpdbopt_sys_man'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "sys_man");
+  $vars{'sys_info'} =
+    $previoustlpdb->option_pkg("00texlive.installation",
+                               "sys_info");
   #
   # import the set of selected architectures
   my @aar = $previoustlpdb->setting_pkg("00texlive.installation",
@@ -2732,7 +2738,7 @@ http(s), ftp, or scp. The documentation for C<tlmgr> has the details
 (L<https://tug.org/texlive/doc/tlmgr.html#OPTIONS>).
 
 For installation, the default is to pick a mirror automatically, using
-L<https://mirror.ctan.org/systems/texlive/tlnet>; the chosen mirror is
+L<http://mirror.ctan.org/systems/texlive/tlnet>; the chosen mirror is
 used for the entire download. You can use the special argument C<ctan>
 as an abbreviation for this. (See L<https://ctan.org> for more about CTAN
 and its mirrors.)
@@ -3112,7 +3118,7 @@ This script and its documentation were written for the TeX Live
 distribution (L<https://tug.org/texlive>) and both are licensed under the
 GNU General Public License Version 2 or later.
 
-$Id$
+$Id: install-tl 58690 2021-03-24 22:12:09Z preining $
 =cut
 
 # to remake HTML version: pod2html --cachedir=/tmp install-tl >/tmp/itl.html
