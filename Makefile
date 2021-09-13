@@ -402,7 +402,8 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#cp ./install-tl ./source/texmfrepo/install-tl
 	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) 
 	# TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist
-	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1   strace -f -v -s 1024 -e trace=execve  ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin
+	# strace -f -v -s 1024 -e trace=execve
+	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1     ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin
 	echo FIND; find build/texlive-basic -name '*.fmt' || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
