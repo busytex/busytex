@@ -403,7 +403,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) 
 	# TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist
 	# 
-	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1  strace -f -v -s 1024 -e trace=execve   ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile #--custom-bin $(ROOT)/build/native/custom_bin
+	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1  strace -f -v -s 1024 -e trace=execve   ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin
 	echo FINDFMT; find build/texlive-basic -name '*.fmt' || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
@@ -476,15 +476,19 @@ build/native/custom_bin:
 	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
-	mv bin/x86_64-linux/kpse* $@
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich $@
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess $@
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat $@
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsereadlink $@
+	#mv bin/x86_64-linux/kpse* $@
 	mv texmf-dist/scripts/texlive/mktexlsr.pl $@/mktexlsr
 	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
 	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
 	mv texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
 	mv texmf-dist/scripts/texlive/fmtutil.pl $@/fmtutil
-	echo "$(BUSYTEX_native) pdlaftex $$"@ > $@/pdflatex; chmod +x $@/pdflatex
-	echo "$(BUSYTEX_native) xelatex  $$"@ > $@/xelatex ; chmod +x $@/xelatex
-	echo "$(BUSYTEX_native) lualatex $$"@ > $@/lualatex; chmod +x $@/lualatex
+	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdfatex; chmod +x $@/pdftex
+	echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
+	echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
 	#
 	#echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
 	#echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
