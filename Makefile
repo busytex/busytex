@@ -481,7 +481,9 @@ build/native/custom_bin:
 	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
 	mv texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
 	mv texmf-dist/scripts/texlive/fmtutil.pl $@/fmtutil
-	rm -rf texmf-dist
+	echo "$(BUSYTEX_native) pdlaftex $$"@ > $@/pdflatex; chmod +x $@/pdflatex
+	echo "$(BUSYTEX_native) xelatex  $$"@ > $@/xelatex ; chmod +x $@/xelatex
+	echo "$(BUSYTEX_native) lualatex $$"@ > $@/lualatex; chmod +x $@/lualatex
 	#
 	#echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
 	#echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
@@ -497,9 +499,6 @@ build/native/custom_bin:
 	#echo "#!/bin/bash" > $@/fmtutil-sys
 	#echo "echo HELLOFROMFMTUTILSH 1>&2; perl $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
 	#chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
-	#echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
-	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
-	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
