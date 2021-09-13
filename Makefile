@@ -475,7 +475,7 @@ build/native/custom_bin:
 	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
-	echo AFTER; texmf-dist
+	echo AFTER; find texmf-dist
 	mv texmf-dist/scripts/texlive/mktexlsr.pl $@/mktexlsr
 	mv texmf-dist/bin/x86_64-linux/kpse* $@
 	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
