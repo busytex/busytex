@@ -473,10 +473,9 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 build/native/custom_bin:
 	mkdir -p $@
 	#
-	echo BEFORE; ls
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
-	echo AFTER; ls
+	echo AFTER; texmf-dist
 	mv texmf-dist/scripts/texlive/mktexlsr.pl $@/mktexlsr
 	mv texmf-dist/bin/x86_64-linux/kpse* $@
 	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
