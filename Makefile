@@ -486,7 +486,7 @@ build/native/custom_bin:
 	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
 	mv texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
 	mv texmf-dist/scripts/texlive/fmtutil.pl $@/fmtutil
-	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdfatex; chmod +x $@/pdftex
+	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
 	echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
 	#
