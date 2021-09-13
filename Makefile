@@ -476,6 +476,7 @@ build/native/custom_bin:
 	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
+	cp -r bin build/texlive-basic
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich $@
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess $@
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat $@
