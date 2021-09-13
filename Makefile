@@ -475,10 +475,13 @@ build/native/custom_bin:
 	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
-	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
-	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
 	mv texmf-dist/scripts/texlive/mktexlsr.pl $@/mktexlsr
 	mv texmf-dist/bin/x86_64-linux/kpse* $@
+	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
+	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
+	mv texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
+	mv texmf-dist/scripts/texlive/fmtutil.pl $@/fmtutil
+	rm -rf texmf-dist
 	#
 	#echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
 	#echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
