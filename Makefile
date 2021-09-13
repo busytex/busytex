@@ -400,11 +400,13 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	#  
 	echo BEFORE
-	PATH=$(ROOT)/build/native/custom_bin:$(PATH) TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c $(BUSYTEX_native) kpsewhich --var-value=TEXMFDIST || true
+	PATH=$(ROOT)/build/native/custom_bin:$(PATH) TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist $(BUSYTEX_native) kpsewhich --var-value=TEXMFDIST || true
 	#
-	cp ./install-tl ./source/texmfrepo/install-tl
+	#cp ./install-tl ./source/texmfrepo/install-tl
 	PATH=$(ROOT)/build/native/custom_bin:$(PATH) KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1  TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist  strace -f -v -s 1024 -e trace=execve  ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	# --custom-bin $(ROOT)/build/native/custom_bin || true
+	echo BIN
+	find texlive-basic/bin
 	echo AFTER
 	find $(ROOT)/build/texlive-$*/texmf-dist/web2c -name texmf.cnf || true
 	TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c $(BUSYTEX_native) kpsewhich --all texmf.cnf || true
