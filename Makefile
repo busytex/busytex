@@ -398,42 +398,102 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	#echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
-	#  
-	echo BEFORE
-	PATH=$(ROOT)/build/native/custom_bin:$(PATH) TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist $(BUSYTEX_native) kpsewhich --var-value=TEXMFDIST || true
-	#
+	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist $(BUSYTEX_native) kpsewhich --var-value=TEXMFDIST || true
 	#cp ./install-tl ./source/texmfrepo/install-tl
 	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) 
-	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1  TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist  strace -f -v -s 1024 -e trace=execve  ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
-	# --custom-bin $(ROOT)/build/native/custom_bin || true
-	echo BIN
-	find build/texlive-basic/bin
-	echo AFTER
-	find $(ROOT)/build/texlive-$*/texmf-dist/web2c -name texmf.cnf || true
-	TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c $(BUSYTEX_native) kpsewhich --all texmf.cnf || true
+	# TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist
+	KPATHSEA_DEBUG=120 TEXLIVE_INSTALL_NO_RESUME=1   strace -f -v -s 1024 -e trace=execve  ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/native/custom_bin || true
 	#
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
 	# grep 'texlive-basic/bin' 8_Install\ TexLive.txt | grep -v 'No such' | grep -oP 'execve\(".+?",' | sort | uniq
+	#
+# bin/x86_64-linux/gftopk
+# texlua
+# mkindex
+# lualatex
+# texluac
+# xdvipdfmx
+# makeindex
+# tex
+# tlmgr
+# dviluatex
+# extractbb
+# dvilualatex
+# mft
+# inimf
+# ebb
+# dvipdfm
+# mktexpk
+# kpseaccess
+# etex
+# initex
+# mf-nowin
+# updmap-user
+# afm2tfm
+# mktexlsr
+# gftype
+# tlshell
+# man
+# mktexfmt
+# mf
+# rungs
+# pktogf
+# luaotfload-tool
+# kpsewhich
+# simpdftex
+# xdvi
+# pdfetex
+# gftodvi
+# pdflatex
+# dvipdfmx
+# dvipdft
+# xdvi-xaw
+# mptopdf
+# kpsestat
+# fmtutil-sys
+# luatex
+# fmtutil-user
+# updmap-sys
+# mktexmf
+# updmap
+# kpsereadlink
+# pktype
+# fmtutil
+# latex
+# dvips
+# mktextfm
+# pdftex
+# texhash
+# bibtex
+# luahbtex
 
 .PHONY: build/native/custom_bin
 build/native/custom_bin:
 	mkdir -p $@
-	echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
-	echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
-	echo "$(BUSYTEX_native) kpsestat $$"@ > $@/kpsestat; chmod +x $@/kpsestat
-	ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
 	#
-	cp updmap.pl source/texlive/texk/texlive/linked_scripts/texlive/
-	echo "#!/bin/bash" > $@/updmap-sys
-	echo "perl -I $(ROOT)/source/texmfrepo/tlpkg $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
-	chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
+	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
+	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
+	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
+	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
+	mv texmf-dist/scripts/texlive/mktexlsr.pl $@/mktexlsr
+	mv texmf-dist/bin/x86_64-linux/kpse* $@
 	#
-	cp fmtutil.pl source/texlive/texk/texlive/linked_scripts/texlive/
-	echo "#!/bin/bash" > $@/fmtutil-sys
-	echo "echo HELLOFROMFMTUTILSH 1>&2; perl $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
-	chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
+	#echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
+	#echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
+	#echo "$(BUSYTEX_native) kpsestat $$"@ > $@/kpsestat; chmod +x $@/kpsestat
+	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
+	##
+	#cp updmap.pl source/texlive/texk/texlive/linked_scripts/texlive/
+	#echo "#!/bin/bash" > $@/updmap-sys
+	#echo "perl -I $(ROOT)/source/texmfrepo/tlpkg $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
+	#chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
+	##
+	#cp fmtutil.pl source/texlive/texk/texlive/linked_scripts/texlive/
+	#echo "#!/bin/bash" > $@/fmtutil-sys
+	#echo "echo HELLOFROMFMTUTILSH 1>&2; perl $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
+	#chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
 	#echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex $$"@ > $@/xetex; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
