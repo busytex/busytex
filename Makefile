@@ -394,8 +394,8 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	#echo collection-xetex 1 >> build/texlive-$*.profile
-	#echo collection-luatex 1 >> build/texlive-$*.profile
+	echo collection-xetex 1 >> build/texlive-$*.profile
+	echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
 	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist $(BUSYTEX_native) kpsewhich --var-value=TEXMFDIST || true
@@ -404,7 +404,6 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	# TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist
 	#TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist  strace -f -e trace=execve -v -s 1024 KPATHSEA_DEBUG=120
 	 TEXLIVE_INSTALL_NO_RESUME=1     ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/texlive-basic/bin/x86_64-linux
-	echo FINDINI; find build/texlive-basic -name '*.ini' || true
 	echo FINDFMT; find build/texlive-basic -name '*.fmt' || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
@@ -483,6 +482,8 @@ build/texlive-basic/bin/x86_64-linux:
 	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
 	cp $(BUSYTEX_native) $@
 	echo "#!/bin/sh" > $@/pdftex; echo "$(ROOT)/$@/busytex pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
+	echo "#!/bin/sh" > $@/xetex; echo "$(ROOT)/$@/busytex xetex $$"@ >> $@/xetex; chmod +x $@/xetex
+	echo "#!/bin/sh" > $@/luatex; echo "$(ROOT)/$@/busytex luatex $$"@ >> $@/luatex; chmod +x $@/luatex
 	#echo "#!/bin/sh" > $@/xetex; echo "$(BUSYTEX_native) xetex $$"@ >> $@/xetex; chmod +x $@/xetex
 	#echo "#!/bin/sh" > $@/luatex; echo "$(BUSYTEX_native) luatex $$"@ >> $@/luatex; chmod +x $@/luatex
 	#mv bin/x86_64-linux/kpse* $@
