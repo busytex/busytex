@@ -481,13 +481,13 @@ build/native/custom_bin:
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess   $@
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat     $@
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsereadlink $@
-	ln -s texmf-dist/scripts/texlive/mktexlsr.pl    $@/mktexlsr
-	ln -s texmf-dist/scripts/texlive/updmap-sys.sh  $@/updmap-sys
-	ln -s texmf-dist/scripts/texlive/updmap.pl      $@/updmap
-	ln -s texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
-	ln -s texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
-	#ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
-	echo "#!/bin/sh" > $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
+	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/mktexlsr.pl    $@/mktexlsr
+	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap-sys.sh  $@/updmap-sys
+	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/updmap
+	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
+	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
+	#echo "#!/bin/sh" > $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
 	#mv bin/x86_64-linux/kpse* $@
 	#echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
