@@ -477,16 +477,17 @@ build/native/custom_bin:
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz       -C build/texlive-basic
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz -C build/texlive-basic
 	tar -xf source/texmfrepo/archive/pdftex.x86_64-linux.r58535.tar.xz   -C build/texlive-basic
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich                $@
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess               $@
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat                 $@
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsereadlink             $@
-	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/mktexlsr.pl    $@/mktexlsr
-	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap-sys.sh  $@/updmap-sys
-	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/updmap
-	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
-	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
-	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
+	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich                $@
+	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess               $@
+	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat                 $@
+	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsereadlink             $@
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/mktexlsr.pl    $@/mktexlsr
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap-sys.sh  $@/updmap-sys
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/updmap
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
+	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex                   $@
+	rm -rf $(ROOT)/build/texlive-basic/bin
 	#ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
 	#echo "#!/bin/sh" > $@/pdftex; echo "echo HELLOFROMPDFTEX" >> $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
 	#echo "#!/bin/sh" > $@/xetex; echo "$(BUSYTEX_native) xetex $$"@ >> $@/xetex; chmod +x $@/xetex
