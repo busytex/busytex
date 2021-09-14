@@ -171,8 +171,8 @@ all:
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
-	wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O "$(basename $@).tar.gz" || true
-	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory="$(basename $@)"
+	wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz || true
+	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
 	touch $@
 
 source/fontconfig.patched: source/fontconfig.downloaded
@@ -473,23 +473,21 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 
 .PHONY: build/native/custom_bin
 build/native/custom_bin:
-	mkdir -p $@
-	#
-	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
-	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
-	tar -xf source/texmfrepo/archive/pdftex.x86_64-linux.r58535.tar.xz
-	mkdir build/texlive-basic && cp -r bin build/texlive-basic
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich $@
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess $@
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat $@
+	mkdir -p $@ build/texlive-basic
+	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz       -C build/texlive-basic
+	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz -C build/texlive-basic
+	tar -xf source/texmfrepo/archive/pdftex.x86_64-linux.r58535.tar.xz   -C build/texlive-basic
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich    $@
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess   $@
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsestat     $@
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsereadlink $@
+	ln -s texmf-dist/scripts/texlive/mktexlsr.pl    $@/mktexlsr
+	ln -s texmf-dist/scripts/texlive/updmap-sys.sh  $@/updmap-sys
+	ln -s texmf-dist/scripts/texlive/updmap.pl      $@/updmap
+	ln -s texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
+	ln -s texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
 	#mv bin/x86_64-linux/kpse* $@
-	mv texmf-dist/scripts/texlive/mktexlsr.pl $@/mktexlsr
-	mv texmf-dist/scripts/texlive/updmap-sys.sh $@/updmap-sys
-	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
-	mv texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
-	mv texmf-dist/scripts/texlive/fmtutil.pl $@/fmtutil
-	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex $@
 	#echo "#!/bin/sh" > $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
 	#echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
