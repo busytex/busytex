@@ -394,7 +394,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo collection-xetex 1 >> build/texlive-$*.profile
+	#echo collection-xetex 1 >> build/texlive-$*.profile
 	#echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
@@ -486,10 +486,11 @@ build/native/custom_bin:
 	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/updmap
 	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
 	ln -s $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
+	mv $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
 	#ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex       $@
-	echo "#!/bin/sh" > $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
-	echo "#!/bin/sh" > $@/xetex; echo "$(BUSYTEX_native) xetex $$"@ >> $@/xetex; chmod +x $@/xetex
-	echo "#!/bin/sh" > $@/luatex; echo "$(BUSYTEX_native) luatex $$"@ >> $@/luatex; chmod +x $@/luatex
+	#echo "#!/bin/sh" > $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
+	#echo "#!/bin/sh" > $@/xetex; echo "$(BUSYTEX_native) xetex $$"@ >> $@/xetex; chmod +x $@/xetex
+	#echo "#!/bin/sh" > $@/luatex; echo "$(BUSYTEX_native) luatex $$"@ >> $@/luatex; chmod +x $@/luatex
 	#mv bin/x86_64-linux/kpse* $@
 	#echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
 	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
