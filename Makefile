@@ -477,6 +477,7 @@ build/native/custom_bin:
 	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz
+	tar -xf source/texmfrepo/archive/pdftex.x86_64-linux.r58535.tar.xz
 	mkdir build/texlive-basic && cp -r bin build/texlive-basic
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpsewhich $@
 	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/kpseaccess $@
@@ -488,9 +489,10 @@ build/native/custom_bin:
 	mv texmf-dist/scripts/texlive/updmap.pl $@/updmap
 	mv texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
 	mv texmf-dist/scripts/texlive/fmtutil.pl $@/fmtutil
-	echo "$(BUSYTEX_native) pdftex $$"@ > $@/pdftex; chmod +x $@/pdftex
-	echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
-	echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
+	ln -s $(ROOT)/build/texlive-basic/bin/x86_64-linux/pdftex $@
+	#echo "#!/bin/sh" > $@/pdftex; echo "$(BUSYTEX_native) pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
+	#echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
+	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
 	#
 	#echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
 	#echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
