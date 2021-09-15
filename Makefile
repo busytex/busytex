@@ -399,8 +399,8 @@ build/texlive-%.txt: source/texmfrepo.txt
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
 	#
-	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz          -C $(basename $@)
-	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz    -C $(basename $@)
+	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
+	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
 	mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                   $(basename $@)/bin/x86_64-linux/mktexlsr
 	mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh                 $(basename $@)/bin/x86_64-linux/updmap-sys
 	mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                     $(basename $@)/bin/x86_64-linux/updmap
