@@ -91,33 +91,33 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain
 ##############################################################################################################################
 
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
-CFLAGS_FONTCONFIG_wasm     = $(CFLAGS_OPT_wasm) -Duuid_generate_random=uuid_generate
-CFLAGS_FONTCONFIG_native   = $(CFLAGS_OPT_native)
-CFLAGS_XDVIPDFMX_wasm      = $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_wasm)
-CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX) $(CFLAGS_OPT_wasm) -s TOTAL_MEMORY=$(TOTAL_MEMORY) $(CFLAGS_OPT_wasm)
-CFLAGS_XETEX_wasm          = $(CFLAGS_XETEX) $(CFLAGS_OPT_wasm)
-CFLAGS_PDFTEX_wasm         = $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)
-CFLAGS_XDVIPDFMX_native    = $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_native)
-CFLAGS_BIBTEX_native       = $(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)
-CFLAGS_XETEX_native        = $(CFLAGS_XETEX) $(CFLAGS_OPT_native)
-CFLAGS_PDFTEX_native       = $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)
-CFLAGS_LUATEX_native       = $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)
-CFLAGS_LUATEX_wasm         = $(CFLAGS_LUATEX) $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEWHICH_wasm      = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEWHICH_native    = $(CFLAGS_KPSEWHICH) $(CFLAGS_OPT_native)
-CFLAGS_KPSESTAT_wasm       = $(CFLAGS_KPSESTAT) $(CFLAGS_OPT_wasm)
-CFLAGS_KPSESTAT_native     = $(CFLAGS_KPSESTAT) $(CFLAGS_OPT_native)
-CFLAGS_KPSEACCESS_wasm     = $(CFLAGS_KPSEACCESS) $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEACCESS_native   = $(CFLAGS_KPSEACCESS) $(CFLAGS_OPT_native)
+CFLAGS_FONTCONFIG_wasm     =                        $(CFLAGS_OPT_wasm) -Duuid_generate_random=uuid_generate
+CFLAGS_FONTCONFIG_native   =                        $(CFLAGS_OPT_native)
+CFLAGS_XDVIPDFMX_wasm      = $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)
+CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX)       $(CFLAGS_OPT_wasm) -s TOTAL_MEMORY=$(TOTAL_MEMORY) $(CFLAGS_OPT_wasm)
+CFLAGS_XETEX_wasm          = $(CFLAGS_XETEX)        $(CFLAGS_OPT_wasm)
+CFLAGS_PDFTEX_wasm         = $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_wasm)
+CFLAGS_XDVIPDFMX_native    = $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)
+CFLAGS_BIBTEX_native       = $(CFLAGS_BIBTEX)       $(CFLAGS_OPT_native)
+CFLAGS_XETEX_native        = $(CFLAGS_XETEX)        $(CFLAGS_OPT_native)
+CFLAGS_PDFTEX_native       = $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_native)
+CFLAGS_LUATEX_native       = $(CFLAGS_LUATEX)       $(CFLAGS_OPT_native)
+CFLAGS_LUATEX_wasm         = $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)
+CFLAGS_KPSEWHICH_wasm      = $(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)
+CFLAGS_KPSEWHICH_native    = $(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)
+CFLAGS_KPSESTAT_wasm       = $(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_wasm)
+CFLAGS_KPSESTAT_native     = $(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)
+CFLAGS_KPSEACCESS_wasm     = $(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_wasm)
+CFLAGS_KPSEACCESS_native   = $(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_native)
 CFLAGS_KPSEREADLINK_wasm   = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)
 CFLAGS_KPSEREADLINK_native = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_native)
-CFLAGS_MAKEINDEX_wasm      = $(CFLAGS_MAKEINDEX) $(CFLAGS_OPT_wasm)
-CFLAGS_MAKEINDEX_native    = $(CFLAGS_MAKEINDEX) $(CFLAGS_OPT_native)
+CFLAGS_MAKEINDEX_wasm      = $(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)
+CFLAGS_MAKEINDEX_native    = $(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)
+CFLAGS_ICU_wasm            =                        $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
-CFLAGS_TEXLIVE_wasm = -I$(ROOT)/build/wasm/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
+CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
 #-fno-common 
-CFLAGS_ICU_wasm = $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
 ##############################################################################################################################
@@ -132,25 +132,25 @@ OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu'"
 OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_BIBTEX_wasm)"
 OPTS_FREETYPE_wasm = CC="$(CCSKIP_FREETYPE_wasm) emcc"
-OPTS_XETEX_wasm = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX_wasm)"
-OPTS_PDFTEX_wasm = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_PDFTEX_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX_wasm)"
-OPTS_XDVIPDFMX_wasm = CC="emcc $(CFLAGS_XDVIPDFMX_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX_wasm)"
+OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX_wasm)"  CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX_wasm)"
+OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_PDFTEX_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX_wasm)"
+OPTS_XDVIPDFMX_wasm= CC="emcc $(CFLAGS_XDVIPDFMX_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX_wasm)"
 OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_native)"
 OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX_native)"
-OPTS_XETEX_native = CC="$(CC) $(CFLAGS_XETEX_native)" CXX="$(CXX) $(CFLAGS_XETEX_native)"
+OPTS_XETEX_native  = CC="$(CC) $(CFLAGS_XETEX_native)"  CXX="$(CXX) $(CFLAGS_XETEX_native)"
 OPTS_PDFTEX_native = CC="$(CC) $(CFLAGS_PDFTEX_native)" CXX="$(CXX) $(CFLAGS_PDFTEX_native)"
 OPTS_LUATEX_native = CC="$(CC) $(CFLAGS_LUATEX_native)" CXX="$(CXX) $(CFLAGS_LUATEX_native)"
-OPTS_LUATEX_wasm = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX_wasm)"
-OPTS_KPSEWHICH_native = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
-OPTS_KPSEWHICH_wasm = CFLAGS="$(CFLAGS_KPSEWHICH_wasm)"
-OPTS_KPSESTAT_native = CFLAGS="$(CFLAGS_KPSESTAT_native)"
-OPTS_KPSESTAT_wasm = CFLAGS="$(CFLAGS_KPSESTAT_wasm)"
-OPTS_KPSEACCESS_native = CFLAGS="$(CFLAGS_KPSEACCESS_native)"
-OPTS_KPSEACCESS_wasm = CFLAGS="$(CFLAGS_KPSEACCESS_wasm)"
+OPTS_LUATEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX_wasm)"
+OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
+OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH_wasm)"
+OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT_native)"
+OPTS_KPSESTAT_wasm       = CFLAGS="$(CFLAGS_KPSESTAT_wasm)"
+OPTS_KPSEACCESS_native   = CFLAGS="$(CFLAGS_KPSEACCESS_native)"
+OPTS_KPSEACCESS_wasm     = CFLAGS="$(CFLAGS_KPSEACCESS_wasm)"
 OPTS_KPSEREADLINK_native = CFLAGS="$(CFLAGS_KPSEREADLINK_native)"
-OPTS_KPSEREADLINK_wasm = CFLAGS="$(CFLAGS_KPSEREADLINK_wasm)"
-OPTS_MAKEINDEX_native = CFLAGS="$(CFLAGS_MAKEINDEX_native)"
-OPTS_MAKEINDEX_wasm = CFLAGS="$(CFLAGS_MAKEINDEX_wasm)"
+OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK_wasm)"
+OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX_native)"
+OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX_wasm)"
 
 OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wimplicit -Wreturn-type 
 OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wl,-error-limit=0   -s SUPPORT_LONGJMP=1 -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0 -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=busytex -s EXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
@@ -419,7 +419,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 
 ################################################################################################################
 
-build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/format-%/pdflatex.fmt build/texlive-%/texmf-dist build/wasm/fonts.conf 
+build/wasm/texlive-%.js: build/texlive-%/texmf-dist build/wasm/fonts.conf 
 	mkdir -p $(dir $@)
 	echo > build/empty
 	echo 'web_user:x:0:0:emscripten:/home/web_user:/bin/false' > build/passwd
@@ -440,22 +440,22 @@ build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 
 build/wasm/fonts.conf:
 	mkdir -p $(dir $@)
-	echo '<?xml version="1.0"?>' > $@
-	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
-	echo '<fontconfig>' >> $@
+	echo '<?xml version="1.0"?>'                          > $@
+	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">'      >> $@
+	echo '<fontconfig>'                                  >> $@
 	echo '<dir>/texlive/texmf-dist/fonts/opentype</dir>' >> $@
-	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>' >> $@
-	echo '</fontconfig>' >> $@
+	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>'    >> $@
+	echo '</fontconfig>'                                 >> $@
 
 build/native/fonts.conf:
 	mkdir -p $(dir $@)
-	echo '<?xml version="1.0"?>' > $@
-	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">' >> $@
-	echo '<fontconfig>' >> $@
+	echo '<?xml version="1.0"?>'                          > $@
+	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">'      >> $@
+	echo '<fontconfig>'                                  >> $@
 	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/opentype</dir>
 	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/type1</dir>
 	#<cachedir prefix="relative">./cache</cachedir>
-	echo '</fontconfig>' >> $@
+	echo '</fontconfig>'                                 >> $@
 
 ################################################################################################################
 
