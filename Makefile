@@ -394,9 +394,9 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo "depend collection-xetex"                                     >> build/texlive-$*.profile
-	echo "depend collection-luatex"                                    >> build/texlive-$*.profile
-	echo "depend collection-latex"                                     >> build/texlive-$*.profile
+	echo "collection-xetex 1"                                     >> build/texlive-$*.profile
+	echo "collection-luatex 1"                                    >> build/texlive-$*.profile
+	echo "collection-latex 1"                                     >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
 	#
