@@ -389,13 +389,13 @@ source/texmfrepo.txt:
 
 build/texlive-%.txt: source/texmfrepo.txt
 	mkdir -p $(basename $@)
-	echo selected_scheme scheme-$* > build/texlive-$*.profile
-	echo TEXDIR $(ROOT)/$(basename $@) >> build/texlive-$*.profile
-	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
-	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
+	echo selected_scheme scheme-$*                                      > build/texlive-$*.profile
+	echo TEXDIR $(ROOT)/$(basename $@)                                 >> build/texlive-$*.profile
+	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> build/texlive-$*.profile
+	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo "collection-xetex  1" >> build/texlive-$*.profile
-	echo "collection-luatex 1" >> build/texlive-$*.profile
+	echo "collection-xetex  1"                                         >> build/texlive-$*.profile
+	echo "collection-luatex 1"                                         >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
 	#
@@ -418,10 +418,11 @@ build/texlive-%.txt: source/texmfrepo.txt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ > $(basename $@)/bin/x86_64-linux/luatex  ; chmod +x $(basename $@)/bin/x86_64-linux/luatex
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex lualatex $$"@ > $(basename $@)/bin/x86_64-linux/lualatex; chmod +x $(basename $@)/bin/x86_64-linux/lualatex
 	#
-	#
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile #--custom-bin $(basename $@)/bin/x86_64-linux
-	echo FINDFMT;  find $(basename $@) -name '*.fmt' 					|| true
-	echo FINDLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log || true
+	#-e trace=execve
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f  ./source/texmfrepo/install-tl -v -v --repository source/texmfrepo --profile build/texlive-$*.profile #--custom-bin $(basename $@)/bin/x86_64-linux
+	echo FINDFMT; find $(basename $@) -name '*.fmt' 					|| true
+	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log || true
+	echo FMTUTIL;      $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
