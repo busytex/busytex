@@ -408,7 +408,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/pdftex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex $$"@ >> $(basename $@)/bin/x86_64-linux/pdftex; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
 	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/xetex;  echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex  $$"@ >> $(basename $@)/bin/x86_64-linux/xetex;  chmod +x $(basename $@)/bin/x86_64-linux/xetex
 	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/luatex; echo "$(ROOT)$(basename $@)/bin/x86_64-linux/busytex luatex  $$"@ >> $(basename $@)/bin/x86_64-linux/luatex; chmod +x $(basename $@)/bin/x86_64-linux/luatex
-	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
 	echo FINDFMT;  find $(basename $@) -name '*.fmt' || true
 	echo PDFTEXLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/pdftex/pdftex.log || true
 	echo XETEXLOG;  cat $(basename $@)/texmf-dist/texmf-var/web2c/xetex/xetex.log   || true
