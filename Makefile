@@ -407,19 +407,20 @@ build/texlive-%.txt: source/texmfrepo.txt
 	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh                $(basename $@)/bin/x86_64-linux/fmtutil-sys
 	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                    $(basename $@)/bin/x86_64-linux/fmtutil
 	#$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var));)
+	echo FINDBIN; find $(basename $@)/bin/x86_64-linux/
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
 	#$(foreach var,pdftex pdflatex xetex xelatex luatex lualatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ > $(basename $@)/bin/x86_64-linux/pdftex;   chmod +x $(basename $@)/bin/x86_64-linux/pdftex
+	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ > $(basename $@)/bin/x86_64-linux/pdftex  ; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
 	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdflatex $$"@ > $(basename $@)/bin/x86_64-linux/pdflatex; chmod +x $(basename $@)/bin/x86_64-linux/pdflatex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex    $$"@ > $(basename $@)/bin/x86_64-linux/xetex;    chmod +x $(basename $@)/bin/x86_64-linux/xetex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xelatex  $$"@ > $(basename $@)/bin/x86_64-linux/xelatex;  chmod +x $(basename $@)/bin/x86_64-linux/xelatex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ > $(basename $@)/bin/x86_64-linux/luatex;   chmod +x $(basename $@)/bin/x86_64-linux/luatex
+	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex    $$"@ > $(basename $@)/bin/x86_64-linux/xetex   ; chmod +x $(basename $@)/bin/x86_64-linux/xetex
+	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xelatex  $$"@ > $(basename $@)/bin/x86_64-linux/xelatex ; chmod +x $(basename $@)/bin/x86_64-linux/xelatex
+	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ > $(basename $@)/bin/x86_64-linux/luatex  ; chmod +x $(basename $@)/bin/x86_64-linux/luatex
 	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex lualatex $$"@ > $(basename $@)/bin/x86_64-linux/lualatex; chmod +x $(basename $@)/bin/x86_64-linux/lualatex
 	#
 	#
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile #--custom-bin $(basename $@)/bin/x86_64-linux
 	echo FINDFMT;  find $(basename $@) -name '*.fmt' 					|| true
 	echo FINDLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
