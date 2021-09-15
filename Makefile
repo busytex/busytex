@@ -11,7 +11,7 @@ PYTHON = python3
 TOTAL_MEMORY = 536870912
 
 CFLAGS_OPT_native = -O3
-#CFLAGS_OPT_wasm = -Oz
+CFLAGS_OPT_wasm = -Oz
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
@@ -397,22 +397,22 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	echo collection-xetex 1 >> build/texlive-$*.profile
 	echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
-	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz       -C $@
-	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz -C $@
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/mktexlsr.pl    $@/bin/x86_64-linux/mktexlsr
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap-sys.sh  $@/bin/x86_64-linux/updmap-sys
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/bin/x86_64-linux/updmap
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/bin/x86_64-linux/fmtutil-sys
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/bin/x86_64-linux/fmtutil
-	cp $(BUSYTEX_native)                                                     $@/bin/x86_64-linux
-	echo "#!/bin/sh" > $@/bin/x86_64-linux/pdftex; echo "$(ROOT)/$@/bin/x86_64-linux/busytex pdftex $$"@ >> $@/pdftex; chmod +x $@/bin/x86_64-linux/pdftex
-	echo "#!/bin/sh" > $@/bin/x86_64-linux/xetex; echo "$(ROOT)/$@/bin/x86_64-linux/busytex xetex $$"@ >> $@/xetex; chmod +x $@/bin/x86_64-linux/xetex
-	echo "#!/bin/sh" > $@/bin/x86_64-linux/luatex; echo "$(ROOT)/$@/bin/x86_64-linux/busytex luatex $$"@ >> $@/luatex; chmod +x $@/bin/x86_64-linux/luatex
-	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/texlive-$*/bin/x86_64-linux
-	echo FINDFMT; find build/texlive-basic -name '*.fmt' || true
-	echo PDFTEXLOG; cat build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdftex.log || true
-	echo XETEXLOG; cat build/texlive-basic/texmf-dist/texmf-var/web2c/xetex/xetex.log || true
-	echo LUATEXLOG; cat build/texlive-basic/texmf-dist/texmf-var/web2c/luatex/luatex.log || true
+	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz        -C $(basename $@)
+	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz  -C $(basename $@)
+	mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                 $(basename $@)/bin/x86_64-linux/mktexlsr
+	mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh               $(basename $@)/bin/x86_64-linux/updmap-sys
+	mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                   $(basename $@)/bin/x86_64-linux/updmap
+	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh              $(basename $@)/bin/x86_64-linux/fmtutil-sys
+	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                  $(basename $@)/bin/x86_64-linux/fmtutil
+	cp $(BUSYTEX_native)                                                     $(basename $@)/bin/x86_64-linux
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/pdftex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex $$"@ >> $(basename $@)/bin/x86_64-linux/pdftex; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/xetex;  echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex  $$"@ >> $(basename $@)/bin/x86_64-linux/xetex;  chmod +x $(basename $@)/bin/x86_64-linux/xetex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/luatex; echo "$(ROOT)$(basename $@)/bin/x86_64-linux/busytex luatex  $$"@ >> $(basename $@)/bin/x86_64-linux/luatex; chmod +x $(basename $@)/bin/x86_64-linux/luatex
+	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
+	echo FINDFMT;  find $(basename $@) -name '*.fmt' || true
+	echo PDFTEXLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/pdftex/pdftex.log || true
+	echo XETEXLOG;  cat $(basename $@)/texmf-dist/texmf-var/web2c/xetex/xetex.log   || true
+	echo LUATEXLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/luatex/luatex.log || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
