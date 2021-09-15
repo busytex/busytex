@@ -39,7 +39,7 @@ jobs:
 #            build/native/texlive/
 
       - name: Download TexLive Full
-        run:  make source/texmfrepo/install-tl
+        run:  make source/texmfrepo.txt
       
       - name: Install TexLive
         run: |
