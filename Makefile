@@ -245,14 +245,14 @@ build/%/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configured
 
 build/%/expat/libexpat.a: source/expat.downloaded
 	mkdir -p $(dir $@) && cd $(dir $@) && \
-	$(CMAKE_$*) \
+	$(CMAKE_$*)                           \
 	   -DCMAKE_C_FLAGS="$(CFLAGS_$*_OPT)" \
-	   -DEXPAT_BUILD_DOCS=off \
-	   -DEXPAT_SHARED_LIBS=off \
-	   -DEXPAT_BUILD_EXAMPLES=off \
-	   -DEXPAT_BUILD_FUZZERS=off \
-	   -DEXPAT_BUILD_TESTS=off \
-	   -DEXPAT_BUILD_TOOLS=off \
+	   -DEXPAT_BUILD_DOCS=off             \
+	   -DEXPAT_SHARED_LIBS=off            \
+	   -DEXPAT_BUILD_EXAMPLES=off         \
+	   -DEXPAT_BUILD_FUZZERS=off          \
+	   -DEXPAT_BUILD_TESTS=off            \
+	   -DEXPAT_BUILD_TOOLS=off            \
 	   $(ROOT)/$(basename $<) 
 	$(MAKE_$*) -C $(dir $@)
 
@@ -260,16 +260,16 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	echo '' > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
 	cd build/$*/fontconfig && \
-	$(CONFIGURE_$*) $(ROOT)/$(basename $<)/configure \
-	   --cache-file=$(CACHE_FONTCONFIG_$*)		 \
-	   --prefix=$(PREFIX_$*) \
-	   --sysconfdir=/etc     \
-	   --localstatedir=/var  \
-	   --enable-static \
-	   --disable-shared \
-	   --disable-docs \
+	$(CONFIGURE_$*) $(ROOT)/$(basename $<)/configure    \
+	   --cache-file=$(CACHE_FONTCONFIG_$*)	            \
+	   --prefix=$(PREFIX_$*)                            \
+	   --sysconfdir=/etc                                \
+	   --localstatedir=/var                             \
+	   --enable-static                                  \
+	   --disable-shared                                 \
+	   --disable-docs                                   \
 	   --with-expat-includes="$(ROOT)/source/expat/lib" \
-	   --with-expat-lib="$(ROOT)/build/$*/expat" \
+	   --with-expat-lib="$(ROOT)/build/$*/expat"        \
 	   CFLAGS="$(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
 	$(MAKE_$*) -C build/$*/fontconfig
 
