@@ -299,6 +299,10 @@ build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texli
 	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
 
+build/%/busytex build/%/busytex.js: 
+	mkdir -p $(dir $@)
+	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
+	$(CXX_$*) $(OPTS_BUSYTEX_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
 
 ################################################################################################################
 
@@ -343,6 +347,9 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
+.PHONY: build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata
+build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
+
 build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) $(OPTS_BIBTEX_wasm)
 	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
@@ -369,13 +376,6 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
 	$(AR_wasm) t $@
-
-################################################################################################################
-
-build/%/busytex build/%/busytex.js: 
-	mkdir -p $(dir $@)
-	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
-	$(CXX_$*) $(OPTS_BUSYTEX_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
 
 ################################################################################################################
 
@@ -407,7 +407,7 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	cp $(BUSYTEX_native)                                                     $(basename $@)/bin/x86_64-linux
 	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/pdftex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex $$"@ >> $(basename $@)/bin/x86_64-linux/pdftex; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
 	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/xetex;  echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex  $$"@ >> $(basename $@)/bin/x86_64-linux/xetex;  chmod +x $(basename $@)/bin/x86_64-linux/xetex
-	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/luatex; echo "$(ROOT)$(basename $@)/bin/x86_64-linux/busytex luatex  $$"@ >> $(basename $@)/bin/x86_64-linux/luatex; chmod +x $(basename $@)/bin/x86_64-linux/luatex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/luatex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex $$"@ >> $(basename $@)/bin/x86_64-linux/luatex; chmod +x $(basename $@)/bin/x86_64-linux/luatex
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
 	echo FINDFMT;  find $(basename $@) -name '*.fmt' || true
 	echo PDFTEXLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/pdftex/pdftex.log || true
@@ -416,19 +416,6 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
-
-build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
-	mkdir -p $(basename $@)
-	rm $(basename $@)/* || true
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX_native) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex unpack.ins
-	TEXINPUTS=build/texlive-basic/texmf-dist/source/latex/base:build/texlive-basic/texmf-dist/tex/generic/unicode-data:build/texlive-basic/texmf-dist/tex/latex/base:build/texlive-basic/texmf-dist/tex/generic/hyphen:build/texlive-basic/texmf-dist/tex/latex/l3kernel:build/texlive-basic/texmf-dist/tex/latex/l3packages/xparse TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX_native) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini -etex latex.ltx
-	mv $(basename $@)/latex.fmt $@
-
-build/format-%/lualatex.fmt: build/native/busytex build/texlive-%.txt
-	mkdir -p $(basename $@)
-	rm $(basename $@)/* || true
-	TEXMFCNF=build/texlive-$*/texmf-dist/web2c TEXMFDIST=build/texlive-$*/texmf-dist $(BUSYTEX_native) $(subst latex.fmt,tex,$(notdir $@)) --interaction=nonstopmode --halt-on-error --output-directory=$(basename $@) -ini lualatex.ini
-	mv $(basename $@)/lualatex.fmt $@
 
 ################################################################################################################
 
@@ -442,9 +429,6 @@ build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/format-%/pdflatex.fmt 
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive
-#		--preload build/format-$*/xelatex.fmt@/xelatex.fmt \
-		--preload build/format-$*/pdflatex.fmt@/pdflatex.fmt \
-		--preload build/format-$*/lualatex.fmt@/lualatex.fmt
 
 build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 	mkdir -p $(dir $@)
@@ -483,79 +467,56 @@ texlive:
 tds-%:
 	$(MAKE) source/texmfrepo/install-tl
 	$(MAKE) build/texlive-$*.txt
-	#$(MAKE) build/format-$*/xelatex.fmt
-	#$(MAKE) build/format-$*/pdflatex.fmt
-	#$(MAKE) build/format-$*/lualatex.fmt
 
 ################################################################################################################
 
+.PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
+build/%/texlivedependencies:
+	$(MAKE) $(MAKEFLAGS) build/$*/expat/libexpat.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/zziplib/libzzip.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/libpng/libpng.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/libpaper/libpaper.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/zlib/libz.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/teckit/libTECkit.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/pplib/libpplib.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/freetype2/libfreetype.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/xpdf/libxpdf.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/bin/icupkg 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/bin/pkgdata 
+	$(MAKE) $(MAKEFLAGS) build/$*/fontconfig/src/.libs/libfontconfig.a
+
+.PHONY: build/native/applets build/wasm/applets
+build/%/applets:
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/lib/lib.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpsewhich.o 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpsestat.o 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpseaccess.o 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpsereadlink.o 
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/bibtex-x/busytex_bibtex8.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/makeindexk/busytex_makeindex.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/busytex_libxetex.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/busytex_libpdftex.a
+	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/libluatex.a
+
 .PHONY: native
 native:
-	echo MAKE=$(MAKE) MAKEFLAGS=$(MAKEFLAGS)
-	$(MAKE) $(MAKEFLAGS) build/native/texlive.configured
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/zziplib/libzzip.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/libpng/libpng.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/libpaper/libpaper.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/zlib/libz.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/teckit/libTECkit.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/harfbuzz/libharfbuzz.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/graphite2/libgraphite2.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/pplib/libpplib.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/freetype2/libfreetype.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/xpdf/libxpdf.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/bin/icupkg 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/libs/icu/icu-build/bin/pkgdata 
-	$(MAKE) $(MAKEFLAGS) build/native/expat/libexpat.a
-	$(MAKE) $(MAKEFLAGS) build/native/fontconfig/src/.libs/libfontconfig.a
-	# 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/.libs/libkpathsea.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/lib/lib.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsewhich.o 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsestat.o 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpseaccess.o 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/kpathsea/busytex_kpsereadlink.o 
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/bibtex-x/busytex_bibtex8.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/makeindexk/busytex_makeindex.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libxetex.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) $(MAKEFLAGS) build/native/texlive/texk/web2c/libluatex.a
-	$(MAKE) $(MAKEFLAGS) build/native/busytex
+	$(MAKE) build/native/texlive.configured
+	$(MAKE) build/native/texlivedependencies
+	$(MAKE) build/native/applets
+	$(MAKE) build/native/busytex
 
 .PHONY: wasm
 wasm:
 	$(MAKE) build/wasm/texlive.configured
-	$(MAKE) build/wasm/texlive/libs/zziplib/libzzip.a
-	$(MAKE) build/wasm/texlive/libs/libpng/libpng.a 
-	$(MAKE) build/wasm/texlive/libs/libpaper/libpaper.a 
-	$(MAKE) build/wasm/texlive/libs/zlib/libz.a 
-	$(MAKE) build/wasm/texlive/libs/teckit/libTECkit.a 
-	$(MAKE) build/wasm/texlive/libs/harfbuzz/libharfbuzz.a 
-	$(MAKE) build/wasm/texlive/libs/graphite2/libgraphite2.a 
-	$(MAKE) build/wasm/texlive/libs/pplib/libpplib.a 
-	$(MAKE) build/wasm/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE) build/wasm/texlive/libs/freetype2/libfreetype.a 
-	$(MAKE) build/wasm/texlive/libs/xpdf/libxpdf.a
-	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	$(MAKE) build/wasm/texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) build/wasm/expat/libexpat.a
-	$(MAKE) build/wasm/fontconfig/src/.libs/libfontconfig.a
-	#
-	$(MAKE) build/wasm/texlive/texk/kpathsea/.libs/libkpathsea.a
-	$(MAKE) build/wasm/texlive/texk/web2c/lib/lib.a
-	$(MAKE) build/wasm/texlive/texk/kpathsea/busytex_kpsewhich.o 
-	$(MAKE) build/wasm/texlive/texk/kpathsea/busytex_kpsestat.o 
-	$(MAKE) build/wasm/texlive/texk/kpathsea/busytex_kpseaccess.o 
-	$(MAKE) build/wasm/texlive/texk/kpathsea/busytex_kpsereadlink.o 
-	$(MAKE) build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a
-	$(MAKE) build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
-	$(MAKE) build/wasm/texlive/texk/makeindexk/busytex_makeindex.a
-	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libxetex.a
-	$(MAKE) build/wasm/texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) build/wasm/texlive/texk/web2c/libluatex.a
+	$(MAKE) build/wasm/texlivedependencies
+	$(MAKE) build/wasm/applets
 	$(MAKE) build/wasm/busytex.js
 
 .PHONY: ubuntu-wasm
