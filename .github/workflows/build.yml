@@ -57,10 +57,10 @@ jobs:
             build/texlive-basic.txt
             build/texlive-full.txt
       
-      - name: Test native busytex pipeline
-        run: |
-            make dist-native
-            bash example/example.sh
+#      - name: Test native busytex pipeline
+#        run: |
+#            make dist-native
+#            bash example/example.sh
 
 #      - name: Archive native test artifacts
 #        uses: actions/upload-artifact@v2

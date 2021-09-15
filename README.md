@@ -102,8 +102,11 @@ make dist
 make clean
 ```
 
-### ISO / ZIP / LD_PRELOAD FS
-- custom FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
+### Virtual and LD_PRELOAD readonly file system (reading ISO / TAR / ZIP)
+- LD_PRELOAD FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
+- LD_PRELOAD FS that could work with texlive iso files containing zip archives
+- virtual FS for reading ISO/TAR texlive TDS
+- virtual FS for reading Perl scripts
 - https://github.com/erincandescent/lib9660/blob/master/tb9660.c
 - https://github.com/jacereda/fsatrace
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
