@@ -25,7 +25,7 @@ PREFIX_native = $(ROOT)/build/native/prefix
 
 MAKE_wasm = emmake $(MAKE)
 CMAKE_wasm = emcmake cmake
-CONFIGURE_wasm = emconfigure
+CONFIGURE_wasm = $(EMROOT)/emconfigure
 AR_wasm = emar
 CC_wasm = emcc
 CXX_wasm = em++
@@ -125,13 +125,13 @@ PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/ic
 ##############################################################################################################################
 
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
-CCSKIP_ICU_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
+CCSKIP_ICU_wasm      = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
 CCSKIP_FREETYPE_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
-CCSKIP_XETEX_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
+CCSKIP_XETEX_wasm    = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
 CCSKIP_LUATEX_wasm = $(CCSKIP_XETEX_wasm)
 OPTS_ICU_configure_wasm = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
-OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(EMROOT)/emconfigure $(ROOT)/source/texlive/libs/icu'"
+OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
 OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_BIBTEX_wasm)"
 OPTS_FREETYPE_wasm = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX_wasm)"  CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX_wasm)"
@@ -399,25 +399,24 @@ build/texlive-%.txt: source/texmfrepo.txt
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
 	#
-	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
-	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
-	mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                   $(basename $@)/bin/x86_64-linux/mktexlsr
-	mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh                 $(basename $@)/bin/x86_64-linux/updmap-sys
-	mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                     $(basename $@)/bin/x86_64-linux/updmap
-	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh                $(basename $@)/bin/x86_64-linux/fmtutil-sys
-	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                    $(basename $@)/bin/x86_64-linux/fmtutil
+	#tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
+	#tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
+	#mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                   $(basename $@)/bin/x86_64-linux/mktexlsr
+	#mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh                 $(basename $@)/bin/x86_64-linux/updmap-sys
+	#mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                     $(basename $@)/bin/x86_64-linux/updmap
+	#mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh                $(basename $@)/bin/x86_64-linux/fmtutil-sys
+	#mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                    $(basename $@)/bin/x86_64-linux/fmtutil
 	#$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var));)
-	echo FINDBIN; find $(basename $@)/bin/x86_64-linux/
-	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
+	#cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
 	#$(foreach var,pdftex pdflatex xetex xelatex luatex lualatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
-	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ > $(basename $@)/bin/x86_64-linux/pdftex  ; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdflatex $$"@ > $(basename $@)/bin/x86_64-linux/pdflatex; chmod +x $(basename $@)/bin/x86_64-linux/pdflatex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex    $$"@ > $(basename $@)/bin/x86_64-linux/xetex   ; chmod +x $(basename $@)/bin/x86_64-linux/xetex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xelatex  $$"@ > $(basename $@)/bin/x86_64-linux/xelatex ; chmod +x $(basename $@)/bin/x86_64-linux/xelatex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ > $(basename $@)/bin/x86_64-linux/luatex  ; chmod +x $(basename $@)/bin/x86_64-linux/luatex
-	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex lualatex $$"@ > $(basename $@)/bin/x86_64-linux/lualatex; chmod +x $(basename $@)/bin/x86_64-linux/lualatex
+	#cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ > $(basename $@)/bin/x86_64-linux/pdftex  ; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdflatex $$"@ > $(basename $@)/bin/x86_64-linux/pdflatex; chmod +x $(basename $@)/bin/x86_64-linux/pdflatex
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex    $$"@ > $(basename $@)/bin/x86_64-linux/xetex   ; chmod +x $(basename $@)/bin/x86_64-linux/xetex
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xelatex  $$"@ > $(basename $@)/bin/x86_64-linux/xelatex ; chmod +x $(basename $@)/bin/x86_64-linux/xelatex
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ > $(basename $@)/bin/x86_64-linux/luatex  ; chmod +x $(basename $@)/bin/x86_64-linux/luatex
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex lualatex $$"@ > $(basename $@)/bin/x86_64-linux/lualatex; chmod +x $(basename $@)/bin/x86_64-linux/lualatex
 	#
 	#
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile #--custom-bin $(basename $@)/bin/x86_64-linux
