@@ -459,7 +459,7 @@ build/native/fonts.conf:
 
 ################################################################################################################
 
-.PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
+#.PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
 build/%/texlivedependencies:
 	$(MAKE) $(MAKEFLAGS) build/$*/expat/libexpat.a
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/zziplib/libzzip.a
@@ -478,8 +478,9 @@ build/%/texlivedependencies:
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/bin/icupkg 
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/bin/pkgdata 
 	$(MAKE) $(MAKEFLAGS) build/$*/fontconfig/src/.libs/libfontconfig.a
+	touch $@
 
-.PHONY: build/native/busytexapplets build/wasm/busytexapplets
+#.PHONY: build/native/busytexapplets build/wasm/busytexapplets
 build/%/busytexapplets:
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/lib/lib.a
@@ -493,6 +494,7 @@ build/%/busytexapplets:
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/libluatex.a
+	touch $@
 
 .PHONY: native
 native:
