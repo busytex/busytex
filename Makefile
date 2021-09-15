@@ -513,8 +513,7 @@ wasm:
 .PHONY: texlive
 texlive: source/texlive.downloaded source/texlive.patched
 
-#.PHONY: tds-basic tds-full
-tds-%: source/texmfrepo.txt build/texlive-$*.txt
+tds-%: source/texmfrepo.txt build/texlive-%.txt
 
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
