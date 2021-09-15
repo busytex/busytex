@@ -461,39 +461,39 @@ build/native/fonts.conf:
 
 #.PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
 build/%/texlivedependencies:
-	$(MAKE) $(MAKEFLAGS) build/$*/expat/libexpat.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/zziplib/libzzip.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/libpng/libpng.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/libpaper/libpaper.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/zlib/libz.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/teckit/libTECkit.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/harfbuzz/libharfbuzz.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/graphite2/libgraphite2.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/pplib/libpplib.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/freetype2/libfreetype.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/xpdf/libxpdf.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/bin/icupkg 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/libs/icu/icu-build/bin/pkgdata 
-	$(MAKE) $(MAKEFLAGS) build/$*/fontconfig/src/.libs/libfontconfig.a
+	$(MAKE) build/$*/expat/libexpat.a
+	$(MAKE) build/$*/texlive/libs/zziplib/libzzip.a
+	$(MAKE) build/$*/texlive/libs/libpng/libpng.a 
+	$(MAKE) build/$*/texlive/libs/libpaper/libpaper.a 
+	$(MAKE) build/$*/texlive/libs/zlib/libz.a 
+	$(MAKE) build/$*/texlive/libs/teckit/libTECkit.a 
+	$(MAKE) build/$*/texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) build/$*/texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) build/$*/texlive/libs/pplib/libpplib.a 
+	$(MAKE) build/$*/texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE) build/$*/texlive/libs/freetype2/libfreetype.a 
+	$(MAKE) build/$*/texlive/libs/xpdf/libxpdf.a
+	$(MAKE) build/$*/texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) build/$*/texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) build/$*/texlive/libs/icu/icu-build/bin/icupkg 
+	$(MAKE) build/$*/texlive/libs/icu/icu-build/bin/pkgdata 
+	$(MAKE) build/$*/fontconfig/src/.libs/libfontconfig.a
 	touch $@
 
 #.PHONY: build/native/busytexapplets build/wasm/busytexapplets
 build/%/busytexapplets:
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/.libs/libkpathsea.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/lib/lib.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpsewhich.o 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpsestat.o 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpseaccess.o 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/kpathsea/busytex_kpsereadlink.o 
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/bibtex-x/busytex_bibtex8.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/makeindexk/busytex_makeindex.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/busytex_libxetex.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) $(MAKEFLAGS) build/$*/texlive/texk/web2c/libluatex.a
+	$(MAKE) build/$*/texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(MAKE) build/$*/texlive/texk/web2c/lib/lib.a
+	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpsewhich.o 
+	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpsestat.o 
+	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpseaccess.o 
+	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpsereadlink.o 
+	$(MAKE) build/$*/texlive/texk/bibtex-x/busytex_bibtex8.a
+	$(MAKE) build/$*/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
+	$(MAKE) build/$*/texlive/texk/makeindexk/busytex_makeindex.a
+	$(MAKE) build/$*/texlive/texk/web2c/busytex_libxetex.a
+	$(MAKE) build/$*/texlive/texk/web2c/busytex_libpdftex.a
+	$(MAKE) build/$*/texlive/texk/web2c/libluatex.a
 	touch $@
 
 .PHONY: native
