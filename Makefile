@@ -114,9 +114,11 @@ CFLAGS_KPSEREADLINK_native = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_native)
 CFLAGS_MAKEINDEX_wasm      = $(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)
 CFLAGS_MAKEINDEX_native    = $(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)
 CFLAGS_ICU_wasm            =                        $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
+
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
 CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
+
 #-fno-common 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
@@ -226,11 +228,20 @@ build/%/texlive.configured: source/texlive.patched
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 
-build/%/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(OPTS_FREETYPE_$*) 
-
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) 
+
+build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $(dir $@))
+
+build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $(dir $@))
+
+build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(notdir $@)
+
+build/%/texlive/libs/freetype2/libfreetype.a: build/native/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(OPTS_FREETYPE_$*) 
 
 build/%/expat/libexpat.a: source/expat.downloaded
 	mkdir -p $(dir $@) && cd $(dir $@) && \
@@ -262,12 +273,6 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	   CFLAGS="$(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
 	$(MAKE_$*) -C build/$*/fontconfig
 
-build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(notdir $@)
-
-build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
-	$(MAKE_$*) -C build/$*/texlive/texk/kpathsea
-
 build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) genind.o mkind.o qsort.o scanid.o scanst.o sortid.o $(OPTS_MAKEINDEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/*.o
@@ -291,9 +296,6 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	rm build/$*/texlive/texk/kpathsea/readlink.o || true
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
-
-build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
-	$(MAKE_$*) -C build/$*/texlive/libs/lua53
 
 build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
@@ -336,7 +338,6 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
 	mv $(dir $@)/libpdftex.a $@
-	$(AR_native) t $@
 
 ################################################################################################################
 
@@ -375,7 +376,6 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
-	$(AR_wasm) t $@
 
 ################################################################################################################
 
@@ -385,7 +385,7 @@ source/texmfrepo.txt:
 	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
 	rm source/$(notdir $(URL_texlive_full_iso))
 	chmod +x ./source/texmfrepo/install-tl
-	find source/texmfrepo > source/texmfrepo.txt
+	find     ./source/texmfrepo > source/texmfrepo.txt
 
 build/texlive-%.txt: source/texmfrepo.txt
 	mkdir -p $(basename $@)
@@ -394,25 +394,31 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo collection-xetex 1 >> build/texlive-$*.profile
-	echo collection-luatex 1 >> build/texlive-$*.profile
+	echo "collection-xetex  1" >> build/texlive-$*.profile
+	echo "collection-luatex 1" >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
-	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz        -C $(basename $@)
-	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz  -C $(basename $@)
-	mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                 $(basename $@)/bin/x86_64-linux/mktexlsr
-	mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh               $(basename $@)/bin/x86_64-linux/updmap-sys
-	mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                   $(basename $@)/bin/x86_64-linux/updmap
-	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh              $(basename $@)/bin/x86_64-linux/fmtutil-sys
-	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                  $(basename $@)/bin/x86_64-linux/fmtutil
-	cp $(BUSYTEX_native)                                                     $(basename $@)/bin/x86_64-linux
-	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/pdftex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex $$"@ >> $(basename $@)/bin/x86_64-linux/pdftex; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
-	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/xetex;  echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex  $$"@ >> $(basename $@)/bin/x86_64-linux/xetex;  chmod +x $(basename $@)/bin/x86_64-linux/xetex
-	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/luatex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex $$"@ >> $(basename $@)/bin/x86_64-linux/luatex; chmod +x $(basename $@)/bin/x86_64-linux/luatex
+	#
+	#
+	tar -xf source/texmfrepo/archive/texlive-scripts.*.tar.xz               -C $(basename $@)
+	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.*.tar.xz         -C $(basename $@)
+	mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                   $(basename $@)/bin/x86_64-linux/mktexlsr
+	mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh                 $(basename $@)/bin/x86_64-linux/updmap-sys
+	mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                     $(basename $@)/bin/x86_64-linux/updmap
+	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh                $(basename $@)/bin/x86_64-linux/fmtutil-sys
+	mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                    $(basename $@)/bin/x86_64-linux/fmtutil
+	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
+	#
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/pdftex;   echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ >> $(basename $@)/bin/x86_64-linux/pdftex;   chmod +x $(basename $@)/bin/x86_64-linux/pdftex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/pdflatex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdflatex $$"@ >> $(basename $@)/bin/x86_64-linux/pdflatex; chmod +x $(basename $@)/bin/x86_64-linux/pdflatex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/xetex;    echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex    $$"@ >> $(basename $@)/bin/x86_64-linux/xetex;    chmod +x $(basename $@)/bin/x86_64-linux/xetex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/xelatex;  echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xelatex  $$"@ >> $(basename $@)/bin/x86_64-linux/xelatex;  chmod +x $(basename $@)/bin/x86_64-linux/xelatex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/luatex;   echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ >> $(basename $@)/bin/x86_64-linux/luatex;   chmod +x $(basename $@)/bin/x86_64-linux/luatex
+	echo "#!/bin/sh" > $(basename $@)/bin/x86_64-linux/lualatex; echo "$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex lualatex $$"@ >> $(basename $@)/bin/x86_64-linux/lualatex; chmod +x $(basename $@)/bin/x86_64-linux/lualatex
+	#
+	#
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
-	echo FINDFMT;  find $(basename $@) -name '*.fmt' || true
-	echo PDFTEXLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/pdftex/pdftex.log || true
-	echo XETEXLOG;  cat $(basename $@)/texmf-dist/texmf-var/web2c/xetex/xetex.log   || true
-	echo LUATEXLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/luatex/luatex.log || true
+	echo FINDFMT;  find $(basename $@) -name '*.fmt' 					|| true
+	echo FINDLOG; cat $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
@@ -513,11 +519,11 @@ wasm:
 .PHONY: texlive
 texlive: source/texlive.downloaded source/texlive.patched
 
-tds-%:
-	$(MAKE) source/texmfrepo.txt build/texlive-$*.txt
-
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
+
+tds-%:
+	$(MAKE) source/texmfrepo.txt build/texlive-$*.txt
 
 ################################################################################################################
 
