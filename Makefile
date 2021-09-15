@@ -232,6 +232,9 @@ build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuz
 	$(MAKE_$*) -C $(dir $@) 
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
+	echo DIR1 $@
+	echo DIR2 $(dir $@)
+	echo DIR3 $(dir $(dir $@))
 	$(MAKE_$*) -C $(dir $(dir $@))
 
 build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
