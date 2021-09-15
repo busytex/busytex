@@ -459,42 +459,40 @@ build/native/fonts.conf:
 
 ################################################################################################################
 
-#.PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
-build/%/texlivedependencies:
-	$(MAKE) build/$*/expat/libexpat.a
-	$(MAKE) build/$*/texlive/libs/zziplib/libzzip.a
-	$(MAKE) build/$*/texlive/libs/libpng/libpng.a 
-	$(MAKE) build/$*/texlive/libs/libpaper/libpaper.a 
-	$(MAKE) build/$*/texlive/libs/zlib/libz.a 
-	$(MAKE) build/$*/texlive/libs/teckit/libTECkit.a 
-	$(MAKE) build/$*/texlive/libs/harfbuzz/libharfbuzz.a 
-	$(MAKE) build/$*/texlive/libs/graphite2/libgraphite2.a 
-	$(MAKE) build/$*/texlive/libs/pplib/libpplib.a 
-	$(MAKE) build/$*/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE) build/$*/texlive/libs/freetype2/libfreetype.a 
-	$(MAKE) build/$*/texlive/libs/xpdf/libxpdf.a
-	$(MAKE) build/$*/texlive/libs/icu/icu-build/lib/libicuuc.a 
-	$(MAKE) build/$*/texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) build/$*/texlive/libs/icu/icu-build/bin/icupkg 
-	$(MAKE) build/$*/texlive/libs/icu/icu-build/bin/pkgdata 
-	$(MAKE) build/$*/fontconfig/src/.libs/libfontconfig.a
-	touch $@
+.PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
+build/native/texlivedependencies build/wasm/texlivedependencies:
+	$(MAKE) $(dir $@)expat/libexpat.a
+	$(MAKE) $(dir $@)texlive/libs/zziplib/libzzip.a
+	$(MAKE) $(dir $@)texlive/libs/libpng/libpng.a 
+	$(MAKE) $(dir $@)texlive/libs/libpaper/libpaper.a 
+	$(MAKE) $(dir $@)texlive/libs/zlib/libz.a 
+	$(MAKE) $(dir $@)texlive/libs/teckit/libTECkit.a 
+	$(MAKE) $(dir $@)texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) $(dir $@)texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) $(dir $@)texlive/libs/pplib/libpplib.a 
+	$(MAKE) $(dir $@)texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE) $(dir $@)texlive/libs/freetype2/libfreetype.a 
+	$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/bin/icupkg 
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/bin/pkgdata 
+	$(MAKE) $(dir $@)fontconfig/src/.libs/libfontconfig.a
 
-#.PHONY: build/native/busytexapplets build/wasm/busytexapplets
-build/%/busytexapplets:
-	$(MAKE) build/$*/texlive/texk/kpathsea/.libs/libkpathsea.a
-	$(MAKE) build/$*/texlive/texk/web2c/lib/lib.a
-	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpsewhich.o 
-	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpsestat.o 
-	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpseaccess.o 
-	$(MAKE) build/$*/texlive/texk/kpathsea/busytex_kpsereadlink.o 
-	$(MAKE) build/$*/texlive/texk/bibtex-x/busytex_bibtex8.a
-	$(MAKE) build/$*/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
-	$(MAKE) build/$*/texlive/texk/makeindexk/busytex_makeindex.a
-	$(MAKE) build/$*/texlive/texk/web2c/busytex_libxetex.a
-	$(MAKE) build/$*/texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) build/$*/texlive/texk/web2c/libluatex.a
-	touch $@
+.PHONY: build/native/busytexapplets build/wasm/busytexapplets
+build/native/busytexapplets build/wasm/busytexapplets:
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpseaccess.o 
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsereadlink.o 
+	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
+	$(MAKE) $(dir $@)texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
+	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/libluatex.a
 
 .PHONY: native
 native:
@@ -515,7 +513,7 @@ wasm:
 .PHONY: texlive
 texlive: source/texlive.downloaded source/texlive.patched
 
-.PHONY: tds-basic tds-full
+#.PHONY: tds-basic tds-full
 tds-%: source/texmfrepo.txt build/texlive-$*.txt
 
 .PHONY: ubuntu-wasm
