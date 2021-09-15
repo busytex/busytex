@@ -422,7 +422,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f  ./source/texmfrepo/install-tl -v -v --repository source/texmfrepo --profile build/texlive-$*.profile #--custom-bin $(basename $@)/bin/x86_64-linux
 	echo FINDFMT; find $(basename $@) -name '*.fmt' 					|| true
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log || true
-	echo FMTUTIL;      $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
+	echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
