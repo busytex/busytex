@@ -1,9 +1,9 @@
 set -e
 
 DIST=$PWD/dist-native
-XETEXFMT=$DIST/xelatex.fmt
-PDFTEXFMT=$DIST/pdftex.fmt
-LUATEXFMT=$DIST/luatex.fmt
+XELATEXFMT=$DIST/xelatex.fmt
+PDFLATEXFMT=$DIST/pdftex.fmt
+LUALATEXFMT=$DIST/luatex.fmt
 BUSYTEX=$DIST/busytex
 
 export TEXMFDIST=$DIST/texlive/texmf-dist
@@ -15,28 +15,28 @@ cd example
 
 $BUSYTEX
 # makeindex
-for applet in xetex pdftex luatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink; do
+for applet in xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink; do
     echo $BUSYTEX $applet --version
     $BUSYTEX $applet --version
 done
 
-$BUSYTEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
 $BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
-$BUSYTEX xetex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XETEXFMT example.tex
+$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
+$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
 $BUSYTEX xdvipdfmx -o example_xetex.pdf example.xdv
 rm example.aux
 
-$BUSYTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
 $BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
-$BUSYTEX pdftex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFTEXFMT example.tex
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
 mv example.pdf example_pdftex.pdf
 rm example.aux
 
-$BUSYTEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT --nosocket example.tex
+$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex
 $BUSYTEX bibtex8 --8bit example.aux                                           
-$BUSYTEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT --nosocket example.tex
-$BUSYTEX luatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUATEXFMT --nosocket example.tex
+$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex
+$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex
 mv example.pdf example_luatex.pdf
 rm example.aux
