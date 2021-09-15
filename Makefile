@@ -379,7 +379,7 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 
 ################################################################################################################
 
-source/texmfrepo/install-tl:
+source/texmfrepo.txt:
 	mkdir -p source/texmfrepo
 	wget --no-verbose --no-clobber $(URL_texlive_full_iso) -P source
 	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
@@ -387,7 +387,7 @@ source/texmfrepo/install-tl:
 	chmod +x ./source/texmfrepo/install-tl
 	find source/texmfrepo > source/texmfrepo.txt
 
-build/texlive-%.txt: source/texmfrepo/install-tl
+build/texlive-%.txt: source/texmfrepo.txt
 	mkdir -p $(basename $@)
 	echo selected_scheme scheme-$* > build/texlive-$*.profile
 	echo TEXDIR $(ROOT)/$(basename $@) >> build/texlive-$*.profile
@@ -459,16 +459,6 @@ build/native/fonts.conf:
 
 ################################################################################################################
 
-
-.PHONY: texlive
-texlive: source/texlive.downloaded source/texlive.patched
-
-tds-%:
-	$(MAKE) source/texmfrepo/install-tl
-	$(MAKE) build/texlive-$*.txt
-
-################################################################################################################
-
 .PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
 build/%/texlivedependencies:
 	$(MAKE) $(MAKEFLAGS) build/$*/expat/libexpat.a
@@ -517,6 +507,14 @@ wasm:
 	$(MAKE) build/wasm/texlivedependencies
 	$(MAKE) build/wasm/busytexapplets
 	$(MAKE) build/wasm/busytex.js
+
+################################################################################################################
+
+.PHONY: texlive
+texlive: source/texlive.downloaded source/texlive.patched
+
+.PHONY: tds-basic tds-full
+tds-%: source/texmfrepo.txt build/texlive-$*.txt
 
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
@@ -579,9 +577,9 @@ clean:
 .PHONY: dist-wasm
 dist-wasm:
 	mkdir -p $@
-	cp build/wasm/busytex.js build/wasm/busytex.wasm $@ || true
+	cp build/wasm/busytex.js       build/wasm/busytex.wasm $@ || true
 	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@ || true
-	cp build/wasm/ubuntu-*.js build/wasm/ubuntu-*.data $@ || true
+	cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data $@ || true
 
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
