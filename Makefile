@@ -396,6 +396,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
 	echo "collection-xetex  1"                                         >> build/texlive-$*.profile
 	echo "collection-luatex 1"                                         >> build/texlive-$*.profile
+	echo "depend 1atex-bin"                                            >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
 	#
@@ -423,7 +424,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo FINDFMT; find $(basename $@) -name '*.fmt' 					|| true
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log || true
 	echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
-	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
+	#rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
 
