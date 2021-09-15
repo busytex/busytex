@@ -397,113 +397,25 @@ build/texlive-%.txt: source/texmfrepo/install-tl
 	echo collection-xetex 1 >> build/texlive-$*.profile
 	echo collection-luatex 1 >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
-	#TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile
-	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist $(BUSYTEX_native) kpsewhich --var-value=TEXMFDIST || true
-	#cp ./install-tl ./source/texmfrepo/install-tl
-	#PATH=$(ROOT)/build/native/custom_bin:$(PATH) 
-	# TEXMFCNF=$(ROOT)/build/texlive-$*/texmf-dist/web2c TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist
-	#TEXMFDIST=$(ROOT)/build/texlive-$*/texmf-dist  strace -f -e trace=execve -v -s 1024 KPATHSEA_DEBUG=120
-	 TEXLIVE_INSTALL_NO_RESUME=1     ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/texlive-basic/bin/x86_64-linux
+	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz       -C $@
+	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz -C $@
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/mktexlsr.pl    $@/bin/x86_64-linux/mktexlsr
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap-sys.sh  $@/bin/x86_64-linux/updmap-sys
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/bin/x86_64-linux/updmap
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/bin/x86_64-linux/fmtutil-sys
+	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/bin/x86_64-linux/fmtutil
+	cp $(BUSYTEX_native)                                                     $@/bin/x86_64-linux
+	echo "#!/bin/sh" > $@/bin/x86_64-linux/pdftex; echo "$(ROOT)/$@/bin/x86_64-linux/busytex pdftex $$"@ >> $@/pdftex; chmod +x $@/bin/x86_64-linux/pdftex
+	echo "#!/bin/sh" > $@/bin/x86_64-linux/xetex; echo "$(ROOT)/$@/bin/x86_64-linux/busytex xetex $$"@ >> $@/xetex; chmod +x $@/bin/x86_64-linux/xetex
+	echo "#!/bin/sh" > $@/bin/x86_64-linux/luatex; echo "$(ROOT)/$@/bin/x86_64-linux/busytex luatex $$"@ >> $@/luatex; chmod +x $@/bin/x86_64-linux/luatex
+	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/build/texlive-$*/bin/x86_64-linux
 	echo FINDFMT; find build/texlive-basic -name '*.fmt' || true
+	echo PDFTEXLOG; cat build/texlive-basic/texmf-dist/texmf-var/web2c/pdftex/pdftex.log || true
+	echo XETEXLOG; cat build/texlive-basic/texmf-dist/texmf-var/web2c/xetex/xetex.log || true
+	echo LUATEXLOG; cat build/texlive-basic/texmf-dist/texmf-var/web2c/luatex/luatex.log || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
-	# grep 'texlive-basic/bin' 8_Install\ TexLive.txt | grep -v 'No such' | grep -oP 'execve\(".+?",' | sort | uniq
-	#
-# bin/x86_64-linux/gftopk
-# texlua
-# mkindex
-# lualatex
-# texluac
-# xdvipdfmx
-# makeindex
-# tex
-# tlmgr
-# dviluatex
-# extractbb
-# dvilualatex
-# mft
-# inimf
-# ebb
-# dvipdfm
-# mktexpk
-# kpseaccess
-# etex
-# initex
-# mf-nowin
-# updmap-user
-# afm2tfm
-# mktexlsr
-# gftype
-# tlshell
-# man
-# mktexfmt
-# mf
-# rungs
-# pktogf
-# luaotfload-tool
-# kpsewhich
-# simpdftex
-# xdvi
-# pdfetex
-# gftodvi
-# pdflatex
-# dvipdfmx
-# dvipdft
-# xdvi-xaw
-# mptopdf
-# kpsestat
-# fmtutil-sys
-# luatex
-# fmtutil-user
-# updmap-sys
-# mktexmf
-# updmap
-# kpsereadlink
-# pktype
-# fmtutil
-# latex
-# dvips
-# mktextfm
-# pdftex
-# texhash
-# bibtex
-# luahbtex
-
-.PHONY: build/texlive-basic/bin/x86_64-linux
-build/texlive-basic/bin/x86_64-linux:
-	mkdir -p $@ build/texlive-basic
-	tar -xf source/texmfrepo/archive/texlive-scripts.r58690.tar.xz       -C build/texlive-basic
-	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r57878.tar.xz -C build/texlive-basic
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/mktexlsr.pl    $@/mktexlsr
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap-sys.sh  $@/updmap-sys
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/updmap.pl      $@/updmap
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil-sys.sh $@/fmtutil-sys
-	mv $(ROOT)/build/texlive-basic/texmf-dist/scripts/texlive/fmtutil.pl     $@/fmtutil
-	cp $(BUSYTEX_native) $@
-	echo "#!/bin/sh" > $@/pdftex; echo "$(ROOT)/$@/busytex pdftex $$"@ >> $@/pdftex; chmod +x $@/pdftex
-	echo "#!/bin/sh" > $@/xetex; echo "$(ROOT)/$@/busytex xetex $$"@ >> $@/xetex; chmod +x $@/xetex
-	echo "#!/bin/sh" > $@/luatex; echo "$(ROOT)/$@/busytex luatex $$"@ >> $@/luatex; chmod +x $@/luatex
-	#echo "#!/bin/sh" > $@/xetex; echo "$(BUSYTEX_native) xetex $$"@ >> $@/xetex; chmod +x $@/xetex
-	#echo "#!/bin/sh" > $@/luatex; echo "$(BUSYTEX_native) luatex $$"@ >> $@/luatex; chmod +x $@/luatex
-	#mv bin/x86_64-linux/kpse* $@
-	#echo "$(BUSYTEX_native) xetex  $$"@ > $@/xetex ; chmod +x $@/xetex
-	#echo "$(BUSYTEX_native) luatex $$"@ > $@/luatex; chmod +x $@/luatex
-	#
-	#echo "echo HELLOFROMKPSEWHICH 1>&2; $(BUSYTEX_native) kpsewhich $$"@ " | tee /dev/fd/2" > $@/kpsewhich; chmod +x $@/kpsewhich
-	#echo "$(BUSYTEX_native) kpseaccess $$"@ > $@/kpseaccess; chmod +x $@/kpseaccess
-	#echo "$(BUSYTEX_native) kpsestat $$"@ > $@/kpsestat; chmod +x $@/kpsestat
-	#ln -s $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/mktexlsr $@
-	##
-	#cp updmap.pl source/texlive/texk/texlive/linked_scripts/texlive/
-	#echo "#!/bin/bash" > $@/updmap-sys
-	#echo "perl -I $(ROOT)/source/texmfrepo/tlpkg $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl --sys $$"@ >> $@/updmap-sys
-	#chmod +x $@/updmap-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/updmap.pl
-	##
-	#cp fmtutil.pl source/texlive/texk/texlive/linked_scripts/texlive/
-	#echo "#!/bin/bash" > $@/fmtutil-sys
-	#echo "echo HELLOFROMFMTUTILSH 1>&2; perl $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl --sys $$"@ >> $@/fmtutil-sys
-	#chmod +x $@/fmtutil-sys $(ROOT)/source/texlive/texk/texlive/linked_scripts/texlive/fmtutil.pl
 
 build/format-%/xelatex.fmt build/format-%/pdflatex.fmt: build/native/busytex build/texlive-%.txt 
 	mkdir -p $(basename $@)
@@ -529,8 +441,8 @@ build/wasm/texlive-%.js: build/format-%/xelatex.fmt build/format-%/pdflatex.fmt 
 		--preload build/passwd@/etc/passwd \
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
-		--preload build/texlive-$*@/texlive \
-		--preload build/format-$*/xelatex.fmt@/xelatex.fmt \
+		--preload build/texlive-$*@/texlive
+#		--preload build/format-$*/xelatex.fmt@/xelatex.fmt \
 		--preload build/format-$*/pdflatex.fmt@/pdflatex.fmt \
 		--preload build/format-$*/lualatex.fmt@/lualatex.fmt
 
@@ -570,7 +482,6 @@ texlive:
 
 tds-%:
 	$(MAKE) source/texmfrepo/install-tl
-	$(MAKE) build/texlive-basic/bin/x86_64-linux
 	$(MAKE) build/texlive-$*.txt
 	#$(MAKE) build/format-$*/xelatex.fmt
 	#$(MAKE) build/format-$*/pdflatex.fmt
@@ -715,7 +626,8 @@ dist-wasm:
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
-	cp $(addprefix build/native/, busytex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
+	cp $(addprefix build/native/, busytex fonts.conf) $@ || true
+	#cp $(addprefix build/native/, busytex fonts.conf ../format-basic/xelatex.fmt ../format-basic/pdflatex.fmt ../format-basic/lualatex.fmt) $@ || true
 	cp -r build/texlive-basic $@/texlive || true
 
 .PHONY: dist
