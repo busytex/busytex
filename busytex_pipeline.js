@@ -210,9 +210,11 @@ class BusytexPipeline
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt = {
-            pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
-            xetex  : '/xelatex.fmt',  //'/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt'
-            luatex : '/lualatex.fmt'
+            pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdftex.fmt',
+            xetex:   '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
+            luatex:  '/texlive/texmf-dist/texmf-var/web2c/luatex/luatex.fmt',
+//          xetex  : '/xelatex.fmt', 
+//          luatex : '/lualatex.fmt'
         };
         this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
