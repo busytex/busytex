@@ -407,8 +407,11 @@ build/texlive-%.txt: source/texmfrepo.txt
 	$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var));)
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
-	$(foreach var,xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
-	ln -s $(basename $@)/bin/x86_64-linux/lualatex $(basename $@)/bin/x86_64-linux/luahbtex
+	echo FINDBIN0; find $(basename $@)/bin/x86_64-linux/ 				           || true
+	#
+	$(foreach var,xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var) ; chmod +x $(basename $@)/bin/x86_64-linux/$(var); )
+	echo FINDBIN00; find $(basename $@)/bin/x86_64-linux/ 				           || true
+	ln -s $(ROOT)/$(basename $@)/bin/x86_64-linux/lualatex $(basename $@)/bin/x86_64-linux/luahbtex
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
 	#
