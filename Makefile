@@ -155,7 +155,7 @@ OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK_wasm)"
 OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX_wasm)"
 
-OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wimplicit -Wreturn-type 
+OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wimplicit -Wreturn-type  -pthread
 OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wl,-error-limit=0   -s SUPPORT_LONGJMP=1 -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0 -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=busytex -s EXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
 ##############################################################################################################################
@@ -305,7 +305,7 @@ build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texli
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
 	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
-	$(CXX_$*) $(OPTS_BUSYTEX_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread -mt 
+	$(CXX_$*) $(OPTS_BUSYTEX_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
 
 ################################################################################################################
 
