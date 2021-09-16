@@ -352,13 +352,13 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
 
 build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_wasm))
-	rm $(dir $@)/bibtex8-bibtex.o
+	#$(MAKE_wasm) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_wasm))
+	#rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
 	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
 	echo BIBTEX8
 	$(NM_wasm) $(dir $@)/bibtex8-bibtex.o
-	file bibtex8-bibtex.o
+	file $(dir $@)/bibtex8-bibtex.o
 
 build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C    $(dir $@) $(OPTS_XDVIPDFMX_wasm)
@@ -496,12 +496,12 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpseaccess.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsereadlink.o 
-	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(dir $@)texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/libluatex.a
+	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
 
 .PHONY: native
 native:
