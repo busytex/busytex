@@ -412,7 +412,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var));)
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
-	$(foreach var,pdftex pdflatex xetex xelatex luatex lualatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
+	$(foreach var,xelatex lualatex pdflatex xetex luatex pdftex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ > $(basename $@)/bin/x86_64-linux/pdftex  ; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdflatex $$"@ > $(basename $@)/bin/x86_64-linux/pdflatex; chmod +x $(basename $@)/bin/x86_64-linux/pdflatex
@@ -426,7 +426,8 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo KPSE1; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=luatex -format=tex luatex.ini || true
 	echo KPSE2; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=lualatex -format=tex lualatex.ini || true
 	echo KPSE3; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=dvilualatex -format=tex dvilualatex.ini || true
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
+	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
 	#echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log           || true
