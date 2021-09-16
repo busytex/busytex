@@ -207,7 +207,7 @@ class BusytexPipeline
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt = {
-            pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdftex.fmt',
+            pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
             xetex:   '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
             luatex:  '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
 //          xetex  : '/xelatex.fmt', 
