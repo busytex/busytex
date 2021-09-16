@@ -352,8 +352,13 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
 
 build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
+	$(MAKE_wasm) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_wasm))
+	rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
 	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
+	echo BIBTEX8
+	$(NM_wasm) $(dir $@)/bibtex8-bibtex.o
+	file bibtex8-bibtex.o
 
 build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C    $(dir $@) $(OPTS_XDVIPDFMX_wasm)
