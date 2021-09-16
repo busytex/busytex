@@ -3,7 +3,7 @@ set -e
 DIST=$PWD/dist-native
 XELATEXFMT=$DIST/xelatex.fmt
 PDFLATEXFMT=$DIST/pdflatex.fmt
-LUALATEXFMT=$DIST/luatex.fmt
+LUALATEXFMT=$DIST/lualatex.fmt
 BUSYTEX=$DIST/busytex
 
 export TEXMFDIST=$DIST/texlive/texmf-dist
@@ -34,9 +34,9 @@ $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --
 mv example.pdf example_pdftex.pdf
 rm example.aux
 
-#$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
-#$BUSYTEX bibtex8 --8bit example.aux
-#$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
-#$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
-#mv example.pdf example_luatex.pdf 
-#rm example.aux 
+$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
+$BUSYTEX bibtex8 --8bit example.aux
+$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
+$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
+mv example.pdf example_luatex.pdf 
+rm example.aux 

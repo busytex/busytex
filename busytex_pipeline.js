@@ -209,7 +209,7 @@ class BusytexPipeline
         this.fmt = {
             pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdftex.fmt',
             xetex:   '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
-            luatex:  '/texlive/texmf-dist/texmf-var/web2c/luatex/luatex.fmt',
+            luatex:  '/texlive/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt',
 //          xetex  : '/xelatex.fmt', 
 //          luatex : '/lualatex.fmt'
         };

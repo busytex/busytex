@@ -404,16 +404,11 @@ build/texlive-%.txt: source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz                -C $(basename $@)
-	$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var));)
-	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
-	#
-	echo FINDBIN0; find $(basename $@)/bin/x86_64-linux/ 				           || true
-	$(foreach var,xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var) ; chmod +x $(basename $@)/bin/x86_64-linux/$(var); )
-	echo FINDBIN1; find $(basename $@)/bin/x86_64-linux/ 				           || true
-	ln -s $(ROOT)/$(basename $@)/bin/x86_64-linux/lualatex $(basename $@)/bin/x86_64-linux/luahbtex
-	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
-	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
-	#
+	$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var)); )
+	$(foreach var,xetex luatex pdftex xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var) ; chmod +x $(basename $@)/bin/x86_64-linux/$(var); )
+	ln -s $(ROOT)/$(basename $@)/bin/x86_64-linux/lualatex           $(basename $@)/bin/x86_64-linux/luahbtex
+	cp $(BUSYTEX_native)                                             $(basename $@)/bin/x86_64-linux
+	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
 	#
 	#rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
@@ -594,7 +589,7 @@ dist-wasm:
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	cp $(addprefix build/native/, busytex fonts.conf) $@
-	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt) $@ #  luahbtex/lualatex.fmt
+	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/lualatex.fmt) $@
 	cp -r build/texlive-basic $@/texlive
 
 .PHONY: dist
