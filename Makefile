@@ -404,31 +404,19 @@ build/texlive-%.txt: source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz                -C $(basename $@)
-	#mv $(basename $@)/texmf-dist/scripts/texlive/mktexlsr.pl                   $(basename $@)/bin/x86_64-linux/mktexlsr
-	#mv $(basename $@)/texmf-dist/scripts/texlive/updmap-sys.sh                 $(basename $@)/bin/x86_64-linux/updmap-sys
-	#mv $(basename $@)/texmf-dist/scripts/texlive/updmap.pl                     $(basename $@)/bin/x86_64-linux/updmap
-	#mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil-sys.sh                $(basename $@)/bin/x86_64-linux/fmtutil-sys
-	#mv $(basename $@)/texmf-dist/scripts/texlive/fmtutil.pl                    $(basename $@)/bin/x86_64-linux/fmtutil
 	$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var));)
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
-	$(foreach var,xelatex lualatex pdflatex xetex luatex pdftex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
+	$(foreach var,xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdftex   $$"@ > $(basename $@)/bin/x86_64-linux/pdftex  ; chmod +x $(basename $@)/bin/x86_64-linux/pdftex
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex pdflatex $$"@ > $(basename $@)/bin/x86_64-linux/pdflatex; chmod +x $(basename $@)/bin/x86_64-linux/pdflatex
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xetex    $$"@ > $(basename $@)/bin/x86_64-linux/xetex   ; chmod +x $(basename $@)/bin/x86_64-linux/xetex
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex xelatex  $$"@ > $(basename $@)/bin/x86_64-linux/xelatex ; chmod +x $(basename $@)/bin/x86_64-linux/xelatex
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex luatex   $$"@ > $(basename $@)/bin/x86_64-linux/luatex  ; chmod +x $(basename $@)/bin/x86_64-linux/luatex
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex lualatex $$"@ > $(basename $@)/bin/x86_64-linux/lualatex; chmod +x $(basename $@)/bin/x86_64-linux/lualatex
-	#
 	#
 	echo FINDBIN1; find $(basename $@)/bin/x86_64-linux/ 				           || true
 	echo KPSE1; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=luatex -format=tex luatex.ini || true
 	echo KPSE2; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=lualatex -format=tex lualatex.ini || true
 	echo KPSE3; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=dvilualatex -format=tex dvilualatex.ini || true
-	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini
+	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
-	#echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
+	echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log           || true
 	echo FINDFMT; find $(basename $@) -name '*.fmt' 					           || true
