@@ -11,7 +11,8 @@ PYTHON = python3
 TOTAL_MEMORY = 536870912
 
 CFLAGS_OPT_native = -O3
-CFLAGS_OPT_wasm   = -Oz
+CFLAGS_OPT_wasm   = 
+#-Oz
 
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
@@ -301,28 +302,28 @@ build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texli
 	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
 
+build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_$*))
+	rm $(dir $@)/bibtex8-bibtex.o
+	$(MAKE_$*) -C    $(dir $@) $(OPTS_BIBTEX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
+
+build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
+	rm $(dir $@)/dvipdfmx.o
+	$(MAKE_$*) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/*.o
+
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
 	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
-	$(CXX_$*) $(OPTS_BUSYTEX_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
+	$(CXX_$*) $(OPTS_BUSYTEX_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUATEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm -pthread 
 
 ################################################################################################################
 
 build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
 	$(MAKE_native) -C build/native/texlive/libs/icu 
 	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build 
-
-build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
-	rm $(dir $@)/bibtex8-bibtex.o
-	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
-	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
-
-build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_native))
-	rm $(dir $@)/dvipdfmx.o
-	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
-	$(AR_native) -crs $@ $(dir $@)/*.o
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
@@ -347,19 +348,6 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
 	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
-
-build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
-	#$(MAKE_wasm) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_wasm))
-	#rm $(dir $@)/bibtex8-bibtex.o
-	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
-	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
-	echo BIBTEX8
-	$(NM_wasm) $(dir $@)/bibtex8-bibtex.o
-	file $(dir $@)/bibtex8-bibtex.o
-
-build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C    $(dir $@) $(OPTS_XDVIPDFMX_wasm)
-	$(AR_wasm) -crs $@ $(dir $@)/*.o
 
 build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
