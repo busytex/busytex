@@ -348,9 +348,6 @@ build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configu
 	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
 
-.PHONY: build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata
-build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
-
 build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
 	#$(MAKE_wasm) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_wasm))
 	#rm $(dir $@)/bibtex8-bibtex.o
@@ -381,6 +378,9 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
+
+.PHONY: build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata
+build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
 
 ################################################################################################################
 
