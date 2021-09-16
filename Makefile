@@ -423,6 +423,9 @@ build/texlive-%.txt: source/texmfrepo.txt
 	#
 	#
 	echo FINDBIN1; find $(basename $@)/bin/x86_64-linux/ 				           || true
+	echo KPSE1; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=luatex -format=tex luatex.ini || true
+	echo KPSE2; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=lualatex -format=tex lualatex.ini || true
+	echo KPSE3; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=dvilualatex -format=tex dvilualatex.ini || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
 	#echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
