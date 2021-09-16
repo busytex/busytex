@@ -400,7 +400,6 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo "collection-latex 1"                                     >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
-	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
@@ -411,14 +410,8 @@ build/texlive-%.txt: source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                             $(basename $@)/bin/x86_64-linux
 	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
 	#
-	#rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
-	#rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
-	#echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
-	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
-	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log           || true
-	echo FINDFMT; find $(basename $@) -name '*.fmt' 					           || true
-	#rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc texmf-var/web2c) || true
+	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
 
