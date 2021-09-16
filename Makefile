@@ -408,7 +408,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
 	$(foreach var,xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
-	ln -s $(basename)/bin/x86_64-linux/lualatex $(basename)/bin/x86_64-linux/luahbtex
+	ln -s $(basename $@)/bin/x86_64-linux/lualatex $(basename $@)/bin/x86_64-linux/luahbtex
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
 	#
