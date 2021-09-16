@@ -327,17 +327,35 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
 	mv $(dir $@)/libpdftex.a $@
 
+################################################################################################################
+
+build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
+	rm $(dir $@)/dvipdfmx.o
+	$(MAKE_$*) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/*.o
+
+#build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/native/texlive.configured
+#	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_native))
+#	rm $(dir $@)/dvipdfmx.o
+#	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
+#	$(AR_native) -crs $@ $(dir $@)/*.o
+#
+#build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.configured
+#	$(MAKE_wasm) -C    $(dir $@) $(OPTS_XDVIPDFMX_wasm)
+#	$(AR_wasm) -crs $@ $(dir $@)/*.o
+
 build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
 	rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
 	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
 
-build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_native))
-	rm $(dir $@)/dvipdfmx.o
-	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
-	$(AR_native) -crs $@ $(dir $@)/*.o
+
+build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
+	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
+	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
+
 
 ################################################################################################################
 
@@ -365,14 +383,6 @@ build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured
 	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 	mv $(dir $@)/libpdftex.a $@
-
-build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
-	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
-
-build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C    $(dir $@) $(OPTS_XDVIPDFMX_wasm)
-	$(AR_wasm) -crs $@ $(dir $@)/*.o
 
 .PHONY: build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata
 build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
