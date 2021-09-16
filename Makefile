@@ -94,7 +94,7 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain
 CFLAGS_FONTCONFIG_wasm     =                        $(CFLAGS_OPT_wasm) -Duuid_generate_random=uuid_generate
 CFLAGS_FONTCONFIG_native   =                        $(CFLAGS_OPT_native)
 CFLAGS_XDVIPDFMX_wasm      = $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)
-CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX)       $(CFLAGS_OPT_wasm) -s TOTAL_MEMORY=$(TOTAL_MEMORY) $(CFLAGS_OPT_wasm)
+CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX)       $(CFLAGS_OPT_wasm) -s TOTAL_MEMORY=$(TOTAL_MEMORY)
 CFLAGS_XETEX_wasm          = $(CFLAGS_XETEX)        $(CFLAGS_OPT_wasm)
 CFLAGS_PDFTEX_wasm         = $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_wasm)
 CFLAGS_XDVIPDFMX_native    = $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)
@@ -414,8 +414,9 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo KPSE1; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=luatex -format=tex luatex.ini || true
 	echo KPSE2; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=lualatex -format=tex lualatex.ini || true
 	echo KPSE3; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=dvilualatex -format=tex dvilualatex.ini || true
-	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini
+	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
+	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
 	echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log           || true
