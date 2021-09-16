@@ -408,15 +408,17 @@ build/texlive-%.txt: source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
 	#
 	$(foreach var,xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var);   chmod +x $(basename $@)/bin/x86_64-linux/$(var);)
+	ln -s $(basename)/bin/x86_64-linux/lualatex $(basename)/bin/x86_64-linux/luahbtex
 	cp $(BUSYTEX_native)                                                       $(basename $@)/bin/x86_64-linux
+	#
 	#
 	echo FINDBIN1; find $(basename $@)/bin/x86_64-linux/ 				           || true
 	echo KPSE1; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=luatex -format=tex luatex.ini || true
 	echo KPSE2; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=lualatex -format=tex lualatex.ini || true
 	echo KPSE3; $(basename $@)/bin/x86_64-linux/kpsewhich -progname=dvilualatex -format=tex dvilualatex.ini || true
-	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
+	#rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
-	rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
+	#rm $(basename $@)/tex/generic/tex-ini-files/dvi*.ini $(basename $@)/texmf-dist/tex/generic/tex-ini-files/dvi*.ini || true
 	echo FMTUTIL;      strace -f $(basename $@)/bin/x86_64-linux/fmtutil-sys --all
 	echo FINDBIN2; find $(basename $@)/bin/x86_64-linux/ 				           || true
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log           || true
