@@ -166,6 +166,7 @@ dist/texlive-lazy.js:
 - [pdftex.js](https://github.com/dmonad/pdftex.js)
 - [xetex.js](https://github.com/lyze/xetex-js)
 - [texlive.js](https://github.com/manuels/texlive.js/)
+- [latexjs](https://github.com/latexjs/latexjs)
 - [dvi2html](https://github.com/kisonecat/dvi2html), [web2js](https://github.com/kisonecat/web2js)
 - [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
 - [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
