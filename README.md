@@ -49,7 +49,7 @@ bash example/example.sh
 - minimize build sequence in Makefile and merge native / WASM steps as much as possible
 - set up x86_64-linux binaries Github Actions test for WSLv1
 - test of WASM binaries using node.js
-- preloaded minimal single-file versions with just TexLive Basic and latex-base
+- preloaded minimal single-file, single-engine versions (both WASM and x86_64-linux) with just TexLive Basic and latex-base
 - explore creating virtual and LD_PRELOAD-based file systems: to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context); to embed Tex packages / Perl scripts in the native build 
 
 ### Dependencies
