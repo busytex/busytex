@@ -202,16 +202,12 @@ class BusytexPipeline
         this.preload = preload;
         this.script_loader = script_loader;
         
-        this.ansi_reset_sequence = '\x1bc';
-        
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt = {
             pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
             xetex:   '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
             luatex:  '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
-//          xetex  : '/xelatex.fmt', 
-//          luatex : '/lualatex.fmt'
         };
         this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
@@ -419,7 +415,6 @@ class BusytexPipeline
     {
         if(!this.supported_drivers.includes(driver))
             throw new Error(`Driver [${driver}] is not supported, only [${this.supported_drivers}] are supported`);
-        //this.print(this.ansi_reset_sequence);
         this.print(`New compilation started: [${main_tex_path}]`);
         
         if(bibtex === null)
@@ -524,8 +519,6 @@ class BusytexPipeline
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
         const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => `$ ${cmd}\nEXITCODE: ${exit_code}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}\n==\nSTDOUT:\n${stdout}\n==\nSTDERR:\n${stderr}\n======`).join('\n\n');
         
-        // TODO: do unmount if not empty even if exceptions happened
-        console.log('AFTERMOUNT', FS.analyzePath(this.project_dir));
         this.Module = this.preload == false ? null : this.Module;
         
         return {pdf : pdf, log : log, exit_code : exit_code, logs : logs};
