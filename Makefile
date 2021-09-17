@@ -335,26 +335,22 @@ build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/*.o
 
-#build/native/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/native/texlive.configured
-#	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_native))
-#	rm $(dir $@)/dvipdfmx.o
-#	$(MAKE_native) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_native)
-#	$(AR_native) -crs $@ $(dir $@)/*.o
-#
-#build/wasm/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/wasm/texlive.configured
-#	$(MAKE_wasm) -C    $(dir $@) $(OPTS_XDVIPDFMX_wasm)
-#	$(AR_wasm) -crs $@ $(dir $@)/*.o
-
-build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
+build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_$*))
 	rm $(dir $@)/bibtex8-bibtex.o
-	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
-	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
+	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
-
-build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
-	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
-	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
+#build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
+#	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
+#	rm $(dir $@)/bibtex8-bibtex.o
+#	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
+#	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
+#
+#
+#build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
+#	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
+#	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
 
 
 ################################################################################################################
