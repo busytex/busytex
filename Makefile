@@ -104,16 +104,6 @@ CFLAGS_XETEX_native        = $(CFLAGS_XETEX)        $(CFLAGS_OPT_native)
 CFLAGS_PDFTEX_native       = $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_native)
 CFLAGS_LUATEX_native       = $(CFLAGS_LUATEX)       $(CFLAGS_OPT_native)
 CFLAGS_LUATEX_wasm         = $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEWHICH_wasm      = $(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEWHICH_native    = $(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)
-CFLAGS_KPSESTAT_wasm       = $(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_wasm)
-CFLAGS_KPSESTAT_native     = $(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)
-CFLAGS_KPSEACCESS_wasm     = $(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEACCESS_native   = $(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_native)
-CFLAGS_KPSEREADLINK_wasm   = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)
-CFLAGS_KPSEREADLINK_native = $(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_native)
-CFLAGS_MAKEINDEX_wasm      = $(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)
-CFLAGS_MAKEINDEX_native    = $(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)
 CFLAGS_ICU_wasm            =                        $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
@@ -140,20 +130,20 @@ OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_PDFTEX_wasm)" CXX="$
 OPTS_XDVIPDFMX_wasm= CC="emcc $(CFLAGS_XDVIPDFMX_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX_wasm)"
 OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_native)"
 OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX_native)"
-OPTS_XETEX_native  = CC="$(CC) $(CFLAGS_XETEX_native)"  CXX="$(CXX) $(CFLAGS_XETEX_native)"
-OPTS_PDFTEX_native = CC="$(CC) $(CFLAGS_PDFTEX_native)" CXX="$(CXX) $(CFLAGS_PDFTEX_native)"
-OPTS_LUATEX_native = CC="$(CC) $(CFLAGS_LUATEX_native)" CXX="$(CXX) $(CFLAGS_LUATEX_native)"
+OPTS_XETEX_native  = CC="$(CC_native) $(CFLAGS_XETEX_native)"  CXX="$(CXX_native) $(CFLAGS_XETEX_native)"
+OPTS_PDFTEX_native = CC="$(CC_native) $(CFLAGS_PDFTEX_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX_native)"
+OPTS_LUATEX_native = CC="$(CC_native) $(CFLAGS_LUATEX_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX_native)"
 OPTS_LUATEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX_wasm)"
-OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH_native)"
-OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH_wasm)"
-OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT_native)"
-OPTS_KPSESTAT_wasm       = CFLAGS="$(CFLAGS_KPSESTAT_wasm)"
-OPTS_KPSEACCESS_native   = CFLAGS="$(CFLAGS_KPSEACCESS_native)"
-OPTS_KPSEACCESS_wasm     = CFLAGS="$(CFLAGS_KPSEACCESS_wasm)"
-OPTS_KPSEREADLINK_native = CFLAGS="$(CFLAGS_KPSEREADLINK_native)"
-OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK_wasm)"
-OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX_native)"
-OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX_wasm)"
+OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
+OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
+OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)"
+OPTS_KPSESTAT_wasm       = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_wasm)"
+OPTS_KPSEACCESS_native   = CFLAGS="$(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_native)"
+OPTS_KPSEACCESS_wasm     = CFLAGS="$(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_wasm)"
+OPTS_KPSEREADLINK_native = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_native)"
+OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
+OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
+OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wimplicit -Wreturn-type  -pthread
 OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wl,-error-limit=0   -s SUPPORT_LONGJMP=1 -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0 -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=busytex -s EXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
@@ -302,6 +292,18 @@ build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texli
 	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
 
+build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
+	rm $(dir $@)/dvipdfmx.o
+	$(MAKE_$*) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/*.o
+
+build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_$*))
+	rm $(dir $@)/bibtex8-bibtex.o
+	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
+	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
+
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
 	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
@@ -327,31 +329,6 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_native)
 	mv $(dir $@)/libpdftex.a $@
-
-################################################################################################################
-
-build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
-	rm $(dir $@)/dvipdfmx.o
-	$(MAKE_$*) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_$*)
-	$(AR_$*) -crs $@ $(dir $@)/*.o
-
-build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_$*))
-	rm $(dir $@)/bibtex8-bibtex.o
-	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
-	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
-
-#build/native/texlive/texk/bibtex-x/busytex_bibtex8.a: build/native/texlive.configured
-#	$(MAKE_native) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_native))
-#	rm $(dir $@)/bibtex8-bibtex.o
-#	$(MAKE_native) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_native)
-#	$(AR_native) -crs $@ $(dir $@)/bibtex8-*.o
-#
-#
-#build/wasm/texlive/texk/bibtex-x/busytex_bibtex8.a: build/wasm/texlive.configured
-#	$(MAKE_wasm) -C    $(dir $@) $(OPTS_BIBTEX_wasm)
-#	$(AR_wasm) -crs $@ $(dir $@)/bibtex8-*.o
 
 
 ################################################################################################################
