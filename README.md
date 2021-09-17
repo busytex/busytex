@@ -40,7 +40,7 @@ bash example/example.sh
 - various Emscripten improvements: https://github.com/emscripten-core/emscripten/issues/12093, https://github.com/emscripten-core/emscripten/issues/12256, https://github.com/emscripten-core/emscripten/issues/13466, https://github.com/emscripten-core/emscripten/issues/13219
 - better error catching at all stages including WASM module initialization: https://github.com/emscripten-core/emscripten/issues/14777
 - explore defining DLLPROC instead of redefining main functions
-- complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338, https://github.com/vadimkantorov/buildbiber
+- complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338, https://github.com/busytex/buildbiber
 - review shipped TexLive packages in order to review useless files to save space
 - review fonts / fontmaps shipped in TexLive packages
 - optimization flags for binaries to make them smaller
@@ -106,7 +106,7 @@ make clean
 ### Virtual and LD_PRELOAD readonly file system (reading ISO / TAR / ZIP)
 - LD_PRELOAD FS that could work with package zip archvies (CTAN? ftp://tug.org/texlive/Contents/live/texmf-dist/)
 - LD_PRELOAD FS that could work with texlive iso files containing zip archives
-- virtual FS for reading ISO/TAR texlive TDS
+- virtual FS for reading ISO/TAR/ZIP texlive TDS
 - virtual FS for reading Perl scripts
 - virtual FS for embedding small TDS into binaries
 - https://github.com/erincandescent/lib9660/blob/master/tb9660.c
