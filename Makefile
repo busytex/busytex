@@ -19,6 +19,7 @@ EMROOT := $(dir $(shell which emcc))
 BUSYTEX_native = $(ROOT)/build/native/busytex
 
 TEXMF_FULL = $(ROOT)/build/texlive-full
+BINDIR_native = bin/x86_64-linux
 
 PREFIX_wasm = $(ROOT)/build/wasm/prefix
 PREFIX_native = $(ROOT)/build/native/prefix
@@ -409,13 +410,13 @@ build/texlive-%.txt: source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz                -C $(basename $@)
-	$(foreach var,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(var) $(basename $@)/bin/x86_64-linux/$(basename $(var)); )
-	$(foreach var,xetex luatex pdftex xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/bin/x86_64-linux/busytex $(var)   $$"@ > $(basename $@)/bin/x86_64-linux/$(var) ; chmod +x $(basename $@)/bin/x86_64-linux/$(var); )
-	ln -s $(ROOT)/$(basename $@)/bin/x86_64-linux/lualatex           $(basename $@)/bin/x86_64-linux/luahbtex
-	cp $(BUSYTEX_native)                                             $(basename $@)/bin/x86_64-linux
+	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
+	$(foreach name,xetex luatex pdftex xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
+	ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
+	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
 	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
 	#
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/bin/x86_64-linux
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
