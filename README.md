@@ -108,6 +108,7 @@ make clean
 - LD_PRELOAD FS that could work with texlive iso files containing zip archives
 - virtual FS for reading ISO/TAR texlive TDS
 - virtual FS for reading Perl scripts
+- virtual FS for embedding small TDS into binaries
 - https://github.com/erincandescent/lib9660/blob/master/tb9660.c
 - https://github.com/jacereda/fsatrace
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
@@ -162,11 +163,11 @@ dist/texlive-lazy.js:
 ```
 
 ### References
-- [texlive.js](https://github.com/manuels/texlive.js/)
+- [pdftex.js](https://github.com/dmonad/pdftex.js)
 - [xetex.js](https://github.com/lyze/xetex-js)
+- [texlive.js](https://github.com/manuels/texlive.js/)
 - [dvi2html](https://github.com/kisonecat/dvi2html), [web2js](https://github.com/kisonecat/web2js)
 - [SwiftLaTeX](https://github.com/SwiftLaTeX/SwiftLaTeX)
 - [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
 - [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
-- [pdftex.js](https://github.com/dmonad/pdftex.js)
 - [BLFS](http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html)
