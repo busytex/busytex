@@ -3,7 +3,7 @@ set -e
 DIST=$PWD/dist-native
 XELATEXFMT=$DIST/xelatex.fmt
 PDFLATEXFMT=$DIST/pdflatex.fmt
-LUALATEXFMT=$DIST/luahblatex.fmt
+LUALATEXFMT=$DIST/lualatex.fmt
 BUSYTEX=$DIST/busytex
 
 export TEXMFDIST=$DIST/texlive/texmf-dist
