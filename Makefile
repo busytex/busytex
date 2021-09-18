@@ -559,7 +559,7 @@ dist-wasm:
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	cp $(addprefix build/native/, busytex fonts.conf) $@
-	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/lualatex.fmt) $@
+	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) $@
 	cp -r build/texlive-basic $@/texlive
 
 .PHONY: dist
