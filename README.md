@@ -3,7 +3,7 @@
 Currently compiles:
 - xetex
 - pdftex
-- luatex
+- luahbtex
 - bibtex8
 - xdvipdfmx
 - kpsewhich, kpsestat, kpseaccess, kpsereadlink
@@ -16,7 +16,6 @@ Supported architecture targets:
 Future work:
 - mktexfmt, mktexlsr from https://github.com/TeX-Live/texlive-source/tree/trunk/texk/kpathsea/win32
 - mf-nowin
-- luahbtex
 - LuaMetaTex / LMTX (lua)
 - tlmgr (perl, web requests)
 - Biber (perl)
