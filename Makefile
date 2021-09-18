@@ -392,12 +392,12 @@ build/texlive-%.txt: source/texmfrepo.txt
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
 	$(foreach name,xetex pdftex luahbtex xelatex luahblatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	#ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
-	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
+	cp $(BUSYTEX_native)                              $(basename $@)/$(BINDIR_native)
 	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
 	#
-	echo FINDBIN; find build/texlive-basic $(basename $@)/$(BINDIR_native) || true
+	echo FINDBIN; find $(basename $@)/$(BINDIR_native) || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
-	echo FINDFMT; find build/texlive-basic -name '*.fmt' || true
+	echo FINDFMT; find build/texlive-$* -name '*.fmt' || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
@@ -562,9 +562,9 @@ clean:
 .PHONY: dist-wasm
 dist-wasm:
 	mkdir -p $@
-	cp build/wasm/busytex.js       build/wasm/busytex.wasm $@ || true
+	cp build/wasm/busytex.js       build/wasm/busytex.wasm       $@ || true
 	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@ || true
-	cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data $@ || true
+	cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data      $@ || true
 
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
