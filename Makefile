@@ -237,7 +237,7 @@ build/%/expat/libexpat.a: source/expat.downloaded
 	$(MAKE_$*) -C $(dir $@)
 
 build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
-	echo '' > $(CACHE_FONTCONFIG_$*)
+	echo > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
 	cd build/$*/fontconfig && \
 	$(CONFIGURE_$*) $(ROOT)/$(basename $<)/configure    \
@@ -368,9 +368,9 @@ build/texlive-%.txt: source/texmfrepo.txt
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> build/texlive-$*.profile
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> build/texlive-$*.profile
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo "collection-xetex 1"                                     >> build/texlive-$*.profile
-	echo "collection-luatex 1"                                    >> build/texlive-$*.profile
-	echo "collection-latex 1"                                     >> build/texlive-$*.profile
+	echo "collection-xetex 1"                                          >> build/texlive-$*.profile
+	echo "collection-luatex 1"                                         >> build/texlive-$*.profile
+	echo "collection-latex 1"                                          >> build/texlive-$*.profile
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 	#
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
@@ -380,10 +380,9 @@ build/texlive-%.txt: source/texmfrepo.txt
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
-	#ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
-	# -e trace=execve -v
+	# -e trace=execve -v strace -f
 	$(BUSYTEX_native)
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
+	TEXLIVE_INSTALL_NO_RESUME=1 $(ROOT)/source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
