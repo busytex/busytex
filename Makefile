@@ -48,8 +48,8 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
 ##############################################################################################################################
 
-OBJ_LUATEX = luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluatex.a libluahbtexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
-#OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
+#OBJ_LUATEX = luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluatex.a libluahbtexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
+OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a busytex_libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
@@ -278,8 +278,8 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	cp $(dir $@)/readlink.o $@
 
 build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libmputil.a $(OPTS_LUATEX_$*)
-	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
+	#$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libmputil.a $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
