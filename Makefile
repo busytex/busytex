@@ -395,6 +395,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
 	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
 	#
+	echo FINDBIN; find build/texlive-basic $(basename $@)/$(BINDIR_native) || true
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	echo FINDFMT; find build/texlive-basic -name '*.fmt' || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
