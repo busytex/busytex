@@ -513,6 +513,11 @@ build/versions.txt:
 	echo fontconfig: \\url{$(URL_fontconfig)} >> $@
 	echo emscripten: $(EMSCRIPTEN_VERSION) >> $@
 
+.PHONY: test
+test: build/native/busytex
+	$(BUSYTEX_native)
+	$(foreach applet,xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) --version; )
+
 ################################################################################################################
 
 .PHONY: clean_tds

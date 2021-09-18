@@ -13,13 +13,6 @@ export FONTCONFIG_PATH=$DIST
 
 cd example
 
-$BUSYTEX
-# makeindex
-#for applet in xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink; do
-#    echo $BUSYTEX $applet --version
-#    $BUSYTEX $applet --version
-#done
-
 $BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
 $BUSYTEX bibtex8 --8bit example.aux
 $BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
