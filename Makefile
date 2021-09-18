@@ -92,24 +92,12 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain
 ##############################################################################################################################
 
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
-CFLAGS_FONTCONFIG_wasm     =                        $(CFLAGS_OPT_wasm) -Duuid_generate_random=uuid_generate
-CFLAGS_FONTCONFIG_native   =                        $(CFLAGS_OPT_native)
-CFLAGS_XDVIPDFMX_wasm      = $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)
-CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX)       $(CFLAGS_OPT_wasm) -s TOTAL_MEMORY=$(TOTAL_MEMORY)
-CFLAGS_XETEX_wasm          = $(CFLAGS_XETEX)        $(CFLAGS_OPT_wasm)
-CFLAGS_PDFTEX_wasm         = $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_wasm)
-CFLAGS_XDVIPDFMX_native    = $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)
-CFLAGS_BIBTEX_native       = $(CFLAGS_BIBTEX)       $(CFLAGS_OPT_native)
-CFLAGS_XETEX_native        = $(CFLAGS_XETEX)        $(CFLAGS_OPT_native)
-CFLAGS_PDFTEX_native       = $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_native)
-CFLAGS_LUATEX_native       = $(CFLAGS_LUATEX)       $(CFLAGS_OPT_native)
-CFLAGS_LUATEX_wasm         = $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)
-CFLAGS_ICU_wasm            =                        $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
-
+CFLAGS_FONTCONFIG_wasm     = -Duuid_generate_random=uuid_generate
+CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX) -s TOTAL_MEMORY=$(TOTAL_MEMORY)
+CFLAGS_ICU_wasm            = $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
 # _setjmp feature request: https://github.com/emscripten-core/emscripten/issues/14999
 CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -D_setjmp=setjmp -D_longjmp=longjmp
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
-
 #-fno-common 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
@@ -123,17 +111,17 @@ CCSKIP_LUATEX_wasm = $(CCSKIP_XETEX_wasm)
 OPTS_ICU_configure_wasm = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
-OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_BIBTEX_wasm)"
+OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_FREETYPE_wasm = CC="$(CCSKIP_FREETYPE_wasm) emcc"
-OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX_wasm)"  CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX_wasm)"
-OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_PDFTEX_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX_wasm)"
-OPTS_XDVIPDFMX_wasm= CC="emcc $(CFLAGS_XDVIPDFMX_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX_wasm)"
-OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX_native)"
-OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX_native)"
-OPTS_XETEX_native  = CC="$(CC_native) $(CFLAGS_XETEX_native)"  CXX="$(CXX_native) $(CFLAGS_XETEX_native)"
-OPTS_PDFTEX_native = CC="$(CC_native) $(CFLAGS_PDFTEX_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX_native)"
-OPTS_LUATEX_native = CC="$(CC_native) $(CFLAGS_LUATEX_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX_native)"
-OPTS_LUATEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX_wasm)"
+OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX)        $(CFLAGS_OPT_wasm)"  CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX)        $(CFLAGS_OPT_wasm)"
+OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_wasm)"
+OPTS_XDVIPDFMX_wasm= CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
+OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)"
+OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)"
+OPTS_XETEX_native  = CC="$(CC_native) $(CFLAGS_XETEX) $(CFLAGS_OPT_native)"  CXX="$(CXX_native) $(CFLAGS_XETEX) $(CFLAGS_OPT_native)"
+OPTS_PDFTEX_native = CC="$(CC_native) $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX)       $(CFLAGS_OPT_native)"
+OPTS_LUATEX_native = CC="$(CC_native) $(CFLAGS_LUATEX)       $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX)       $(CFLAGS_OPT_native)"
+OPTS_LUATEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
 OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)"
@@ -261,7 +249,7 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	   --disable-docs                                   \
 	   --with-expat-includes="$(ROOT)/source/expat/lib" \
 	   --with-expat-lib="$(ROOT)/build/$*/expat"        \
-	   CFLAGS="$(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
+	   CFLAGS="$(CFLAGS_OPT_$*) $(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
 	$(MAKE_$*) -C build/$*/fontconfig
 
 build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
@@ -289,8 +277,8 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	cp $(dir $@)/readlink.o $@
 
 build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o luatexdir/luahbtex-luatex.o mplibdir/luatex-lmplib.o mplibdir/luahbtex-lmplib.o libluatexspecific.a libluahbtexspecific.a libmputil.a $(OPTS_LUATEX_$*)
-	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
+	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o luatexdir/luahbtex-luatex.o mplibdir/luatex-lmplib.o mplibdir/luahbtex-lmplib.o libluatexspecific.a libluahbtexspecific.a libmputil.a $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
