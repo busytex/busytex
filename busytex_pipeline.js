@@ -205,9 +205,9 @@ class BusytexPipeline
         this.project_dir = '/home/web_user/project_dir';
         this.bin_busytex = '/bin/busytex';
         this.fmt = {
-            pdftex : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
-            xetex:   '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
-            luatex:  '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
+            pdftex  : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
+            xetex   : '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
+            luahbtex: '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
         };
         this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
@@ -220,26 +220,26 @@ class BusytexPipeline
             [BusytexPipeline.VerboseSilent] : {
                 pdftex : [],
                 xetex : [],
-                luatex : [],
+                luahbtex : [],
                 bibtex8 : [],
                 xdvipdfmx : [],
             },
             [BusytexPipeline.VerboseInfo] : {
                 pdftex: ['-kpathsea-debug', '32'],
                 xetex: ['-kpathsea-debug', '32'],
-                luatex: ['-kpathsea-debug', '32'],
+                luahbtex: ['-kpathsea-debug', '32'],
                 bibtex8 : ['--debug', 'search'],
                 xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
             },
             [BusytexPipeline.VerboseDebug] : {
                 pdftex : ['-kpathsea-debug', '63', '-recorder'],
                 xetex : ['-kpathsea-debug', '63', '-recorder'],
-                luatex : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
+                luahbtex : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
                 bibtex8 : ['--debug', 'all'],
                 xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
             },
         };
-        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luatex_bibtex8'];
+        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8'];
         this.error_messages = ['==> Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
 
         this.mem_header_size = 2 ** 26;
@@ -458,7 +458,7 @@ class BusytexPipeline
         
         const xetex =  ['xetex' , '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const pdftex = ['pdftex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
-        const luatex = ['luatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luatex);
+        const luahbtex = ['luahbtex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luahbtex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
         const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
@@ -488,8 +488,8 @@ class BusytexPipeline
             cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
         else if(driver == 'pdftex_bibtex8')
             cmds = bibtex ? [pdftex, bibtex8, pdftex, pdftex] : [pdftex];
-        else if(driver == 'luatex_bibtex8')
-            cmds = bibtex ? [luatex, bibtex8, luatex, luatex] : [luatex];
+        else if(driver == 'luahbtex_bibtex8')
+            cmds = bibtex ? [luahbtex, bibtex8, luahbtex, luahbtex] : [luahbtex];
         
         let exit_code = 0, stdout = '', stderr = '';
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));

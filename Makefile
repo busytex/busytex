@@ -87,7 +87,7 @@ CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\"))) busymain
 CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
 CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'    $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
-CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luahbtex'    $(shell $(REDEFINE_SYM) busyluahbtex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
 
 ##############################################################################################################################
 
@@ -289,7 +289,7 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	cp $(dir $@)/readlink.o $@
 
 build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o luatexdir/luahbtex-luatex.o mplibdir/luatex-lmplib.o mplibdir/luahbtex-lmplib.o libluatexspecific.a libluahbtexspecific.a libmputil.a $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
 
@@ -389,8 +389,8 @@ build/texlive-%.txt: source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz                -C $(basename $@)
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
-	$(foreach name,xetex luatex pdftex xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
-	ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
+	$(foreach name,xetex pdftex luahbtex xelatex luahblatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
+	#ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
 	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
 	#
