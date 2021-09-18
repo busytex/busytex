@@ -382,7 +382,7 @@ build/texlive-%.txt: source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
 	#ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
 	# -e trace=execve -v
-	$(ROOT)/$(BUSYTEX_native)
+	$(BUSYTEX_native)
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
