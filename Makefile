@@ -382,9 +382,11 @@ build/texlive-%.txt: source/texmfrepo.txt
 	ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
 	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
-	#
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve ./source/texmfrepo/install-tl -v --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
-	echo FINDFMT; find $(basename $@) -name '*.fmt' || true
+	#strace -f -e trace=execve -v
+	echo FINDBIN; find  $(basename $@)/$(BINDIR_native)                                                 || true
+	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
+	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
+	echo FINDFMT; find $(basename $@) -name '*.fmt'                                                     || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
