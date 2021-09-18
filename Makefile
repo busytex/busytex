@@ -517,7 +517,7 @@ build/versions.txt:
 .PHONY: test
 test: build/native/busytex
 	$(BUSYTEX_native)
-	$(foreach applet,xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) --version; )
+	$(foreach applet,xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
 
@@ -532,10 +532,6 @@ clean_native:
 .PHONY: clean_wasm
 clean_wasm:
 	rm -rf build/wasm
-
-.PHONY: clean_format
-clean_format:
-	rm -rf build/format-*
 
 .PHONY: clean_dist
 clean_dist:
