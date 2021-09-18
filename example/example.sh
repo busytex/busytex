@@ -3,7 +3,7 @@ set -e
 DIST=$PWD/dist-native
 XELATEXFMT=$DIST/xelatex.fmt
 PDFLATEXFMT=$DIST/pdflatex.fmt
-LUALATEXFMT=$DIST/lualatex.fmt
+LUALATEXFMT=$DIST/luahblatex.fmt
 BUSYTEX=$DIST/busytex
 
 export TEXMFDIST=$DIST/texlive/texmf-dist
@@ -15,7 +15,7 @@ cd example
 
 $BUSYTEX
 # makeindex
-for applet in xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink; do
+for applet in xelatex pdflatex luahblatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink; do
     echo $BUSYTEX $applet --version
     $BUSYTEX $applet --version
 done
@@ -34,9 +34,9 @@ $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --
 mv example.pdf example_pdftex.pdf
 rm example.aux
 
-$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
+$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
 $BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
-$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
-mv example.pdf example_luatex.pdf 
+$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
+$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
+mv example.pdf example_luahbtex.pdf 
 rm example.aux 
