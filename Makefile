@@ -88,7 +88,7 @@ CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\"))) busymain
 CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
 CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'    $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
-CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luahbtex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
 
 ##############################################################################################################################
 
@@ -379,16 +379,14 @@ build/texlive-%.txt: source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz                -C $(basename $@)
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
-	$(foreach name,xetex luatex pdftex xelatex lualatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
-	ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
+	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
-	# build/texlive-full/texmf-dist/texmf-var/web2c/luahbtex/luahbtex.fmt
+	#ln -s $(ROOT)/$(basename $@)/$(BINDIR_native)/lualatex           $(basename $@)/$(BINDIR_native)/luahbtex
 	# -e trace=execve -v
-	echo FINDBIN; find  $(basename $@)/$(BINDIR_native)                                                 || true
 	$(ROOT)/$(BUSYTEX_native)
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
-	echo FINDFMT; find $(basename $@) -name '*.fmt'                                                     || true
+	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(ROOT)/$(basename $@) > $@
 	#find $(ROOT)/$(basename $@) -executable -type f -delete
@@ -517,7 +515,7 @@ build/versions.txt:
 .PHONY: test
 test: build/native/busytex
 	$(BUSYTEX_native)
-	$(foreach applet,xelatex pdflatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	$(foreach applet,xelatex pdflatex luahblatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
 
