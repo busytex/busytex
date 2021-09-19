@@ -133,8 +133,9 @@ OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
 OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
-OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wimplicit -Wreturn-type  -pthread
-OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -export-dynamic   -Wl,-error-limit=0   -s SUPPORT_LONGJMP=1 -s TOTAL_MEMORY=$(TOTAL_MEMORY) -s EXIT_RUNTIME=0 -s INVOKE_RUN=0 -s ASSERTIONS=1 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s FORCE_FILESYSTEM=1 -s LZ4=1 -s MODULARIZE=1 -s EXPORT_NAME=busytex -s EXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64 -s EXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
+OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type  -pthread
+OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0   -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
+# -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64
 
 ##############################################################################################################################
 
@@ -524,6 +525,10 @@ test: build/native/busytex
 
 ################################################################################################################
 
+.PHONY: clean_tds
+clean_tds:
+	rm -rf build/texlive-*
+
 .PHONY: clean_native
 clean_native:
 	rm -rf build/native
@@ -538,15 +543,11 @@ clean_build:
 
 .PHONY: clean_dist
 clean_dist:
-	rm -rf dist-wasm dist-native
+	rm -rf dist-*
 
 .PHONY: clean_example
 clean_example:
 	rm -rf example/*.aux example/*.bbl example/*.blg example/*.log example/*.xdv
-
-.PHONY: clean_tds
-clean_tds:
-	rm -rf build/texlive-*
 
 .PHONY: clean
 clean:
