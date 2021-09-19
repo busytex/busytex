@@ -394,7 +394,9 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
 	# -e trace=execve -v strace -f
+	echo FINDBIN1; find $(basename $@)/$(BINDIR_native) -printf "%s %h/%p\n"
 	TEXLIVE_INSTALL_NO_RESUME=1 $(ROOT)/source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
+	echo FINDBIN2; find $(basename $@)/$(BINDIR_native) -printf "%s %h/%p\n"
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
