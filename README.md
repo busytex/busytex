@@ -50,23 +50,19 @@ bash example/example.sh
 - test of WASM binaries using node.js
 - preloaded minimal single-file, single-engine versions (both WASM and x86_64-linux) with just TexLive Basic and latex-base
 - explore creating virtual and LD_PRELOAD-based file systems: to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context); to embed Tex packages / Perl scripts in the native build 
+- figure out how to embed static perl with Perl scripts (fmtutil.pl, updmap.pl, https://perldoc.perl.org/perlembed#Using-embedded-Perl-with-POSIX-locales, https://www.cs.ait.ac.th/~on/O/oreilly/perl/advprog/ch19_02.htm)
 
-### Dependencies
+### Building from soucr
 ```shell
-# install dependencies
+# install dependencies: wget, cmake, emscripten
 apt-get install wget cmake
-
-# install and activate emscripten
 git clone https://github.com/emscripten-core/emsdk
 cd emsdk
 ./emsdk update-tags
 ./emsdk install tot
 ./emsdk activate tot
 source emsdk_env.sh
-```
 
-### Building from source
-```shell
 # clone busytex
 git clone https://github.com/busytex/busytex
 cd busytex
@@ -77,17 +73,14 @@ export MAKEFLAGS=-j8
 # download and patch texlive source
 make texlive
 
-# build native tools
+# build native tools and fonts file
 make native
-
-# build native fonts file
-make build/native/fonts.conf
-
-# build TeX Directory Structure (TDS) and latex format file (latex.fmt)
-make tds-basic
 
 # build wasm tools
 make wasm
+
+# build TeX Directory Structure (TDS) and latex format file (latex.fmt)
+make tds-basic
 
 # pack TDS into wasm data files
 make tds-wasm
@@ -132,7 +125,6 @@ make clean
 - https://ctan.crest.fr/tex-archive/macros/latex/contrib/
 - https://ctan.tetaneutral.net/systems/texlive/Images/texlive2020-20200406.iso
 - https://fossies.org/linux/misc/install-tl-unx.tar.gz/
-- http://www.tug.org/texlive/devsrc/Master/tlpkg/tlpsrc/collection-basic.tlpsrc
 - http://tug.org/texmf-dist/
 - http://tug.org/texmf-dist/scripts/texlive/
 - http://tug.ctan.org/systems/texlive/tlnet/tlpkg/

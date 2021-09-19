@@ -28,7 +28,7 @@ class BusytexDataPackageResolver
         
         this.msgs = [];
         this.data_packages_js = data_packages_js;
-        this.data_packages = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  )    )]);
+        this.data_packages    = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  )    )]);
         this.remap = remap;
         this.texmf_local_texmfdist_tex  = texmf_local .map(t => t + '/texmf-dist/tex/');
         this.texmf_system_texmfdist_tex = texmf_system.map(t => t + '/texmf-dist/tex/');
@@ -385,7 +385,6 @@ class BusytexPipeline
                 Module.output_stdout = '';
                 Module.output_stderr = '';
                 Module.setPrefix(args[0]);
-                
                 const exit_code = Module.callMain(args);
                 Module._flush_streams();
                 
@@ -427,24 +426,20 @@ class BusytexPipeline
         
         const tex_packages_not_resolved = filter_map(v => v.source == null);
         
-        console.log('RESOLVED', resolved, this.preload_data_packages_js);
-
         this.print('TeX packages: ' + filter_map(v => v.used).toString());
         this.print('TeX packages local: ' + filter_map(v => v.source == 'local').toString());
         this.print('TeX packages unresolved (in local or preloaded): ' + filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source))).toString());
-        this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
         this.print('Data packages used (not preloaded): ' + Array.from(new Set(filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), false))).sort().toString());
         this.print('Data packages used: ' + data_packages_js.toString());
+        this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
 
         if(tex_packages_not_resolved.length > 0)
         {
-            console.log('DATA PACKAGES', data_packages_js, 'NOT RESOLVED', tex_packages_not_resolved);
-            
             // TODO: replace by regular return? override? 
             // throw new Error('Not resolved TeX packages: ' + tex_packages_not_resolved.join(', '));
             
-            //TODO: fallback on all data-packages?
             data_packages_js = this.data_package_resolver.data_packages_js;
+            this.print('Because of unresolved TeX packages, enabling all available data packages: ' + data_packages_js.sort().toString());
         }
         
         this.Module = this.reload_module_if_needed(this.Module == null, this.env, this.project_dir, data_packages_js);
@@ -456,9 +451,9 @@ class BusytexPipeline
 
         const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
-        const xetex =  ['xetex' , '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
-        const pdftex = ['pdftex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
-        const luahbtex = ['luahbtex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luahbtex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+        const xetex     = ['xetex' ,   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+        const pdftex    = ['pdftex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+        const luahbtex  = ['luahbtex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luahbtex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
         const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
@@ -467,7 +462,6 @@ class BusytexPipeline
         FS.mount(FS.filesystems.MEMFS, {}, this.project_dir);
 
         let dirs = new Set(['/', this.project_dir]);
-
         for(const {path, contents} of files.sort((lhs, rhs) => lhs['path'] < rhs['path'] ? -1 : 1))
         {
             const absolute_path = PATH.join(this.project_dir, path);
@@ -501,7 +495,6 @@ class BusytexPipeline
 
             this.print('$ busytex ' + cmd.join(' '));
             ({exit_code, stdout, stderr} = Module.callMainWithRedirects(cmd, verbose != BusytexPipeline.VerboseSilent));
-       
 
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
@@ -510,14 +503,21 @@ class BusytexPipeline
             this.print(`${exit_code}\n`);
 
             exit_code = stdout.trim() ? (this.error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
-            logs.push({cmd : cmd.join(' '), texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', log : this.read_all_text(FS, log_path), stdout : stdout.trim(), stderr : stderr.trim(), exit_code : exit_code});
+            logs.push({
+                cmd : cmd.join(' '), 
+                texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', 
+                log : this.read_all_text(FS, log_path), 
+                stdout : stdout.trim(), 
+                stderr : stderr.trim(), 
+                exit_code : exit_code
+            });
             
             if(exit_code != 0)
                 break;
         }
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
-        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => `$ ${cmd}\nEXITCODE: ${exit_code}\n\nTEXMFLOG:\n${texmflog}\n==\nLOG:\n${log}\n==\nSTDOUT:\n${stdout}\n==\nSTDERR:\n${stderr}\n======`).join('\n\n');
+        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => [`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'LOG:', log, '==', 'STDOUT:' stdout, '==', 'STDERR:', stderr, '======'].join('\n')).join('\n\n');
         
         this.Module = this.preload == false ? null : this.Module;
         

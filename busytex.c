@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
             "pdftex\n"
 #endif
 #ifdef BUSYTEX_LUATEX
-            "luatex\n"
+            "luahbtex\n"
 #endif
 #ifdef BUSYTEX_XETEX
             "xetex\n"
