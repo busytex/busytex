@@ -218,25 +218,25 @@ class BusytexPipeline
         this.verbose_args = 
         {
             [BusytexPipeline.VerboseSilent] : {
-                pdftex : [],
-                xetex : [],
-                luahbtex : [],
-                bibtex8 : [],
+                pdftex    : [],
+                xetex     : [],
+                luahbtex  : [],
+                bibtex8   : [],
                 xdvipdfmx : [],
             },
             [BusytexPipeline.VerboseInfo] : {
-                pdftex: ['-kpathsea-debug', '32'],
-                xetex: ['-kpathsea-debug', '32'],
-                luahbtex: ['-kpathsea-debug', '32'],
-                bibtex8 : ['--debug', 'search'],
-                xdvipdfmx : ['-v', '--kpathsea-debug', '32'],
+                pdftex    : ['-kpathsea-debug', '32'],
+                xetex     : ['-kpathsea-debug', '32'],
+                luahbtex  : ['-kpathsea-debug', '32'],
+                xdvipdfmx : ['--kpathsea-debug','32', '-v'],
+                bibtex8   : ['--debug', 'search'],
             },
             [BusytexPipeline.VerboseDebug] : {
-                pdftex : ['-kpathsea-debug', '63', '-recorder'],
-                xetex : ['-kpathsea-debug', '63', '-recorder'],
-                luahbtex : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
-                bibtex8 : ['--debug', 'all'],
-                xdvipdfmx : ['-vv', '--kpathsea-debug', '63'],
+                pdftex    : ['-kpathsea-debug', '63', '-recorder'],
+                xetex     : ['-kpathsea-debug', '63', '-recorder'],
+                luahbtex  : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
+                xdvipdfmx : ['--kpathsea-debug','63', '-vv'],
+                bibtex8   : ['--debug', 'all'],
             },
         };
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8'];
@@ -244,10 +244,10 @@ class BusytexPipeline
 
         this.mem_header_size = 2 ** 26;
         this.env = {
-            TEXMFDIST : this.dir_texmfdist, 
-            TEXMFVAR : this.dir_texmfvar, 
-            TEXMFCNF : this.dir_cnf, 
-            TEXMFLOG : this.texmflog, 
+            TEXMFDIST       : this.dir_texmfdist, 
+            TEXMFVAR        : this.dir_texmfvar, 
+            TEXMFCNF        : this.dir_cnf, 
+            TEXMFLOG        : this.texmflog, 
             FONTCONFIG_PATH : this.dir_fontconfig
         };
         
@@ -517,7 +517,7 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
-        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => [`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'LOG:', log, '==', 'STDOUT:' stdout, '==', 'STDERR:', stderr, '======'].join('\n')).join('\n\n');
+        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'LOG:', log, '==', 'STDOUT:' stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
         
         this.Module = this.preload == false ? null : this.Module;
         
