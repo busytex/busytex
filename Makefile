@@ -361,34 +361,41 @@ source/texmfrepo.txt:
 	chmod +x ./source/texmfrepo/install-tl
 	find     ./source/texmfrepo > source/texmfrepo.txt
 
-build/texlive-%.txt: source/texmfrepo.txt
-	mkdir -p $(basename $@)
-	echo selected_scheme scheme-$*                                      > build/texlive-$*.profile
-	echo TEXDIR $(ROOT)/$(basename $@)                                 >> build/texlive-$*.profile
-	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> build/texlive-$*.profile
-	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> build/texlive-$*.profile
-	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> build/texlive-$*.profile
-	echo "collection-xetex 1"                                          >> build/texlive-$*.profile
-	echo "collection-luatex 1"                                         >> build/texlive-$*.profile
-	echo "collection-latex 1"                                          >> build/texlive-$*.profile
+build/texlive-basic.profile:
+	mkdir -p $(dir $@)
+	echo selected_scheme scheme-basic                                   > $@
+	echo TEXDIR $(ROOT)/$(basename $@)                                 >> $@ 
+	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> $@
+	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> $@ 
+	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> $@ 
+	echo "collection-xetex  1"                                         >> $@ 
+	echo "collection-luatex 1"                                         >> $@ 
+	echo "collection-latex  1"                                         >> $@ 
+
+build/texlive-full.profile:
+	mkdir -p $(dir $@)
+	echo selected_scheme scheme-full                                    > $@
+	echo TEXDIR $(ROOT)/$(basename $@)                                 >> $@ 
+	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> $@
+	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> $@ 
+	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> $@ 
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
-	#
+
+build/texlive-%.txt: source/texlive-%.profile source/texmfrepo.txt
+	mkdir -p $(basename $@)
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz                -C $(basename $@)
-	#tar -xf source/texmfrepo/archive/kpathsea.x86_64-linux.r*.tar.xz        -C $(basename $@)
 	mkdir -p $(basename $@)/$(BINDIR_native)
 	cp $(BUSYTEX_native)                                             $(basename $@)/$(BINDIR_native)
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
 	# -e trace=execve -v strace -f
-	$(BUSYTEX_native)
 	TEXLIVE_INSTALL_NO_RESUME=1 $(ROOT)/source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(ROOT)/$(basename $@) > $@
-	#find $(ROOT)/$(basename $@) -executable -type f -delete
 
 ################################################################################################################
 
@@ -518,10 +525,6 @@ test: build/native/busytex
 
 ################################################################################################################
 
-.PHONY: clean_tds
-clean_tds:
-	rm -rf build/texlive-*
-
 .PHONY: clean_native
 clean_native:
 	rm -rf build/native
@@ -530,17 +533,21 @@ clean_native:
 clean_wasm:
 	rm -rf build/wasm
 
-.PHONY: clean_dist
-clean_dist:
-	rm -rf dist-wasm dist-native
-
 .PHONY: clean_build
 clean_build:
 	rm -rf build
 
+.PHONY: clean_dist
+clean_dist:
+	rm -rf dist-wasm dist-native
+
 .PHONY: clean_example
 clean_example:
 	rm -rf example/*.aux example/*.bbl example/*.blg example/*.log example/*.xdv
+
+.PHONY: clean_tds
+clean_tds:
+	rm -rf build/texlive-*
 
 .PHONY: clean
 clean:
