@@ -48,7 +48,7 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
 ##############################################################################################################################
 
-OBJ_LUAHBTEX = luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluatex.a libluahbtexspecific.a libluaharfbuzz.a  libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
+OBJ_LUAHBTEX = luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a  libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a busytex_libluahbtex.a
 OBJ_LUATEX = luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatex.a libluatexspecific.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
 OBJ_PDFTEX = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a busytex_libpdftex.a
 OBJ_XETEX = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
@@ -104,24 +104,23 @@ PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/ic
 ##############################################################################################################################
 
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
-CCSKIP_ICU_wasm      = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
 CCSKIP_FREETYPE_wasm = $(PYTHON) $(ROOT)/emcc_wrapper.py $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
-CCSKIP_XETEX_wasm    = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
-CCSKIP_LUATEX_wasm = $(CCSKIP_XETEX_wasm)
+CCSKIP_ICU_wasm      = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
+CCSKIP_TEX_wasm      = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
 OPTS_ICU_configure_wasm = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
 OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_FREETYPE_wasm = CC="$(CCSKIP_FREETYPE_wasm) emcc"
-OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm)    emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
-OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm)    emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
+OPTS_XETEX_wasm    = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
+OPTS_PDFTEX_wasm   = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_wasm= CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)"
 OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)"
 OPTS_XETEX_native  = CC="$(CC_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native)"
 OPTS_PDFTEX_native = CC="$(CC_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)"
 OPTS_LUAHBTEX_native = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)"
-OPTS_LUAHBTEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
+OPTS_LUAHBTEX_wasm   = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
 OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)"
@@ -135,7 +134,6 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type  -pthread
 OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0   -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
-# -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64
 
 ##############################################################################################################################
 
@@ -276,15 +274,17 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
 
-build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
+build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
-	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUAHBTEX_$*)
+	$(MAKE_$*) -C $(dir $@) libluatex.a	$(OPTS_LUAHBTEX_$*)
+	mv $(dir $@)/libluatex.a $@
 	echo AR; $(AR_$*) t $@
 	echo NM; $(NM_$*) $@
 
 build/%/texlive/texk/web2c/busytex_libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
-	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUATEX_$*)
+	mv $(dir $@)/libluatex.a $@
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
@@ -474,7 +474,8 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) $(dir $@)texlive/texk/web2c/libluatex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
+	#$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluatex.a
 	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
 
 .PHONY: native
