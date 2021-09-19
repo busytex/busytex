@@ -505,7 +505,7 @@ class BusytexPipeline
             exit_code = stdout.trim() ? (this.error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             logs.push({
                 cmd : cmd.join(' '), 
-                texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? read_all_text(FS, this.texmflog) : '', 
+                texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '', 
                 log : this.read_all_text(FS, log_path), 
                 stdout : stdout.trim(), 
                 stderr : stderr.trim(), 
