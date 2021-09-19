@@ -87,16 +87,16 @@ CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\"))) busymain
 CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
 CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'    $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
-CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luahbtex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUAHBTEX     := -Dmain='__attribute__((visibility(\"default\"))) busymain_luahbtex'  $(shell $(REDEFINE_SYM) busyluahbtex   $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
 
 ##############################################################################################################################
 
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
-CFLAGS_FONTCONFIG_wasm     = -Duuid_generate_random=uuid_generate
-CFLAGS_BIBTEX_wasm         = $(CFLAGS_BIBTEX) -s TOTAL_MEMORY=$(TOTAL_MEMORY)
-CFLAGS_ICU_wasm            = $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 
-CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
-#-D_setjmp=setjmp -D_longjmp=longjmp
+CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate
+CFLAGS_BIBTEX_wasm    = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
+CFLAGS_ICU_wasm       = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 
+CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
 CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
 #-fno-common 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
@@ -120,8 +120,8 @@ OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX) 
 OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)"
 OPTS_XETEX_native  = CC="$(CC_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native)"
 OPTS_PDFTEX_native = CC="$(CC_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)"
-OPTS_LUATEX_native = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)"
-OPTS_LUATEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
+OPTS_LUAHBTEX_native = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)"
+OPTS_LUAHBTEX_wasm   = CC="$(CCSKIP_LUATEX_wasm) emcc $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_LUATEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
 OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)"
@@ -134,7 +134,7 @@ OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_native = -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type  -pthread
-OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0   -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
+OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0   -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 # -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=__sys_statfs64
 
 ##############################################################################################################################
@@ -277,9 +277,9 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	cp $(dir $@)/readlink.o $@
 
 build/%/texlive/texk/web2c/libluatex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
 	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a libmputil.a $(OPTS_LUATEX_$*)
-	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUATEX_$*)
+	$(MAKE_$*) -C $(dir $@) $(notdir $@) $(OPTS_LUAHBTEX_$*)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
