@@ -21,7 +21,7 @@ BUSYTEX_native = $(ROOT)/build/native/busytex
 TEXMF_FULL = $(ROOT)/build/texlive-full
 BINDIR_native = bin/x86_64-linux
 
-PREFIX_wasm = $(ROOT)/build/wasm/prefix
+PREFIX_wasm   = $(ROOT)/build/wasm/prefix
 PREFIX_native = $(ROOT)/build/native/prefix
 
 MAKE_wasm = emmake $(MAKE)
@@ -113,8 +113,8 @@ OPTS_ICU_make_wasm = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
 OPTS_BIBTEX_wasm = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_FREETYPE_wasm = CC="$(CCSKIP_FREETYPE_wasm) emcc"
-OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
-OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm) emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
+OPTS_XETEX_wasm    = CC="$(CCSKIP_XETEX_wasm)    emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
+OPTS_PDFTEX_wasm   = CC="$(CCSKIP_XETEX_wasm)    emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_XETEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_wasm= CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" CXX="em++ $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_native = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)"
 OPTS_BIBTEX_native = -e CFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX) $(CFLAGS_OPT_native)"
@@ -140,14 +140,12 @@ OPTS_BUSYTEX_wasm   = -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0   -
 ##############################################################################################################################
 
 .PHONY: all
-all:
-	$(MAKE) build/versions.txt
+all: build/versions.txt
 	$(MAKE) texlive
 	$(MAKE) native
 	$(MAKE) test
 	$(MAKE) tds-basic
 	$(MAKE) wasm
-	$(MAKE) build/wasm/fonts.conf
 	$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) tds-full
 	#$(MAKE) ubuntu-wasm
@@ -482,7 +480,7 @@ native: build/native/fonts.conf
 	$(MAKE) build/native/busytex
 
 .PHONY: wasm
-wasm:
+wasm: build/wasm/fonts.conf
 	$(MAKE) build/wasm/texlive.configured
 	$(MAKE) build/wasm/texlivedependencies
 	$(MAKE) build/wasm/busytexapplets
