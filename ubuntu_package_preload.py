@@ -22,20 +22,19 @@ def generate_preload(texmf_src, package_file_list, skip, skip_log, good_log, var
     preload = set()
     print(f'Skip log in [{skip_log or "stderr"}]', file = sys.stderr)
     
-    if args.good_log:
-        os.makedirs(os.path.dirname(args.good_log), exist_ok = True)
-        good_log = open(args.good_log, 'w')
+    if good_log:
+        os.makedirs(os.path.dirname(good_log), exist_ok = True)
+        good_log = open(good_log, 'w')
     else:
         good_log = sys.stderr
-    good_log.writelines(l + '\n' for l in html_parser.file_list)
+    good_log.writelines(path + '\n' for path in package_file_list)
     
     if skip_log:
-        os.makedirs(os.path.dirname(args.skip_log), exist_ok = True)
+        os.makedirs(os.path.dirname(skip_log), exist_ok = True)
         preload.add((skip_log, os.path.join(varlog, os.path.basename(skip_log))))
         skip_log = open(skip_log, 'w')
     else:
         skip_log = sys.stderr
-    
     
 
     for path in package_file_list:
