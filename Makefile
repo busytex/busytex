@@ -381,7 +381,7 @@ build/texlive-full.profile:
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> $@ 
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 
-build/texlive-%.txt: source/texlive-%.profile source/texmfrepo.txt
+build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz              -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz                  -C $(basename $@)
