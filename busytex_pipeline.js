@@ -517,7 +517,7 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
-        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'LOG:', log, '==', 'STDOUT:' stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
+        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
         
         this.Module = this.preload == false ? null : this.Module;
         
