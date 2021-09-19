@@ -207,6 +207,7 @@ class BusytexPipeline
         this.fmt = {
             pdftex  : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
             xetex   : '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
+            luatex  : '/texlive/texmf-dist/texmf-var/web2c/luatex/lualatex.fmt',
             luahbtex: '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
         };
         this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
@@ -220,6 +221,7 @@ class BusytexPipeline
             [BusytexPipeline.VerboseSilent] : {
                 pdftex    : [],
                 xetex     : [],
+                luatex    : [],
                 luahbtex  : [],
                 bibtex8   : [],
                 xdvipdfmx : [],
@@ -227,6 +229,7 @@ class BusytexPipeline
             [BusytexPipeline.VerboseInfo] : {
                 pdftex    : ['-kpathsea-debug', '32'],
                 xetex     : ['-kpathsea-debug', '32'],
+                luatex  : ['-kpathsea-debug', '32'],
                 luahbtex  : ['-kpathsea-debug', '32'],
                 xdvipdfmx : ['--kpathsea-debug','32', '-v'],
                 bibtex8   : ['--debug', 'search'],
@@ -234,12 +237,13 @@ class BusytexPipeline
             [BusytexPipeline.VerboseDebug] : {
                 pdftex    : ['-kpathsea-debug', '63', '-recorder'],
                 xetex     : ['-kpathsea-debug', '63', '-recorder'],
+                luatex  : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
                 luahbtex  : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
                 xdvipdfmx : ['--kpathsea-debug','63', '-vv'],
                 bibtex8   : ['--debug', 'all'],
             },
         };
-        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8'];
+        this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8', 'luatex_bibtex8'];
         this.error_messages = ['==> Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
 
         this.mem_header_size = 2 ** 26;
