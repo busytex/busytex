@@ -473,7 +473,7 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
-	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluatex.a
 	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
 
 .PHONY: native
