@@ -430,12 +430,13 @@ class BusytexPipeline
         
         const tex_packages_not_resolved = filter_map(v => v.source == null);
         
-        this.print('TeX packages: ' + filter_map(v => v.used).toString());
-        this.print('TeX packages local: ' + filter_map(v => v.source == 'local').toString());
-        this.print('TeX packages unresolved (in local or preloaded): ' + filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source))).toString());
-        this.print('Data packages used (not preloaded): ' + Array.from(new Set(filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), false))).sort().toString());
-        this.print('Data packages used: ' + data_packages_js.toString());
-        this.print('TeX packages unresolved: ' + tex_packages_not_resolved.toString());
+        const fmt_packages_list = packages => '[' + (packages ? packages.toString().replaceAll(',', ', ') : '') + ']';
+        this.print('TeX packages: ' + fmt_packages_list(filter_map(v => v.used)));
+        this.print('TeX packages local: ' + fmt_packages_list(filter_map(v => v.source == 'local')));
+        this.print('TeX packages unresolved (in local or preloaded): ' + fmt_packages_list(filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source)))));
+        this.print('Data packages used (not preloaded): ' + fmt_packages_list(Array.from(new Set(filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), false))).sort()));
+        this.print('Data packages used: ' + fmt_packages_list(data_packages_js));
+        this.print('TeX packages unresolved: ' + fmt_packages_list(tex_packages_not_resolved));
 
         if(tex_packages_not_resolved.length > 0)
         {
