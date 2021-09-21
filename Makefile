@@ -402,6 +402,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
 	# -e trace=execve -v strace -f
+	$(ROOT)/source/texmfrepo/install-tl --help
 	TEXLIVE_INSTALL_NO_RESUME=1 $(ROOT)/source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
@@ -532,7 +533,7 @@ build/versions.txt:
 .PHONY: test
 test: build/native/busytex
 	$(BUSYTEX_native)
-	$(foreach applet,xelatex pdflatex luahblatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
 
