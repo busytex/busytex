@@ -207,8 +207,8 @@ class BusytexPipeline
         this.fmt = {
             pdftex  : '/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt',
             xetex   : '/texlive/texmf-dist/texmf-var/web2c/xetex/xelatex.fmt',
-            luatex  : '/texlive/texmf-dist/texmf-var/web2c/luatex/lualatex.fmt',
-            luahbtex: '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
+            luatex  : '/texlive/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt',
+            luahbtex: '/texlive/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt',
         };
         this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
