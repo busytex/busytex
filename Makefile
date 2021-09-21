@@ -283,7 +283,6 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 	mv $(dir $@)/libluatex.a $@
 	echo AR1; $(AR_$*) t $@
 	echo NM1; $(NM_$*) $@
-	# $(subst busymain_luahbtex, busymain_luatex, $(OPTS_LUAHBTEX_$*))
 	$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a $(OPTS_LUATEX_$*)
 	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUATEX_$*)
 	mv $(dir $@)/libluatex.a $(dir $@)/busytex_libluatex.a
@@ -404,6 +403,9 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	# -e trace=execve -v strace -f
 	$(ROOT)/source/texmfrepo/install-tl --help
 	TEXLIVE_INSTALL_NO_RESUME=1 $(ROOT)/source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
+	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
+	echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINDIR_native)/luahbtex
+	$(basename $@)/$(BINDIR_native)/fmtutil-sys --byengine luahbtex
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
@@ -578,7 +580,7 @@ dist-wasm:
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p $@
 	cp $(addprefix build/native/, busytex fonts.conf) $@
-	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/lualatex.fmt) $@
+	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt luahbtex/lualatex.fmt) $@
 	cp -r build/texlive-basic $@/texlive
 
 .PHONY: dist
