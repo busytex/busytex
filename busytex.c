@@ -15,7 +15,7 @@ extern int optind;
 extern int busymain_pdftex(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_LUATEX
-extern int busymain_luatex(int argc, char* argv[]);
+//extern int busymain_luatex(int argc, char* argv[]);
 extern int busymain_luahbtex(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_XETEX
@@ -81,8 +81,8 @@ int main(int argc, char* argv[])
 #ifdef BUSYTEX_PDFTEX
     APPLET(pdftex, pdflatex)
 #endif
+//    APPLET(luatex, lualatex)
 #ifdef BUSYTEX_LUATEX
-    APPLET(luatex, lualatex)
     APPLET(luahbtex, luahblatex)
 #endif
 #ifdef BUSYTEX_XETEX
