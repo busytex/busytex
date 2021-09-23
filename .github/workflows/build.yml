@@ -34,14 +34,14 @@ jobs:
       - name: Smoke native
         run: make test
 
-#      - name: Download TexLive Full
-#        run:  make source/texmfrepo.txt
-#      
-#      - name: Install TexLive
-#        run: |
-#            make test
-#            make tds-basic
-#            make tds-full
+      - name: Download TexLive Full
+        run:  make source/texmfrepo.txt
+      
+      - name: Install TexLive
+        run: |
+            make test
+            make tds-basic
+            make tds-full
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
@@ -55,10 +55,10 @@ jobs:
 #            build/texlive-basic.txt
 #            build/texlive-full.txt
       
-#      - name: Test native busytex pipeline
-#        run: |
-#            make dist-native
-#            bash example/example.sh
+      - name: Test native busytex pipeline
+        run: |
+            make dist-native
+            bash example/example.sh
 
 #      - name: Archive native test artifacts
 #        uses: actions/upload-artifact@v2
