@@ -8,7 +8,7 @@ env:
 
 jobs:
 
-  build:
+  build-gcc:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup Emscripten
@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 1
       
       - name: Install Prerequisites
-        run: sudo apt-get install -y gperf p7zip-full strace musl musl-dev musl-tools
+        run: sudo apt-get install -y gperf p7zip-full strace
         
       - name: Clone/patch TexLive and dependencies
         run: make texlive build/versions.txt
