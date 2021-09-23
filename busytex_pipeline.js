@@ -403,8 +403,8 @@ class BusytexPipeline
         
         if(report_applet_versions)
         {
-            const applets = initialized_module.callMainWithRedirects().stdout.split('\n').filter(line => line.length > 0).filter(applet => applet != 'makeindex');
-            initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, initialized_module.callMainWithRedirects([applet, '--version']).stdout])));
+            const applets = initialized_module.callMainWithRedirects().stdout.split('\n').filter(line => line.length > 0);
+            initialized_module.applet_versions = Object.fromEntries(applets.map(applet => ([applet, applet != 'makeindex' ? initialized_module.callMainWithRedirects([applet, '--version']).stdout : 'makeindex does not support --version' ])));
             // TODO: exception here not caught?
             this.on_initialized(initialized_module.applet_versions);
         }
