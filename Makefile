@@ -223,8 +223,8 @@ build/%/texlive/libs/lua53/.libs/libtexlua53.a: build/%/texlive.configured
 	$(MAKE_$*) -C build/$*/texlive/libs/lua53
 
 build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
-	echo LIBKPATHSEA: $(dir $@)/..
-	$(MAKE_$*) -C $(dir $@)/..
+	echo LIBKPATHSEA: $(dir $(abspath $(dir $@)))
+	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
 	#$(MAKE_$*) -C build/$*/texlive/texk/kpathsea
 
 build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
