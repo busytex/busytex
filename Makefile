@@ -99,7 +99,8 @@ CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate
 CFLAGS_BIBTEX_wasm    = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
 CFLAGS_ICU_wasm       = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 
 CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
-CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)      -static-libstdc++ -static-libgcc
+CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native) -DKPSE_CXX_HACK -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc
+#-static-libstdc++ -static-libgcc
 #-fno-common 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
@@ -529,6 +530,8 @@ build/versions.txt:
 
 .PHONY: test
 test: build/native/busytex
+	$(LDD_native) build/native/busytex.o
+	$(LDD_native) $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX))
 	$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
 	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
