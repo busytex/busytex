@@ -21,6 +21,14 @@ Future work:
 - Biber (perl)
 - fmtutil, updmap (perl)
 
+Almost static build, remaining dependencies of the native binary:
+- `libdl.so`
+- `libstdc++.so`
+- `libm.so`
+- `libgcc_s.so`
+- `libpthread.so`
+- `libc.so`
+
 ### Usage
 ```shell
 # wasm version, download latest compiled assets, launch the web server example.py and then go to http://localhost:8080/example/example.html
@@ -44,7 +52,7 @@ bash example/example.sh
 - review fonts / fontmaps shipped in TexLive packages
 - optimization flags for binaries to make them smaller
 - compile for x86_64-linux with clang (to match WASM toolchain)
-- minimize shared library dependencies for x86_64-linux (build with musl, try building without pthreads etc) to obtain platform-independent binaries
+- minimize shared library dependencies for x86_64-linux (try building with musl, without pthreads, static libm): https://tug.org/pipermail/tlbuild/2018q1/003975.html, https://git.alpinelinux.org/aports/tree/community/texlive/APKBUILD
 - minimize build sequence in Makefile and merge native / WASM steps as much as possible
 - set up x86_64-linux binaries Github Actions test for WSLv1
 - test of WASM binaries using node.js
