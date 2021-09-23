@@ -23,9 +23,7 @@ Future work:
 
 Almost static build, remaining dependencies of the native binary:
 - `libdl.so`
-- `libstdc++.so`
 - `libm.so`
-- `libgcc_s.so`
 - `libpthread.so`
 - `libc.so`
 
