@@ -76,16 +76,16 @@ cd busytex
 # set make parallelism
 export MAKEFLAGS=-j8
 
-# download and patch texlive source
+# download and patch texlive into ./source
 make texlive
 
-# build native tools and fonts file
+# build native tools and fonts file into ./build/native
 make native
 
 # smoke test native binaries
 make test
 
-# build wasm tools
+# build wasm tools into ./build/wasm
 make wasm
 
 # build TeX Directory Structure (TDS)
@@ -100,7 +100,7 @@ make build/wasm/texlive-basic.js
 # copies binaries and TexLive TDS into ./dist
 make dist-native dist-wasm
 
-# remove build and source completely
+# remove ./build and ./source completely
 make clean
 ```
 
