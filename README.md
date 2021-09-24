@@ -47,13 +47,13 @@ bash example/example.sh
 - explore defining DLLPROC instead of redefining main functions
 - complete investigation of feasibility of porting Biber to WASM/browser: https://github.com/plk/biber/issues/338, https://github.com/busytex/buildbiber
 - review shipped TexLive packages in order to review useless files to save space
-- review fonts / fontmaps shipped in TexLive packages
-- optimization flags for binaries to make them smaller
-- compile for x86_64-linux with clang (to match WASM toolchain)
+- review fonts / fontmaps / hyphenation shipped in TexLive packages
+- optimizing binary size. any stripping possible?
+- compile for x86_64-linux-glibc with clang (to match WASM toolchain)
 - minimize shared library dependencies for x86_64-linux (try building with musl, without pthreads, static libm): https://tug.org/pipermail/tlbuild/2018q1/003975.html, https://git.alpinelinux.org/aports/tree/community/texlive/APKBUILD, https://www.petefreitag.com/item/903.cfm
 - minimize build sequence in Makefile and merge native / WASM steps as much as possible
 - set up x86_64-linux binaries Github Actions test for WSLv1
-- test of WASM binaries using node.js
+- test of WASM binaries using node.js, test preloading of data packages
 - preloaded minimal single-file, single-engine versions (both WASM and x86_64-linux) with just TexLive Basic and latex-base
 - explore creating virtual and LD_PRELOAD-based file systems: to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context); to embed Tex packages / Perl scripts in the native build 
 - figure out how to embed static perl with Perl scripts (fmtutil.pl, updmap.pl, https://perldoc.perl.org/perlembed#Using-embedded-Perl-with-POSIX-locales, https://www.cs.ait.ac.th/~on/O/oreilly/perl/advprog/ch19_02.htm, https://www.foo.be/docs/tpj/issues/vol1_4/tpj0104-0009.html, http://www.kaiyuanba.cn/content/develop/Perl/Extending_And_Embedding_Perl.pdf)
@@ -82,20 +82,20 @@ make texlive
 # build native tools and fonts file
 make native
 
+# smoke test native binaries
+make test
+
 # build wasm tools
 make wasm
 
 # build TeX Directory Structure (TDS) and latex format file (latex.fmt)
 make tds-basic
 
-# pack TDS into wasm data files
-make tds-wasm
-
 # reproduce and pack Ubuntu TexLive packages into wasm data files
 make ubuntu-wasm
 
 # copies binaries and TexLive TDS into ./dist
-make dist
+make dist-native
 
 # remove build and source completely
 make clean
@@ -121,11 +121,10 @@ make clean
 - http://ordiluc.net/fs/libetc/
 
 ### Random links
-- TODO: abspath/realpath instead of ROOT
-- TODO: instruction for local tlmgr install tinytex
-- TODO: install-tl install from local full download
-- TODO: https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
-- TODO: location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
+- abspath/realpath instead of ROOT
+- instruction for local tlmgr install like tinytex
+- https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
+- location of hyphen.cfg file? https://tex.loria.fr/ctan-doc/macros/latex/doc/html/cfgguide/node11.html
 - https://en.wikibooks.org/wiki/LaTeX/Installing_Extra_Packages
 - https://github.com/emscripten-core/emscripten/pull/4737
 - https://ctan.crest.fr/tex-archive/macros/latex/contrib/

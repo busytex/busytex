@@ -39,7 +39,6 @@ jobs:
       
       - name: Install TexLive
         run: |
-            make test
             make tds-basic
             make tds-full
 
