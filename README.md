@@ -91,6 +91,9 @@ make wasm
 # build TeX Directory Structure (TDS)
 make tds-basic
 
+# test native binaries
+bash example/example.sh
+
 # reproduce and pack Ubuntu TexLive packages into wasm data files
 make build/wasm/texlive-basic.js
 
@@ -141,10 +144,10 @@ make clean
 - Biber: https://meeting.contextgarden.net/2011/talks/day1_07_jean-michel_bibliography/hc-bb-1.pdf
 
 ### Example of lazy files
-```
+```make
 dist/texlive-lazy.js:
     mkdir -p $(dir $@)
-    rm -rf dist/texmf || true
+    -rm -rf dist/texmf
     $(PYTHON) lazy_packager.py dist --js-output=$@ --export-name=BusytexPipeline \
         --preload build/texlive-full/texmf-dist/tex/latex/titlesec@/texmf/texmf-dist/tex/latex/titlesec \
         --preload build/texlive-full/texmf-dist/tex/latex/xcolor@/texmf/texmf-dist/tex/latex/xcolor \
@@ -152,7 +155,7 @@ dist/texlive-lazy.js:
         --preload build/texlive-full/texmf-dist/tex/latex/footmisc@/texmf/texmf-dist/tex/latex/footmisc \
         --preload build/texlive-full/texmf-dist/tex/latex/textpos@/texmf/texmf-dist/tex/latex/textpos \
         --preload build/texlive-full/texmf-dist/tex/latex/ms@/texmf/texmf-dist/tex/latex/ms \
-        --preload build/texlive-full/texmf-dist/tex/latex/parskip@/texmf/texmf-dist/tex/latex/parksip
+        --preload build/texlive-full/texmf-dist/tex/latex/parskip@/texmf/texmf-dist/tex/latex/parskip
 ```
 
 ### References
