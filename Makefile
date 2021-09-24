@@ -126,7 +126,7 @@ OPTS_BIBTEX_native       = -e CFLAGS="$(CFLAGS_BIBTEX)         $(CFLAGS_OPT_nati
 OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native)"
 OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)"
 OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)"
-OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
+OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
 OPTS_LUATEX_native     = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)"
 OPTS_LUATEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
@@ -160,7 +160,7 @@ all: build/versions.txt
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
-	wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz || true
+	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
 	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
 	touch $@
 
@@ -222,9 +222,6 @@ build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuz
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
 
-#build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
-#	$(MAKE_$*) -C $(dir $@) $(notdir $@)
-
 build/%/expat/libexpat.a: source/expat.downloaded
 	mkdir -p $(dir $@) && cd $(dir $@) && \
 	$(CMAKE_$*)                           \
@@ -260,22 +257,22 @@ build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
 	$(AR_$*) -crs $@ $(dir $@)/*.o
 
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
-	rm build/$*/texlive/texk/kpathsea/kpsewhich.o || true
+	-rm build/$*/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
 	cp $(dir $@)/kpsewhich.o $@
 
 build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
-	rm build/$*/texlive/texk/kpathsea/kpsestat.o || true
+	-rm build/$*/texlive/texk/kpathsea/kpsestat.o 
 	$(MAKE_$*) -C $(dir $@) kpsestat.o $(OPTS_KPSESTAT_$*)
 	cp $(dir $@)/kpsestat.o $@
 
 build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
-	rm build/$*/texlive/texk/kpathsea/access.o || true
+	-rm build/$*/texlive/texk/kpathsea/access.o 
 	$(MAKE_$*) -C $(dir $@) access.o $(OPTS_KPSEACCESS_$*)
 	cp $(dir $@)/access.o $@
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
-	rm build/$*/texlive/texk/kpathsea/readlink.o || true
+	-rm build/$*/texlive/texk/kpathsea/readlink.o 
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
 
@@ -569,9 +566,9 @@ clean:
 .PHONY: dist-wasm
 dist-wasm:
 	mkdir -p $@
-	cp build/wasm/busytex.js       build/wasm/busytex.wasm $@ || true
-	cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@ || true
-	cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data $@ || true
+	-cp build/wasm/busytex.js       build/wasm/busytex.wasm $@ 
+	-cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@ 
+	-cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data $@ 
 
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
