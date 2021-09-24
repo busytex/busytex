@@ -21,7 +21,7 @@ Future work:
 - Biber (perl)
 - fmtutil, updmap (perl)
 
-Almost static build, remaining dependencies of the native binary:
+Almost static build, remaining dependencies of the native binary (need to try to build with musl to get rid of them):
 - `libdl.so`
 - `libm.so`
 - `libpthread.so`
@@ -58,7 +58,7 @@ bash example/example.sh
 - explore creating virtual and LD_PRELOAD-based file systems: to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context); to embed Tex packages / Perl scripts in the native build 
 - figure out how to embed static perl with Perl scripts (fmtutil.pl, updmap.pl, https://perldoc.perl.org/perlembed#Using-embedded-Perl-with-POSIX-locales, https://www.cs.ait.ac.th/~on/O/oreilly/perl/advprog/ch19_02.htm, https://www.foo.be/docs/tpj/issues/vol1_4/tpj0104-0009.html, http://www.kaiyuanba.cn/content/develop/Perl/Extending_And_Embedding_Perl.pdf)
 
-### Building from soucr
+### Building from source
 ```shell
 # install dependencies: wget, cmake, gperf, p7zip-full, emscripten
 apt-get install wget cmake gperf p7zip-full 
