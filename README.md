@@ -60,8 +60,8 @@ bash example/example.sh
 
 ### Building from soucr
 ```shell
-# install dependencies: wget, cmake, emscripten
-apt-get install wget cmake
+# install dependencies: wget, cmake, gperf, p7zip-full, emscripten
+apt-get install wget cmake gperf p7zip-full 
 git clone https://github.com/emscripten-core/emsdk
 cd emsdk
 ./emsdk update-tags
@@ -88,14 +88,15 @@ make test
 # build wasm tools
 make wasm
 
-# build TeX Directory Structure (TDS) and latex format file (latex.fmt)
+# build TeX Directory Structure (TDS)
 make tds-basic
 
 # reproduce and pack Ubuntu TexLive packages into wasm data files
-make ubuntu-wasm
+make build/wasm/texlive-basic.js
 
 # copies binaries and TexLive TDS into ./dist
 make dist-native
+make dist-wasm
 
 # remove build and source completely
 make clean
