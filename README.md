@@ -98,8 +98,7 @@ bash example/example.sh
 make build/wasm/texlive-basic.js
 
 # copies binaries and TexLive TDS into ./dist
-make dist-native
-make dist-wasm
+make dist-native dist-wasm
 
 # remove build and source completely
 make clean
