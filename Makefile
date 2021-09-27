@@ -39,11 +39,11 @@ AR_native     = $(AR)
 NM_native     = nm
 LDD_native    = ldd
 
-CACHE_TEXLIVE_native    = $(ROOT)/build/native-texlive.cache
-CACHE_TEXLIVE_wasm      = $(ROOT)/build/wasm-texlive.cache
-CACHE_FONTCONFIG_native = $(ROOT)/build/native-fontconfig.cache
-CACHE_FONTCONFIG_wasm   = $(ROOT)/build/wasm-fontconfig.cache
-CONFIGSITE_BUSYTEX      = $(ROOT)/busytex.site
+CACHE_TEXLIVE_native    = $(abspath build/native-texlive.cache)
+CACHE_TEXLIVE_wasm      = $(abspath build/wasm-texlive.cache)
+CACHE_FONTCONFIG_native = $(abspath build/native-fontconfig.cache)
+CACHE_FONTCONFIG_wasm   = $(abspath build/wasm-fontconfig.cache)
+CONFIGSITE_BUSYTEX      = $(abspath busytex.site)
 
 CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
@@ -180,7 +180,7 @@ build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
 	cd $(basename $@) &&                        \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(ROOT)/source/texlive/configure		\
+	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
 	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
 	  --prefix="$(PREFIX_$*)"					\
 	  --enable-dump-share						\
@@ -231,14 +231,14 @@ build/%/expat/libexpat.a: source/expat.downloaded
 	   -DEXPAT_BUILD_FUZZERS=off          \
 	   -DEXPAT_BUILD_TESTS=off            \
 	   -DEXPAT_BUILD_TOOLS=off            \
-	   $(ROOT)/$(basename $<) 
+	   $(abspath $(basename $<)) 
 	$(MAKE_$*) -C $(dir $@)
 
 build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
 	echo > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
 	cd build/$*/fontconfig && \
-	$(CONFIGURE_$*) $(ROOT)/$(basename $<)/configure    \
+	$(CONFIGURE_$*) $(abspath $(basename $<)/configure) \
 	   --cache-file=$(CACHE_FONTCONFIG_$*)	            \
 	   --prefix=$(PREFIX_$*)                            \
 	   --sysconfdir=/etc                                \
@@ -393,15 +393,15 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
 	# -e trace=execve -v strace -f
-	$(ROOT)/source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 $(ROOT)/source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
+	source/texmfrepo/install-tl --help
+	TEXLIVE_INSTALL_NO_RESUME=1 source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINDIR_native)/luahbtex
 	#$(basename $@)/$(BINDIR_native)/fmtutil-sys --byengine luahbtex
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
-	find $(ROOT)/$(basename $@) > $@
+	find $(basename $@) > $@
 
 ################################################################################################################
 
