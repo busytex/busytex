@@ -19,7 +19,7 @@ TEXMF_FULL    = $(abspath build/texlive-full)
 PREFIX_wasm   = $(abspath build/wasm/prefix)
 PREFIX_native = $(abspath build/native/prefix)
 
-BINDIR_native =bin/x86_64-linux
+BINARCH_native =bin/x86_64-linuxmusl
 
 PYTHON        = python3
 MAKE_wasm     = emmake $(MAKE)
@@ -391,20 +391,20 @@ build/texlive-full.profile:
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
-	mkdir -p $(basename $@)/$(BINDIR_native)
+	mkdir -p $(basename $@)/$(BINARCH_native)
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz         -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz             -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz           -C $(basename $@)
-	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINDIR_native)
-	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
-	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
-	echo KPSEWHICH; $(basename $@)/$(BINDIR_native)/kpsewhich -var-value=TEXMFROOT || true
+	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
+	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
+	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
+	echo KPSEWHICH; $(basename $@)/$(BINARCH_native)/kpsewhich -var-value=TEXMFROOT || true
 	#   -v
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINDIR_native)
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native)
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINDIR_native)/luahbtex
-	#$(basename $@)/$(BINDIR_native)/fmtutil-sys --byengine luahbtex
+	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
+	#$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
