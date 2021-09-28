@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 1
       
       - name: Install Prerequisites
-        run: sudo apk add gperf p7zip
+        run: sudo apk add --update --no-cache gperf p7zip python3 && ln -sf python3 /usr/bin/python
 #        run: sudo apt-get install -y gperf p7zip-full strace
         
       - name: Clone/patch TexLive and dependencies
