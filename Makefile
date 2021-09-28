@@ -306,19 +306,27 @@ build/%/busytex build/%/busytex.js:
 
 ################################################################################################################
 
-build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
-	$(MAKE_native) -C build/native/texlive/libs/icu 
-	echo "all install:" > build/native/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build
-	$(MAKE_native) -C build/native/texlive/libs/icu/include/unicode
+build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a build/%/texlive/libs/icu/icu-build/bin/icupkg build/%/texlive/libs/icu/icu-build/bin/pkgdata : build/%/texlive.configured
+	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+	cd build/$*/texlive/libs/icu && $(CONFIGURE_$*) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_$*)
+	$(MAKE_$*) -C build/$*/texlive/libs/icu 
+	echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
+	$(MAKE_$*) -C build/$*/texlive/libs/icu/icu-build
+	$(MAKE_$*) -C build/$*/texlive/libs/icu/include/unicode
 
-build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_wasm)
-	##
-	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu           $(OPTS_ICU_configure_make_wasm)
-	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
-	$(MAKE_wasm)   -C build/native/texlive/libs/icu/include/unicode
+#build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
+#	$(MAKE_native) -C build/native/texlive/libs/icu 
+#	echo "all install:" > build/native/texlive/libs/icu/icu-build/test/Makefile
+#	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build
+#	$(MAKE_native) -C build/native/texlive/libs/icu/include/unicode
+#
+#build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+#	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_wasm)
+#	##
+#	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu           $(OPTS_ICU_configure_make_wasm)
+#	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
+#	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
+#	$(MAKE_wasm)   -C build/native/texlive/libs/icu/include/unicode
 
 ################################################################################################################
 
@@ -397,7 +405,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#   -v -e trace=execve strace -v -s 1000 -f
 	source/texmfrepo/install-tl --help 
-	TEXLIVE_INSTALL_NO_RESUME=1  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
+	TEXLIVE_INSTALL_NO_RESUME=1  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) 
 	# 
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
