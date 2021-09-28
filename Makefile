@@ -532,7 +532,7 @@ build/versions.txt:
 
 .PHONY: test
 test: build/native/busytex
-	$(LDD_native) $(BUSYTEX_native)
+	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
 	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
