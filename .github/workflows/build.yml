@@ -52,7 +52,7 @@ jobs:
       - name: Install TexLive
         run: |
             make tds-basic
-            make tds-full
+#            make tds-full
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
