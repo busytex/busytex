@@ -19,6 +19,7 @@ TEXMF_FULL    = $(abspath build/texlive-full)
 PREFIX_wasm   = $(abspath build/wasm/prefix)
 PREFIX_native = $(abspath build/native/prefix)
 
+#TODO: replace directly by bin/custom ?
 BINARCH_native =bin/x86_64-linuxmusl
 
 PYTHON        = python3
@@ -396,7 +397,10 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(abspath $(basename $@)/$(BINARCH_native)/busytex) $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
-	echo BINARCH;        find $(basename $@)/$(BINARCH_native) || true 
+	echo BINARCH0;        find $(ROOT)/$(basename $@)/$(BINARCH_native) || true
+	echo BINARCH00; echo $$PWD/build/texlive-basic/bin/x86_64-linuxmusl/kpsewhich; ls $$PWD/build/texlive-basic/bin/x86_64-linuxmusl/kpsewhich || true
+	echo BINARCH1;        find $(abspath $(basename $@)/$(BINARCH_native)) || true 
+	echo BINARCH2;        find $(basename $@)/$(BINARCH_native) || true 
 	echo KPSEWHICH; $(abspath $(basename $@)/$(BINARCH_native)/kpsewhich) -var-value=TEXMFROOT || true
 	#   -v
 	source/texmfrepo/install-tl --help

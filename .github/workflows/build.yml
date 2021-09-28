@@ -39,9 +39,18 @@ jobs:
       - name: Smoke native
         run:  make test
 
+# cache ISO https://github.com/actions/cache
+#      - name: Cache ISO
+#        id: cache-texlive-iso
+#        uses: actions/cache@v2
+#        with:
+#          path: source/texlive2021-20210325.iso
+#        key: texlive-iso
+
       - name: Download TexLive Full
         run:  make source/texmfrepo.txt
-      
+#        if: steps.cache-texlive-iso.outputs.cache-hit != 'true'
+
       - name: Install TexLive
         run: |
             make tds-basic
