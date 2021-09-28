@@ -5,11 +5,14 @@ on: workflow_dispatch
 env:
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
   EMSCRIPTEN_VERSION: 2.0.30
+  MAKEFLAGS_PARALLELISM: -j2
 
 jobs:
 
   build-gcc:
     runs-on: ubuntu-20.04
+    container:
+      image: alpine
     steps:
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v10
@@ -21,7 +24,8 @@ jobs:
           fetch-depth: 1
       
       - name: Install Prerequisites
-        run: sudo apt-get install -y gperf p7zip-full strace
+        run: sudo apk add gperf p7zip
+#        run: sudo apt-get install -y gperf p7zip-full strace
         
       - name: Clone/patch TexLive and dependencies
         run: make texlive build/versions.txt
@@ -29,7 +33,7 @@ jobs:
       - name: Build native busytex
         run: make native
         env:
-            MAKEFLAGS: -j2
+            MAKEFLAGS: ${{env.MAKEFLAGS_PARALLELISM}}
       
       - name: Smoke native
         run: make test
@@ -72,7 +76,7 @@ jobs:
 #            make build/wasm/texlive-basic.js
 #            make dist-wasm
 #        env:
-#            MAKEFLAGS: -j2
+#            MAKEFLAGS: ${{env.MAKEFLAGS_PARALLELISM}}
       
 #      - name: Archive TexLive wasm build
 #        uses: actions/upload-artifact@v2
