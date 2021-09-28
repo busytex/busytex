@@ -60,13 +60,13 @@ jobs:
         with:
           name: native_build
           path: |
-#            build/native/texlive/
             build/texlive-basic/
             build/native/busytex
             build/native/fonts.conf
             source/texmfrepo.txt
             build/texlive-basic.txt
             build/texlive-full.txt
+#           build/native/texlive/
       
       - name: Test native busytex pipeline
         run: |
