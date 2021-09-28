@@ -19,7 +19,7 @@ TEXMF_FULL    = $(abspath build/texlive-full)
 PREFIX_wasm   = $(abspath build/wasm/prefix)
 PREFIX_native = $(abspath build/native/prefix)
 
-BINARCH_native =bin/custom
+BINARCH_native =bin/_custom
 #BINARCH_native =bin/x86_64-linux
 
 PYTHON        = python3
@@ -400,9 +400,9 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo BINARCH1;        find $(basename $@)/$(BINARCH_native) || true
 	echo BINARCH2;        cat $(basename $@)/$(BINARCH_native)/kpsewhich || true
 	echo BINARCH3;        cat $(ROOT)/$(basename $@)/$(BINARCH_native)/kpsewhich || true
-	#   -v -e trace=execve strace -f
+	#   -v -e trace=execve
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
 	echo FINDBINARCH; find build/texlive-basic/$(BINARCH_native) || true
 	echo FINDBINCUSTOM; find build/texlive-basic/bin/custom/ || true
 	exit 0
