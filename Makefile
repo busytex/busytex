@@ -305,7 +305,8 @@ build/%/busytex build/%/busytex.js:
 
 build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
 	$(MAKE_native) -C build/native/texlive/libs/icu 
-	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build 
+	$(MAKE_native) -C build/native/texlive/libs/icu/include/unicode
+	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
 	echo ICUINCLUDE; find build/native/texlive/libs/icu/include
