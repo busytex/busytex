@@ -142,7 +142,7 @@ OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_COMPILE = -static-libstdc++ -static-libgcc
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -static -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread
 # https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
