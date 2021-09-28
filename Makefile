@@ -128,8 +128,8 @@ OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_nati
 OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)"
 OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)"
 OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
-OPTS_LUATEX_native     = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)"
-OPTS_LUATEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
+OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)"
+OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
 OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)"
@@ -400,12 +400,12 @@ build/texlive-full.profile:
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
-	$(foreach name, texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
+	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#   -v -e trace=execve strace -v -s 1000 -f
 	source/texmfrepo/install-tl --help 
-	TEXLIVE_INSTALL_NO_RESUME=1  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) 
+	TEXLIVE_INSTALL_NO_RESUME=1 source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) 
 	# 
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex

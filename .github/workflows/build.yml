@@ -70,7 +70,7 @@ jobs:
       - name: Test native busytex pipeline
         run: |
             make dist-native
-            bash example/example.sh
+            sh example/example.sh
 
 #      - name: Archive native test artifacts
 #        uses: actions/upload-artifact@v2
