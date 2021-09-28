@@ -308,6 +308,8 @@ build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs
 	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build 
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
+	echo ICUINCLUDE; find build/native/texlive/libs/icu/include
+	echo UTYPES; find build/native/texlive -name utypes.h || true
 	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
 	rm $(dir $@)/xetexdir/xetex-xetexextra.o
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o $(OPTS_XETEX_native)
