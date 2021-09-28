@@ -406,7 +406,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo BINARCH3;        cat $(ROOT)/$(basename $@)/$(BINARCH_native)/kpsewhich || true
 	#   -v -e trace=execve
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -v -s 1000 -f source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
 	echo FINDBINARCH  ; find $(ROOT)/$(basename $@)/$(BINARCH_native) || true
 	echo FINDBINCUSTOM; find $(ROOT)/$(basename $@)/bin/custom || true
 	exit 0
