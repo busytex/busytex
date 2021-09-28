@@ -314,6 +314,7 @@ build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs
 
 build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_wasm)
+	##
 	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu           $(OPTS_ICU_configure_make_wasm)
 	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
@@ -328,10 +329,8 @@ build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configu
 	mv $(dir $@)/libxetex.a $@
 
 build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
-	echo PDFTEXD1; ls build/native/texlive/texk/web2c/pdftexd.h || true
-	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o     pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
-	-rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
-	echo PDFTEXD2; ls build/native/texlive/texk/web2c/pdftexd.h || true
+	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o     pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
+	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
 	$(EXTERN_SYM) build/native/texlive/texk/web2c/pdftexd.h     $(PDFTEX_EXTERN)
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_native)
@@ -399,10 +398,10 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINDIR_native)
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
-	echo KPSEWHICH; $(basename $@)/$(BINDIR_native) kpsewhich -var-value=TEXMFROOT || true
-	# -e trace=execve -v strace -f
+	echo KPSEWHICH; $(basename $@)/$(BINDIR_native)/kpsewhich -var-value=TEXMFROOT || true
+	#   -v
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINDIR_native)
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINDIR_native)
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINDIR_native)/luahbtex
 	#$(basename $@)/$(BINDIR_native)/fmtutil-sys --byengine luahbtex
