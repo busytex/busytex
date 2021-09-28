@@ -320,10 +320,11 @@ build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configu
 	mv $(dir $@)/libxetex.a $@
 
 build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
-	echo PDFTEXD; ls build/native/texlive/texk/web2c/pdftexd.h || true
-	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
-	# pdftexdir/pdftex-pdftexextra.o synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o
-	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
+	echo PDFTEXD1; ls build/native/texlive/texk/web2c/pdftexd.h || true
+	$(MAKE_native) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(OPTS_PDFTEX_native)
+	echo PDFTEXD2; ls build/native/texlive/texk/web2c/pdftexd.h || true
+	# pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
+	#rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
 	$(EXTERN_SYM) build/native/texlive/texk/web2c/pdftexd.h     $(PDFTEX_EXTERN)
 	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_native)
 	$(MAKE_native) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_native)
