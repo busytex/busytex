@@ -400,12 +400,12 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo BINARCH1;        find $(basename $@)/$(BINARCH_native) || true
 	echo BINARCH2;        cat $(basename $@)/$(BINARCH_native)/kpsewhich || true
 	echo BINARCH3;        cat $(ROOT)/$(basename $@)/$(BINARCH_native)/kpsewhich || true
-	#   -v -e trace=execve
+	#   -v -e trace=execve strace -f
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
+	TEXLIVE_INSTALL_NO_RESUME=1  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
 	echo FINDBINARCH; find build/texlive-basic/$(BINARCH_native) || true
 	echo FINDBINCUSTOM; find build/texlive-basic/bin/custom/ || true
-	exit 1
+	exit 0
 	# 
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex

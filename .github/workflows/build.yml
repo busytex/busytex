@@ -64,13 +64,13 @@ jobs:
             build/native/fonts.conf
             source/texmfrepo.txt
             build/texlive-basic.txt
-            build/texlive-full.txt
-#           build/native/texlive/
+#            build/texlive-full.txt
+#            build/native/texlive/
       
-      - name: Test native busytex pipeline
-        run: |
-            make dist-native
-            bash example/example.sh
+#      - name: Test native busytex pipeline
+#        run: |
+#            make dist-native
+#            bash example/example.sh
 
 #      - name: Archive native test artifacts
 #        uses: actions/upload-artifact@v2
