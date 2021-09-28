@@ -19,8 +19,9 @@ TEXMF_FULL    = $(abspath build/texlive-full)
 PREFIX_wasm   = $(abspath build/wasm/prefix)
 PREFIX_native = $(abspath build/native/prefix)
 
-BINARCH_native =bin/_custom
 #BINARCH_native =bin/x86_64-linux
+BINARCH_native =bin/_custom
+BINARCH_native_=bin/custom
 
 PYTHON        = python3
 MAKE_wasm     = emmake $(MAKE)
@@ -397,6 +398,8 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
+	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native_)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native_)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native_)/$(name); )
+	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native_)/$(basename $(name)); )
 	echo BINARCH1;        find $(basename $@)/$(BINARCH_native) || true
 	echo BINARCH2;        cat $(basename $@)/$(BINARCH_native)/kpsewhich || true
 	echo BINARCH3;        cat $(ROOT)/$(basename $@)/$(BINARCH_native)/kpsewhich || true
