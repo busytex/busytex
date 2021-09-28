@@ -247,8 +247,8 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/
 	   --enable-static                                  \
 	   --disable-shared                                 \
 	   --disable-docs                                   \
-	   --with-expat-includes="$(ROOT)/source/expat/lib" \
-	   --with-expat-lib="$(ROOT)/build/$*/expat"        \
+	   --with-expat-includes="$(abspath source/expat/lib)" \
+	   --with-expat-lib="$(abspath build/$*/expat)"        \
 	   CFLAGS="$(CFLAGS_OPT_$*) $(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
 	$(MAKE_$*) -C build/$*/fontconfig
 
@@ -394,7 +394,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz             -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz           -C $(basename $@)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
-	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
+	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(abspath $(basename $@)/$(BINARCH_native)/busytex) $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	echo KPSEWHICH; $(basename $@)/$(BINARCH_native)/kpsewhich -var-value=TEXMFROOT || true
 	#   -v
