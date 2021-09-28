@@ -313,7 +313,7 @@ build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
 	echo XETEX0
-	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o xetex $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
+	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o     xetexdir/xetex-xetexextra.o synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
 	rm $(dir $@)/xetexdir/xetex-xetexextra.o
 	echo XETEX1
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_native)
@@ -484,9 +484,9 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
 	$(MAKE) $(dir $@)texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
-	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 
 .PHONY: native
 native: build/native/fonts.conf
