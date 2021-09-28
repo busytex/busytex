@@ -312,8 +312,9 @@ build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs
 	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
-	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o     xetexdir/xetex-xetexextra.o synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
-	rm $(dir $@)/xetexdir/xetex-xetexextra.o
+	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o      synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
+	# xetexdir/xetex-xetexextra.o
+	#rm $(dir $@)/xetexdir/xetex-xetexextra.o
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_native)
 	$(MAKE_native) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_native)
 	mv $(dir $@)/libxetex.a $@
