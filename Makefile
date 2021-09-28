@@ -2,14 +2,12 @@
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
-URL_texlive = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
-URL_expat = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
-URL_fontconfig = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
-URL_UBUNTU_RELEASE = https://packages.ubuntu.com/groovy/
+URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
+URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
+URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
+URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
 
-PYTHON            = python3
 TOTAL_MEMORY      = 536870912
-
 CFLAGS_OPT_native = -O3
 CFLAGS_OPT_wasm   = -Oz
 
@@ -23,6 +21,7 @@ PREFIX_native = $(abspath build/native/prefix)
 
 BINDIR_native =bin/x86_64-linux
 
+PYTHON        = python3
 MAKE_wasm     = emmake $(MAKE)
 CMAKE_wasm    = emcmake cmake
 CONFIGURE_wasm= $(EMROOT)/emconfigure
@@ -111,9 +110,9 @@ PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/ic
 ##############################################################################################################################
 
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
-CCSKIP_ICU_wasm          = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
-CCSKIP_FREETYPE_wasm     = $(PYTHON) $(ROOT)/emcc_wrapper.py $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
-CCSKIP_TEX_wasm          = $(PYTHON) $(ROOT)/emcc_wrapper.py $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
+CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
+CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(abspath build/native/texlive/libs/freetype2/ft-build/apinames) --
+CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
 OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
