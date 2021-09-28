@@ -406,8 +406,8 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	#   -v -e trace=execve
 	source/texmfrepo/install-tl --help
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
-	echo FINDBINARCH; find build/texlive-basic/$(BINARCH_native) || true
-	echo FINDBINCUSTOM; find build/texlive-basic/bin/custom/ || true
+	echo FINDBINARCH  ; find $(ROOT)/$(basename $@)/$(BINARCH_native) || true
+	echo FINDBINCUSTOM; find $(ROOT)/$(basename $@)/bin/custom || true
 	exit 0
 	# 
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
