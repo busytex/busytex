@@ -19,8 +19,8 @@ TEXMF_FULL    = $(abspath build/texlive-full)
 PREFIX_wasm   = $(abspath build/wasm/prefix)
 PREFIX_native = $(abspath build/native/prefix)
 
-#TODO: replace directly by bin/custom ?
-BINARCH_native =bin/x86_64-linux
+BINARCH_native =bin/custom
+#BINARCH_native =bin/x86_64-linux
 
 PYTHON        = python3
 MAKE_wasm     = emmake $(MAKE)
