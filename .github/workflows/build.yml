@@ -13,9 +13,10 @@ jobs:
     runs-on: ubuntu-20.04
     container:
       image: alpine
+# alpine:3.14
     steps:
       - name: Install Prerequisites
-        run: apk add --update --no-cache build-base cmake git wget gperf p7zip python3 && ln -sf python3 /usr/bin/python
+        run:  apk add --update --no-cache build-base cmake git wget gperf p7zip python3 && ln -sf python3 /usr/bin/python
 #        run: sudo apt-get install -y gperf p7zip-full strace
         
       - name: Setup Emscripten
@@ -28,15 +29,15 @@ jobs:
           fetch-depth: 1
       
       - name: Clone/patch TexLive and dependencies
-        run: make texlive build/versions.txt
+        run:  make texlive build/versions.txt
 
       - name: Build native busytex
-        run: make native
+        run:  make native
         env:
             MAKEFLAGS: ${{env.MAKEFLAGS_PARALLELISM}}
       
       - name: Smoke native
-        run: make test
+        run:  make test
 
       - name: Download TexLive Full
         run:  make source/texmfrepo.txt
@@ -86,7 +87,7 @@ jobs:
 #            build/wasm/texlive/
       
 #      - name: Recreate Ubuntu packages
-#        run: make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
+#        run:  make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
 #
 #      - name: Create Release
 #        env:

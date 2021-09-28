@@ -16,13 +16,12 @@ CFLAGS_OPT_wasm   = -Oz
 ROOT := $(CURDIR)
 EMROOT := $(dir $(shell which emcc))
 
-BUSYTEX_native= $(ROOT)/build/native/busytex
+BUSYTEX_native= $(abspath build/native/busytex)
+TEXMF_FULL    = $(abspath build/texlive-full)
+PREFIX_wasm   = $(abspath build/wasm/prefix)
+PREFIX_native = $(abspath build/native/prefix)
 
-TEXMF_FULL    = $(ROOT)/build/texlive-full
 BINDIR_native = bin/x86_64-linux
-
-PREFIX_wasm   = $(ROOT)/build/wasm/prefix
-PREFIX_native = $(ROOT)/build/native/prefix
 
 MAKE_wasm     = emmake $(MAKE)
 CMAKE_wasm    = emcmake cmake
