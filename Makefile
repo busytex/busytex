@@ -395,16 +395,15 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz             -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz           -C $(basename $@)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
-	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(abspath $(basename $@)/$(BINARCH_native)/busytex) $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
+	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
-	echo BINARCH0;        find $(ROOT)/$(basename $@)/$(BINARCH_native) || true
-	echo BINARCH00; echo $$PWD/build/texlive-basic/bin/x86_64-linuxmusl/kpsewhich; ls $$PWD/build/texlive-basic/bin/x86_64-linuxmusl/kpsewhich || true
-	echo BINARCH1;        find $(abspath $(basename $@)/$(BINARCH_native)) || true 
-	echo BINARCH2;        find $(basename $@)/$(BINARCH_native) || true 
-	echo KPSEWHICH; $(abspath $(basename $@)/$(BINARCH_native)/kpsewhich) -var-value=TEXMFROOT || true
-	#   -v
+	echo BINARCH1;        find $(basename $@)/$(BINARCH_native) || true
+	echo BINARC2;         cat $(basename $@)/$(BINARCH_native)/kpsewhich || true
+	echo BINARCH3;        cat /__w/busytex/busytex/build/texlive-basic/bin/x86_64-linuxmusl/kpsewhich || true
+	echo KPSEWHICH; $(ROOT)/$(basename $@)/$(BINARCH_native)/kpsewhich -var-value=TEXMFROOT || true
+	#   -v -e trace=execve
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native)
+	TEXLIVE_INSTALL_NO_RESUME=1 strace -f  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native)
 	# --force-platform x86_64-linux
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
