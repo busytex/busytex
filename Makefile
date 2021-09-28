@@ -396,10 +396,12 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(abspath $(basename $@)/$(BINARCH_native)/busytex) $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
-	echo KPSEWHICH; $(basename $@)/$(BINARCH_native)/kpsewhich -var-value=TEXMFROOT || true
+	echo BINARCH;        find $(basename $@)/$(BINARCH_native) || true 
+	echo KPSEWHICH; $(abspath $(basename $@)/$(BINARCH_native)/kpsewhich) -var-value=TEXMFROOT || true
 	#   -v
 	source/texmfrepo/install-tl --help
 	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -e trace=execve source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native)
+	# --force-platform x86_64-linux
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
 	#$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
