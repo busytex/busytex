@@ -21,7 +21,7 @@ TEXMF_FULL    = $(abspath build/texlive-full)
 PREFIX_wasm   = $(abspath build/wasm/prefix)
 PREFIX_native = $(abspath build/native/prefix)
 
-BINDIR_native = bin/x86_64-linux
+BINDIR_native =bin/x86_64-linux
 
 MAKE_wasm     = emmake $(MAKE)
 CMAKE_wasm    = emcmake cmake
@@ -400,7 +400,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo KPSEWHICH; $(basename $@)/$(BINDIR_native) kpsewhich -var-value=SELFAUTOPARENT || true
 	# -e trace=execve -v strace -f
 	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(basename $@)/$(BINDIR_native)
+	TEXLIVE_INSTALL_NO_RESUME=1 source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINDIR_native)
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINDIR_native)/luahbtex
 	#$(basename $@)/$(BINDIR_native)/fmtutil-sys --byengine luahbtex
