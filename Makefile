@@ -21,7 +21,6 @@ PREFIX_native = $(abspath build/native/prefix)
 
 #BINARCH_native =bin/x86_64-linux
 BINARCH_native =bin/_custom
-BINARCH_native_=bin/custom
 
 PYTHON        = python3
 MAKE_wasm     = emmake $(MAKE)
@@ -391,7 +390,7 @@ build/texlive-full.profile:
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
-	mkdir -p $(basename $@)/$(BINARCH_native) $(basename $@)/$(BINARCH_native_)
+	mkdir -p $(basename $@)/$(BINARCH_native)
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz         -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz             -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz           -C $(basename $@)
