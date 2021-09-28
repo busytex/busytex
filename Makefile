@@ -391,25 +391,16 @@ build/texlive-full.profile:
 
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)/$(BINARCH_native)
-	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz         -C $(basename $@)
-	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz             -C $(basename $@)
-	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz           -C $(basename $@)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
+	$(foreach name, texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
-	#
-	echo BINARCH1;        find $(basename $@)/$(BINARCH_native) || true
-	echo BINARCH2;        cat $(basename $@)/$(BINARCH_native)/kpsewhich || true
-	echo BINARCH3;        cat $(ROOT)/$(basename $@)/$(BINARCH_native)/kpsewhich || true
-	#   -v -e trace=execve
-	source/texmfrepo/install-tl --help
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -v -s 1000 -f source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
-	echo FINDBINARCH  ; find $(ROOT)/$(basename $@)/$(BINARCH_native) || true
-	echo FINDBINCUSTOM; find $(ROOT)/$(basename $@)/bin/custom || true
-	exit 0
+	#   -v -e trace=execve strace -v -s 1000 -f
+	source/texmfrepo/install-tl --help 
+	TEXLIVE_INSTALL_NO_RESUME=1  source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) || true
 	# 
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
-	#echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
+	#printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
 	#$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true

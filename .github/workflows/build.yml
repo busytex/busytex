@@ -52,25 +52,25 @@ jobs:
       - name: Install TexLive
         run: |
             make tds-basic
-#            make tds-full
+            make tds-full
 
-      - name: Archive native artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: native_build
-          path: |
-            build/texlive-basic/
-            build/native/busytex
-            build/native/fonts.conf
-            source/texmfrepo.txt
-            build/texlive-basic.txt
+#      - name: Archive native artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: native_build
+#          path: |
+#            build/texlive-basic/
+#            build/native/busytex
+#            build/native/fonts.conf
+#            source/texmfrepo.txt
+#            build/texlive-basic.txt
 #            build/texlive-full.txt
 #            build/native/texlive/
       
-#      - name: Test native busytex pipeline
-#        run: |
-#            make dist-native
-#            bash example/example.sh
+      - name: Test native busytex pipeline
+        run: |
+            make dist-native
+            bash example/example.sh
 
 #      - name: Archive native test artifacts
 #        uses: actions/upload-artifact@v2
