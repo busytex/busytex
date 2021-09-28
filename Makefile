@@ -13,8 +13,8 @@ TOTAL_MEMORY      = 536870912
 CFLAGS_OPT_native = -O3
 CFLAGS_OPT_wasm   = -Oz
 
-ROOT := $(CURDIR)
-EMROOT := $(dir $(shell which emcc))
+ROOT         := $(CURDIR)
+EMROOT       := $(dir $(shell which emcc))
 
 BUSYTEX_native= $(abspath build/native/busytex)
 TEXMF_FULL    = $(abspath build/texlive-full)
@@ -87,7 +87,7 @@ CFLAGS_KPSEACCESS   := -Dmain='__attribute__((visibility(\"default\"))) busymain
 CFLAGS_KPSEREADLINK := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsereadlink'
 CFLAGS_KPSEWHICH    := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
 CFLAGS_MAKEINDEX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_makeindex'
-CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex' -lfontconfig
+CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
 CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
 CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
 CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'    $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
@@ -481,12 +481,12 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpseaccess.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsereadlink.o 
-	$(MAKE) $(dir $@)texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
+	$(MAKE) $(dir $@)texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
+	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
-	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
 
 .PHONY: native
 native: build/native/fonts.conf
