@@ -484,9 +484,9 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/makeindexk/busytex_makeindex.a
 	$(MAKE) $(dir $@)texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
 	$(MAKE) $(dir $@)texlive/texk/bibtex-x/busytex_bibtex8.a
-	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 
 .PHONY: native
 native: build/native/fonts.conf
