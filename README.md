@@ -1,6 +1,6 @@
 # Binaries from TexLive 2021 compiled with Emscripten into a single binary (native / WASM)
 
-Currently compiles:
+Currently compiles in a fully static build:
 - xetex
 - pdftex
 - luahbtex
@@ -20,12 +20,6 @@ Future work:
 - tlmgr (perl, web requests)
 - Biber (perl)
 - fmtutil, updmap (perl)
-
-Almost static build, remaining dependencies of the native binary (need to try to build with musl to get rid of them):
-- `libdl.so`
-- `libm.so`
-- `libpthread.so`
-- `libc.so`
 
 ### Usage
 ```shell
@@ -50,7 +44,6 @@ bash example/example.sh
 - review fonts / fontmaps / hyphenation shipped in TexLive packages
 - optimizing binary size. any stripping possible?
 - compile for x86_64-linux-glibc with clang (to match WASM toolchain)
-- minimize shared library dependencies for x86_64-linux (try building with musl, without pthreads, static libm): https://tug.org/pipermail/tlbuild/2018q1/003975.html, https://git.alpinelinux.org/aports/tree/community/texlive/APKBUILD, https://www.petefreitag.com/item/903.cfm
 - minimize build sequence in Makefile and merge native / WASM steps as much as possible
 - set up x86_64-linux binaries Github Actions test for WSLv1
 - test of WASM binaries using node.js, test preloading of data packages
