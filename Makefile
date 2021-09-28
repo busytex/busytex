@@ -99,8 +99,8 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain
 CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate
 CFLAGS_BIBTEX_wasm    = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
 CFLAGS_ICU_wasm       = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 
-CFLAGS_TEXLIVE_wasm   = -I$(ROOT)/build/wasm/texlive/libs/icu/include   -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
-CFLAGS_TEXLIVE_native = -I$(ROOT)/build/native/texlive/libs/icu/include -I$(ROOT)/source/fontconfig $(CFLAGS_OPT_native)
+CFLAGS_TEXLIVE_wasm   = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
+CFLAGS_TEXLIVE_native = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
 # https://tug.org/pipermail/tlbuild/2021q1/004774.html
 #-static-libstdc++ -static-libgcc
 # -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc
