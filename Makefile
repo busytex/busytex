@@ -308,8 +308,18 @@ build/%/busytex build/%/busytex.js:
 
 build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata : build/native/texlive.configured
 	$(MAKE_native) -C build/native/texlive/libs/icu 
-	$(MAKE_native) -C build/native/texlive/libs/icu/include/unicode
+	echo "all install:" > build/native/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_native) -C build/native/texlive/libs/icu/icu-build
+	$(MAKE_native) -C build/native/texlive/libs/icu/include/unicode
+
+build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_wasm)
+	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu           $(OPTS_ICU_configure_make_wasm)
+	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
+	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
+	$(MAKE_wasm)   -C build/native/texlive/libs/icu/include/unicode
+
+################################################################################################################
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
 	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
@@ -329,14 +339,6 @@ build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.config
 
 
 ################################################################################################################
-
-build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-	cd build/wasm/texlive/libs/icu && \
-	$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-	$(MAKE_wasm)       -C build/wasm/texlive/libs/icu           $(OPTS_ICU_configure_make_wasm)
-	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_wasm)       -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
-	$(MAKE_wasm)       -C build/native/texlive/libs/icu/include/unicode
 
 build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
