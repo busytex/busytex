@@ -390,14 +390,14 @@ build/texlive-full.profile:
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
-	mkdir -p $(basename $@) $(basename $@)/$(BINDIR_native)
+	mkdir -p $(basename $@)/$(BINDIR_native)
 	tar -xf source/texmfrepo/archive/texlive-scripts.r*.tar.xz         -C $(basename $@)
 	tar -xf source/texmfrepo/archive/latexconfig.r*.tar.xz             -C $(basename $@)
 	tar -xf source/texmfrepo/archive/tex-ini-files.r*.tar.xz           -C $(basename $@)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINDIR_native)
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,echo "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINDIR_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINDIR_native)/$(name) ; chmod +x $(basename $@)/$(BINDIR_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINDIR_native)/$(basename $(name)); )
-	echo KPSEWHICH; $(basename $@)/$(BINDIR_native) kpsewhich -var-value=SELFAUTOPARENT || true
+	echo KPSEWHICH; $(basename $@)/$(BINDIR_native) kpsewhich -var-value=TEXMFROOT || true
 	# -e trace=execve -v strace -f
 	source/texmfrepo/install-tl --help
 	TEXLIVE_INSTALL_NO_RESUME=1 source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINDIR_native)
