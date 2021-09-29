@@ -319,16 +319,6 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build $(OPTS_ICU_make_$*) 
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
 
-#build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-#	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
-#	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
-#	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-#	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
-#	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/include/unicode
-
-
-################################################################################################################
-
 build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
 	-cp $(subst wasm, native, $(dir $@))*.c $(dir $@)
@@ -411,7 +401,6 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
 	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
-	#$(foreach name,xetex xelatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#   -v -e trace=execve strace -v -s 1000 -f
@@ -539,12 +528,12 @@ example:
 
 build/versions.txt:
 	mkdir -p build
-	echo 'busytex dependencies:' > $@
+	echo 'busytex dependencies:'                                        > $@
 	echo texlive: \\url{$(URL_texlive)} \\url{$(URL_texlive_full_iso)} >> $@
-	echo ubuntu packages: \\url{$(URL_UBUNTU_RELEASE)} >> $@
-	echo expat: \\url{$(URL_expat)} >> $@
-	echo fontconfig: \\url{$(URL_fontconfig)} >> $@
-	echo emscripten: $(EMSCRIPTEN_VERSION) >> $@
+	echo ubuntu packages: \\url{$(URL_UBUNTU_RELEASE)}                 >> $@
+	echo expat: \\url{$(URL_expat)}                                    >> $@
+	echo fontconfig: \\url{$(URL_fontconfig)}                          >> $@
+	echo emscripten: $(EMSCRIPTEN_VERSION)                             >> $@
 
 .PHONY: test
 test: build/native/busytex
