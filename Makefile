@@ -183,7 +183,7 @@ build/%/texlive.configured: source/texlive.patched
 	echo '' > $(CACHE_TEXLIVE_$*)
 	find /__w/_temp/*/emsdk-main/upstream/bin 
 	cd $(basename $@) &&                        \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
+	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) strace -f -e trace=execve $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
 	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
 	  --prefix="$(PREFIX_$*)"					\
 	  --enable-dump-share						\
