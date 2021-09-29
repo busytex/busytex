@@ -1,19 +1,17 @@
 name: build-wasm
 
-on: workflow_dispatch
-
-env:
-  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
-  EMSCRIPTEN_VERSION: 2.0.30
-  MAKE_PARALLELISM: -j2
-
 on: 
   workflow_dispatch:
     inputs:
       busytexurlrelease:
         description: 'busytex release url '
         required: false
-        default: 'build_faf2d1e9650e24070d1a339bdbc07b4f6a0a9a6b'
+        default: 'https://github.com/busytex/busytex/releases/download/build_9e27c92469c90d55520cbc9b2f42b05e039c8e78'
+
+env:
+  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
+  EMSCRIPTEN_VERSION: 2.0.30
+  MAKE_PARALLELISM: -j2
 
 jobs:
 
