@@ -31,6 +31,10 @@ jobs:
       - name: Clone/patch TexLive and dependencies
         run:  make texlive build/versions.txt
 
+      - name: Download native bin
+        run: |
+            make URLRELEASE=${{ github.event.inputs.busytexurlrelease }} download-native
+
 # cache ISO https://github.com/actions/cache
 #      - name: Cache ISO
 #        id: cache-texlive-iso
@@ -43,10 +47,6 @@ jobs:
         run:  make source/texmfrepo.txt
 #       if: steps.cache-texlive-iso.outputs.cache-hit != 'true'
 #
-      - name: Download native bin
-        run: |
-            make URLRELEASE=${{ github.event.inputs.busytexurlrelease }} download-native
-
       - name: Install TexLive
         run: |
             make tds-basic
