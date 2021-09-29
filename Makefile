@@ -181,8 +181,8 @@ source/texlive.patched: source/texlive.downloaded
 build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
-	find /__w/_temp/*/emsdk-main/upstream/bin -name clang 
-	/__w/_temp/*/emsdk-main/upstream/bin/clang --version 
+	#find /__w/_temp/*/emsdk-main/upstream/bin/clang
+	#/__w/_temp/*/emsdk-main/upstream/bin/clang --version 
 	cd $(basename $@) &&                        \
 	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) strace -f -e trace=execve $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
 	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
@@ -215,8 +215,7 @@ build/%/texlive.configured: source/texlive.patched
 	  --enable-cxx-runtime-hack=yes             \
 		CFLAGS="$(CFLAGS_TEXLIVE_$*)"	     	\
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"           \
-	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)" || true
-	find $(basename $@) -name config.log -exec cat {} +
+	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 
