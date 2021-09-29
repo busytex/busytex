@@ -8,6 +8,8 @@ replace = [a for i, a in enumerate(sys.argv) if 1 <= i < K]
 
 copy = [(r, sys.argv[i]) for i in range(1 + K, len(sys.argv)) if sys.argv[i - 1] == '-o' for r in replace if os.path.basename(sys.argv[i]) == os.path.basename(r)]
 
+print(copy, sys.argv, file = sys.stderr)
+
 if copy:
     dirname = os.path.dirname(copy[0][1])
     if dirname:
