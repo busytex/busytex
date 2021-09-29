@@ -21,19 +21,19 @@ $BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --n
 $BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
 rm example.aux
 
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-$BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-mv example.pdf example_pdflatex.pdf
-rm example.aux
+#$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+#$BUSYTEX bibtex8 --8bit example.aux
+#$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+#$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+#mv example.pdf example_pdflatex.pdf
+#rm example.aux
 
-$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex 
-$BUSYTEX bibtex8 --8bit example.aux
-$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex 
-$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex 
-mv example.pdf example_luahblatex.pdf 
-rm example.aux 
+#$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex 
+#$BUSYTEX bibtex8 --8bit example.aux
+#$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex 
+#$BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex 
+#mv example.pdf example_luahblatex.pdf 
+#rm example.aux 
 
 #$BUSYTEX lualatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUALATEXFMT --nosocket example.tex 
 #$BUSYTEX bibtex8 --8bit example.aux
