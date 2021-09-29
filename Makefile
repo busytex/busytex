@@ -9,7 +9,7 @@ URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
 
 BUSYTEX_BIN          = busytex fonts.conf
 BUSYTEX_ICUBIN       = icupkg pkgdata
-BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie xetex
+BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
 BUSYTEX_FREETYPEBIN  = apinames
 
@@ -119,7 +119,7 @@ PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/ic
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
 CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(abspath build/native/texlive/libs/freetype2/ft-build/apinames) --
-CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie xetex) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
+CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
 OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
@@ -594,8 +594,8 @@ dist-native: build/native/busytex build/native/fonts.conf
 .PHONY: download-native
 download-native:
 	mkdir -p build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
-	wget  -P build/native -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_BIN))
-	wget  -P build/native/texlive/libs/icu/icu-build/bin -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_ICUBIN))
+	wget  -P build/native                                 -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_BIN))
+	wget  -P build/native/texlive/libs/icu/icu-build/bin  -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_ICUBIN))
 	wget  -P build/native/texlive/libs/freetype2/ft-build -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_FREETYPEBIN))
-	wget  -P build/native/texlive/texk/web2c -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_TEXBIN))
-	wget  -P build/native/texlive/texk/web2c/web2c -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_WEB2CBIN))
+	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_TEXBIN))
+	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_WEB2CBIN))
