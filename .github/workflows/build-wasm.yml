@@ -18,6 +18,9 @@ jobs:
   build-wasm:
     runs-on: ubuntu-20.04
     steps:
+      - name: Download native bin
+        run: make URLRELEASE=${{ github.event.inputs.busytexurlrelease }} download-native
+
       - name: Install Prerequisites
         run: sudo apt-get install -y gperf p7zip-full strace
 
@@ -27,13 +30,11 @@ jobs:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
       - uses: actions/checkout@v2
+
       
       - name: Clone/patch TexLive and dependencies
         run:  make texlive build/versions.txt
 
-      - name: Download native bin
-        run: |
-            make URLRELEASE=${{ github.event.inputs.busytexurlrelease }} download-native
 
 # cache ISO https://github.com/actions/cache
 #      - name: Cache ISO
