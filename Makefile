@@ -1,29 +1,29 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
-BUSYTEX_BIN         = busytex fonts.conf
-BUSYTEX_ICUBIN      = icupkg pkgdata
-BUSYTEX_TEXBIN      = ctangle otangle tangle tangleboot ctangleboot tie xetex
-BUSYTEX_WEB2CBIN    = fixwrites makecpool splitup web2c
-BUSYTEX_FREETYPEBIN = apinames
-
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
 
-TOTAL_MEMORY      = 536870912
-CFLAGS_OPT_native = -O3
-CFLAGS_OPT_wasm   = -Oz
+BUSYTEX_BIN          = busytex fonts.conf
+BUSYTEX_ICUBIN       = icupkg pkgdata
+BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie xetex
+BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
+BUSYTEX_FREETYPEBIN  = apinames
 
-ROOT         := $(CURDIR)
-EMROOT       := $(dir $(shell which emcc))
+TOTAL_MEMORY         = 536870912
+CFLAGS_OPT_native    = -O3
+CFLAGS_OPT_wasm      = -Oz
 
-BUSYTEX_native= $(abspath build/native/busytex)
-TEXMF_FULL    = $(abspath build/texlive-full)
-PREFIX_wasm   = $(abspath build/wasm/prefix)
-PREFIX_native = $(abspath build/native/prefix)
+ROOT                := $(CURDIR)
+EMROOT              := $(dir $(shell which emcc))
+
+BUSYTEX_native       = $(abspath build/native/busytex)
+TEXMF_FULL           = $(abspath build/texlive-full)
+PREFIX_wasm          = $(abspath build/wasm/prefix)
+PREFIX_native        = $(abspath build/native/prefix)
 
 #BINARCH_native =bin/x86_64-linux
 BINARCH_native =bin/_custom
