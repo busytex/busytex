@@ -1,6 +1,6 @@
 # Programs from TexLive 2021 compiled with Emscripten into a single fully static binary (x86_64-linux / WASM)
 
-Currently compiles into a fully static binary:
+Currently compiles into a **fully static binary**:
 - xetex
 - pdftex
 - luahbtex
@@ -29,7 +29,7 @@ wget -P dist --backups=1 $(printf "https://github.com/busytex/busytex/releases/l
 python3 example/example.py
 
 # native version
-bash example/example.sh
+sh example/example.sh
 ```
 
 ### Help needed
@@ -86,7 +86,7 @@ make wasm
 make tds-basic
 
 # test native binaries
-bash example/example.sh
+sh example/example.sh
 
 # reproduce and pack Ubuntu TexLive packages into wasm data files
 make build/wasm/texlive-basic.js

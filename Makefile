@@ -312,13 +312,6 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
 
-#build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-#	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_wasm)
-#	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu           $(OPTS_ICU_configure_make_wasm)
-#	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
-#	$(MAKE_wasm)   -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
-#	$(MAKE_wasm)   -C build/native/texlive/libs/icu/include/unicode
-
 ################################################################################################################
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
@@ -327,22 +320,20 @@ build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configu
 	$(MAKE_native) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_native)
 	mv $(dir $@)/libxetex.a $@
 
-build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
-	$(MAKE_native) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o     pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
-	$(EXTERN_SYM)     $(dir $@)/pdftexd.h     $(PDFTEX_EXTERN)
-	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_native)
-	$(MAKE_native) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_native)
-	mv $(dir $@)/libpdftex.a $@
-
-
-################################################################################################################
-
 build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
 	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex  $(OPTS_XETEX_wasm)
 	mv $(dir $@)/libxetex.a $@
+
+
+build/native/texlive/texk/web2c/busytex_libpdftex.a: build/native/texlive.configured build/native/texlive/libs/xpdf/libxpdf.a
+	$(MAKE_native) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o     pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_native))
+	$(EXTERN_SYM)     $(dir $@)/pdftexd.h     $(PDFTEX_EXTERN)
+	$(MAKE_native) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_native)
+	$(MAKE_native) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_native)
+	mv $(dir $@)/libpdftex.a $@
 
 build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured build/native/busytex
 	# copying generated C files from native version, since string offsets are off
