@@ -181,6 +181,7 @@ source/texlive.patched: source/texlive.downloaded
 build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
+	find /__w/_temp/*/emsdk-main/upstream/bin 
 	cd $(basename $@) &&                        \
 	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
 	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
@@ -215,7 +216,6 @@ build/%/texlive.configured: source/texlive.patched
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"           \
 	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)" || true
 	find $(basename $@) -name config.log -exec cat {} +
-	find /__w/_temp/*/emsdk-main/upstream/ || true
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 
