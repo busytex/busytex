@@ -182,6 +182,7 @@ build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
 	find /__w/_temp/*/emsdk-main/upstream/bin 
+	/__w/_temp/*/emsdk-main/upstream/bin/clang --version 
 	cd $(basename $@) &&                        \
 	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) strace -f -e trace=execve $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
 	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
