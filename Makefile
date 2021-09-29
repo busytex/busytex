@@ -593,9 +593,10 @@ dist-native: build/native/busytex build/native/fonts.conf
 
 .PHONY: download-native
 download-native:
-	mkdir -p build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
+	mkdir -p build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
 	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_BIN))
 	wget  -P build/native/texlive/libs/icu/icu-build/bin  -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_ICUBIN))
 	wget  -P build/native/texlive/libs/freetype2/ft-build -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_FREETYPEBIN))
 	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_TEXBIN))
 	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_WEB2CBIN))
+	find build/native -type f -exec chmod +x {} +
