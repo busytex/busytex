@@ -33,6 +33,12 @@ jobs:
       - name: Smoke native
         run:  make test
 
+      - name: Test native 
+        run: |
+            make tds-basic
+            make dist-native
+            sh example/example.sh
+
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
