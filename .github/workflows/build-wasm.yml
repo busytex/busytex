@@ -37,7 +37,9 @@ jobs:
       - name: Build native busytex
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run:  make native test
+        run: |
+            make native
+            make test
 
 # cache ISO https://github.com/actions/cache
 #      - name: Cache ISO
