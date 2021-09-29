@@ -326,12 +326,12 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 
 build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
-	-cp $(subst wasm, native, $(dir $@))/*.c $(dir $@)
+	-cp $(subst wasm, native, $(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_$*))
 	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
 	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
 	mv $(dir $@)/libxetex.a $@
-	tar -cf $(basename $@).tar $(dir $@)/*.c
+	tar -cf $(basename $@).tar $(dir $@)*.c
 
 #build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
 #	mkdir -p $(dir $@)
