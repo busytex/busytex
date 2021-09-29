@@ -1,4 +1,4 @@
-name: build
+name: build-wasm
 
 on: workflow_dispatch
 
@@ -6,9 +6,6 @@ env:
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
   EMSCRIPTEN_VERSION: 2.0.30
   MAKE_PARALLELISM: -j2
-  ICUBIN: icupkg pkgdata
-  TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie xetex web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
-  FREETYPEBIN: apinames
 
 on: 
   workflow_dispatch:
@@ -19,32 +16,6 @@ on:
         default: 'build_faf2d1e9650e24070d1a339bdbc07b4f6a0a9a6b'
 
 jobs:
-
-  build-native:
-    runs-on: ubuntu-20.04
-    container: alpine:3.14
-    steps:
-      - name: Install Prerequisites
-        run:  apk add --update --no-cache build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
-
-      - uses: actions/checkout@v2
-      
-      - name: Clone/patch TexLive and dependencies
-        run:  make texlive build/versions.txt
-
-      - name: Build native busytex
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run:  make native
-      
-      - name: Smoke native
-        run:  make test
-
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex $(printf -- "-a build/native/texlive/libs/freetype2/ft-build/%s " $FREETYPEBIN) $(printf -- "-a build/native/texlive/libs/icu/icu-build/bin/%s " $ICUBIN) $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
-
 
   build-wasm:
     runs-on: ubuntu-20.04
