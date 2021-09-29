@@ -315,6 +315,7 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 ################################################################################################################
 
 build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
+	mkdir -p $(dir $@)
 	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
 	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_native)
 	$(MAKE_native) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_native)
@@ -324,7 +325,10 @@ build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured 
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	cp build/native/texlive/texk/web2c/*.c $(dir $@)
-	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex  $(OPTS_XETEX_wasm)
+	#$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex  $(OPTS_XETEX_wasm)
+	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_wasm))
+	$(MAKE_wasm) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_wasm)
+	$(MAKE_wasm) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_wasm)
 	mv $(dir $@)/libxetex.a $@
 
 
