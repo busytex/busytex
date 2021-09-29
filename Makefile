@@ -213,7 +213,8 @@ build/%/texlive.configured: source/texlive.patched
 	  --enable-cxx-runtime-hack=yes             \
 		CFLAGS="$(CFLAGS_TEXLIVE_$*)"	     	\
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"           \
-	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"
+	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)" || true
+	find $(basename $@) -name config.log -exec cat {} + 
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 

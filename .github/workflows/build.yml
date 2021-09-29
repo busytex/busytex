@@ -29,13 +29,13 @@ jobs:
       - name: Clone/patch TexLive and dependencies
         run:  make texlive build/versions.txt
 
-      - name: Build native busytex
-        run:  make native
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-      
-      - name: Smoke native
-        run:  make test
+#      - name: Build native busytex
+#        run:  make native
+#        env:
+#            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+#      
+#      - name: Smoke native
+#        run:  make test
 
 # cache ISO https://github.com/actions/cache
 #      - name: Cache ISO
@@ -45,14 +45,14 @@ jobs:
 #          path: source/texlive2021-20210325.iso
 #        key: texlive-iso
 
-      - name: Download TexLive Full
-        run:  make source/texmfrepo.txt
+#      - name: Download TexLive Full
+#        run:  make source/texmfrepo.txt
 #        if: steps.cache-texlive-iso.outputs.cache-hit != 'true'
 
-      - name: Install TexLive
-        run: |
-            make tds-basic
-            make tds-full
+#      - name: Install TexLive
+#        run: |
+#            make tds-basic
+#            make tds-full
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
@@ -67,10 +67,10 @@ jobs:
 #            build/texlive-full.txt
 #            build/native/texlive/
       
-      - name: Test native busytex pipeline
-        run: |
-            make dist-native
-            sh example/example.sh
+#      - name: Test native busytex pipeline
+#        run: |
+#            make dist-native
+#            sh example/example.sh
 
       - name: Build wasm busytex
         run: |
