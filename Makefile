@@ -1,6 +1,12 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
+BUSYTEX_BIN         = busytex fonts.conf
+BUSYTEX_ICUBIN      = icupkg pkgdata
+BUSYTEX_TEXBIN      = ctangle otangle tangle tangleboot ctangleboot tie xetex
+BUSYTEX_WEB2CBIN    = fixwrites makecpool splitup web2c
+BUSYTEX_FREETYPEBIN = apinames
+
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
@@ -584,3 +590,12 @@ dist-native: build/native/busytex build/native/fonts.conf
 	#  luahbtex/lualatex.fmt
 	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) $@
 	cp -r build/texlive-basic $@/texlive
+
+.PHONY: download-native
+download-native:
+	mkdir -p build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
+	wget  -P build/native -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_BIN))
+	wget  -P build/native/texlive/libs/icu/icu-build/bin -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_ICUBIN))
+	wget  -P build/native/texlive/libs/freetype2/ft-build -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_FREETYPEBIN))
+	wget  -P build/native/texlive/texk/web2c -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_TEXBIN))
+	wget  -P build/native/texlive/texk/web2c/web2c -nc $(addprefix $(URL_RELEASE)/, $(BUSYTEX_WEB2CBIN))

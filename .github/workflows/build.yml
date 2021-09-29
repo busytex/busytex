@@ -6,39 +6,61 @@ env:
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
   EMSCRIPTEN_VERSION: 2.0.30
   MAKE_PARALLELISM: -j2
+  ICUBIN: icupkg pkgdata
+  TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie xetex web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
+  FREETYPEBIN: apinames
+
+on: 
+  workflow_dispatch:
+    inputs:
+      busytexurlrelease:
+        description: 'busytex release url '
+        required: false
+        default: 'build_faf2d1e9650e24070d1a339bdbc07b4f6a0a9a6b'
 
 jobs:
 
-  build-gcc:
+  build-native:
     runs-on: ubuntu-20.04
     container: alpine:3.14
     steps:
       - name: Install Prerequisites
         run:  apk add --update --no-cache build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
-#        run: sudo apt-get install -y gperf p7zip-full strace
-
-      - name: Setup Emscripten
-        run:  apk add emscripten --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing 
-          
-#      - name: Setup Emscripten
-#        uses: mymindstorm/setup-emsdk@v10
-#        with:
-#          version: ${{env.EMSCRIPTEN_VERSION}}
 
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
       
       - name: Clone/patch TexLive and dependencies
         run:  make texlive build/versions.txt
 
-#      - name: Build native busytex
-#        run:  make native
-#        env:
-#            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-#      
-#      - name: Smoke native
-#        run:  make test
+      - name: Build native busytex
+        env:
+            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+        run:  make native
+      
+      - name: Smoke native
+        run:  make test
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex $(printf -- "-a build/native/texlive/libs/freetype2/ft-build/%s " $FREETYPEBIN) $(printf -- "-a build/native/texlive/libs/icu/icu-build/bin/%s " $ICUBIN) $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
+
+
+  build-wasm:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Prerequisites
+        run: sudo apt-get install -y gperf p7zip-full strace
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v10
+        with:
+          version: ${{env.EMSCRIPTEN_VERSION}}
+
+      - uses: actions/checkout@v2
+      
+      - name: Clone/patch TexLive and dependencies
+        run:  make texlive build/versions.txt
 
 # cache ISO https://github.com/actions/cache
 #      - name: Cache ISO
@@ -48,14 +70,18 @@ jobs:
 #          path: source/texlive2021-20210325.iso
 #        key: texlive-iso
 
-#      - name: Download TexLive Full
-#        run:  make source/texmfrepo.txt
-#        if: steps.cache-texlive-iso.outputs.cache-hit != 'true'
+      - name: Download TexLive Full
+        run:  make source/texmfrepo.txt
+#       if: steps.cache-texlive-iso.outputs.cache-hit != 'true'
+#
+      - name: Download native bin
+        run: |
+            make URLRELEASE=${{ github.event.inputs.busytexurlrelease }} download-native
 
-#      - name: Install TexLive
-#        run: |
-#            make tds-basic
-#            make tds-full
+      - name: Install TexLive
+        run: |
+            make tds-basic
+            make tds-full
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
@@ -70,10 +96,10 @@ jobs:
 #            build/texlive-full.txt
 #            build/native/texlive/
       
-#      - name: Test native busytex pipeline
-#        run: |
-#            make dist-native
-#            sh example/example.sh
+      - name: Test native busytex pipeline
+        run: |
+            make dist-native
+            sh example/example.sh
 
       - name: Build wasm busytex
         run: |
@@ -97,4 +123,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Build assets" -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt  -a build/wasm/busytex.js -a build/wasm/busytex.wasm   -a build/native/busytex -a build/native/fonts.conf -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) build_${{github.sha}}
+        run: hub release create -m "Wasm assets" -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt  -a build/wasm/busytex.js -a build/wasm/busytex.wasm   -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) build_${{github.sha}}
