@@ -1,3 +1,4 @@
+# good https://github.com/busytex/busytex/blob/e95e9cce4b5be1f932a06cb078ada701687d1c69/Makefile
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
@@ -310,13 +311,21 @@ build/%/busytex build/%/busytex.js:
 	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX $(OPTS_BUSYTEX_COMPILE)
 	$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
 
-build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a build/%/texlive/libs/icu/icu-build/bin/icupkg build/%/texlive/libs/icu/icu-build/bin/pkgdata : build/%/texlive.configured
+build/native/texlive/libs/icu/icu-build/lib/libicuuc.a build/native/texlive/libs/icu/icu-build/lib/libicudata.a: build/native/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-	cd                    build/$*/texlive/libs/icu && $(CONFIGURE_$*) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_$*)
-	$(MAKE_$*)         -C build/$*/texlive/libs/icu 
-	echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build
-	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
+	cd                    build/native/texlive/libs/icu && $(CONFIGURE_native) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_native)
+	$(MAKE_native)         -C build/native/texlive/libs/icu $(OPTS_ICU_configure_make_native)
+	echo "all install:" > build/native/texlive/libs/icu/icu-build/test/Makefile
+	$(MAKE_native)         -C build/native/texlive/libs/icu/icu-build $(OPTS_ICU_make_native) 
+	$(MAKE_native)         -C build/native/texlive/libs/icu/include/unicode
+
+build/wasm/texlive/libs/icu/icu-build/lib/libicuuc.a: build/wasm/texlive.configured build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+	cd build/wasm/texlive/libs/icu && $(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu/configure $(OPTS_ICU_configure_wasm)
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu $(OPTS_ICU_configure_make_wasm)
+	echo "all install:" > build/wasm/texlive/libs/icu/icu-build/test/Makefile
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/icu-build $(OPTS_ICU_make_wasm) 
+	$(MAKE_wasm) -C build/wasm/texlive/libs/icu/include/unicode
+
 
 ################################################################################################################
 
@@ -367,9 +376,6 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 #	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
 #	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
 #	mv $(dir $@)/libpdftex.a $@
-
-.PHONY: build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata
-build/wasm/texlive/libs/icu/icu-build/bin/icupkg build/wasm/texlive/libs/icu/icu-build/bin/pkgdata:
 
 ################################################################################################################
 
@@ -478,8 +484,6 @@ build/native/texlivedependencies build/wasm/texlivedependencies:
 	$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
 	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
 	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicudata.a
-	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/bin/icupkg 
-	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/bin/pkgdata 
 	$(MAKE) $(dir $@)fontconfig/src/.libs/libfontconfig.a
 
 .PHONY: build/native/busytexapplets build/wasm/busytexapplets
