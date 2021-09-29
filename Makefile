@@ -214,7 +214,8 @@ build/%/texlive.configured: source/texlive.patched
 		CFLAGS="$(CFLAGS_TEXLIVE_$*)"	     	\
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"           \
 	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)" || true
-	find $(basename $@) -name config.log -exec cat {} + 
+	find $(basename $@) -name config.log -exec cat {} +
+	find /__w/_temp/*/emsdk-main/upstream/ || true
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 
