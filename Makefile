@@ -285,6 +285,7 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	cp $(dir $@)/readlink.o $@
 
 build/%/texlive/texk/kpathsea/win32/busytex_mktexlsr.o: build/%/texlive.configured
+	sed -i 's#kpathsea/dirent.h#dirent.h#g' source/texlive/texk/kpathsea/win32/mktexlsr.c
 	$(CC_$*) -o $@ source/texlive/texk/kpathsea/win32/mktexlsr.c -Isource/texlive/texk -Ibuild/$*/texlive/texk $(CFLAGS_MKTEXLSR)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
