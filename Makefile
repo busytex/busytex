@@ -284,16 +284,6 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
 
-build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
-	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUAHBTEX_$*)
-	mv $(dir $@)/libluatex.a $@
-	#echo AR1; $(AR_$*) t $@; echo NM1; $(NM_$*) $@
-	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a $(OPTS_LUATEX_$*)
-	#$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUATEX_$*)
-	#mv $(dir $@)/libluatex.a $(dir $@)/busytex_libluatex.a
-	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
-
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
 	rm $(dir $@)/dvipdfmx.o
@@ -328,23 +318,6 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	mv $(dir $@)/libxetex.a $@
 	tar -cf $(basename $@).tar $(dir $@)*.c
 
-#build/native/texlive/texk/web2c/busytex_libxetex.a: build/native/texlive.configured
-#	mkdir -p $(dir $@)
-#	$(MAKE_native) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_native))
-#	$(MAKE_native) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_native)
-#	$(MAKE_native) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_native)
-#	mv $(dir $@)/libxetex.a $@
-#
-#build/wasm/texlive/texk/web2c/busytex_libxetex.a: build/wasm/texlive.configured build/native/busytex
-#	# copying generated C files from native version, since string offsets are off
-#	mkdir -p $(dir $@)
-#	cp build/native/texlive/texk/web2c/*.c $(dir $@)
-#	#$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o xetex  $(OPTS_XETEX_wasm)
-#	$(MAKE_wasm) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_wasm))
-#	$(MAKE_wasm) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_wasm)
-#	$(MAKE_wasm) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_wasm)
-#	mv $(dir $@)/libxetex.a $@
-
 build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
@@ -356,16 +329,16 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	mv $(dir $@)/libpdftex.a $@
 	tar -cf $(basename $@).tar $(dir $@)/*.c
 
-#build/wasm/texlive/texk/web2c/busytex_libpdftex.a: build/wasm/texlive.configured build/native/busytex
-#	# copying generated C files from native version, since string offsets are off
-#	mkdir -p $(dir $@)
-#	cp build/native/texlive/texk/web2c/*.c $(dir $@)
-#	$(MAKE_wasm) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_wasm))
-#	rm $(dir $@)/pdftexdir/pdftex-pdftexextra.o
-#	$(EXTERN_SYM) build/wasm/texlive/texk/web2c/pdftexd.h $(PDFTEX_EXTERN)
-#	$(MAKE_wasm) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o $(OPTS_PDFTEX_wasm)
-#	$(MAKE_wasm) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_wasm)
-#	mv $(dir $@)/libpdftex.a $@
+build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
+	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUAHBTEX_$*)
+	mv $(dir $@)/libluatex.a $@
+	#echo AR1; $(AR_$*) t $@; echo NM1; $(NM_$*) $@
+	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a $(OPTS_LUATEX_$*)
+	#$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUATEX_$*)
+	#mv $(dir $@)/libluatex.a $(dir $@)/busytex_libluatex.a
+	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
+
 
 ################################################################################################################
 
