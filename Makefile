@@ -284,7 +284,7 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
 
-build/%/texlive/texk/kpathsea/win32/mktexlsr.o: build/%/texlive.configured
+build/%/texlive/texk/kpathsea/win32/busytex_mktexlsr.o: build/%/texlive.configured
 	$(CC_$*) -o $@ source/texlive/texk/kpathsea/win32/mktexlsr.c -Ibuild/$*/texlive/texk $(CFLAGS_MKTEXLSR)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
@@ -460,6 +460,7 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	#TODO: factor out build of tangle with friends, web2c/*.c
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/win32/busytex_mktexlsr.o
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpseaccess.o 
@@ -477,7 +478,6 @@ native: build/native/fonts.conf
 	$(MAKE) build/native/texlivedependencies
 	$(MAKE) build/native/busytexapplets
 	$(MAKE) build/native/busytex
-	$(MAKE) build/native/texlive/texk/kpathsea/win32/mktexlsr.o
 
 .PHONY: wasm
 wasm: build/wasm/fonts.conf
