@@ -14,12 +14,11 @@ Supported architecture targets:
 - WASM
 
 Future work:
-- mktexfmt, mktexlsr from https://github.com/TeX-Live/texlive-source/tree/trunk/texk/kpathsea/win32
 - mf-nowin
 - LuaMetaTex / LMTX (lua)
 - tlmgr (perl, web requests)
 - Biber (perl)
-- fmtutil, updmap (perl)
+- mktexlsr, fmtutil, updmap (perl)
 
 ### Usage
 ```shell
