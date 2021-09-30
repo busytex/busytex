@@ -11,7 +11,7 @@ URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
 BUSYTEX_BIN          = busytex fonts.conf
 BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
-BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c convert
+BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c 
 BUSYTEX_FREETYPEBIN  = apinames
 
 TOTAL_MEMORY         = 536870912
@@ -147,9 +147,8 @@ OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
 OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
-OPTS_BUSYTEX_COMPILE = -static-libstdc++ -static-libgcc
+OPTS_BUSYTEX_COMPILE = -static -static-libstdc++ -static-libgcc
 OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread
-#  -static
 # https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
