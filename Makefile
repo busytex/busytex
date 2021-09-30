@@ -300,6 +300,7 @@ build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
 	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX $(OPTS_BUSYTEX_COMPILE)
 	$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
+	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
@@ -309,25 +310,28 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build $(OPTS_ICU_make_$*) 
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
 
+# tie.c tangleboot.c tangle.c otangle.c cwebboot.c cweb.c ctangleboot.c ctangle.c
+
 build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
+	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
+	# xetexini.c, xetex0.c xetex-pool.c
 	-cp $(subst wasm, native, $(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_$*))
 	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
 	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
 	mv $(dir $@)/libxetex.a $@
-	tar -cf $(basename $@).tar $(dir $@)*.c
 
 build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
-	-cp $(subst wasm, native, $(dir $@))/*.c $(dir $@)
+	# pdftexini.c, pdftex0.c pdftex-pool.c
+	-cp $(subst wasm, native, $(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_$*))
 	$(EXTERN_SYM)     $(dir $@)/pdftexd.h                   $(PDFTEX_EXTERN)
 	$(MAKE_$*) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_$*)
 	$(MAKE_$*) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_$*)
 	mv $(dir $@)/libpdftex.a $@
-	tar -cf $(basename $@).tar $(dir $@)/*.c
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
@@ -563,10 +567,12 @@ dist-native: build/native/busytex build/native/fonts.conf
 
 .PHONY: download-native
 download-native:
-	mkdir -p build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
+	mkdir -p source build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
 	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_BIN))
 	wget  -P build/native/texlive/libs/icu/icu-build/bin  -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_ICUBIN))
 	wget  -P build/native/texlive/libs/freetype2/ft-build -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_FREETYPEBIN))
 	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_TEXBIN))
 	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_WEB2CBIN))
 	find build/native -type f -exec chmod +x {} +
+	wget  -P source                                       -nc $(URLRELEASE)/busytex.tar
+	tar -xf source/busytex.tar $(addprefix build/native/texlive/texk/web2c/, pdftexini.c, pdftex0.c pdftex-pool.c xetexini.c xetex0.c xetex-pool.c)
