@@ -88,7 +88,6 @@ DVIPDFMX_REDEFINE = cff_stdstr agl_chop_suffix agl_sput_UTF16BE agl_get_unicodes
 EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
 REDEFINE_SYM        := $(PYTHON) -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
 
-CFLAGS_MKTEXLSR     := -Dmain='__attribute__((visibility(\"default\"))) busymain_mktexlsr'
 CFLAGS_KPSESTAT     := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsestat'
 CFLAGS_KPSEACCESS   := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpseaccess'
 CFLAGS_KPSEREADLINK := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsereadlink'
@@ -284,10 +283,6 @@ build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
 
-build/%/texlive/texk/kpathsea/win32/busytex_mktexlsr.o: build/%/texlive.configured
-	sed -i 's#kpathsea/dirent.h#dirent.h#g' source/texlive/texk/kpathsea/win32/mktexlsr.c
-	$(CC_$*) -o $@ source/texlive/texk/kpathsea/win32/mktexlsr.c -Isource/texlive/texk -Ibuild/$*/texlive/texk $(CFLAGS_MKTEXLSR)
-
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
 	rm $(dir $@)/dvipdfmx.o
@@ -461,7 +456,6 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	#TODO: factor out build of tangle with friends, web2c/*.c
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
-	$(MAKE) $(dir $@)texlive/texk/kpathsea/win32/busytex_mktexlsr.o
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpseaccess.o 
