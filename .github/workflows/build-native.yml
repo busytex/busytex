@@ -5,7 +5,7 @@ on: workflow_dispatch
 env:
   MAKE_PARALLELISM: -j2
   ICUBIN: icupkg pkgdata
-  TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c web2c/convert
+  TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
   FREETYPEBIN: apinames
 
 jobs:
