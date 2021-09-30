@@ -11,7 +11,7 @@ URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
 BUSYTEX_BIN          = busytex fonts.conf
 BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
-BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
+BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c convert
 BUSYTEX_FREETYPEBIN  = apinames
 
 TOTAL_MEMORY         = 536870912
