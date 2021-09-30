@@ -44,8 +44,8 @@ sh example/example.sh
 - review fonts / fontmaps / hyphenation shipped in TexLive packages
 - optimizing binary size. any stripping possible?
 - compile for x86_64-linux-glibc with clang (to match WASM toolchain)
-- minimize build sequence in Makefile and merge native / WASM steps as much as possible
 - set up x86_64-linux binaries Github Actions test for WSLv1
+- minimize build sequence in Makefile as much as possible
 - test of WASM binaries using node.js, test preloading of data packages
 - preloaded minimal single-file, single-engine versions (both WASM and x86_64-linux) with just TexLive Basic and latex-base
 - explore creating virtual and LD_PRELOAD-based file systems: to avoid unpacking the ISO files or ZIP files (to be used even outside BusyTeX context); to embed Tex packages / Perl scripts in the native build 

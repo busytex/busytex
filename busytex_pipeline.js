@@ -246,7 +246,6 @@ class BusytexPipeline
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8', 'luatex_bibtex8'];
         this.error_messages = ['==> Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
 
-        this.mem_header_size = 2 ** 26;
         this.env = {
             TEXMFDIST       : this.dir_texmfdist, 
             TEXMFVAR        : this.dir_texmfvar, 
@@ -271,6 +270,8 @@ class BusytexPipeline
         this.bibtex_resolver = new BusytexBibtexResolver();
         this.data_package_resolver = new BusytexDataPackageResolver(data_packages_js, BusytexPipeline.texmf_system, texmf_local);
         this.wasm_module_promise = fetch(busytex_wasm).then(WebAssembly.compileStreaming);
+        this.mem_header_size = 2 ** 26;
+        
         this.em_module_promise = this.script_loader(busytex_js);
         BusytexPipeline.data_packages = [];
         this.data_package_promises = {};
@@ -282,6 +283,8 @@ class BusytexPipeline
         this.on_initialized = null;
         this.on_initialized_promise = new Promise(resolve => (this.on_initialized = resolve));
         this.on_initialized_promise_notification = this.on_initialized_promise.then(on_initialized);
+        
+        this.on_initialization_error = null;
     }
 
     terminate()
