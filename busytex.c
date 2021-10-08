@@ -37,6 +37,11 @@ extern int busymain_kpseaccess(int argc, char* argv[]);
 extern int busymain_kpsereadlink(int argc, char* argv[]);
 #endif
 
+#ifdef BUSYTEX_FMTUTILUPDMAP
+extern int busymain_fmtutil(int argc, char* argv[]);
+extern int busymain_updmap(int argc, char* argv[]);
+#endif
+
 void flush_streams()
 {
     fputc('\n', stdout);
@@ -103,6 +108,9 @@ int main(int argc, char* argv[])
     APPLET(kpseaccess, kpseaccess)
     APPLET(kpsereadlink, kpsereadlink)
 #endif
-
+#ifdef BUSYTEX_FMTUTILUPDMAP
+    APPLET(fmtutil, fmtutil);
+    APPLET(updmap, updmap);
+#endif
     return 1;
 }
