@@ -344,12 +344,12 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
 
 build/%/perl/busytex_perltools.a: source/perl.downloaded
-	find /usr/lib
-	mkdir -p $(dir $@) && cd $(dir $@) && sh $(ROOT)/source/perl/Configure -Dmksymlinks -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
+	mkdir -p $(dir $@) && cd $(dir $@) && sh $(ROOT)/source/perl/Configure -Dmksymlinks -sde -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dman1dir=none -Dman3dir=none -Dinstallman1dir=none -Dinstallman3dir=none  -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
 	$(MAKE_$*) -C $(dir $@) miniperl generate_uudmap
 	$(MAKE_$*) -C $(dir $@) perl
 	$(MAKE_$*) -C $(dir $@) install
-	find $@/prefix
+	rm -rf ../prefix/man ../prefix/lib/*/pod/ || true
+	find ../prefix/lib -name '*.pod' -delete
 
 
 
