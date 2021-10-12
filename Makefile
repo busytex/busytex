@@ -351,8 +351,16 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	find $(dir $@)prefix
 	rm -rf $(dir $@)prefix/man $(dir $@)/prefix/lib/*/pod/ || true
 	find $(dir $@)/prefix/lib -name '*.pod' -delete
-
-
+	#
+	mkdir -p TeXLive
+	wget  -P TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLConfig.pm
+	wget  -P TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
+	wget             https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
+	wget             https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/updmap.pl
+	$(PYTHON) pack_perl_modules.py TeXLive/TLConfig.pm TeXLive/TLUtils.pm > pack_perl_modules.pl
+	$(LD_$*) -r -b binary -o pack_perl_modules.o pack_perl_modules.pl
+	$(LD_$*) -r -b binary -o fmtutil.o fmtutil.pl
+	$(LD_$*) -r -b binary -o updmap.o updmap.pl
 
 ################################################################################################################
 
