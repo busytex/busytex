@@ -15,7 +15,7 @@ jobs:
     container: alpine:3.14
     steps:
       - name: Install Prerequisites
-        run:  apk add --update --no-cache build-base coreutils cmake git xz wget perl gperf p7zip python3 strace libnsl && ln -sf python3 /usr/bin/python
+        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
 
       - name: Install Hub
         run:  apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing hub 
