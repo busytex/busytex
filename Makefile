@@ -345,7 +345,7 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 
 build/%/perl/busytex_perltools.a: source/perl.downloaded
 	find /usr/lib
-	mkdir -p $(dir $@) && cd $(dir $@) && sh $(ROOT)/source/perl/Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
+	mkdir -p $(dir $@) && cd $(dir $@) && sh $(ROOT)/source/perl/Configure -Dmksymlinks -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
 	$(MAKE_$*) -C $(dir $@) miniperl generate_uudmap
 	$(MAKE_$*) -C $(dir $@) perl
 	$(MAKE_$*) -C $(dir $@) install
