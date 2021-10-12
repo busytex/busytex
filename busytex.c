@@ -81,8 +81,6 @@ int busymain_fmtutil(int argc, char **argv, char **env)
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     
-    //perl_parse(my_perl, xs_init, argc, argv, (char **)NULL);
-    
     int iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
     strncpy(script,    _binary_fmtutil_pl_start, iSize);
     script[iSize] = '\0';
@@ -104,8 +102,6 @@ int busymain_updmap(int argc, char **argv, char **env)
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-    
-    //perl_parse(my_perl, xs_init, argc, argv, (char **)NULL);
     
     int iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
     strncpy(script,    _binary_fmtutil_pl_start, iSize);
