@@ -395,7 +395,6 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	$(LD_$*) -r -b binary -o pack_perl_modules.o pack_perl_modules.pl
 	$(LD_$*) -r -b binary -o fmtutil.o fmtutil.pl
 	$(LD_$*) -r -b binary -o updmap.o updmap.pl
-	$(CC_$*) -o emperl emperl.c fmtutil.o updmap.o 
 	$(AR_$*) -crs $@ fmtutil.o updmap.o pack_perl_modules.o
 
 ################################################################################################################
