@@ -348,8 +348,9 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	$(MAKE_$*) -C $(dir $@) miniperl generate_uudmap
 	$(MAKE_$*) -C $(dir $@) perl
 	$(MAKE_$*) -C $(dir $@) install
-	rm -rf ../prefix/man ../prefix/lib/*/pod/ || true
-	find ../prefix/lib -name '*.pod' -delete
+	find $(dir $@)prefix
+	rm -rf $(dir $@)prefix/man $(dir $@)/prefix/lib/*/pod/ || true
+	find $(dir $@)/prefix/lib -name '*.pod' -delete
 
 
 
