@@ -149,7 +149,8 @@ OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_COMPILE = -static -static-libstdc++ -static-libgcc
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread
+OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_FMTUTILUPDMAP -I$(ROOT)/build/native/perl -Wl,-E -fstack-protector-strong   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/prefix/lib/5.35.4/x86_64-linux/CORE 
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/prefix/lib/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/prefix/lib/5.35.4/x86_64-linux/auto/IO/IO.a  -L$(ROOT)/build/native/prefix/lib/5.35.4/x86_64-linux/CORE -lperl -lpthread -lnsl -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong 
 # https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
@@ -298,7 +299,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
-	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX $(OPTS_BUSYTEX_COMPILE)
+	$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
 	$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
@@ -357,10 +358,45 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	wget  -P TeXLive https://raw.githubusercontent.com/TeX-Live/installer/master/tlpkg/TeXLive/TLUtils.pm
 	wget             https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
 	wget             https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/updmap.pl
-	$(PYTHON) pack_perl_modules.py TeXLive/TLConfig.pm TeXLive/TLUtils.pm > pack_perl_modules.pl
+	$(PYTHON) pack_perl_modules.py \
+		prefix/lib/5.35.4/Exporter.pm \
+		prefix/lib/5.35.4/strict.pm \
+		prefix/lib/5.35.4/vars.pm \
+		prefix/lib/5.35.4/warnings.pm \
+		prefix/lib/5.35.4/Carp.pm \
+		prefix/lib/5.35.4/overloading.pm \
+		prefix/lib/5.35.4/XSLoader.pm \
+		prefix/lib/5.35.4/Getopt/Long.pm@Getopt/Long.pm \
+		prefix/lib/5.35.4/constant.pm \
+		prefix/lib/5.35.4/overload.pm \
+		prefix/lib/5.35.4/Symbol.pm \
+		prefix/lib/5.35.4/parent.pm \
+		prefix/lib/5.35.4/SelectSaver.pm \
+		prefix/lib/5.35.4/x86_64-linux/IO.pm \
+		prefix/lib/5.35.4/x86_64-linux/Fcntl.pm \
+		prefix/lib/5.35.4/x86_64-linux/Cwd.pm \
+		prefix/lib/5.35.4/x86_64-linux/Errno.pm \
+		prefix/lib/5.35.4/x86_64-linux/Config.pm \
+		prefix/lib/5.35.4/warnings/register.pm@warnings/register.pm \
+		prefix/lib/5.35.4/Exporter/Heavy.pm@Exporter/Heavy.pm \
+		prefix/lib/5.35.4/File/Temp.pm@File/Temp.pm \
+		prefix/lib/5.35.4/File/Path.pm@File/Path.pm \
+		prefix/lib/5.35.4/File/Basename.pm@File/Basename.pm \
+		prefix/lib/5.35.4/Carp/Heavy.pm@Carp/Heavy.pm \
+		prefix/lib/5.35.4/x86_64-linux/File/Spec.pm@File/Spec.pm \
+		prefix/lib/5.35.4/x86_64-linux/File/Spec/Unix.pm@File/Spec/Unix.pm \
+		prefix/lib/5.35.4/x86_64-linux/IO/Seekable.pm@IO/Seekable.pm \
+		prefix/lib/5.35.4/x86_64-linux/IO/Handle.pm@IO/Handle.pm \
+		prefix/lib/5.35.4/x86_64-linux/Scalar/Util.pm@Scalar/Util.pm \
+		prefix/lib/5.35.4/x86_64-linux/List/Util.pm@List/Util.pm
+		TeXLive/TLConfig.pm@TeXLive/TLConfig.pm \
+		TeXLive/TLUtils.pm@TeXLive/TLUtils.pm \
+		> pack_perl_modules.pl
 	$(LD_$*) -r -b binary -o pack_perl_modules.o pack_perl_modules.pl
 	$(LD_$*) -r -b binary -o fmtutil.o fmtutil.pl
 	$(LD_$*) -r -b binary -o updmap.o updmap.pl
+	$(CC_$*) -o emperl emperl.c fmtutil.o updmap.o 
+	$(AR_$*) -crs $@ fmtutil.o updmap.o pack_perl_modules.o
 
 ################################################################################################################
 

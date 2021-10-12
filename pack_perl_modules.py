@@ -1,11 +1,16 @@
+import os
 import sys
 
 print(sys.argv, file = sys.stderr)
 
 print('BEGIN {')
 print('my %modules = (')
-for path in sys.argv[1:]:
-    print(f'''"${path}" => <<' '__EOI__',''')
+for p in sys.argv[1:]:
+    path, *key = p.split('@')
+    if not key:
+        key = os.path.basename(path)
+
+    print(f'''"${key[0]}" => <<' '__EOI__',''')
     print(open(path).read())
     print('1;')
     print('__EOI__')

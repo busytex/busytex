@@ -61,7 +61,7 @@ extern char _binary_pack_perl_modules_pl_end[];
 extern void boot_Fcntl      (pTHX_ CV* cv);
 extern void boot_IO         (pTHX_ CV* cv);
 extern void boot_DynaLoader (pTHX_ CV* cv);
-void xs_init         (pTHX)
+void xs_init                (pTHX)
 {
     static const char file[] = __FILE__;
     dXSUB_SYS;
