@@ -11,9 +11,9 @@ URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
 BUSYTEX_BIN          = busytex fonts.conf
 BUSYTEX_ICUBIN       = icupkg pkgdata
+BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c 
-BUSYTEX_FREETYPEBIN  = apinames
 
 TOTAL_MEMORY         = 536870912
 CFLAGS_OPT_native    = -O3

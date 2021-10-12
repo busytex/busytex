@@ -109,8 +109,20 @@ int main(int argc, char* argv[])
     APPLET(kpsereadlink, kpsereadlink)
 #endif
 #ifdef BUSYTEX_FMTUTILUPDMAP
-    APPLET(fmtutil, fmtutil);
-    APPLET(updmap, updmap);
+    APPLET(fmtutil, fmtutil)
+    APPLET(updmap, updmap)
+#endif
+#ifdef BUSYTEX_TEXBIN
+    APPLET(ctangle, ctangle)
+    APPLET(otangle, otangle)
+    APPLET(tangle, tangle)
+    APPLET(tangleboot, tangleboot)
+    APPLET(ctangleboot, ctangleboot)
+    APPLET(tie, tie)
+    APPLET(fixwrites, fixwrites)
+    APPLET(makecpool, makecpool)
+    APPLET(splitup, splitup)
+    APPLET(web2c, web2c)
 #endif
     return 1;
 }
