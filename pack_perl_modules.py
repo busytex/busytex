@@ -1,8 +1,10 @@
 import sys
 
+print(sys.argv, file = sys.stderr)
+
 print('BEGIN {')
 print('my %modules = (')
-for p in sys.argv[1:]:
+for path in sys.argv[1:]:
     print(f'''"${path}" => <<' '__EOI__',''')
     print(open(path).read())
     print('1;')
