@@ -6,7 +6,7 @@ print('my %modules = (')
 for p in sys.argv[1:]:
     path, *key = p.split('@')
     if not key:
-        key = os.path.basename(path)
+        key = [os.path.basename(path)]
 
     print(f'''"${key[0]}" => <<' '__EOI__',''')
     print(open(path).read())
