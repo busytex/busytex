@@ -361,36 +361,36 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	$(PYTHON) pack_perl_modules.py \
 		TeXLive/TLConfig.pm@TeXLive/TLConfig.pm \
 		TeXLive/TLUtils.pm@TeXLive/TLUtils.pm \
-		$(dir $@)prefix/lib/5.35.4/Exporter.pm \
-		$(dir $@)prefix/lib/5.35.4/strict.pm \
-		$(dir $@)prefix/lib/5.35.4/vars.pm \
-		$(dir $@)prefix/lib/5.35.4/warnings.pm \
-		$(dir $@)prefix/lib/5.35.4/Carp.pm \
-		$(dir $@)prefix/lib/5.35.4/overloading.pm \
-		$(dir $@)prefix/lib/5.35.4/XSLoader.pm \
-		$(dir $@)prefix/lib/5.35.4/Getopt/Long.pm@Getopt/Long.pm \
-		$(dir $@)prefix/lib/5.35.4/constant.pm \
-		$(dir $@)prefix/lib/5.35.4/overload.pm \
-		$(dir $@)prefix/lib/5.35.4/Symbol.pm \
-		$(dir $@)prefix/lib/5.35.4/parent.pm \
-		$(dir $@)prefix/lib/5.35.4/SelectSaver.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/IO.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/Fcntl.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/Cwd.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/Errno.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/Config.pm \
-		$(dir $@)prefix/lib/5.35.4/warnings/register.pm@warnings/register.pm \
-		$(dir $@)prefix/lib/5.35.4/Exporter/Heavy.pm@Exporter/Heavy.pm \
-		$(dir $@)prefix/lib/5.35.4/File/Temp.pm@File/Temp.pm \
-		$(dir $@)prefix/lib/5.35.4/File/Path.pm@File/Path.pm \
-		$(dir $@)prefix/lib/5.35.4/File/Basename.pm@File/Basename.pm \
-		$(dir $@)prefix/lib/5.35.4/Carp/Heavy.pm@Carp/Heavy.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/File/Spec.pm@File/Spec.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/File/Spec/Unix.pm@File/Spec/Unix.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/IO/Seekable.pm@IO/Seekable.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/IO/Handle.pm@IO/Handle.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/Scalar/Util.pm@Scalar/Util.pm \
-		$(dir $@)prefix/lib/5.35.4/x86_64-linux/List/Util.pm@List/Util.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/Exporter.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/strict.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/vars.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/warnings.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/Carp.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/overloading.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/XSLoader.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/Getopt/Long.pm@Getopt/Long.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/constant.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/overload.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/Symbol.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/parent.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/SelectSaver.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/IO.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/Fcntl.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/Cwd.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/Errno.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/Config.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/warnings/register.pm@warnings/register.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/Exporter/Heavy.pm@Exporter/Heavy.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/File/Temp.pm@File/Temp.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/File/Path.pm@File/Path.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/File/Basename.pm@File/Basename.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/Carp/Heavy.pm@Carp/Heavy.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/File/Spec.pm@File/Spec.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/File/Spec/Unix.pm@File/Spec/Unix.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/IO/Seekable.pm@IO/Seekable.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/IO/Handle.pm@IO/Handle.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/Scalar/Util.pm@Scalar/Util.pm \
+		$(dir $@)prefix/lib/perl5/5.35.4/x86_64-linux/List/Util.pm@List/Util.pm \
 		> pack_perl_modules.pl
 	$(LD_$*) -r -b binary -o pack_perl_modules.o pack_perl_modules.pl
 	$(LD_$*) -r -b binary -o fmtutil.o fmtutil.pl
