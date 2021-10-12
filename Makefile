@@ -7,6 +7,7 @@ URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/h
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
+URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
 BUSYTEX_BIN          = busytex fonts.conf
 BUSYTEX_ICUBIN       = icupkg pkgdata
@@ -165,7 +166,7 @@ all: build/versions.txt
 	#$(MAKE) tds-full
 	#$(MAKE) ubuntu-wasm
 
-source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
+source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded source/perl.downloaded:
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
 	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
@@ -342,6 +343,14 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 	#mv $(dir $@)/libluatex.a $(dir $@)/busytex_libluatex.a
 	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
 
+build/%/perltools/busytex_perltools.a: 
+	cd $(dir $@) && sh ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
+	$(MAKE_$*) -C $(dir $@) miniperl generate_uudmap
+	$(MAKE_$*) -C $(dir $@) perl
+	$(MAKE_$*) -C $(dir $@) install
+	find $@/prefix
+
+
 
 ################################################################################################################
 
@@ -454,6 +463,7 @@ build/native/texlivedependencies build/wasm/texlivedependencies:
 .PHONY: build/native/busytexapplets build/wasm/busytexapplets
 build/native/busytexapplets build/wasm/busytexapplets:
 	#TODO: factor out build of tangle with friends, web2c/*.c
+	$(MAKE) $(dir $@)perltools/busytex_perltools.a
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
