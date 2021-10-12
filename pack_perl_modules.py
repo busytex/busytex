@@ -1,8 +1,6 @@
 import os
 import sys
 
-print(sys.argv, file = sys.stderr)
-
 print('BEGIN {')
 print('my %modules = (')
 for p in sys.argv[1:]:
