@@ -6,7 +6,7 @@ URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive202
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
-URL_UBUNTU_RELEASE   = https://packages.ubuntu.com/groovy/
+URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
 BUSYTEX_BIN          = busytex fonts.conf
@@ -42,6 +42,7 @@ CXX_native    = $(CXX)
 MAKE_native   = $(MAKE)
 CMAKE_native  = cmake
 AR_native     = $(AR)
+LD_native     = $(LD)
 NM_native     = nm
 LDD_native    = ldd
 
@@ -464,7 +465,7 @@ build/wasm/ubuntu-%.js: $(TEXMF_FULL)
 		--js-output=$@ \
 		--export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
-		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_UBUNTU_RELEASE) --skip-log $(basename $@).skip.txt --good-log $(basename $@).good.txt --package $*)
+		$(shell $(PYTHON) ubuntu_package_preload.py --texmf $(TEXMF_FULL) --url $(URL_ubuntu_release) --skip-log $(basename $@).skip.txt --good-log $(basename $@).good.txt --package $*)
 
 build/wasm/fonts.conf:
 	mkdir -p $(dir $@)
@@ -561,7 +562,7 @@ build/versions.txt:
 	mkdir -p build
 	echo 'busytex dependencies:'                                        > $@
 	echo texlive: \\url{$(URL_texlive)} \\url{$(URL_texlive_full_iso)} >> $@
-	echo ubuntu packages: \\url{$(URL_UBUNTU_RELEASE)}                 >> $@
+	echo ubuntu packages: \\url{$(URL_ubuntu_release)}                 >> $@
 	echo expat: \\url{$(URL_expat)}                                    >> $@
 	echo fontconfig: \\url{$(URL_fontconfig)}                          >> $@
 	echo emscripten: $(EMSCRIPTEN_VERSION)                             >> $@
