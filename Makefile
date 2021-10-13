@@ -151,7 +151,7 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_COMPILE = -static -static-libstdc++ -static-libgcc
 OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_FMTUTILUPDMAP -I$(ROOT)/build/native/perl -Wl,-E -fstack-protector-strong   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a  -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lpthread -lnsl -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong 
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a  -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong 
 # https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
@@ -346,7 +346,7 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
 
 build/%/perl/busytex_perltools.a: source/perl.downloaded
-	mkdir -p $(dir $@) && cd $(dir $@) && sh $(ROOT)/source/perl/Configure -Dmksymlinks -sde -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dman1dir=none -Dman3dir=none -Dinstallman1dir=none -Dinstallman3dir=none  -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -lnsl -ldl -lm -lutil -lc"
+	mkdir -p $(dir $@) && cd $(dir $@) && sh $(ROOT)/source/perl/Configure -Dmksymlinks -sde -Dprefix=prefix -Aldflags=-lm -Accflags=-lm -Dman1dir=none -Dman3dir=none -Dinstallman1dir=none -Dinstallman3dir=none  -Dstatic_ext="IO Fcntl" -Dusedevel -Dlibs="-lpthread -ldl -lm -lutil -lc"
 	$(MAKE_$*) -C $(dir $@) miniperl generate_uudmap
 	$(MAKE_$*) -C $(dir $@) perl
 	$(MAKE_$*) -C $(dir $@) install
