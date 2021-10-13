@@ -75,16 +75,19 @@ void xs_init                (pTHX)
 
 static char script[1 << 20];
 
-int busymain_fmtutil(int argc, char **argv, char **env)
+int busymain_fmtutil(int argc, char* argv[])
 {
-    PERL_SYS_INIT3(&argc, &argv, &env);
+    //PERL_SYS_INIT3(&argc, &argv, &env);
+    PERL_SYS_INIT3((int *)NULL,(char ***)NULL,(char ***)NULL);
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     
-    int iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
-    strncpy(script,    _binary_fmtutil_pl_start, iSize);
+    int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
+    strncpy(script,    _binary_pack_perl_modules_pl_start, iSize);
     script[iSize] = '\0';
+    iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
+    strncat(script,    _binary_fmtutil_pl_start, iSize);
 
     char *one_args[] = { "my_perl", "-e", script, "--", argv[1], NULL };
     perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
@@ -97,16 +100,19 @@ int busymain_fmtutil(int argc, char **argv, char **env)
     return 0;
 }
 
-int busymain_updmap(int argc, char **argv, char **env)
+int busymain_updmap(int argc, char* argv[])
 {
-    PERL_SYS_INIT3(&argc, &argv, &env);
+    //PERL_SYS_INIT3(&argc, &argv, &env);
+    PERL_SYS_INIT3((int *)NULL,(char ***)NULL,(char ***)NULL);
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     
-    int iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
-    strncpy(script,    _binary_fmtutil_pl_start, iSize);
+    int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
+    strncpy(script,    _binary_pack_perl_modules_pl_start, iSize);
     script[iSize] = '\0';
+    iSize =  (int)(_binary_updmap_pl_end - _binary_updmap_pl_start);
+    strncat(script,    _binary_updmap_pl_start, iSize);
 
     char *one_args[] = { "my_perl", "-e", script, "--", argv[1], NULL };
     perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
