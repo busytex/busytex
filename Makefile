@@ -432,7 +432,8 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
 	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
-	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
+	rm $(addprefix $(basename $@)/$(BINARCH_native)/, fmtutil-sys updmap-sys)
+	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink fmtutil-sys updmap-sys,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#   -v -e trace=execve strace -v -s 1000 -f
 	source/texmfrepo/install-tl --help 

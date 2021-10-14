@@ -73,8 +73,6 @@ void xs_init                (pTHX)
     newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
 
-static char script[1 << 20];
-
 int busymain_fmtutil(int argc, char* argv[])
 {
     //PERL_SYS_INIT3(&argc, &argv, &env);
@@ -82,6 +80,10 @@ int busymain_fmtutil(int argc, char* argv[])
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+
+    static char script[1 << 20];
+    static char* my_args[1 << 10] = {"my_perl", "-e", NULL, "--", "--sys"};
+    int my_argc = 5;
     
     int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
     strncpy(script,    _binary_pack_perl_modules_pl_start, iSize);
@@ -89,8 +91,11 @@ int busymain_fmtutil(int argc, char* argv[])
     iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
     strncat(script,    _binary_fmtutil_pl_start, iSize);
 
-    char *one_args[] = { "my_perl", "-e", script, "--", argv[1], NULL };
-    perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
+    my_args[2] = script;
+    memcpy(my_args + my_argc, argv + 1, (argc - 1) * sizeof(char*));
+    my_argc += (argc - 1);
+
+    perl_parse(my_perl, xs_init, my_argc, my_args, (char **)NULL);
     
     perl_run(my_perl);
     perl_destruct(my_perl);
@@ -108,14 +113,21 @@ int busymain_updmap(int argc, char* argv[])
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     
+    static char script[1 << 20];
+    static char* my_args[1 << 10] = {"my_perl", "-e", NULL, "--", "--sys"};
+    int my_argc = 5;
+    
     int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
     strncpy(script,    _binary_pack_perl_modules_pl_start, iSize);
     script[iSize] = '\0';
     iSize =  (int)(_binary_updmap_pl_end - _binary_updmap_pl_start);
     strncat(script,    _binary_updmap_pl_start, iSize);
 
-    char *one_args[] = { "my_perl", "-e", script, "--", argv[1], NULL };
-    perl_parse(my_perl, xs_init, 5, one_args, (char **)NULL);
+    my_args[2] = script;
+    memcpy(my_args + my_argc, argv + 1, (argc - 1) * sizeof(char*));
+    my_argc += (argc - 1);
+
+    perl_parse(my_perl, xs_init, my_argc, my_args, (char **)NULL);
     
     perl_run(my_perl);
     perl_destruct(my_perl);
@@ -165,6 +177,10 @@ int main(int argc, char* argv[])
             "kpseaccess\n"
             "kpsereadlink\n"
 #endif
+#ifdef BUSYTEX_FMTUTILUPDMAP
+            "fmtutil-sys\n"
+            "updmap-sys\n"
+#endif
         );
         return 0;
     }
@@ -195,8 +211,8 @@ int main(int argc, char* argv[])
     APPLET(kpsereadlink, kpsereadlink)
 #endif
 #ifdef BUSYTEX_FMTUTILUPDMAP
-    APPLET(fmtutil, fmtutil)
-    APPLET(updmap, updmap)
+    APPLET(fmtutil, fmtutil-sys)
+    APPLET(updmap, updmap-sys)
 #endif
 #ifdef BUSYTEX_TEXBIN
     APPLET(ctangle, ctangle)
