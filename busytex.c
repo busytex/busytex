@@ -76,11 +76,13 @@ void xs_init                (pTHX)
 int busymain_fmtutil(int argc, char* argv[])
 {
     //PERL_SYS_INIT3(&argc, &argv, &env);
+    puts("1");
     PERL_SYS_INIT3((int *)NULL,(char ***)NULL,(char ***)NULL);
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
+    puts("2");
     static char script[1 << 20];
     static char* my_args[1 << 10] = {"my_perl", "-e", NULL, "--", "--sys"};
     int my_argc = 5;
@@ -91,12 +93,13 @@ int busymain_fmtutil(int argc, char* argv[])
     iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
     strncat(script,    _binary_fmtutil_pl_start, iSize);
 
+    puts("3");
     my_args[2] = script;
     memcpy(my_args + my_argc, argv + 1, (argc - 1) * sizeof(char*));
     my_argc += (argc - 1);
-
+    puts("4");
     perl_parse(my_perl, xs_init, my_argc, my_args, (char **)NULL);
-    
+    puts("5");
     perl_run(my_perl);
     perl_destruct(my_perl);
     perl_free(my_perl);
