@@ -351,7 +351,7 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	$(MAKE_$*) -C $(dir $@) perl
 	$(MAKE_$*) -C $(dir $@) install
 	find $(dir $@)prefix
-	rm -rf $(dir $@)prefix/man $(dir $@)/prefix/lib/*/pod/ || true
+	-rm -rf $(dir $@)prefix/man $(dir $@)/prefix/lib/*/pod/
 	find $(dir $@)/prefix/lib -name '*.pod' -delete
 	#
 	mkdir -p TeXLive
@@ -433,8 +433,6 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	cp $(BUSYTEX_native)                                                  $(basename $@)/$(BINARCH_native)
 	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink fmtutil-sys updmap-sys,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
-	$(basename $@)/$(BINARCH_native)/fmtutil-sys --help
-	$(basename $@)/$(BINARCH_native)/updmap-sys --help
 	$(foreach name,mktexlsr.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#   -v -e trace=execve strace -v -s 1000 -f
@@ -575,6 +573,8 @@ test: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
 	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	-$(BUSYTEX_native) fmtutil-sys --help
+	-$(BUSYTEX_native) updmap-sys --help
 
 ################################################################################################################
 
