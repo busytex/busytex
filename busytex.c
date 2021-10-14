@@ -77,7 +77,7 @@ int busymain_fmtutil(int argc, char* argv[])
 {
     //PERL_SYS_INIT3(&argc, &argv, &env);
     puts("1");
-    PERL_SYS_INIT3((int *)NULL,(char ***)NULL,(char ***)NULL);
+    PERL_SYS_INIT3(&args, &argv, NULL);
     puts("11");
     PerlInterpreter* my_perl = perl_alloc();
     puts("12");
@@ -113,7 +113,7 @@ int busymain_fmtutil(int argc, char* argv[])
 int busymain_updmap(int argc, char* argv[])
 {
     //PERL_SYS_INIT3(&argc, &argv, &env);
-    PERL_SYS_INIT3((int *)NULL,(char ***)NULL,(char ***)NULL);
+    PERL_SYS_INIT3(&args, &argv, NULL);
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
