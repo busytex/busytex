@@ -574,8 +574,8 @@ build/versions.txt:
 test: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
-	$(BUSYTEX_native) fmtutil-sys --help
-	$(BUSYTEX_native) updmap-sys --help
+	strace -f $(BUSYTEX_native) fmtutil-sys --help
+	strace -f $(BUSYTEX_native) updmap-sys --help
 	#$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
