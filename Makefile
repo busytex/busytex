@@ -151,7 +151,7 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_COMPILE = -static -static-libstdc++ -static-libgcc
 OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_FMTUTILUPDMAP -I$(ROOT)/build/native/perl -Wl,-E -fstack-protector-strong   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a  -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -pipe -fstack-protector-strong 
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -fstack-protector-strong 
 # https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
@@ -367,7 +367,7 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	$(CC_$*) -o emperl emperl.c fmtutil.o -Ibuild/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm
 	./emperl
 	$(CC_$*) -c busytex.c -o busytex.o $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
-	$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o busytex busytex.o $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) -ldl -lm
+	$(CXX_$*) $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -fstack-protector-strong  $(CFLAGS_OPT_$*) -o busytex busytex.o $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX))
 	./busytex fmtutil-sys
 	exit 1
 	rm fmtutil.o
