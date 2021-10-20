@@ -300,8 +300,8 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
-	$(CC_$*) -c busytex.c -o $(basename $@).o $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
-	$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) -ldl -lm
+	$(CC_$*) -c busytex.c -o $(basename $@).o $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(CFLAGS_OPT_$*)
+	$(CC_$*) $(OPTS_BUSYTEX_LINK_$*) -o $@ $(basename $@).o -ldl -lm
 	#$(CC_$*) -c busytex.c -o $(basename $@).o -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
 	#$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
@@ -366,9 +366,9 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	#
 	$(CC_$*) -o emperl emperl.c fmtutil.o -Ibuild/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm
 	./emperl
-	$(CXX_$*) -o busytex emperl.c -Ibuild/$*/perl -Wl,-E -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE    -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -fstack-protector-strong  $(CFLAGS_OPT_$*) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX))
-	#$(CC_$*) -o busytex.o -c emperl.c -DBUSYTEX_FMTUTILUPDMAP -Ibuild/native/perl -Wl,-E -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE
-	#$(CXX_$*) $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread -L/usr/local/lib build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -fstack-protector-strong  $(CFLAGS_OPT_$*) -o busytex busytex.o $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX))
+	#$(CXX_$*) -o busytex emperl.c -Ibuild/$*/perl -Wl,-E -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE    -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -fstack-protector-strong  $(CFLAGS_OPT_$*) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX))
+	$(CC_$*) -o busytex.o -c emperl.c -DBUSYTEX_FMTUTILUPDMAP -Ibuild/native/perl -Wl,-E -fstack-protector-strong -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE
+	$(CC_$*) $(OPTS_BUSYTEX_COMPILE) -Wl,--unresolved-symbols=ignore-all -Wimplicit -Wreturn-type -pthread -L/usr/local/lib build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm -fwrapv -fno-strict-aliasing -fstack-protector-strong -o busytex busytex.o 
 	./busytex fmtutil-sys
 	exit 1
 	rm fmtutil.o
