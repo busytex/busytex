@@ -10,7 +10,7 @@
 
 #define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain(name1)(argc - 1, argv + 1); } }
 
-extern int optind;
+//extern int optind;
 
 #ifdef BUSYTEX_PDFTEX 
 extern int busymain_pdftex(int argc, char* argv[]);
