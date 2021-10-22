@@ -363,15 +363,15 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 	wget             https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/fmtutil.pl
 	wget             https://raw.githubusercontent.com/TeX-Live/texlive-source/trunk/texk/texlive/linked_scripts/texlive/updmap.pl
 	#
-	$(LD_$*) -r -b binary -o fmtutil.o fmtutil.pl
+	#$(LD_$*) -r -b binary -o fmtutil.o fmtutil.pl
 	#
-	$(CC_$*) -o emperl emperl.c fmtutil.o -Ibuild/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm
-	./emperl
-	$(CC_$*) busytex.c -o buid/$*/busytex $(OPTS_BUSYTEX_LINK_$*) $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(CFLAGS_OPT_$*) -ldl -lm
+	#$(CC_$*) -o emperl emperl.c fmtutil.o -Ibuild/native/perl -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -lpthread -ldl -lm -lutil -lc -lm
+	#./emperl
+	#$(CC_$*) busytex.c -o buid/$*/busytex $(OPTS_BUSYTEX_LINK_$*) $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(CFLAGS_OPT_$*) -ldl -lm
 	#$(CC_$*) -o busytex emperl.c -Ibuild/$*/perl  -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Ibuild/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -L/usr/local/lib build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a build/$*/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE/libperl.a -Wl,--unresolved-symbols=ignore-all -pthread -lpthread -ldl -lm -lutil -lc -lm # -Wl,-E -Wimplicit -Wreturn-type 
-	./busytex fmtutil-sys
-	exit 1
-	rm fmtutil.o
+	#./busytex fmtutil-sys
+	#exit 1
+	#rm fmtutil.o
 	#
 	$(PYTHON) pack_perl_modules.py \
 		TeXLive/TLConfig.pm@TeXLive/TLConfig.pm \
@@ -586,8 +586,9 @@ build/versions.txt:
 test: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
-	strace -f $(BUSYTEX_native) fmtutil-sys --help
-	strace -f $(BUSYTEX_native) updmap-sys --help
+	$(BUSYTEX_native) fmtutil-sys --help
+	$(BUSYTEX_native) updmap-sys --help
+	exit 1
 	#$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
