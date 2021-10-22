@@ -57,7 +57,6 @@ extern char _binary_updmap_pl_start[];
 extern char _binary_updmap_pl_end[];
 extern char _binary_pack_perl_modules_pl_start[];
 extern char _binary_pack_perl_modules_pl_end[];
-
 extern void boot_Fcntl      (pTHX_ CV* cv);
 extern void boot_IO         (pTHX_ CV* cv);
 extern void boot_DynaLoader (pTHX_ CV* cv);

@@ -33,13 +33,13 @@ jobs:
       - name: Smoke native
         run:  make test
 
-      - name: Test native 
-        run: |
-            make tds-basic
-            make dist-native
-            sh example/example.sh
-
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex -a build/native/busytex.tar  $(printf -- "-a build/native/texlive/libs/freetype2/ft-build/%s " $FREETYPEBIN) $(printf -- "-a build/native/texlive/libs/icu/icu-build/bin/%s " $ICUBIN) $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
+#      - name: Test native 
+#        run: |
+#            make tds-basic
+#            make dist-native
+#            sh example/example.sh
+#
+#      - name: Create Release
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex -a build/native/busytex.tar  $(printf -- "-a build/native/texlive/libs/freetype2/ft-build/%s " $FREETYPEBIN) $(printf -- "-a build/native/texlive/libs/icu/icu-build/bin/%s " $ICUBIN) $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
