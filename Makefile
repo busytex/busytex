@@ -303,10 +303,9 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
-	#$(CC_$*) -c busytex.c -o $(basename $@).o $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
-	#$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
-	#$(CC_$*) -c busytex.c -o $(basename $@).o $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
-	$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
+	$(CC_$*) -c busytex.c -o $(basename $@).o $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*)
+	$(CXX_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
+	#$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE) $(OPTS_BUSYTEX_COMPILE_$*) $(OPTS_BUSYTEX_LINK_$*) $(CFLAGS_OPT_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA)) -ldl -lm
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
