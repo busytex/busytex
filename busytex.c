@@ -13,29 +13,29 @@
 extern int optind;
 
 #ifdef BUSYTEX_PDFTEX 
-extern int busymain_pdftex(int argc, char* argv[]);
+extern "C" int busymain_pdftex(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_LUATEX
-//extern int busymain_luatex(int argc, char* argv[]);
-extern int busymain_luahbtex(int argc, char* argv[]);
+//extern "C" int busymain_luatex(int argc, char* argv[]);
+extern "C" int busymain_luahbtex(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_XETEX
-extern int busymain_xetex(int argc, char* argv[]);
+extern "C" int busymain_xetex(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_XDVIPDFMX
-extern int busymain_xdvipdfmx(int argc, char* argv[]);
+extern "C" int busymain_xdvipdfmx(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_BIBTEX8
-extern int busymain_bibtex8(int argc, char* argv[]);
+extern "C" int busymain_bibtex8(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_MAKEINDEX
-extern int busymain_makeindex(int argc, char* argv[]);
+extern "C" int busymain_makeindex(int argc, char* argv[]);
 #endif
 #ifdef BUSYTEX_KPSE
-extern int busymain_kpsewhich(int argc, char* argv[]);
-extern int busymain_kpsestat(int argc, char* argv[]);
-extern int busymain_kpseaccess(int argc, char* argv[]);
-extern int busymain_kpsereadlink(int argc, char* argv[]);
+extern "C" int busymain_kpsewhich(int argc, char* argv[]);
+extern "C" int busymain_kpsestat(int argc, char* argv[]);
+extern "C" int busymain_kpseaccess(int argc, char* argv[]);
+extern "C" int busymain_kpsereadlink(int argc, char* argv[]);
 #endif
 
 #ifdef BUSYTEX_FMTUTILUPDMAP
