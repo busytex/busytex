@@ -10,7 +10,7 @@
 
 #define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain(name1)(argc - 1, argv + 1); } }
 
-extern int optind;
+extern "C" int optind;
 
 #ifdef BUSYTEX_PDFTEX 
 extern "C" int busymain_pdftex(int argc, char* argv[]);
@@ -80,7 +80,7 @@ int busymain_fmtutil(int argc, char* argv[])
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
 
     static char script[1 << 20];
-    static char* my_args[1 << 10] = {"my_perl", "-e", NULL, "--", "--sys"};
+    static char* my_args[1 << 10] = {(const char*)"my_perl", (const char*)"-e", NULL, (const char*)"--", (const char*)"--sys"};
     int my_argc = 5;
     
     int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
@@ -109,7 +109,7 @@ int busymain_updmap(int argc, char* argv[])
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
     
     static char script[1 << 20];
-    static char* my_args[1 << 10] = {"my_perl", "-e", NULL, "--", "--sys"};
+    static char* my_args[1 << 10] = {(const char*)"my_perl", (const char*)"-e", NULL, (const char*)"--", (const char*)"--sys"};
     int my_argc = 5;
     
     int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
