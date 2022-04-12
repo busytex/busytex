@@ -115,6 +115,7 @@ make clean
 - https://adared.ch/unionfs_by_intercept/
 - https://arxiv.org/abs/1908.10740
 - http://ordiluc.net/fs/libetc/
+- http://pages.stern.nyu.edu/~marriaga/software/libtrash/
 
 ### Random links
 - abspath/realpath instead of ROOT
