@@ -37,11 +37,11 @@ jobs:
         run: |
             make tds-basic
             make dist-native
-            pushd
+            MYOLDPWD="$PWD"
             echo PWD="$PWD"
             sh example/example.sh
             echo PWD="$PWD"
-            popd
+            cd "$MYOLDPWD"
 
       - name: Create Release
         env:
