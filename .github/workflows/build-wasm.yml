@@ -10,7 +10,7 @@ on:
 
 env:
   BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
-  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science
+  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-fonts-recommended
   EMSCRIPTEN_VERSION: 2.0.30
   MAKE_PARALLELISM: -j2
 

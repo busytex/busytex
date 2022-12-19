@@ -151,7 +151,9 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
 OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      -I$(ROOT)/build/native/perl -Wimplicit -Wreturn-type -fstack-protector-strong  -fwrapv -fno-strict-aliasing   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE  -DBUSYTEX_FMTUTILUPDMAP
 OPTS_BUSYTEX_LINK = -static -static-libstdc++ -static-libgcc 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all -Wl,-E build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lutil
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all 
+
+#OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all -Wl,-E build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lutil
 # https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
@@ -300,9 +302,10 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
-	#$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
-	#$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
-	$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*) $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
+	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
+	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
+	#
+	#$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*) $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
@@ -513,7 +516,7 @@ build/native/texlivedependencies build/wasm/texlivedependencies:
 .PHONY: build/native/busytexapplets build/wasm/busytexapplets
 build/native/busytexapplets build/wasm/busytexapplets:
 	#TODO: factor out build of tangle with friends, web2c/*.c
-	$(MAKE) $(dir $@)perl/busytex_perltools.a
+	#$(MAKE) $(dir $@)perl/busytex_perltools.a
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
@@ -547,7 +550,7 @@ wasm: build/wasm/fonts.conf
 texlive: source/texlive.downloaded source/texlive.patched
 
 .PHONY: ubuntu-wasm
-ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js
+ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js build/wasm/ubuntu-texlive-fonts-recommended.js
 
 tds-%:
 	$(MAKE) source/texmfrepo.txt build/texlive-$*.txt
