@@ -2,7 +2,8 @@
 # http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
-URL_texlive_full_iso = https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2021/texlive2021-20210325.iso
+URL_texlive_full_iso = ftp://tug.org/historic/systems/texlive/2021/texlive2021-20210325.iso
+#URL_texlive_full_iso = https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2021/texlive2021-20210325.iso
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
