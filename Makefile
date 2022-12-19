@@ -3,9 +3,13 @@
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
+#URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
+#URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
+#URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
+#URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
