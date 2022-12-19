@@ -37,9 +37,16 @@ jobs:
         run: |
             make tds-basic
             make dist-native
+            pushd
+            echo PWD="$PWD"
             sh example/example.sh
+            echo PWD="$PWD"
+            popd
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex -a build/native/busytex.tar  $(printf -- "-a build/native/texlive/libs/freetype2/ft-build/%s " $FREETYPEBIN) $(printf -- "-a build/native/texlive/libs/icu/icu-build/bin/%s " $ICUBIN) $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
+        run: |
+            echo PWD="$PWD"
+            ls
+            hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex -a build/native/busytex.tar  $(printf -- "-a build/native/texlive/libs/freetype2/ft-build/%s " $FREETYPEBIN) $(printf -- "-a build/native/texlive/libs/icu/icu-build/bin/%s " $ICUBIN) $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
