@@ -45,7 +45,7 @@ jobs:
         run: |
             ls -la
             git status || true
-            chown -R $USER .
+            chown -R $(whoami) .
             git status || true
             git config --global safe.directory '*'
             git status || true
