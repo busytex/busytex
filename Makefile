@@ -6,8 +6,8 @@
 #URL_texlive_full_iso = https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2021/texlive2021-20210325.iso
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
-URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
-#URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
+#URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
+URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 #URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_fontconfig      = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
@@ -195,7 +195,7 @@ source/texlive.patched: source/texlive.downloaded
 	cp hb-subset-cff1.cc source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc
 	touch $@
 
-build/%/texlive.configured: source/texlive.patched
+build/%/texlive.configured: source/texlive.downloaded
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
 	cd $(basename $@) &&                        \
