@@ -39,10 +39,10 @@ jobs:
             make dist-native
             sh example/example.sh
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          path: build/native
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@v3
+#        with:
+#          path: build/native
 
       - name: Create Release
         env:
