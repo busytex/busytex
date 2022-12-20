@@ -253,7 +253,6 @@ build/%/expat/libexpat.a: source/expat.downloaded
 	   $(abspath $(basename $<)) 
 	$(MAKE_$*) -C $(dir $@)
 
-# source/fontconfig.patched 
 build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.downloaded build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
 	echo > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
