@@ -4,12 +4,9 @@
 
 #URL_texlive_full_iso = ftp://tug.org/historic/systems/texlive/2021/texlive2021-20210325.iso
 #URL_texlive_full_iso = https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2021/texlive2021-20210325.iso
-#URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2021-20210325.iso
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
-#URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
-#URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
 URL_fontconfig      = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
@@ -180,19 +177,6 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded s
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
 	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
-	touch $@
-
-source/fontconfig.patched: source/fontconfig.downloaded
-	#TODO: https://superuser.com/questions/493640/how-to-retry-connections-with-wget
-	#wget -O $(basename $<)/src/fcstat.c https://gitlab.freedesktop.org/fontconfig/fontconfig/-/raw/fd393c53d816653e525950b742d49b02d599260b/src/fcstat.c
-	cp fcstat.c $(basename $<)/src/fcstat.c
-	touch $@
-
-source/texlive.patched: source/texlive.downloaded
-	#wget -O source/texlive/texk/upmendex/configure https://raw.githubusercontent.com/t-tk/upmendex-package/207d40e/source/configure 
-	#wget -O source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc https://raw.githubusercontent.com/harfbuzz/harfbuzz/2.8.2/src/hb-subset-cff1.cc
-	cp configure source/texlive/texk/upmendex/configure
-	cp hb-subset-cff1.cc source/texlive/libs/harfbuzz/harfbuzz-src/src/hb-subset-cff1.cc
 	touch $@
 
 build/%/texlive.configured: source/texlive.downloaded
@@ -552,10 +536,6 @@ wasm: build/wasm/fonts.conf
 	$(MAKE) build/wasm/busytex.js
 
 ################################################################################################################
-
-.PHONY: texlive
-texlive: source/texlive.downloaded
-#source/texlive.patched
 
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js build/wasm/ubuntu-texlive-fonts-recommended.js

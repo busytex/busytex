@@ -33,7 +33,7 @@ jobs:
         run:  make URLRELEASE=$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexreleasetag }} download-native
       
       - name: Clone/patch TexLive and dependencies
-        run:  make texlive build/versions.txt
+        run:  make source/texlive.downloaded build/versions.txt
 
       - name: Build native busytex
         env:
