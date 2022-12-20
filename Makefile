@@ -511,7 +511,9 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	$(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)"
-#	$(MAKE) -C $(dir $@)texlive/texk/web2c CFLAGS="$(CFLAGS_OPT_native)"
+	echo BEGINFIND1; find -executable $(dir $@)texlive/texk/web2c/web2c; echo ENDFIND1
+	$(MAKE) -C $(dir $@)texlive/texk/web2c $(BUSYTEX_TEXBIN) CFLAGS="$(CFLAGS_OPT_native)"
+	echo BEGINFIND2; find -executable $(dir $@)texlive/texk/web2c; echo ENDFIND2
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpseaccess.o 
