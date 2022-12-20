@@ -8,10 +8,9 @@
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2021.2.tar.gz
 #URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
-#URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
-URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
-#URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
+#URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.93.tar.gz
+URL_fontconfig      = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
@@ -254,7 +253,8 @@ build/%/expat/libexpat.a: source/expat.downloaded
 	   $(abspath $(basename $<)) 
 	$(MAKE_$*) -C $(dir $@)
 
-build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.patched build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
+# source/fontconfig.patched 
+build/%/fontconfig/src/.libs/libfontconfig.a: build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
 	echo > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
 	cd build/$*/fontconfig && \
