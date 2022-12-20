@@ -510,6 +510,7 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	#$(MAKE) $(dir $@)perl/busytex_perltools.a
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
+	$(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)"
 	$(MAKE) -C $(dir $@)texlive/texk/web2c CFLAGS="$(CFLAGS_OPT_native)"
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
