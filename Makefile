@@ -182,39 +182,41 @@ source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded s
 build/%/texlive.configured: source/texlive.downloaded
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
-	cd $(basename $@) &&                        \
-	CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		\
-	  --cache-file=$(CACHE_TEXLIVE_$*)  		\
-	  --prefix="$(PREFIX_$*)"					\
-	  --enable-dump-share						\
-	  --enable-static							\
-	  --enable-freetype2						\
-	  --disable-shared							\
-	  --disable-multiplatform					\
-	  --disable-native-texlive-build			\
-	  --disable-all-pkgs						\
-	  --without-x								\
-	  --without-system-cairo					\
-	  --without-system-gmp						\
-	  --without-system-graphite2				\
-	  --without-system-harfbuzz					\
-	  --without-system-libgs					\
-	  --without-system-libpaper					\
-	  --without-system-mpfr						\
-	  --without-system-pixman					\
-	  --without-system-poppler					\
-	  --without-system-xpdf						\
-	  --without-system-icu						\
-	  --without-system-fontconfig				\
-	  --without-system-freetype2				\
-	  --without-system-libpng					\
-	  --without-system-zlib						\
-	  --without-system-zziplib					\
-	  --with-banner-add="_busytex$*"			\
-	  --enable-cxx-runtime-hack=yes             \
-		CFLAGS="$(CFLAGS_TEXLIVE_$*)"	     	\
-	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"           \
-	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"
+	#CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		
+	cd $(basename $@) &&                                            \
+	$(CONFIGURE_$*) $(abspath source/texlive/configure)		\
+	  --cache-file=$(CACHE_TEXLIVE_$*)  	        \
+	  --prefix="$(PREFIX_$*)"			\
+	  --enable-dump-share				\
+	  --enable-static				\
+	  --enable-freetype2				\
+	  --disable-shared				\
+	  --disable-multiplatform			\
+	  --disable-native-texlive-build		\
+	  --disable-all-pkgs				\
+	  --without-x					\
+	  --without-system-cairo			\
+	  --without-system-gmp				\
+	  --without-system-graphite2			\
+	  --without-system-harfbuzz			\
+	  --without-system-libgs			\
+	  --without-system-libpaper			\
+	  --without-system-mpfr				\
+	  --without-system-pixman			\
+	  --without-system-poppler			\
+	  --without-system-xpdf				\
+	  --without-system-icu				\
+	  --without-system-fontconfig			\
+	  --without-system-freetype2			\
+	  --without-system-libpng			\
+	  --without-system-zlib				\
+	  --without-system-zziplib			\
+	  --with-banner-add="_busytex$*"                \
+	  --enable-cxx-runtime-hack=yes                 \
+	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"	        \
+	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
+	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
+          ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
 
