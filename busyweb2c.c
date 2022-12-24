@@ -19,6 +19,7 @@ extern int optind;
 extern int busymain_splitup(int argc, char* argv[]);
 extern int busymain_fixwrites(int argc, char* argv[]);
 extern int busymain_makecpool(int argc, char* argv[]);
+extern int busymain_web2c(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
@@ -28,6 +29,7 @@ int main(int argc, char* argv[])
     APPLET(splitup, splitup)
     APPLET(fixwrites, fixwrites)
     APPLET(makecpool, makecpool)
+    APPLET(web2c, web2c)
     return 1;
 }
 
