@@ -20,7 +20,7 @@ extern int busymain_splitup(int argc, char* argv[]);
 extern int busymain_fixwrites(int argc, char* argv[]);
 extern int busymain_makecpool(int argc, char* argv[]);
 
-int main(int argc, char* argv[]);
+int main(int argc, char* argv[])
 {
     if(argc < 2)
         return 0;
