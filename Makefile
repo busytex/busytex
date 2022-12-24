@@ -15,7 +15,6 @@ BUSYTEX_BIN          = busytex fonts.conf
 BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
-BUSYTEX_TEXBIn       = ctangle otangle tangle tangleboot ctangleboot
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
 
 TOTAL_MEMORY         = 536870912
@@ -298,7 +297,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 build/%/texlive/texk/web2c/busyweb2c:
 	mkdir -p $(dir $@)
 	cp $(dir $@)/tie-tie.o $(dir $@)/tie.o; $(foreach binname,$(BUSYTEX_TEXBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;) # tie-tie.o  lib/lib.a
-	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*) --localize-symbol=filename --localize-symbol=tex --localize-symbol=out --localize-hidden --redefine-sym main=busymain_$(binname) $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
+	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*)  --redefine-sym main=busymain_$(binname) --localize-hidden --localize-symbol=filename --localize-symbol=tex --localize-symbol=out --localize-symbol=temp $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
 	$(CC_$*) -o    $(basename $@).o -c busyweb2c.c
 	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 
