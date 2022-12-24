@@ -296,9 +296,9 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 build/%/texlive/texk/web2c/busyweb2c:
 	mkdir -p $(dir $@)
 	$(CC_$*)  -o    $(basename $@).o -c busyweb2c.c
-	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/web2c/, splitup.o libweb2c.a)
 	echo BEGINNM1; nm $(dir $@)/web2c/splitup.o; echo ENDNM1; $(OBJCOPY_$*) --redefine-sym main=busymain_splitup $(dir $@)/web2c/splitup.o $(dir $@)/web2c/busytex_splitup.o;  echo BEGINNM2; nm $(dir $@)/web2c/busytex_splitup.o; echo ENDNM2; 
-	echo BEGINSPLITUPVER; $(dir $@)/web2c/splitup --version; $(dir $@)/web2c/busyweb2c --version; echo ENDSPLITUPVER; 
+	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/web2c/, busytex_splitup.o libweb2c.a)
+	echo BEGINSPLITUPVER; $(dir $@)/web2c/splitup --version; $(dir $@)/busyweb2c --version; echo ENDSPLITUPVER; 
 
 # 2022-12-23T23:06:53.2894695Z gcc -DHAVE_CONFIG_H -I. -I/__w/busytex/busytex/source/texlive/texk/web2c/web2c -I./kpathsea  -I/__w/busytex/busytex/source/texlive/texk/web2c/web2c/../.. -I/__w/busytex/busytex/build/native/texlive/libs/icu/include -I/__w/busytex/busytex/source/fontconfig -O3 -Wimplicit -Wreturn-type -O3 -MT splitup.o -MD -MP -MF $depbase.Tpo -c -o splitup.o /__w/busytex/busytex/source/texlive/texk/web2c/web2c/splitup.c &&\
 2022-12-23T23:06:53.2895390Z mv -f $depbase.Tpo $depbase.Po

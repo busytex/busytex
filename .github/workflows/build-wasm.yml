@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Install Prerequisites
-        run:  sudo apt-get install -y gperf p7zip-full strace
+        run:  sudo apt-get install -y gperf p7zip-full strace icu-devtools
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v10
