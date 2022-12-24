@@ -21,6 +21,13 @@ extern int busymain_fixwrites(int argc, char* argv[]);
 extern int busymain_makecpool(int argc, char* argv[]);
 extern int busymain_web2c(int argc, char* argv[]);
 
+extern int busymain_ctangle(int argc, char* argv[]);
+//extern int busymain_otangle(int argc, char* argv[]);
+//extern int busymain_tangle(int argc, char* argv[]);
+//extern int busymain_tangleboot(int argc, char* argv[]);
+//extern int busymain_ctangleboot(int argc, char* argv[]);
+//extern int busymain_tie(int argc, char* argv[]);
+
 int main(int argc, char* argv[])
 {
     if(argc < 2)
@@ -30,6 +37,14 @@ int main(int argc, char* argv[])
     APPLET(fixwrites, fixwrites)
     APPLET(makecpool, makecpool)
     APPLET(web2c, web2c)
+
+    APPLET(ctangle, ctangle)
+    //APPLET(otangle, otangle)
+    //APPLET(tangle, tangle)
+    //APPLET(tangleboot, tangleboot)
+    //APPLET(ctangleboot, ctangleboot)
+    //APPLET(tie, tie)
+
     return 1;
 }
 
