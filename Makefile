@@ -16,6 +16,8 @@ BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
+BUSYWEB2C_LOCALIZE_SYMBOL = $(addprefix --localize-symbol=,filename tex out temp buffer file  error changing phaseone line loc limit buffer xchr history outptr outbuf xord parsearguments webname pascalname chgname initialize hash Pascalfile chophash byteptr nameptr stringptr poolchecksum tokstart textptr z ilk equiv lastunnamed textlink scanninghex modtext bytestart tokptr openinput webfile changefile zinputln zprintid bytemem zidlookup idfirst idloc link_var choppedid doublechars pool poolname zmodlookup zprefixlookup zstoretwobytes tokmem zpushlevel stackptr curstate stack zo poplevel getoutput curval flashbuffer semiptr breakptr zappval zsendout outstate outcontrib outapp outval lastsign outsign zsendsign zsendval sendtheoutput bracelevel linesdontmatch changelimit changebuffer primethechangebuffer checkchange otherline templine inputhasended web2c_getline zcontrolcode modulecount skipahead skipcomment getnext curmodule zscannumeric nextcontrol zscanrepl currepltext zdefinemacro scanmodule mainbody ii changing line limit loc buffer history hash)
+
 
 TOTAL_MEMORY         = 536870912
 CFLAGS_OPT_native    = -O3
@@ -296,8 +298,8 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/texlive/texk/web2c/busyweb2c:
 	mkdir -p $(dir $@)
-	cp $(dir $@)/tie-tie.o $(dir $@)/tie.o; $(foreach binname,$(BUSYTEX_TEXBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;)
-	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden --localize-symbol=filename --localize-symbol=tex --localize-symbol=out --localize-symbol=temp --localize-symbol=buffer --localize-symbol=file $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
+	cp $(dir $@)/tie-tie.o $(dir $@)/tie.o; $(foreach binname,$(BUSYTEX_TEXBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;)
+	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL)  $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
 	$(CC_$*) -o    $(basename $@).o -c busyweb2c.c
 	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o cweb.o lib/lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 
