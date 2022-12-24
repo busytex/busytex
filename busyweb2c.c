@@ -14,16 +14,11 @@
 #define extern  extern "C"
 #endif
 
-void flush_streams()
-{
-    fputc('\n', stdout);
-    fputc('\n', stderr);
-    fflush(NULL);
-}
-
 extern int optind;
 
 extern int busymain_splitup(int argc, char* argv[]);
+extern int busymain_fixwrites(int argc, char* argv[]);
+extern int busymain_makecpool(int argc, char* argv[]);
 
 int main(int argc, char* argv[]);
 {
@@ -31,6 +26,8 @@ int main(int argc, char* argv[]);
         return 0;
 
     APPLET(splitup, splitup)
+    APPLET(fixwrites, fixwrites)
+    APPLET(makecpool, makecpool)
     return 1;
 }
 
