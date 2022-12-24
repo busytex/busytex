@@ -16,6 +16,7 @@ BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c 
+BUSYTEX_WEB2cBIN     = fixwrites makecpool splitup 
 
 TOTAL_MEMORY         = 536870912
 CFLAGS_OPT_native    = -O3
@@ -296,10 +297,8 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 build/%/texlive/texk/web2c/busyweb2c:
 	mkdir -p $(dir $@)
 	$(CC_$*)  -o    $(basename $@).o -c busyweb2c.c
-	$(OBJCOPY_$*) --redefine-sym main=busymain_splitup $(dir $@)/web2c/splitup.o $(dir $@)/web2c/busytex_splitup.o
-	$(OBJCOPY_$*) --redefine-sym main=busymain_fixwrites $(dir $@)/web2c/fixwrites.o $(dir $@)/web2c/busytex_fixwrites.o
-	$(OBJCOPY_$*) --redefine-sym main=busymain_makecpool $(dir $@)/web2c/makecpool.o $(dir $@)/web2c/busytex_makecpool.o
-	$(OBJCOPY_$*) --redefine-sym main=busymain_web2c $(dir $@)/web2c/web2c.o $(dir $@)/web2c/busytex_web2c.o
+	$(foreach binname,$(BUSYTEX_TEXBIN),   $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;)
+	$(foreach binname,$(BUSYTEX_WEB2cBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
 	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o libweb2c.a)
 	echo BEGINSPLITUPVER; $(dir $@)/web2c/splitup --version; $(dir $@)/busyweb2c --version; echo ENDSPLITUPVER; 
 
