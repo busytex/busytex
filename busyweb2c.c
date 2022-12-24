@@ -14,13 +14,6 @@
 #define extern  extern "C"
 #endif
 
-extern int optind;
-
-#ifdef BUSYTEX_PDFTEX 
-#ifdef BUSYTEX_KPSE
-extern int busymain_ctangle(int argc, char* argv[]);
-#endif
-
 void flush_streams()
 {
     fputc('\n', stdout);
@@ -28,11 +21,18 @@ void flush_streams()
     fflush(NULL);
 }
 
-int main(int argc, char* argv[])
+
+extern int optind;
+
+//extern int busymain_splitup(int argc, char* argv[]);
+
+extern int main(int argc, char* argv[]);
+/*
 {
     if(argc < 2)
         return 0;
 
-    APPLET(ctangle, ctangle)
+    APPLET(splitup, splitup)
     return 1;
 }
+*/

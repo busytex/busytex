@@ -7,7 +7,7 @@
 URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
-URL_fontconfig      = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
+URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
@@ -292,12 +292,21 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
+build/%/texlive/texk/web2c/busyweb2c:
+	mkdir -p $(dir $@)
+	$(CC_$*)  -o    $(basename $@).o -c busyweb2c.c
+	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/web2c/, splitup.o libweb2c.a)
+	ldd $@
+
+# 2022-12-23T23:06:53.2894695Z gcc -DHAVE_CONFIG_H -I. -I/__w/busytex/busytex/source/texlive/texk/web2c/web2c -I./kpathsea  -I/__w/busytex/busytex/source/texlive/texk/web2c/web2c/../.. -I/__w/busytex/busytex/build/native/texlive/libs/icu/include -I/__w/busytex/busytex/source/fontconfig -O3 -Wimplicit -Wreturn-type -O3 -MT splitup.o -MD -MP -MF $depbase.Tpo -c -o splitup.o /__w/busytex/busytex/source/texlive/texk/web2c/web2c/splitup.c &&\
+2022-12-23T23:06:53.2895390Z mv -f $depbase.Tpo $depbase.Po
+
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
 	#$(CC_$*) -E -nostdinc  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
 	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
-	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
-	#
+	$(CXX_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
+	#$(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) 
 	#$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*) $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
@@ -526,6 +535,7 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
+	$(MAKE) $(dir $@)texlive/texk/web2c/busyweb2c
 
 .PHONY: native
 native: build/native/fonts.conf
