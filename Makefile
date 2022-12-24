@@ -16,7 +16,7 @@ BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_TEXBIn       = ctangle otangle tangle tangleboot ctangleboot
-BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c 
+BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
 
 TOTAL_MEMORY         = 536870912
 CFLAGS_OPT_native    = -O3
@@ -40,6 +40,7 @@ AR_wasm       = emar
 CC_wasm       = emcc
 CXX_wasm      = em++
 NM_wasm       = $(EMROOT)/../bin/llvm-nm
+OBJCOPY_wasm  = echo
 CC_native     = $(CC)
 CXX_native    = $(CXX)
 MAKE_native   = $(MAKE)
