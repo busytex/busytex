@@ -26,7 +26,7 @@ extern int busymain_otangle(int argc, char* argv[]);
 extern int busymain_tangle(int argc, char* argv[]);
 extern int busymain_tangleboot(int argc, char* argv[]);
 extern int busymain_ctangleboot(int argc, char* argv[]);
-//extern int busymain_tie(int argc, char* argv[]);
+extern int busymain_tie(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     APPLET(tangle, tangle)
     APPLET(tangleboot, tangleboot)
     APPLET(ctangleboot, ctangleboot)
-    //APPLET(tie, tie)
+    APPLET(tie, tie)
 
     return 1;
 }
