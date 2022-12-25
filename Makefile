@@ -27,6 +27,7 @@ ROOT                := $(CURDIR)
 EMROOT              := $(dir $(shell which emcc))
 
 BUSYTEX_native       = $(abspath build/native/busytex)
+BUSYWEB2C_native     = $(abspath build/native/texlive/texk/web2c/busyweb2c)
 TEXMF_FULL           = $(abspath build/texlive-full)
 PREFIX_wasm          = $(abspath build/wasm/prefix)
 PREFIX_native        = $(abspath build/native/prefix)
@@ -582,7 +583,7 @@ build/versions.txt:
 .PHONY: test
 test: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
-	chown $(whoami) $(BUSYTEX_native); chmod +x $(BUSYTEX_native); file $(BUSYTEX_native); $(BUSYTEX_native)
+	$(BUSYTEX_native)
 	-$(BUSYTEX_native) fmtutil-sys --help
 	-$(BUSYTEX_native)  updmap-sys --help
 	-$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
@@ -636,8 +637,11 @@ dist-native: build/native/busytex build/native/fonts.conf
 
 .PHONY: download-native
 download-native:
-	mkdir -p source build/native
+	mkdir -p source build/native build/native/texlive/texk/web2c
 	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_BIN) busytex.tar)
+	wget  -P build/native/texlive/texk/web2c              -nc $(URLRELEASE)/busyweb2c
+	chown $(whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x $(BUSYTEX_native) $(BUSYWEB2C_native); file $(BUSYTEX_native); file $(BUSYWEB2C_native)
+
 
 .PHONY: replace-native
 replace-native:
