@@ -647,4 +647,4 @@ replace-native:
 	-rm build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata build/native/texlive/libs/freetype2/ft-build/apinames
 	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
-	$(CC_native) -o build/native/texlive/libs/freetype2/ft-build/apinames libs/freetype2/freetype-src/src/tools/apinames.c
+	$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
