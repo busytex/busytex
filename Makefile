@@ -12,8 +12,6 @@ URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
 BUSYTEX_BIN          = busytex fonts.conf
-BUSYTEX_ICUBIN       = icupkg pkgdata
-BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
 BUSYWEB2C_LOCALIZE_SYMBOL = $(addprefix --localize-symbol=,filename tex out temp buffer file  error changing phaseone line loc limit buffer xchr history outptr outbuf xord parsearguments webname pascalname chgname initialize hash Pascalfile chophash byteptr nameptr stringptr poolchecksum tokstart textptr z ilk equiv lastunnamed textlink scanninghex modtext bytestart tokptr openinput webfile changefile zinputln zprintid bytemem zidlookup idfirst idloc link_var choppedid doublechars pool poolname zmodlookup zprefixlookup zstoretwobytes tokmem zpushlevel stackptr curstate stack zo poplevel getoutput curval flashbuffer semiptr breakptr zappval zsendout outstate outcontrib outapp outval lastsign outsign zsendsign zsendval sendtheoutput bracelevel linesdontmatch changelimit changebuffer primethechangebuffer checkchange otherline templine inputhasended web2c_getline zcontrolcode modulecount skipahead skipcomment getnext curmodule zscannumeric nextcontrol zscanrepl currepltext zdefinemacro scanmodule mainbody ii changing line limit loc buffer history hash flushbuffer print unambiglength forceuppercase forcelowercase TANGLEHELP strictmode allowunderlines names_match init_node init_p print_stats argc argv limit loc history)
@@ -645,8 +643,8 @@ download-native:
 
 .PHONY: replace-native
 replace-native:
-	mkdir -p source build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
+	mkdir -p build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
 	-rm build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata build/native/texlive/libs/freetype2/ft-build/apinames
-	ln -s $(which icupkg) build/native/texlive/libs/icu/icu-build/bin/
-	ln -s $(which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
+	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
+	ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
 	$(CC_native) -o build/native/texlive/libs/freetype2/ft-build/apinames libs/freetype2/freetype-src/src/tools/apinames.c
