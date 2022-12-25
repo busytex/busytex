@@ -6,7 +6,7 @@ on:
       busytexreleasetag:
         description: 'busytex release tag'
         required: false
-        default: 'build_b2744c666a99f75d77b6af4af09f05847b86a520'
+        default: 'build_70e692454a6ed21372a35783f8a11c0c133726d7'
 
 env:
   BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
