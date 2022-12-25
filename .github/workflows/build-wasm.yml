@@ -35,12 +35,12 @@ jobs:
       - name: Clone/patch TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
 
-      - name: Build native busytex
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run: |
-            make native
-            make test
+      #- name: Build native busytex
+      #  env:
+      #      MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+      #  run: |
+      #      make native
+      #      make test
       
       - name: Replace native busytex
         run: make replace-native
