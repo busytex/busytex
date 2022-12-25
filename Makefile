@@ -127,7 +127,7 @@ PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/ic
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
 CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
-CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, ctangle otangle tangle tangleboot ctangleboot tie) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, fixwrites makecpool splitup web2c) --
+CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
 OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
 OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
@@ -649,4 +649,6 @@ replace-native:
 	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
 	$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
-	echo '$(ROOT)/build/native/texlive/texk/busyweb2c ctangleboot $$@' > build/native/texlive/texk/web2c/ctangleboot; chmod +x build/native/texlive/texk/web2c/ctangleboot
+	$(foreach binname,$(BUSYTEX_TEXBIN), echo '$(ROOT)/build/native/texlive/texk/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/$(binname);)
+	$(foreach binname,$(BUSYTEX_WEB2CBIN), echo '$(ROOT)/build/native/texlive/texk/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/web2c/$(binname);)
+	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN))  $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
