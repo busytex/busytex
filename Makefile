@@ -302,7 +302,7 @@ build/%/texlive/texk/web2c/busyweb2c:
 	$(OBJCOPY_$*) --redefine-sym main=busymain_tie --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/lib/lib.a $(dir $@)/lib/busytex_lib.a; $(AR_$*) dv $(dir $@)/lib/busytex_lib.a main.o
 	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL)  $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
 	$(CC_$*) -o    $(basename $@).o -c busyweb2c.c
-	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o  cweb.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a) # busytex_tie.o
+	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o cweb.o busytex_tie.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 	#ar cru lib.a basechsuffix.o chartostring.o coredump.o eofeoln.o fprintreal.o inputint.o input2int.o main.o openclose.o printversion.o setupvar.o uexit.o usage.o version.o zround.o
 
 build/%/busytex build/%/busytex.js: 
