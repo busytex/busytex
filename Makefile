@@ -110,7 +110,8 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain
 ##############################################################################################################################
 
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
-CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate -pthread
+CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate
+# -pthread
 CFLAGS_BIBTEX_wasm    = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
 CFLAGS_ICU_wasm       = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 
 CFLAGS_TEXLIVE_wasm   = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
@@ -249,7 +250,6 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.downloaded build
 	$(CONFIGURE_$*) $(abspath $(basename $<)/configure) \
 	   --cache-file=$(CACHE_FONTCONFIG_$*)	            \
 	   --prefix=$(PREFIX_$*)                            \
-	   --host=none-none-none                            \
 	   --sysconfdir=/etc                                \
 	   --localstatedir=/var                             \
 	   --enable-static                                  \
@@ -501,19 +501,19 @@ build/native/fonts.conf:
 .PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
 build/native/texlivedependencies build/wasm/texlivedependencies:
 	$(MAKE) $(dir $@)expat/libexpat.a
-	#$(MAKE) $(dir $@)texlive/libs/zziplib/libzzip.a
-	#$(MAKE) $(dir $@)texlive/libs/libpng/libpng.a 
-	#$(MAKE) $(dir $@)texlive/libs/libpaper/libpaper.a 
-	#$(MAKE) $(dir $@)texlive/libs/zlib/libz.a 
-	#$(MAKE) $(dir $@)texlive/libs/teckit/libTECkit.a 
-	#$(MAKE) $(dir $@)texlive/libs/harfbuzz/libharfbuzz.a 
-	#$(MAKE) $(dir $@)texlive/libs/graphite2/libgraphite2.a 
-	#$(MAKE) $(dir $@)texlive/libs/pplib/libpplib.a 
-	#$(MAKE) $(dir $@)texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE) $(dir $@)texlive/libs/zziplib/libzzip.a
+	$(MAKE) $(dir $@)texlive/libs/libpng/libpng.a 
+	$(MAKE) $(dir $@)texlive/libs/libpaper/libpaper.a 
+	$(MAKE) $(dir $@)texlive/libs/zlib/libz.a 
+	$(MAKE) $(dir $@)texlive/libs/teckit/libTECkit.a 
+	$(MAKE) $(dir $@)texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) $(dir $@)texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) $(dir $@)texlive/libs/pplib/libpplib.a 
+	$(MAKE) $(dir $@)texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) $(dir $@)texlive/libs/freetype2/libfreetype.a 
-	#$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
-	#$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
-	#$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicudata.a
 	$(MAKE) $(dir $@)fontconfig/src/.libs/libfontconfig.a
 
 .PHONY: build/native/busytexapplets build/wasm/busytexapplets
