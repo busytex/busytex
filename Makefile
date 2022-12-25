@@ -16,7 +16,7 @@ BUSYTEX_ICUBIN       = icupkg pkgdata
 BUSYTEX_FREETYPEBIN  = apinames
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
-BUSYWEB2C_LOCALIZE_SYMBOL = $(addprefix --localize-symbol=,filename tex out temp buffer file  error changing phaseone line loc limit buffer xchr history outptr outbuf xord parsearguments webname pascalname chgname initialize hash Pascalfile chophash byteptr nameptr stringptr poolchecksum tokstart textptr z ilk equiv lastunnamed textlink scanninghex modtext bytestart tokptr openinput webfile changefile zinputln zprintid bytemem zidlookup idfirst idloc link_var choppedid doublechars pool poolname zmodlookup zprefixlookup zstoretwobytes tokmem zpushlevel stackptr curstate stack zo poplevel getoutput curval flashbuffer semiptr breakptr zappval zsendout outstate outcontrib outapp outval lastsign outsign zsendsign zsendval sendtheoutput bracelevel linesdontmatch changelimit changebuffer primethechangebuffer checkchange otherline templine inputhasended web2c_getline zcontrolcode modulecount skipahead skipcomment getnext curmodule zscannumeric nextcontrol zscanrepl currepltext zdefinemacro scanmodule mainbody ii changing line limit loc buffer history hash flushbuffer print unambiglength forceuppercase forcelowercase TANGLEHELP strictmode allowunderlines names_match init_node init_p print_stats argc argv)
+BUSYWEB2C_LOCALIZE_SYMBOL = $(addprefix --localize-symbol=,filename tex out temp buffer file  error changing phaseone line loc limit buffer xchr history outptr outbuf xord parsearguments webname pascalname chgname initialize hash Pascalfile chophash byteptr nameptr stringptr poolchecksum tokstart textptr z ilk equiv lastunnamed textlink scanninghex modtext bytestart tokptr openinput webfile changefile zinputln zprintid bytemem zidlookup idfirst idloc link_var choppedid doublechars pool poolname zmodlookup zprefixlookup zstoretwobytes tokmem zpushlevel stackptr curstate stack zo poplevel getoutput curval flashbuffer semiptr breakptr zappval zsendout outstate outcontrib outapp outval lastsign outsign zsendsign zsendval sendtheoutput bracelevel linesdontmatch changelimit changebuffer primethechangebuffer checkchange otherline templine inputhasended web2c_getline zcontrolcode modulecount skipahead skipcomment getnext curmodule zscannumeric nextcontrol zscanrepl currepltext zdefinemacro scanmodule mainbody ii changing line limit loc buffer history hash flushbuffer print unambiglength forceuppercase forcelowercase TANGLEHELP strictmode allowunderlines names_match init_node init_p print_stats argc argv limit loc history)
 
 
 TOTAL_MEMORY         = 536870912
@@ -582,10 +582,10 @@ build/versions.txt:
 .PHONY: test
 test: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
-	$(BUSYTEX_native)
+	chown $(whoami) $(BUSYTEX_native); chmod +x $(BUSYTEX_native); file $(BUSYTEX_native); $(BUSYTEX_native)
 	-$(BUSYTEX_native) fmtutil-sys --help
 	-$(BUSYTEX_native)  updmap-sys --help
-	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	-$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
 
