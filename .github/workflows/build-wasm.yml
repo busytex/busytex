@@ -44,23 +44,19 @@ jobs:
       
       - name: Replace native busytex
         run: make replace-native
+      
+      - name: Build wasm busytex
+        run: make wasm
+        #env:
+        #    MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
 
-# cache ISO https://github.com/actions/cache
-#      - name: Cache ISO
-#        id: cache-texlive-iso
-#        uses: actions/cache@v2
-#        with:
-#          path: source/texlive2021-20210325.iso
-#        key: texlive-iso
+      #- name: Download TexLive Full
+      #  run:  make source/texmfrepo.txt
 
-      - name: Download TexLive Full
-        run:  make source/texmfrepo.txt
-#       if: steps.cache-texlive-iso.outputs.cache-hit != 'true'
-#
-      - name: Install TexLive
-        run: |
-            make tds-basic
-            make tds-full
+      #- name: Install TexLive
+      #  run: |
+      #      make tds-basic
+      #      make tds-full
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
@@ -69,29 +65,16 @@ jobs:
 #          path: |
 #            build/texlive-basic/
 #            build/native/busytex
-#            build/native/fonts.conf
-#            source/texmfrepo.txt
-#            build/texlive-basic.txt
-#            build/texlive-full.txt
-#            build/native/texlive/
-      
-      - name: Test native busytex pipeline
-        run: |
-            make dist-native
-            sh example/example.sh
 
-      - name: Build wasm busytex
-        run: |
-            make wasm
-            make build/wasm/texlive-basic.js
-            make dist-wasm
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-      
-      - name: Recreate Ubuntu packages
-        run:  make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
+      #- name: Create Basic package
+      #  run: make build/wasm/texlive-basic.js
+      #
+      #- name: Create Ubuntu packages
+      #  run:  make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
 
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: hub release create -m "Wasm assets" -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt -a build/wasm/busytex.js -a build/wasm/busytex.wasm   -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) build_${{github.sha}}
+      #- name: Create Release
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  run: |
+      #      make dist-wasm
+      #      hub release create -m "Wasm assets" -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt -a build/wasm/busytex.js -a build/wasm/busytex.wasm   -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) build_${{github.sha}}
