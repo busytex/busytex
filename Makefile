@@ -303,7 +303,6 @@ build/%/texlive/texk/web2c/busyweb2c:
 	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL)  $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
 	$(CC_$*) -o    $(basename $@).o -c busyweb2c.c
 	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o cweb.o busytex_tie.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
-	#ar cru lib.a basechsuffix.o chartostring.o coredump.o eofeoln.o fprintreal.o inputint.o input2int.o main.o openclose.o printversion.o setupvar.o uexit.o usage.o version.o zround.o
 
 build/%/busytex build/%/busytex.js: 
 	mkdir -p $(dir $@)
@@ -321,8 +320,6 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 	echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build $(OPTS_ICU_make_$*) 
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
-
-# tie.c tangleboot.c tangle.c otangle.c cwebboot.c cweb.c ctangleboot.c ctangle.c
 
 build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
@@ -639,13 +636,13 @@ dist-native: build/native/busytex build/native/fonts.conf
 
 .PHONY: download-native
 download-native:
+	mkdir -p source build/native
+	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_BIN) busytex.tar)
+
+.PHONY: replace-native
+replace-native:
 	mkdir -p source build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
-	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_BIN))
-	wget  -P build/native/texlive/libs/icu/icu-build/bin  -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_ICUBIN))
-	wget  -P build/native/texlive/libs/freetype2/ft-build -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_FREETYPEBIN))
-	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_TEXBIN))
-	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/, $(BUSYTEX_WEB2CBIN))
-	find build/native -type f -exec chmod +x {} +
-	find build/native -type f -executable
-	wget  -P source                                       -nc $(URLRELEASE)/busytex.tar
-	tar -xf source/busytex.tar $(addprefix build/native/texlive/texk/web2c/, pdftexini.c pdftex0.c pdftex-pool.c xetexini.c xetex0.c xetex-pool.c)
+	-rm build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata build/native/texlive/libs/freetype2/ft-build/apinames
+	ln -s $(which icupkg) build/native/texlive/libs/icu/icu-build/bin/
+	ln -s $(which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
+	$(CC_native) -o build/native/texlive/libs/freetype2/ft-build/apinames libs/freetype2/freetype-src/src/tools/apinames.c

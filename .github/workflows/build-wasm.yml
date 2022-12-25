@@ -41,6 +41,9 @@ jobs:
         run: |
             make native
             make test
+      
+      - name: Replace native busytex
+        run: make replace-native
 
 # cache ISO https://github.com/actions/cache
 #      - name: Cache ISO
@@ -84,15 +87,6 @@ jobs:
             make dist-wasm
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-      
-#      - name: Archive TexLive wasm build
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: wasm_build_texlive
-#          path: |
-#            build/wasm/
-#            build/native/
-#            example/example_*.pdf
       
       - name: Recreate Ubuntu packages
         run:  make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
