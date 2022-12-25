@@ -512,9 +512,9 @@ build/native/texlivedependencies build/wasm/texlivedependencies:
 	$(MAKE) $(dir $@)texlive/libs/pplib/libpplib.a 
 	$(MAKE) $(dir $@)texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) $(dir $@)texlive/libs/freetype2/libfreetype.a 
-	#$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
-	#$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
-	#$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicudata.a
+	$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
+	$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicudata.a
 	$(MAKE) $(dir $@)fontconfig/src/.libs/libfontconfig.a
 
 .PHONY: build/native/busytexapplets build/wasm/busytexapplets
