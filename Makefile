@@ -648,3 +648,7 @@ replace-native:
 	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
 	$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
+	echo "$(ROOT)/build/native/texlive/texk/busyweb2c splitup $$@" > build/native/texlive/texk/web2c/web2c/splitup; cat build/native/texlive/texk/web2c/web2c/splitup
+	#echo "$(ROOT)/build/native/texlive/texk/busyweb2c fixwrites $$@" > build/native/texlive/texk/web2c/web2c/fixwrites; cat build/native/texlive/texk/web2c/web2c/fixwrites
+	#echo "$(ROOT)/build/native/texlive/texk/busyweb2c makecpool $$@" > build/native/texlive/texk/web2c/web2c/makecpool; cat build/native/texlive/texk/web2c/web2c/makecpool
+	#echo "$(ROOT)/build/native/texlive/texk/busyweb2c web2c $$@" > build/native/texlive/texk/web2c/web2c/web2c; cat build/native/texlive/texk/web2c/web2c/web2c
