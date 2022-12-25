@@ -502,15 +502,15 @@ build/native/fonts.conf:
 .PHONY: build/native/texlivedependencies build/wasm/texlivedependencies
 build/native/texlivedependencies build/wasm/texlivedependencies:
 	$(MAKE) $(dir $@)expat/libexpat.a
-	#$(MAKE) $(dir $@)texlive/libs/zziplib/libzzip.a
-	#$(MAKE) $(dir $@)texlive/libs/libpng/libpng.a 
-	#$(MAKE) $(dir $@)texlive/libs/libpaper/libpaper.a 
-	#$(MAKE) $(dir $@)texlive/libs/zlib/libz.a 
-	#$(MAKE) $(dir $@)texlive/libs/teckit/libTECkit.a 
-	#$(MAKE) $(dir $@)texlive/libs/harfbuzz/libharfbuzz.a 
-	#$(MAKE) $(dir $@)texlive/libs/graphite2/libgraphite2.a 
-	#$(MAKE) $(dir $@)texlive/libs/pplib/libpplib.a 
-	#$(MAKE) $(dir $@)texlive/libs/lua53/.libs/libtexlua53.a
+	$(MAKE) $(dir $@)texlive/libs/zziplib/libzzip.a
+	$(MAKE) $(dir $@)texlive/libs/libpng/libpng.a 
+	$(MAKE) $(dir $@)texlive/libs/libpaper/libpaper.a 
+	$(MAKE) $(dir $@)texlive/libs/zlib/libz.a 
+	$(MAKE) $(dir $@)texlive/libs/teckit/libTECkit.a 
+	$(MAKE) $(dir $@)texlive/libs/harfbuzz/libharfbuzz.a 
+	$(MAKE) $(dir $@)texlive/libs/graphite2/libgraphite2.a 
+	$(MAKE) $(dir $@)texlive/libs/pplib/libpplib.a 
+	$(MAKE) $(dir $@)texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE) $(dir $@)texlive/libs/freetype2/libfreetype.a 
 	#$(MAKE) $(dir $@)texlive/libs/xpdf/libxpdf.a
 	#$(MAKE) $(dir $@)texlive/libs/icu/icu-build/lib/libicuuc.a 
