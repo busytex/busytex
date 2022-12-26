@@ -223,6 +223,7 @@ build/%/texlive.configured: source/texlive.downloaded
           ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
 	touch $@
+	#LDFLAGS="$(OPTS_BUSYTEX_LINK_$*)"	        
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) 
@@ -298,6 +299,9 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
 build/%/texlive/texk/web2c/busyweb2c:
+	echo BEGINLDD
+	-ldd $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN))
+	echo ENDLDD
 	mkdir -p $(dir $@)
 	cp $(dir $@)/tie-tie.o $(dir $@)/tie.o; $(foreach binname,$(BUSYTEX_TEXBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;)
 	$(OBJCOPY_$*) --redefine-sym main=busymain_tie --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/lib/lib.a $(dir $@)/lib/busytex_lib.a; $(AR_$*) dv $(dir $@)/lib/busytex_lib.a main.o
