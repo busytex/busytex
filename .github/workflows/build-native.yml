@@ -16,7 +16,7 @@ jobs:
         run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
 
       - name: Install Hub
-        run:  apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing hub 
+        run:  apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing hub github-cli
 
       - uses: actions/checkout@v2
       
@@ -43,3 +43,4 @@ jobs:
         run: |
             chown -R $(whoami) .
             hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex -a build/native/texlive/texk/web2c/busyweb2c -a build/native/busytex.tar $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
+            # gh release create -t build_${{github.sha}} --notes "Native assets" build/versions.txt build/native/fonts.conf -a build/native/busytex -a build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN)

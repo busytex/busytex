@@ -220,9 +220,9 @@ build/%/texlive.configured: source/texlive.downloaded
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"	        \
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
 	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
-	  LDFLAGS="$(OPTS_BUSYTEX_LINK_$*)"             \
           ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
+	#LDFLAGS="$(OPTS_BUSYTEX_LINK_$*)"             
 	touch $@	        
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
