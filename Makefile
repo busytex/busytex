@@ -649,6 +649,6 @@ replace-native:
 	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
 	$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
-	$(foreach binname,$(BUSYTEX_TEXBIN), echo '$(ROOT)/build/native/texlive/texk/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/$(binname);)
-	$(foreach binname,$(BUSYTEX_WEB2CBIN), echo '$(ROOT)/build/native/texlive/texk/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/web2c/$(binname);)
+	$(foreach binname,$(BUSYTEX_TEXBIN),   echo '$(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/$(binname);)
+	$(foreach binname,$(BUSYTEX_WEB2CBIN), echo '$(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/web2c/$(binname);)
 	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN))  $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
