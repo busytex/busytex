@@ -300,6 +300,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/texlive/texk/web2c/busyweb2c:
 	echo BEGINLDD
+	-ldd build/native/texlive/texk/web2c/web2c/web2c
 	-ldd $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN))
 	echo ENDLDD
 	mkdir -p $(dir $@)
