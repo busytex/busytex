@@ -529,6 +529,9 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	#
 	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
+	echo BEGINLDD1
+	-ldd build/native/texlive/texk/web2c/web2c/web2c
+	echo ENDLDD1
 	echo BEGINFIND1; find $(dir $@)texlive/texk/web2c/web2c -type f -executable; echo ENDFIND1
 	$(MAKE) -C $(dir $@)texlive/texk/web2c $(BUSYTEX_TEXBIN) CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
 	echo BEGINFIND2; find $(dir $@)texlive/texk/web2c -type f -executable; echo ENDFIND2; echo ENDWEB2C
