@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
 {
     if(argc < 2)
     {
-        printf(
+        printf("\n"
 #ifdef BUSYTEX_PDFTEX
             "pdftex\n"
 #endif
