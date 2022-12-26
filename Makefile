@@ -453,7 +453,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#   
 	source/texmfrepo/install-tl --help 
-	TEXLIVE_INSTALL_NO_RESUME=1 strace -f -v -s 1000 -e trace=execve source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) 
+	TEXLIVE_INSTALL_NO_RESUME=1 ./source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) #strace -f -v -s 1000 -e trace=execve
 	# 
 	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	##printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
@@ -531,6 +531,10 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	#
 	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="-Wl,-Bstatic $(OPTS_BUSYTEX_LINK_native)"
 	echo BEGINLDD1
+	-ldd build/native/texlive/texk/web2c/web2c/web2c
+	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc libweb2c.a -pthread
+	-ldd build/native/texlive/texk/web2c/web2c/web2c
+	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc libweb2c.a -pthread
 	-ldd build/native/texlive/texk/web2c/web2c/web2c
 	echo ENDLDD1
 	echo BEGINFIND1; find $(dir $@)texlive/texk/web2c/web2c -type f -executable; echo ENDFIND1
