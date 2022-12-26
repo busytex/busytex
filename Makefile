@@ -527,10 +527,10 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	#
-	$(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_$*)"
+	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
 	echo BEGINFIND1; find $(dir $@)texlive/texk/web2c/web2c -type f -executable; echo ENDFIND1
-	$(MAKE) -C $(dir $@)texlive/texk/web2c $(BUSYTEX_TEXBIN) CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_$*)"
-	echo BEGINFIND2; find $(dir $@)texlive/texk/web2c -type f -executable; echo ENDFIND2
+	$(MAKE) -C $(dir $@)texlive/texk/web2c $(BUSYTEX_TEXBIN) CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
+	echo BEGINFIND2; find $(dir $@)texlive/texk/web2c -type f -executable; echo ENDFIND2; echo ENDWEB2C
 	#
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
