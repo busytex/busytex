@@ -78,3 +78,4 @@ jobs:
       #  run: |
       #      make dist-wasm
       #      hub release create -m "Wasm assets" -a busytex_pipeline.js -a busytex_worker.js -a build/versions.txt -a build/wasm/busytex.js -a build/wasm/busytex.wasm   -a source/texmfrepo.txt -a build/texlive-basic.txt -a build/texlive-full.txt -a build/wasm/texlive-basic.js -a build/wasm/texlive-basic.data $(printf -- "-a build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf -- "-a build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) build_${{github.sha}}
+#            gh release create build_${{github.sha}} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN)
