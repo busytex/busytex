@@ -158,7 +158,7 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      
 OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 #OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      -I$(ROOT)/build/native/perl -Wimplicit -Wreturn-type -fstack-protector-strong  -fwrapv -fno-strict-aliasing   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE  -DBUSYTEX_FMTUTILUPDMAP
-OPTS_BUSYTEX_LINK = -static -static-libstdc++ -static-libgcc -static
+OPTS_BUSYTEX_LINK = -static -static-libstdc++ -static-libgcc
 OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all 
 
 #OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all -Wl,-E build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lutil
@@ -529,7 +529,7 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	#
-	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native) $(OPTS_BUSYTEX_LINK_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
+	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="-Wl,-Bstatic $(OPTS_BUSYTEX_LINK_native)"
 	echo BEGINLDD1
 	-ldd build/native/texlive/texk/web2c/web2c/web2c
 	echo ENDLDD1
