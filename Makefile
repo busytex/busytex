@@ -532,9 +532,9 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="-Wl,-Bstatic $(OPTS_BUSYTEX_LINK_native)"
 	echo BEGINLDD1
 	-ldd build/native/texlive/texk/web2c/web2c/web2c
-	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc libweb2c.a -pthread
+	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc build/native/texlive/texk/web2c/web2c/libweb2c.a -pthread
 	-ldd build/native/texlive/texk/web2c/web2c/web2c
-	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc libweb2c.a -pthread
+	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc build/native/texlive/texk/web2c/web2c/libweb2c.a -pthread
 	-ldd build/native/texlive/texk/web2c/web2c/web2c
 	echo ENDLDD1
 	echo BEGINFIND1; find $(dir $@)texlive/texk/web2c/web2c -type f -executable; echo ENDFIND1
