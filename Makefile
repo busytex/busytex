@@ -326,7 +326,7 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	# xetexini.c, xetex0.c xetex-pool.c
-	-cp $(subst wasm, native, $(dir $@))*.c $(dir $@)
+	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_$*))
 	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
 	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
@@ -336,7 +336,7 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	# pdftexini.c, pdftex0.c pdftex-pool.c
-	-cp $(subst wasm, native, $(dir $@))*.c $(dir $@)
+	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_$*))
 	$(EXTERN_SYM)     $(dir $@)/pdftexd.h                   $(PDFTEX_EXTERN)
 	$(MAKE_$*) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_$*)
@@ -649,6 +649,6 @@ replace-native:
 	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
 	$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
-	$(foreach binname,$(BUSYTEX_TEXBIN),   echo '$(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/$(binname);)
-	$(foreach binname,$(BUSYTEX_WEB2CBIN), echo '$(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/web2c/$(binname);)
+	$(foreach binname,$(BUSYTEX_TEXBIN),   echo 'echo $$@; $(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/$(binname);)
+	$(foreach binname,$(BUSYTEX_WEB2CBIN), echo 'echo $$@; $(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/web2c/$(binname);)
 	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN))  $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
