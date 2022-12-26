@@ -647,8 +647,8 @@ download-native:
 	wget  -P build/native/texlive/texk/web2c              -nc $(URLRELEASE)/busyweb2c
 	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
 	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
-	chown $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x $(BUSYTEX_native) $(BUSYWEB2C_native); file $(BUSYTEX_native); file $(BUSYWEB2C_native)
-	chown $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN)); chmod +x $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN)); file $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN))
+	chown $(shell whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x $(BUSYTEX_native) $(BUSYWEB2C_native); file $(BUSYTEX_native); file $(BUSYWEB2C_native)
+	chown $(shell whoami) $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN)); chmod +x $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN)); file $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN))
 
 
 .PHONY: replace-native

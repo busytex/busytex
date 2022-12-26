@@ -41,6 +41,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            chown -R .
+            chown $(whoami) -R .
             #hub release create -m "Native assets" -a build/versions.txt -a build/native/fonts.conf -a build/native/busytex -a build/native/texlive/texk/web2c/busyweb2c -a build/native/busytex.tar $(printf -- "-a build/native/texlive/texk/web2c/%s " $TEXBIN) build_${{github.sha}}
              gh release create -t build_${{github.sha}} --notes native_assets build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN)
