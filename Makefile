@@ -300,7 +300,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/texlive/texk/web2c/busyweb2c:
 	echo BEGINLDD
-	-ldd $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN))
+	-ldd $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN))
 	echo ENDLDD
 	mkdir -p $(dir $@)
 	cp $(dir $@)/tie-tie.o $(dir $@)/tie.o; $(foreach binname,$(BUSYTEX_TEXBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;)
