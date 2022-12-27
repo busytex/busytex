@@ -6,10 +6,9 @@ on:
       busytexreleasetag:
         description: 'busytex release tag'
         required: false
-        default: 'build_3f8d8a0c6c9502d0cc9ac190342fdcbb4737e88b'
+        default: 'build_981176fb2e657273141b6a6c58695338d1586c58'
 
 env:
-  BUSYTEX_RELEASES_URL: https://github.com/busytex/busytex/releases
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-fonts-recommended
   EMSCRIPTEN_VERSION: 2.0.30
   MAKE_PARALLELISM: -j2
@@ -33,7 +32,7 @@ jobs:
         run:  make source/texlive.downloaded build/versions.txt
       
       - name: Download native binaries
-        run:  make URLRELEASE=$BUSYTEX_RELEASES_URL/download/${{ github.event.inputs.busytexreleasetag }} download-native
+        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
 
       - name: Build wasm busytex
         run: make wasm
