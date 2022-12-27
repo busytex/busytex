@@ -56,15 +56,13 @@ jobs:
 #            build/texlive-basic/
 #            build/native/busytex
 
-      - name: Create Basic package
-        run: make build/wasm/texlive-basic.js
-      
-      - name: Create Ubuntu packages
-        run:  make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
+      - name: Create packages and dist
+        run: |
+            make build/wasm/texlive-basic.js
+            make $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) -e TEXMF_FULL=build/texlive-full 
+            make dist-wasm
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-            make dist-wasm
-            gh release create build_${{github.sha}} -t "Wasm assets" busytex_pipeline.js busytex_worker.js build/versions.txt build/wasm/busytex.js build/wasm/busytex.wasm  source/texmfrepo.txt build/texlive-basic.txt build/texlive-full.txt build/wasm/texlive-basic.js build/wasm/texlive-basic.data $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.providespackage.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.ubuntu.txt " $UBUNTUPACKAGES)
+        run: chown $(whoami) -R . && gh release create build_${{github.sha}} -t "Wasm assets" busytex_pipeline.js busytex_worker.js build/versions.txt build/wasm/busytex.js build/wasm/busytex.wasm  source/texmfrepo.txt build/texlive-basic.txt build/texlive-full.txt build/wasm/texlive-basic.js build/wasm/texlive-basic.data $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.providespackage.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.ubuntu.txt " $UBUNTUPACKAGES)
