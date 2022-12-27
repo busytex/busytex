@@ -72,20 +72,20 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     filelist_url = os.path.join(args.url, 'all', args.package, 'filelist')
+    print('File list URL', filelist_url, file = sys.stderr)
     for i in range(args.retry):
         try:
             page = urllib.request.urlopen(filelist_url).read().decode('utf-8')
             break
         except Exception as err:
-            if i == args.retry - 1:
-                sys.exit(1)
-
-            print('Retrying', err)
+            assert i < args.retry - 1
+            print('Retrying', err, file = sys.stderr)
             time.sleep(args.retry_seconds)
     
     html_parser = UbuntuDebFileList()
     html_parser.feed(page)
-    
+    assert html_parser.file_list is not None
+
     preload = generate_preload(args.texmf, html_parser.file_list, args.skip, skip_log = args.skip_log, good_log = args.good_log, varlog = args.varlog)
 
     print(' '.join(f'--preload {src}@{dst}' for src, dst in preload))

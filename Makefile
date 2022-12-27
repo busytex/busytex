@@ -8,7 +8,7 @@ URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive202
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2022.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
-URL_ubuntu_release   = https://packages.ubuntu.com/groovy/
+URL_ubuntu_release   = https://packages.ubuntu.com/kinetic/
 URL_perl             = https://www.cpan.org/src/5.0/perl-5.35.4.tar.gz
 
 BUSYTEX_BIN          = busytex fonts.conf
