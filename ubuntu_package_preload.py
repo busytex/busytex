@@ -18,27 +18,30 @@ class UbuntuDebFileList(html.parser.HTMLParser):
         if self.file_list == []:
             self.file_list.extend(list(filter(None, data.split('\n'))))
 
+def makedirs_open_w(path):
+    dirname = os.path.dirname(good_log)
+    if dirname:
+        os.makedirs(dirname, exist_ok = True)
+    return open(path, 'w')
+
 def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None, good_log = None, providespackage_log = None, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
     preload = set()
     print(f'Skip log in [{skip_log or "stderr"}]', file = sys.stderr)
     
     if good_log:
-        os.makedirs(os.path.dirname(good_log), exist_ok = True)
-        good_log = open(good_log, 'w')
+        good_log = makedirs_open_w(good_log)
     else:
         good_log = sys.stderr
     good_log.writelines(path + '\n' for path in package_file_list)
     
     if skip_log:
-        os.makedirs(os.path.dirname(skip_log), exist_ok = True)
         preload.add((skip_log, os.path.join(varlog, os.path.basename(skip_log))))
-        skip_log = open(skip_log, 'w')
+        skip_log = make_dirs_open_w(skip_log)
     else:
         skip_log = sys.stderr
     
     if providespackage_log:
-        os.makedirs(os.path.dirname(providespackage_log), exist_ok = True)
-        providespackage_log = open(providespackage_log, 'w')
+        providespackage_log = makedirs_open_w(providespackage_log)
     else:
         providespackage_log = sys.stderr
 
@@ -99,6 +102,6 @@ if __name__ == '__main__':
     preload = generate_preload(args.texmf, html_parser.file_list, args.skip, skip_log = args.skip_log, good_log = args.good_log, varlog = args.varlog, providespackage_log = args.providespackage_log)
 
     if args.ubuntu_log:
-        open(args.ubuntu_log, 'w').writelines(line + '\n' for line in html_parser.file_list)
+        makedirs_open_w(args.ubuntu_log).writelines(line + '\n' for line in html_parser.file_list)
 
     print(' '.join(f'--preload {src}@{dst}' for src, dst in preload))
