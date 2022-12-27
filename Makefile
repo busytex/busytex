@@ -654,10 +654,7 @@ download-native:
 	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
 	chown $(shell whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x $(BUSYTEX_native) $(BUSYWEB2C_native); file $(BUSYTEX_native); file $(BUSYWEB2C_native)
 	chown $(shell whoami) $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN)); chmod +x $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN)); file $(addprefix build/native/texlive/texk/web2c,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c,$(BUSYTEX_WEB2CBIN))
-
-
-.PHONY: replace-native
-replace-native:
+	#
 	mkdir -p build/native build/native/texlive/libs/icu/icu-build/bin build/native/texlive/libs/freetype2/ft-build build/native/texlive/texk/web2c/web2c
 	-rm build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata build/native/texlive/libs/freetype2/ft-build/apinames
 	ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
@@ -666,3 +663,4 @@ replace-native:
 	#$(foreach binname,$(BUSYTEX_TEXBIN),   echo 'echo $(binname) $$@ 1>&2; $(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/$(binname);)
 	#$(foreach binname,$(BUSYTEX_WEB2CBIN), echo 'echo $(binname) $$@ 1>&2; $(ROOT)/build/native/texlive/texk/web2c/busyweb2c $(binname) $$@' > build/native/texlive/texk/web2c/web2c/$(binname);)
 	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN))  $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
+
