@@ -18,7 +18,7 @@ class UbuntuDebFileList(html.parser.HTMLParser):
         if self.file_list == []:
             self.file_list.extend(list(filter(None, data.split('\n'))))
 
-def generate_preload(texmf_src, package_file_list, skip, skip_log, good_log, varlog, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
+def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None, good_log = None, providespackage_log = None, texmf_dst = '/texmf', texmf_ubuntu = '/usr/share/texlive', texmf_dist = '/usr/share/texlive/texmf-dist'):
     preload = set()
     print(f'Skip log in [{skip_log or "stderr"}]', file = sys.stderr)
     
@@ -36,6 +36,11 @@ def generate_preload(texmf_src, package_file_list, skip, skip_log, good_log, var
     else:
         skip_log = sys.stderr
     
+    if providespackage_log:
+        os.makedirs(os.path.dirname(providespackage_log), exist_ok = True)
+        providespackage_log = open(providespackage_log, 'w')
+    else:
+        providespackage_log = sys.stderr
 
     for path in package_file_list:
         if any(map(path.startswith, skip)):
@@ -52,6 +57,9 @@ def generate_preload(texmf_src, package_file_list, skip, skip_log, good_log, var
             print(path, file = skip_log)
             continue
         
+        providespackage_log.writelines(line.strip() + '\n' for line in open(src_path) if '\\providespackage' in line.lower())
+            
+
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
         dst_dir = dirname.replace(texmf_ubuntu, texmf_dst)
         preload.add((src_dir, dst_dir))
@@ -65,6 +73,8 @@ if __name__ == '__main__':
     parser.add_argument('--url', required = True)
     parser.add_argument('--skip-log')
     parser.add_argument('--good-log')
+    parser.add_argument('--ubuntu-log')
+    parser.add_argument('--providespackage-log')
     parser.add_argument('--skip', nargs = '*', default = ['/usr/share/doc', '/usr/share/man'])
     parser.add_argument('--varlog', default = '/var/log')
     parser.add_argument('--retry', type = int, default = 10)
@@ -86,6 +96,9 @@ if __name__ == '__main__':
     html_parser.feed(page)
     assert html_parser.file_list is not None
 
-    preload = generate_preload(args.texmf, html_parser.file_list, args.skip, skip_log = args.skip_log, good_log = args.good_log, varlog = args.varlog)
+    preload = generate_preload(args.texmf, html_parser.file_list, args.skip, skip_log = args.skip_log, good_log = args.good_log, varlog = args.varlog, providespackage_log = args.providespackage_log)
+
+    if args.ubuntu_log:
+        open(args.ubuntu_log, 'w').writelines(line + '\n' for line in html_parser.file_list)
 
     print(' '.join(f'--preload {src}@{dst}' for src, dst in preload))

@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Install Prerequisites
-        run:  sudo apt-get install -y gperf p7zip-full strace icu-devtools musl
+        run:  sudo apt-get install -y gperf p7zip-full strace icu-devtools
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v10
@@ -67,4 +67,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
             make dist-wasm
-            gh release create build_${{github.sha}} -t "Wasm assets" busytex_pipeline.js busytex_worker.js build/versions.txt build/wasm/busytex.js build/wasm/busytex.wasm  source/texmfrepo.txt build/texlive-basic.txt build/texlive-full.txt build/wasm/texlive-basic.js build/wasm/texlive-basic.data $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES)
+            gh release create build_${{github.sha}} -t "Wasm assets" busytex_pipeline.js busytex_worker.js build/versions.txt build/wasm/busytex.js build/wasm/busytex.wasm  source/texmfrepo.txt build/texlive-basic.txt build/texlive-full.txt build/wasm/texlive-basic.js build/wasm/texlive-basic.data $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.skip.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.good.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.providespackage.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.ubuntu.txt " $UBUNTUPACKAGES)
