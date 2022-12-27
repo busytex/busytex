@@ -158,12 +158,12 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      
 OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 #OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      -I$(ROOT)/build/native/perl -Wimplicit -Wreturn-type -fstack-protector-strong  -fwrapv -fno-strict-aliasing   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE  -DBUSYTEX_FMTUTILUPDMAP
-#OPTS_BUSYTEX_LINK = -static -static-libstdc++ -static-libgcc
 OPTS_BUSYTEX_LINK = --static -static -static-libstdc++ -static-libgcc
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all 
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
+LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
 #OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all -Wl,-E build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lutil
-# https://tug.org/pipermail/tex-live-commits/2021-June/018270.html
+
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
 ##############################################################################################################################
@@ -222,7 +222,7 @@ build/%/texlive.configured: source/texlive.downloaded
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"	        \
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
 	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
-	LDFLAGS="$(OPTS_BUSYTEX_LINK_$*)"               \
+	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"               \
           ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
@@ -530,17 +530,12 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	#
-	echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="-Wl,-Bstatic $(OPTS_BUSYTEX_LINK_native)"
-	echo BEGINLDD1
-	-ldd build/native/texlive/texk/web2c/web2c/web2c
-	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc build/native/texlive/texk/web2c/web2c/libweb2c.a -pthread
-	-ldd build/native/texlive/texk/web2c/web2c/web2c
-	gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc build/native/texlive/texk/web2c/web2c/libweb2c.a -pthread
-	-ldd build/native/texlive/texk/web2c/web2c/web2c
-	echo ENDLDD1
-	echo BEGINFIND1; find $(dir $@)texlive/texk/web2c/web2c -type f -executable; echo ENDFIND1
-	$(MAKE) -C $(dir $@)texlive/texk/web2c $(BUSYTEX_TEXBIN) CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
-	echo BEGINFIND2; find $(dir $@)texlive/texk/web2c -type f -executable; echo ENDFIND2; echo ENDWEB2C
+	#echo BEGINWEB2C; $(MAKE) -C $(dir $@)texlive/texk/web2c/web2c CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
+	#-echo BEGINLDD1 && ldd build/native/texlive/texk/web2c/web2c/web2c || echo ENDLDD1
+	#gcc -Wimplicit -Wreturn-type -O3 -Wl,-Bstatic -static -static-libstdc++ -static-libgcc -pthread -Wl,--unresolved-symbols=ignore-all -o build/native/texlive/texk/web2c/web2c/web2c build/native/texlive/texk/web2c/web2c/web2c-parser.o build/native/texlive/texk/web2c/web2c/web2c-lexer.o build/native/texlive/texk/web2c/web2c/main.o  -ldl -lm -lpthread -lc build/native/texlive/texk/web2c/web2c/libweb2c.a -pthread
+	#echo BEGINFIND1; find $(dir $@)texlive/texk/web2c/web2c -type f -executable; echo ENDFIND1
+	#$(MAKE) -C $(dir $@)texlive/texk/web2c $(BUSYTEX_TEXBIN) CFLAGS="$(CFLAGS_OPT_native)" LDFLAGS="$(OPTS_BUSYTEX_LINK_native)"
+	#echo BEGINFIND2; find $(dir $@)texlive/texk/web2c -type f -executable; echo ENDFIND2; echo ENDWEB2C
 	#
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsestat.o 
@@ -552,13 +547,13 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libxetex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libpdftex.a
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
-	$(MAKE) $(dir $@)texlive/texk/web2c/busyweb2c
 
 .PHONY: native
 native: build/native/fonts.conf
 	$(MAKE) build/native/texlive.configured
 	$(MAKE) build/native/texlivedependencies
 	$(MAKE) build/native/busytexapplets
+	$(MAKE) build/native/texlive/texk/web2c/busyweb2c
 	$(MAKE) build/native/busytex
 
 .PHONY: wasm

@@ -28,18 +28,18 @@ jobs:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
         run:  make native
       
-#      - name: Smoke native
-#        run:  make test
-#
-#      - name: Test native 
-#        run: |
-#            make tds-basic
-#            make dist-native
-#            sh example/example.sh
-#
-#      - name: Create Release
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: |
-#            chown $(whoami) -R .
-#            gh release create build_${{github.sha}} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN)
+      - name: Smoke native
+        run:  make test
+
+      - name: Test native 
+        run: |
+            make tds-basic
+            make dist-native
+            sh example/example.sh
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            chown $(whoami) -R .
+            gh release create build_${{github.sha}} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN)
