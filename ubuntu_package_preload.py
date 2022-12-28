@@ -19,7 +19,7 @@ class UbuntuDebFileList(html.parser.HTMLParser):
             self.file_list.extend(list(filter(None, data.split('\n'))))
 
 def makedirs_open_w(path):
-    dirname = os.path.dirname(good_log)
+    dirname = os.path.dirname(path)
     if dirname:
         os.makedirs(dirname, exist_ok = True)
     return open(path, 'w')
