@@ -11,7 +11,7 @@ Currently compiles into a **fully static binary** (via musl on Alpine Linux):
 
 Supported architecture targets:
 - x86_64-linux
-- WASM
+- WASM32
 
 Future work:
 - mf-nowin
@@ -118,6 +118,7 @@ make clean
 - http://pages.stern.nyu.edu/~marriaga/software/libtrash/
 
 ### Random links
+- https://raw.githubusercontent.com/void-linux/void-packages/master/srcpkgs/texlive/template
 - abspath/realpath instead of ROOT
 - instruction for local tlmgr install like tinytex
 - https://github.com/emscripten-core/emscripten/issues/11709#issuecomment-663901019
