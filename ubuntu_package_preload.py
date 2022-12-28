@@ -28,20 +28,14 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
     preload = set()
     print(f'Skip log in [{skip_log or "stderr"}]', file = sys.stderr)
     
-    if good_log:
-        good_log = makedirs_open(good_log, 'w')
-    else:       
-        good_log = sys.stderr
-    good_log.writelines(path + '\n' for path in package_file_list)
-    
     if skip_log:
         preload.add((skip_log, os.path.join(varlog, os.path.basename(skip_log))))
-        skip_log = makedirs_open(skip_log, 'w')
-    else:
-        skip_log = sys.stderr
+   
+    skip_log = makedirs_open(skip_log, 'w')if skip_log else sys.stderr
+    providespackage_log = makedirs_open(providespackage_log, 'wb') if providespackage_log else sys.stderr.buffer
+    good_log = makedirs_open(good_log, 'w') if good_log else sys.stderr
     
-    if providespackage_log:
-        providespackage_log = makedirs_open(providespackage_log, 'wb')
+    good_log.writelines(path + '\n' for path in package_file_list)
 
     for path in package_file_list:
         if any(map(path.startswith, skip)):
@@ -58,8 +52,7 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
             print(path, file = skip_log)
             continue
         
-        if providespackage_log is not None:
-            providespackage_log.writelines(line for line in open(src_path, 'rb') if b'\\ProvidesPackage' in line)
+        providespackage_log.writelines(line for line in open(src_path, 'rb') if b'\\ProvidesPackage' in line)
 
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
         dst_dir = dirname.replace(texmf_ubuntu, texmf_dst)
