@@ -26,7 +26,7 @@ EMROOT              := $(dir $(shell which emcc))
 
 BUSYTEX_native       = $(abspath build/native/busytex)
 BUSYWEB2C_native     = $(abspath build/native/texlive/texk/web2c/busyweb2c)
-TEXMF_FULL           = $(abspath build/texlive-full)
+TEXMFFULL            = $(abspath build/texlive-full)
 PREFIX_wasm          = $(abspath build/wasm/prefix)
 PREFIX_native        = $(abspath build/native/prefix)
 
@@ -477,13 +477,14 @@ build/wasm/texlive-%.js: build/texlive-%/texmf-dist build/wasm/fonts.conf
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive
 
-build/wasm/ubuntu-%.js: $(TEXMF_FULL)
+build/wasm/ubuntu-%.js: $(TEXMFFULL)
 	mkdir -p $(dir $@)
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data \
 		--js-output=$@ \
 		--export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
-		$(shell $(PYTHON) ubuntu_package_preload.py --package $* --texmf $(TEXMF_FULL) --url $(URL_ubuntu_release) --skip-log $(basename $@).skip.txt --good-log $(basename $@).good.txt --providespackage-log $(basename $@).providespackage.txt --ubuntu-log $(basename $@).ubuntu.txt)
+		$(shell $(PYTHON) ubuntu_package_preload.py --package $* --texmf $(TEXMFFULL) --url $(URL_ubuntu_release) --skip-log $@.skip.txt --good-log $@.good.txt --providespackage-log $@.providespackage.txt --ubuntu-log $@.ubuntu.txt)
+	cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
 build/wasm/fonts.conf:
 	mkdir -p $(dir $@)

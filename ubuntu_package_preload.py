@@ -52,7 +52,7 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
             print(path, file = skip_log)
             continue
         
-        providespackage_log.writelines(line for line in open(src_path, 'rb') if b'\\ProvidesPackage' in line)
+        providespackage_log.writelines(b'//' + line.strip() + b'\n' for line in open(src_path, 'rb') if b'\\ProvidesPackage' in line)
 
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
         dst_dir = dirname.replace(texmf_ubuntu, texmf_dst)
