@@ -30,7 +30,7 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
     
     if good_log:
         good_log = makedirs_open(good_log, 'w')
-    else:
+    else:       
         good_log = sys.stderr
     good_log.writelines(path + '\n' for path in package_file_list)
     
@@ -41,9 +41,7 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
         skip_log = sys.stderr
     
     if providespackage_log:
-        providespackage_log = makedirs_open(providespackage_log, 'w')
-    else:
-        providespackage_log = sys.stderr
+        providespackage_log = makedirs_open(providespackage_log, 'wb')
 
     for path in package_file_list:
         if any(map(path.startswith, skip)):
@@ -60,8 +58,8 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
             print(path, file = skip_log)
             continue
         
-        providespackage_log.writelines(line.strip() + '\n' for line in open(src_path) if '\\providespackage' in line.lower())
-            
+        if providespackage_log is not None:
+            providespackage_log.writelines(line for line in open(src_path, 'rb') if b'\\ProvidesPackage' in line)
 
         src_dir = dirname.replace(texmf_ubuntu, texmf_src)
         dst_dir = dirname.replace(texmf_ubuntu, texmf_dst)
