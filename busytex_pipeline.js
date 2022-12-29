@@ -549,8 +549,8 @@ class BusytexPipeline
         {
             cmds = bibtex ? 
                 [
-                    [luahbtex this.error_messages_fatal], 
-                    [bibtex8, this.error_messages_fatal], 
+                    [luahbtex, this.error_messages_fatal], 
+                    [bibtex8 , this.error_messages_fatal], 
                     [luahbtex, this.error_messages_fatal], 
                     [luahbtex, this.error_messages_all]
                 ] : 
@@ -562,8 +562,8 @@ class BusytexPipeline
         {
             cmds = bibtex ? 
                 [
-                    [luatex this.error_messages_fatal], 
-                    [bibtex8, this.error_messages_fatal], 
+                    [luatex, this.error_messages_fatal], 
+                    [bibtex8,this.error_messages_fatal], 
                     [luatex, this.error_messages_fatal], 
                     [luatex, this.error_messages_all]
                 ] : 
