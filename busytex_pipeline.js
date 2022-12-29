@@ -266,7 +266,7 @@ class BusytexPipeline
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8', 'luatex_bibtex8'];
         
         this.error_messages_fatal = ['==> Fatal error occurred'];
-        this.error_messages_all = this.error_messages_fata.concat(['no output PDF file produced', 'No pages of output.']);
+        this.error_messages_all = this.error_messages_fatal.concat(['no output PDF file produced', 'No pages of output.']);
 
         this.env = {
             TEXMFDIST       : this.dir_texmfdist, 
