@@ -36,8 +36,8 @@ jobs:
 
       - name: Build wasm busytex
         run: make wasm
-        #env:
-        #    MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+        env:
+            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
 
       - name: Download TexLive Full
         run:  make source/texmfrepo.txt
@@ -64,4 +64,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: chown $(whoami) -R . && gh release create build_${{github.sha}} -t "Wasm assets" busytex_pipeline.js busytex_worker.js build/versions.txt build/wasm/busytex.js build/wasm/busytex.wasm  source/texmfrepo.txt build/texlive-basic.txt build/texlive-full.txt build/wasm/texlive-basic.js build/wasm/texlive-basic.data $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.skip.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.good.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.providespackage.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.ubuntu.txt " $UBUNTUPACKAGES)
+        run: chown $(whoami) -R . && gh release create build_${{github.sha}} -t "Wasm assets" busytex_pipeline.js busytex_worker.js build/versions.txt build/wasm/busytex.js build/wasm/busytex.wasm  source/texmfrepo.txt build/texlive-basic.txt build/texlive-full.txt build/wasm/texlive-basic.js build/wasm/texlive-basic.data build/wasm/texlive-basic.js.providespackage.txt $(printf "build/wasm/ubuntu-%s.js " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.data " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.skip.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.good.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.providespackage.txt " $UBUNTUPACKAGES) $(printf "build/wasm/ubuntu-%s.js.ubuntu.txt " $UBUNTUPACKAGES)
