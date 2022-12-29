@@ -477,7 +477,7 @@ build/wasm/texlive-%.js: build/texlive-%/texmf-dist build/wasm/fonts.conf
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive
-	grep -r -I -h 'ProvidesPackage{' build/texlive-$* | sed -e 's/^/\/\/ /' > $@.providespackage.txt
+	grep -r -I -h 'ProvidesPackage{' build/texlive-$* | grep '^[^%]' | sed -e 's/^/\/\/ /' > $@.providespackage.txt
 	cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
 build/wasm/ubuntu-%.js: $(TEXMFFULL)
