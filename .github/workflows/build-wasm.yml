@@ -9,7 +9,7 @@ on:
         default: 'build_981176fb2e657273141b6a6c58695338d1586c58'
 
 env:
-  UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-fonts-recommended
+  UBUNTUPACKAGES: texlive-base texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-fonts-recommended
   EMSCRIPTEN_VERSION: 2.0.30
   MAKE_PARALLELISM: -j2
 
