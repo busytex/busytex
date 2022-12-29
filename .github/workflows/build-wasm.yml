@@ -35,17 +35,17 @@ jobs:
         run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
 
       - name: Build wasm busytex
-        run: make wasm
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+        run: make wasm
 
       - name: Download TexLive Full
         run:  make source/texmfrepo.txt
 
       - name: Install TexLive
-        run: make build/texlive-basic.txt build/texlive-full.txt
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+        run: make build/texlive-basic.txt build/texlive-full.txt
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
