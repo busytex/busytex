@@ -33,6 +33,8 @@ jobs:
 
       - name: Test native 
         run: |
+            make source/texmfrepo.txt
+            make build/texlive-basic.txt
             make tds-basic
             make dist-native
             sh example/example.sh

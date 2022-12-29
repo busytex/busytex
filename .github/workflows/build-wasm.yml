@@ -43,9 +43,8 @@ jobs:
         run:  make source/texmfrepo.txt
 
       - name: Install TexLive
-        run: |
-            make tds-basic
-            make tds-full
+        run: make build/texlive-basic.txt build/texlive-full.txt
+            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2

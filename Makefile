@@ -173,7 +173,8 @@ all: build/versions.txt
 	$(MAKE) texlive
 	$(MAKE) native
 	$(MAKE) test
-	$(MAKE) tds-basic
+	$(MAKE) source/texmfrepo.txt
+	$(MAKE) build/texlive-basic.txt
 	$(MAKE) wasm
 	$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) tds-full
@@ -569,9 +570,6 @@ wasm: build/wasm/fonts.conf
 
 .PHONY: ubuntu-wasm
 ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js build/wasm/ubuntu-texlive-fonts-recommended.js
-
-tds-%:
-	$(MAKE) source/texmfrepo.txt build/texlive-$*.txt
 
 ################################################################################################################
 
