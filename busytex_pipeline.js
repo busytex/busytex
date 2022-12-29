@@ -264,7 +264,9 @@ class BusytexPipeline
             },
         };
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8', 'luatex_bibtex8'];
-        this.error_messages = ['==> Fatal error occurred', 'no output PDF file produced', 'No pages of output.'];
+        
+        this.error_messages_fatal = ['==> Fatal error occurred'];
+        this.error_messages_all = this.error_messages_fata.concat(['no output PDF file produced', 'No pages of output.']);
 
         this.env = {
             TEXMFDIST       : this.dir_texmfdist, 
@@ -456,10 +458,12 @@ class BusytexPipeline
         const fmt_packages_list = packages => '[' + (packages ? packages.toString().replaceAll(',', ', ') : '') + ']';
         this.print('TeX packages: ' + fmt_packages_list(filter_map(v => v.used)));
         this.print('TeX packages local: ' + fmt_packages_list(filter_map(v => v.source == 'local')));
+        this.print('TeX packages unresolved: ' + fmt_packages_list(tex_packages_not_resolved));
         this.print('TeX packages unresolved (in local or preloaded): ' + fmt_packages_list(filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source)))));
+        
+        this.print('Data packages used (preloaded): ' + fmt_packages_list(this.preload_data_packages_js));
         this.print('Data packages used (not preloaded): ' + fmt_packages_list(Array.from(new Set(filter_map(v => v.used && v.source != 'local' && v.source != null && !this.preload_data_packages_js.includes(v.source), false))).sort()));
         this.print('Data packages used: ' + fmt_packages_list(data_packages_js));
-        this.print('TeX packages unresolved: ' + fmt_packages_list(tex_packages_not_resolved));
 
         if(tex_packages_not_resolved.length > 0)
         {
@@ -480,10 +484,16 @@ class BusytexPipeline
         const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
         
         const xetex     = ['xelatex' ,   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+        const xetex_not_final     = ['xelatex' ,   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const pdftex    = ['pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+        const pdftex_not_final    = ['pdflatex',   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+        
         const luahbtex  = ['luahblatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luahbtex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+       
         const luatex  = ['lualatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+       
         const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
+        
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
         if(FS.analyzePath(this.project_dir).object.mount.mountpoint == this.project_dir)
@@ -508,18 +518,64 @@ class BusytexPipeline
         
         let cmds = [];
         if(driver == 'xetex_bibtex8_dvipdfmx')
-            cmds = bibtex ? [xetex, bibtex8, xetex, xetex, xdvipdfmx] : [xetex, xdvipdfmx];
+        {
+            cmds = bibtex ? 
+                [
+                    [xetex_not_final, this.error_messages_fatal], 
+                    [bibtex8, this.error_messages_fatal], 
+                    [xetex_not_final, this.error_messages_fatal], 
+                    [xetex, this.error_messages_all], 
+                    [xdvipdfmx, this.error_messages_all]
+                ] :
+                [
+                    [xetex, this.error_messages_all], 
+                    [xdvipdfmx, this.error_messages_all]
+                ];
+        }
         else if(driver == 'pdftex_bibtex8')
-            cmds = bibtex ? [pdftex, bibtex8, pdftex, pdftex] : [pdftex];
+        {
+            cmds = bibtex ? 
+                [
+                    [pdftex_not_final, this.error_messages_fatal], 
+                    [bibtex8, this.error_messages_fatal], 
+                    [pdftex_not_final, this.error_messages_fatal],  
+                    [pdftex, this.error_messages_all]
+                ] : 
+                [
+                    [pdftex, this.error_messages_all]
+                ];
+        }
         else if(driver == 'luahbtex_bibtex8')
-            cmds = bibtex ? [luahbtex, bibtex8, luahbtex, luahbtex] : [luahbtex];
+        {
+            cmds = bibtex ? 
+                [
+                    [luahbtex this.error_messages_fatal], 
+                    [bibtex8, this.error_messages_fatal], 
+                    [luahbtex, this.error_messages_fatal], 
+                    [luahbtex, this.error_messages_all]
+                ] : 
+                [
+                    [luahbtex, this.error_messages_all]
+                ];
+        }
         else if(driver == 'luatex_bibtex8')
-            cmds = bibtex ? [luatex, bibtex8, luatex, luatex] : [luatex];
+        {
+            cmds = bibtex ? 
+                [
+                    [luatex this.error_messages_fatal], 
+                    [bibtex8, this.error_messages_fatal], 
+                    [luatex, this.error_messages_fatal], 
+                    [luatex, this.error_messages_all]
+                ] : 
+                [
+                    [luatex, this.error_messages_all]
+                ];
+        }
         
         let exit_code = 0, stdout = '', stderr = '';
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         const logs = [];
-        for(const cmd of cmds)
+        for(const ([cmd, error_messages]) of cmds)
         {
             this.remove(FS, this.texmflog);
             this.remove(FS, log_path);
@@ -533,7 +589,7 @@ class BusytexPipeline
             this.print('$ echo $?');
             this.print(`${exit_code}\n`);
 
-            exit_code = stdout.trim() ? (this.error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
+            exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             logs.push({
                 cmd : cmd.join(' '), 
                 texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '', 
