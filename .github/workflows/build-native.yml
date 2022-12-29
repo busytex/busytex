@@ -42,4 +42,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: chown $(whoami) -R . && gh release create build_${{github.sha}} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN)
+        run: chown $(whoami) -R . && gh release create build_${{github.sha}} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
