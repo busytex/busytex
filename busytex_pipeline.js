@@ -47,6 +47,7 @@ class BusytexDataPackageResolver
         this.msgs = [];
         this.data_packages_js = data_packages_js;
         this.data_packages    = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  )    )]);
+        console.log('BusytexDataPackageResolver', this.data_packages);
         this.remap = remap;
         this.texmf_local_texmfdist_tex  = texmf_local .map(t => t + '/texmf-dist/tex/');
         this.texmf_system_texmfdist_tex = texmf_system.map(t => t + '/texmf-dist/tex/');
