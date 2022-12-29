@@ -463,7 +463,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(basename $@) > $@
-	echo BEGINPROVIDES; rgrep -I 'ProvidesPackage' $(basename $@); echo ENDPROVIDES;
+	echo BEGINPROVIDES; grep -r -I 'ProvidesPackage' $(basename $@); echo ENDPROVIDES;
 
 ################################################################################################################
 
