@@ -218,7 +218,7 @@ class BusytexPipeline
 
     constructor(busytex_js, busytex_wasm, data_packages_js, preload_data_packages_js, texmf_local, print, on_initialized, preload, script_loader)
     {
-        this.print = print;
+        this.print =  text => {console.log(text); print(text); };
         this.preload = preload;
         this.script_loader = script_loader;
         
@@ -378,7 +378,7 @@ class BusytexPipeline
             print(text)
             {
                 text = (arguments.length > 1 ?  Array.prototype.slice.call(arguments).join(' ') : text) || '';
-                Module.output_stdout += text + '\n' ;
+                Module.output_stdout += text + '\n';
                 if(Module.do_print)
                     Module.setStatus(Module.thisProgram + ' stdout: ' + text);
             },
