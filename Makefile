@@ -464,7 +464,6 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	find $(basename $@) > $@
-	echo BEGINPROVIDES; grep -r -I -h 'ProvidesPackage' $(basename $@); echo ENDPROVIDES;
 
 ################################################################################################################
 
@@ -478,6 +477,8 @@ build/wasm/texlive-%.js: build/texlive-%/texmf-dist build/wasm/fonts.conf
 		--preload build/empty@/bin/busytex \
 		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
 		--preload build/texlive-$*@/texlive
+	grep -r -I -h 'ProvidesPackage{' build/texlive-$* | sed -e 's/^/\/\/ /' > $@.providespackage.txt
+	cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
 build/wasm/ubuntu-%.js: $(TEXMFFULL)
 	mkdir -p $(dir $@)
