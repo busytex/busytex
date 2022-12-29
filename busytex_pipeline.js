@@ -575,7 +575,7 @@ class BusytexPipeline
         let exit_code = 0, stdout = '', stderr = '';
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         const logs = [];
-        for(const ([cmd, error_messages]) of cmds)
+        for(const [cmd, error_messages] of cmds)
         {
             this.remove(FS, this.texmflog);
             this.remove(FS, log_path);
