@@ -464,6 +464,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
 	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
 	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
+	find $(basename $@)/ -type f -executable -delete || true
 	find $(basename $@) > $@
 	tar -czf $(basename $@).tar.gz $(basename $@)
 
