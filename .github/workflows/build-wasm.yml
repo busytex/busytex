@@ -6,7 +6,7 @@ on:
       busytexreleasetag:
         description: 'busytex release tag'
         required: false
-        default: 'build_981176fb2e657273141b6a6c58695338d1586c58'
+        default: 'build_1c187d6a3a4bc48787e9def12554eb0dc8740b93'
 
 env:
   UBUNTUPACKAGES: texlive-base texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-fonts-recommended
