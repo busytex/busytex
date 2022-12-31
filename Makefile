@@ -434,7 +434,7 @@ build/texlive-basic.profile:
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> $@ 
 	echo "collection-xetex  1"                                         >> $@ 
 	echo "collection-latex  1"                                         >> $@ 
-	echo "collection-latexrecommended  1"                              >> $@ 
+	#echo "collection-latexrecommended  1"                              >> $@ 
 	echo "collection-luatex 1"                                         >> $@ 
 
 build/texlive-full.profile:
