@@ -487,7 +487,7 @@ build/wasm/ubuntu-%.js: $(TEXMFFULL)
 	mkdir -p $(dir $@)
 	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
 		--lz4 --use-preload-cache \
-		$(shell $(PYTHON) ubuntu_package_preload.py --package $* --texmf $(TEXMFFULL) --url $(URL_ubuntu_release) --skip-log $@.skip.txt --good-log $@.good.txt --providespackage-log $@.providespackage.txt --ubuntu-log $@.ubuntu.txt) || echo " " > $(basename $@).data
+		$(shell $(PYTHON) ubuntu_package_preload.py --package $* --texmf $(TEXMFFULL) --url $(URL_ubuntu_release) --skip-log $@.skip.txt --good-log $@.good.txt --providespackage-log $@.providespackage.txt --ubuntu-log $@.ubuntu.txt)
 	-cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
 build/wasm/fonts.conf:
