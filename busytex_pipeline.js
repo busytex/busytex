@@ -590,6 +590,7 @@ class BusytexPipeline
             this.print(`${exit_code}\n`);
 
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
+            // check blg bibtex log file. also check bbl file. if bbl empty and bibtex exit code is 0, then no need to do cross-references and run two more times
             logs.push({
                 cmd : cmd.join(' '), 
                 texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '', 
