@@ -235,6 +235,7 @@ class BusytexPipeline
         this.dir_cnf = '/texlive/texmf-dist/web2c';
         this.dir_fontconfig = '/etc/fonts';
         this.texmflog = '/tmp/texmf.log';
+        this.missfontlog = 'missfont.log';
 
         this.verbose_args = 
         {
@@ -481,7 +482,7 @@ class BusytexPipeline
 
         const tex_path = PATH.basename(main_tex_path), dirname = PATH.dirname(main_tex_path);
 
-        const [xdv_path, pdf_path, log_path, aux_path] = ['.xdv', '.pdf', '.log', '.aux'].map(ext => tex_path.replace('.tex', ext));
+        const [xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path] = ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'].map(ext => tex_path.replace('.tex', ext));
         
         const xetex     = ['xelatex' ,   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
         const xetex_not_final     = ['xelatex' ,   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
@@ -521,25 +522,25 @@ class BusytexPipeline
         {
             cmds = bibtex ? 
                 [
-                    [xetex_not_final, this.error_messages_fatal], 
-                    [bibtex8, this.error_messages_fatal], 
-                    [xetex_not_final, this.error_messages_fatal], 
-                    [xetex, this.error_messages_all], 
-                    [xdvipdfmx, this.error_messages_all]
+                    [xetex_not_final, this.error_messages_fatal, false], 
+                    [bibtex8, this.error_messages_fatal, true], 
+                    [xetex_not_final, this.error_messages_fatal, true], 
+                    [xetex, this.error_messages_all, true], 
+                    [xdvipdfmx, this.error_messages_all, false]
                 ] :
                 [
-                    [xetex, this.error_messages_all], 
-                    [xdvipdfmx, this.error_messages_all]
+                    [xetex, this.error_messages_all, false], 
+                    [xdvipdfmx, this.error_messages_all, false]
                 ];
         }
         else if(driver == 'pdftex_bibtex8')
         {
             cmds = bibtex ? 
                 [
-                    [pdftex_not_final, this.error_messages_fatal], 
-                    [bibtex8, this.error_messages_fatal], 
-                    [pdftex_not_final, this.error_messages_fatal],  
-                    [pdftex, this.error_messages_all]
+                    [pdftex_not_final, this.error_messages_fatal, false], 
+                    [bibtex8, this.error_messages_fatal, true], 
+                    [pdftex_not_final, this.error_messages_fatal, true],  
+                    [pdftex, this.error_messages_all, false]
                 ] : 
                 [
                     [pdftex, this.error_messages_all]
@@ -549,36 +550,44 @@ class BusytexPipeline
         {
             cmds = bibtex ? 
                 [
-                    [luahbtex, this.error_messages_fatal], 
-                    [bibtex8 , this.error_messages_fatal], 
-                    [luahbtex, this.error_messages_fatal], 
-                    [luahbtex, this.error_messages_all]
+                    [luahbtex, this.error_messages_fatal, false], 
+                    [bibtex8 , this.error_messages_fatal, true], 
+                    [luahbtex, this.error_messages_fatal, true], 
+                    [luahbtex, this.error_messages_all, true]
                 ] : 
                 [
-                    [luahbtex, this.error_messages_all]
+                    [luahbtex, this.error_messages_all, false]
                 ];
         }
         else if(driver == 'luatex_bibtex8')
         {
             cmds = bibtex ? 
                 [
-                    [luatex, this.error_messages_fatal], 
-                    [bibtex8,this.error_messages_fatal], 
-                    [luatex, this.error_messages_fatal], 
-                    [luatex, this.error_messages_all]
+                    [luatex, this.error_messages_fatal, false], 
+                    [bibtex8,this.error_messages_fatal, true], 
+                    [luatex, this.error_messages_fatal, true], 
+                    [luatex, this.error_messages_all, false]
                 ] : 
                 [
-                    [luatex, this.error_messages_all]
+                    [luatex, this.error_messages_all, false]
                 ];
         }
         
-        let exit_code = 0, stdout = '', stderr = '';
+        let exit_code = 0, stdout = '', stderr = '', log = '';
+        let skip = false;
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         const logs = [];
-        for(const [cmd, error_messages] of cmds)
+        for(const [cmd, error_messages, can_skip] of cmds)
         {
+            if(can_skip && skip)
+                continue;
+
+            const is_bibtex = cmd[0].startsWith('bibtex');
+            const cmd_log_path = is_bibtex ? blg_path : log_path;
+
             this.remove(FS, this.texmflog);
-            this.remove(FS, log_path);
+            this.remove(FS, this.missfontlog);
+            this.remove(FS, cmd_log_path);
 
             this.print('$ busytex ' + cmd.join(' '));
             ({exit_code, stdout, stderr} = Module.callMainWithRedirects(cmd, verbose != BusytexPipeline.VerboseSilent));
@@ -590,11 +599,21 @@ class BusytexPipeline
             this.print(`${exit_code}\n`);
 
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
-            // check blg bibtex log file. also check bbl file. if bbl empty and bibtex exit code is 0, then no need to do cross-references and run two more times
+            log = this.read_all_text(FS, cmd_log_path);
+            
+            if(is_bibtex && this.read_all_text(bbl_path).trim() == '' && exit_code == 0)
+            {
+                skip = true;
+                this.print('$ # bibtex found no citation commands, skipping extra calls');
+            }
+            
+            this.print('$ # XDV_PATH ' + (FS.analyzePath(xdv_path).exists ? 'EXISTS' : 'DOESNOTEXIST'));
+            
             logs.push({
                 cmd : cmd.join(' '), 
-                texmflog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '', 
-                log : this.read_all_text(FS, log_path), 
+                texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
+                missfontlog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.missfontlog) : '',
+                log : log.trim(), 
                 stdout : stdout.trim(), 
                 stderr : stderr.trim(), 
                 exit_code : exit_code
@@ -605,7 +624,7 @@ class BusytexPipeline
         }
 
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
-        const log = logs.map(({cmd, texmflog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
+        const log = logs.map(({cmd, texmflog, missfontlog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'MISSFONTLOG:', missfontlog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
         
         this.Module = this.preload == false ? null : this.Module;
         
