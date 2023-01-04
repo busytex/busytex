@@ -598,14 +598,14 @@ class BusytexPipeline
             this.print('$ echo $?');
             this.print(`${exit_code}\n`);
 
-            exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
-            log = this.read_all_text(FS, cmd_log_path);
-            
-            if(is_bibtex && this.read_all_text(bbl_path).trim() == '' && exit_code == 0)
+            if(is_bibtex && this.read_all_text(FS, bbl_path).trim() == '' && exit_code == 0)
             {
                 skip = true;
                 this.print('$ # bibtex found no citation commands, skipping extra calls');
             }
+            
+            log = this.read_all_text(FS, cmd_log_path);
+            exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             
             this.print('$ # XDV_PATH ' + (FS.analyzePath(xdv_path).exists ? 'EXISTS' : 'DOESNOTEXIST'));
             
