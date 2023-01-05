@@ -607,7 +607,7 @@ class BusytexPipeline
             log = this.read_all_text(FS, cmd_log_path);
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             
-            this.print('$ # XDV_PATH ' + this.read_all_text(FS, bbl_path).trim().length);
+            this.print('$ # XDV_PATH ' + this.read_all_text(FS, xdv_path).trim().length);
             
             logs.push({
                 cmd : cmd.join(' '), 
