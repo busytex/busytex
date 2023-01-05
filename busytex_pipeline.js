@@ -598,12 +598,7 @@ class BusytexPipeline
             this.print('$ echo $?');
             this.print(`${exit_code}\n`);
 
-            if(is_bibtex)
-            {
-                console.log('BBL', exit_code, this.read_all_text(FS, bbl_path).trim());
-            }
-
-            if(is_bibtex && this.read_all_text(FS, bbl_path).trim() == '' && exit_code == 0)
+            if(is_bibtex && this.read_all_text(FS, bbl_path).trim() == '' && (exit_code == 0 || exit_code == 2))
             {
                 skip = true;
                 this.print('$ # bibtex found no citation commands, skipping extra calls');
