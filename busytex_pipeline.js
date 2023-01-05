@@ -493,7 +493,7 @@ class BusytexPipeline
        
         const luatex  = ['lualatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
        
-        const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
+        const bibtex8   = ['bibtex8', '--8bit', '--terse', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
         
         const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
 
@@ -607,7 +607,7 @@ class BusytexPipeline
             log = this.read_all_text(FS, cmd_log_path);
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             
-            this.print('$ # XDV_PATH ' + (FS.analyzePath(xdv_path).exists ? 'EXISTS' : 'DOESNOTEXIST'));
+            this.print('$ # XDV_PATH ' + this.read_all_text(FS, bbl_path).trim().length);
             
             logs.push({
                 cmd : cmd.join(' '), 
