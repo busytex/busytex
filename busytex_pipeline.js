@@ -37,16 +37,15 @@ class BusytexDataPackageResolver
             zapfding : null
         })
     {
-        this.regex_createPath = /"filename": "(.+?)"/g 
         this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
-        this.regex_providespackage = /\\ProvidesPackage(\[.*?\])?\{(.+?)\}/g;
+        this.regex_providespackage = /\\ProvidesPackage\{(.+?)\}(\[.*?\])?/g;
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         this.dirname = path => path.slice(0, path.lastIndexOf('/'));
         this.isfile = path => this.basename(path).includes('.');
         
         this.msgs = [];
         this.data_packages_js = data_packages_js;
-        this.data_packages    = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_createPath)).map(groups => this.extract_tex_package_name(groups[1])).filter(f => f)  )    )]);
+        this.data_packages    = data_packages_js.map(data_package_js => [data_package_js, fetch(data_package_js).then(r => r.text()).then(    data_package_js_script => new Set(Array.from(data_package_js_script.matchAll(this.regex_providespackage)).map(groups => groups[1].toLowerCase().trim())))]);
         console.log('BusytexDataPackageResolver', this.data_packages);
         console.log('BusytexDataPackageResolver', this.msgs);
         this.remap = remap;
