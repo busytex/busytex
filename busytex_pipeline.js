@@ -456,7 +456,7 @@ class BusytexPipeline
         
         const fmt_packages_list = packages => '[' + (packages ? packages.toString().replaceAll(',', ', ') : '') + ']';
         
-        console.log('resolved', resovled);
+        console.log('resolved', resolved);
         console.log('tex_packages_not_resolved', tex_packages_not_resolved);
         console.log('data_packages_js', data_packages_js);
 
