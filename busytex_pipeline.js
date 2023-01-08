@@ -577,7 +577,7 @@ class BusytexPipeline
                 ];
         }
         
-        let exit_code = 0, stdout = '', stderr = '', log = '';
+        let exit_code = 0, stdout = '', stderr = '', log = '', aux = '';
         let skip = false;
         const mem_header = Uint8Array.from(Module.HEAPU8.slice(0, this.mem_header_size));
         const logs = [];
@@ -588,6 +588,7 @@ class BusytexPipeline
 
             const is_bibtex = cmd[0].startsWith('bibtex');
             const cmd_log_path = is_bibtex ? blg_path : log_path;
+            const cmd_aux_path = is_bibtex ? bbl_path : aux_path;
 
             this.remove(FS, this.texmflog);
             this.remove(FS, this.missfontlog);
@@ -608,6 +609,7 @@ class BusytexPipeline
                 this.print('$ # bibtex found no citation commands, skipping extra calls');
             }
             
+            aux = this.read_all_text(FS, cmd_aux_path);
             log = this.read_all_text(FS, cmd_log_path);
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             
@@ -617,7 +619,8 @@ class BusytexPipeline
                 cmd : cmd.join(' '), 
                 texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
                 missfontlog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.missfontlog) : '',
-                log : log.trim(), 
+                log : log.trim(),
+                aux : aux.trim(),
                 stdout : stdout.trim(), 
                 stderr : stderr.trim(), 
                 exit_code : exit_code
