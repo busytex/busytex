@@ -613,8 +613,6 @@ class BusytexPipeline
             log = this.read_all_text(FS, cmd_log_path);
             exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
             
-            this.print('$ # XDV_PATH ' + this.read_all_bytes(FS, xdv_path).length);
-            
             logs.push({
                 cmd : cmd.join(' '), 
                 texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
