@@ -455,8 +455,13 @@ class BusytexPipeline
         const tex_packages_not_resolved = filter_map(v => v.source == null);
         
         const fmt_packages_list = packages => '[' + (packages ? packages.toString().replaceAll(',', ', ') : '') + ']';
-        this.print('TeX packages: ' + fmt_packages_list(filter_map(v => v.used)));
-        this.print('TeX packages local: ' + fmt_packages_list(filter_map(v => v.source == 'local')));
+        
+        console.log('resolved', resovled);
+        console.log('tex_packages_not_resolved', tex_packages_not_resolved);
+        console.log('data_packages_js', data_packages_js);
+
+        this.print('TeX packages: '            + fmt_packages_list(filter_map(v => v.used)));
+        this.print('TeX packages local: '      + fmt_packages_list(filter_map(v => v.source == 'local')));
         this.print('TeX packages unresolved: ' + fmt_packages_list(tex_packages_not_resolved));
         this.print('TeX packages unresolved (in local or preloaded): ' + fmt_packages_list(filter_map(v => v.used && (v.source != 'local' && !this.preload_data_packages_js.includes(v.source)))));
         
