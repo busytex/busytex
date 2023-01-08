@@ -37,7 +37,7 @@ class BusytexDataPackageResolver
             zapfding : null
         })
     {
-        this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g;
+        this.regex_usepackage = /\\usepackage(\[.*?\])?\{(.+?)\}/g; // [2019/06/21 v0.4.0 A clean LaTeX style for thesis documents] : {source: 'local', used: false}
         this.regex_providespackage = /\\ProvidesPackage\{(.+?)\}(\[.*?\])?/g;
         this.basename = path => path.slice(path.lastIndexOf('/') + 1);
         this.dirname = path => path.slice(0, path.lastIndexOf('/'));
@@ -85,7 +85,7 @@ class BusytexDataPackageResolver
             const prefix = this.texmf_texmfdist_tex.find(t => path.startsWith(t));
             if(contents)
             {
-                const tex_packages = contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups.pop()  )  ).flat();
+                const tex_packages = contents.split('\n').filter(l => l.trim().startsWith('\\ProvidesPackage')).map(l => Array.from(l.matchAll(this.regex_providespackage)).filter(groups => groups.length >= 2).map(groups => groups[0]  )  ).flat();
                 if(tex_packages.length > 0)
                     tex_package_name = tex_packages[0];
             }
@@ -264,7 +264,7 @@ class BusytexPipeline
         };
         this.supported_drivers = ['xetex_bibtex8_dvipdfmx', 'pdftex_bibtex8', 'luahbtex_bibtex8', 'luatex_bibtex8'];
         
-        this.error_messages_fatal = ['==> Fatal error occurred', 'That was a fatal error'];
+        this.error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:'];
         this.error_messages_all = this.error_messages_fatal.concat(['no output PDF file produced', 'No pages of output.']);
 
         this.env = {
