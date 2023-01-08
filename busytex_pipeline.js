@@ -628,6 +628,8 @@ class BusytexPipeline
                 break;
         }
 
+        console.log('LOGS', logs);
+
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
         const logcat = logs.map(({cmd, texmflog, missfontlog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'MISSFONTLOG:', missfontlog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
         
