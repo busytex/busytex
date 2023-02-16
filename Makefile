@@ -181,6 +181,9 @@ all: build/versions.txt
 	#$(MAKE) tds-full
 	#$(MAKE) ubuntu-wasm
 
+log_file_access_preload.so: log_file_access_preload.c
+	$(CC) -shared -fPIC $< -o $@ -ldl
+
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded source/perl.downloaded:
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
