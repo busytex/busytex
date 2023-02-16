@@ -2,31 +2,25 @@
 #include <stdio.h>
 #include <string.h>
 
-/*
+#ifdef BUSYTEX_TRACE_FS
 #include <unistd.h>
 #include <errno.h>
 #include <dlfcn.h>
 typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
-typedef int (*orig_open_func_type)(const char *pathname, int flags);
-
+static orig_fopen_func_type orig_fopen;
 FILE* fopen(const char *path, const char *mode)
 {
     fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
-
-    orig_fopen_func_type orig_func;
-    orig_func = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
-    return orig_func(path, mode);
+    return orig_fopen(path, mode);
 }
-
-int open(const char *pathname, int flags)
+typedef int (*orig_open_func_type)(const char *pathname, int flags);
+static orig_open_func_type orig_open;
+int open(const char *path, int flags)
 {
-    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", pathname, flags);
-
-    orig_open_func_type orig_func;
-    orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
-    return orig_func(pathname, flags);
+    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
+    return orig_open(path, flags);
 }
-*/
+#endif
 
 //#define concat2(X, Y) X ## Y
 //#define concat(X, Y) concat2(X, Y)
@@ -174,6 +168,11 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
+#ifdef BUSYTEX_TRACE_FS
+    orig_fopen = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
+    orig_open = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
+#endif
+
     if(argc < 2)
     {
         printf("\n"

@@ -156,7 +156,7 @@ OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
 OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
-OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      
+OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      -DBUSYTEX_TRACE_FS
 OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 #OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      -I$(ROOT)/build/native/perl -Wimplicit -Wreturn-type -fstack-protector-strong  -fwrapv -fno-strict-aliasing   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE  -DBUSYTEX_FMTUTILUPDMAP
 OPTS_BUSYTEX_LINK = --static -static -static-libstdc++ -static-libgcc
@@ -180,9 +180,6 @@ all: build/versions.txt
 	$(MAKE) build/wasm/texlive-basic.js
 	#$(MAKE) tds-full
 	#$(MAKE) ubuntu-wasm
-
-log_file_access_preload.so: log_file_access_preload.c
-	$(CC) -shared -fPIC $< -o $@ -ldl
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded source/perl.downloaded:
 	mkdir -p $(basename $@)
