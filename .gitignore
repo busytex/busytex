@@ -6,6 +6,8 @@
 *.xdv
 *.pdf
 
+*.so
+
 example/bibtex/
 build/
 source/
