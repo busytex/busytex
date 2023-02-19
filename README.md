@@ -103,6 +103,7 @@ make clean
 - virtual FS for reading ISO/TAR/ZIP texlive TDS
 - virtual FS for reading Perl scripts
 - virtual FS for embedding small TDS into binaries
+- https://kevinpt.github.io/evfs/
 - https://github.com/erincandescent/lib9660/blob/master/tb9660.c
 - https://github.com/jacereda/fsatrace
 - https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
@@ -110,15 +111,16 @@ make clean
 - https://lists.ubuntu.com/archives/snappy-devel/2015-February/000282.html
 - https://www.tomaz.me/2014/01/08/detecting-which-process-is-creating-a-file-using-ld-preload-trick.html
 - https://github.com/AppImage/AppImageKit/issues/267
-- http://avf.sourceforge.net/
+- https://avf.sourceforge.net/
 - https://gist.github.com/przemoc/571086
 - https://adared.ch/unionfs_by_intercept/
 - https://arxiv.org/abs/1908.10740
 - http://ordiluc.net/fs/libetc/
-- http://pages.stern.nyu.edu/~marriaga/software/libtrash/
+- https://pages.stern.nyu.edu/~marriaga/software/libtrash/
+- https://www.madlab.it/old-school/codes/uml.c
 
 ### Random links
-- http://tug.ctan.org/systems/texlive/tlnet/tlpkg/texlive.tlpdb
+- https://tug.ctan.org/systems/texlive/tlnet/tlpkg/texlive.tlpdb
 - https://support.stmdocs.in/wiki/index.php?title=Notes_on_TeX_Live_setup
 - /mnt/texlive2008/texmf-dist/tex/latex/base/sample2e.tex
 - https://raw.githubusercontent.com/void-linux/void-packages/master/srcpkgs/texlive/template
