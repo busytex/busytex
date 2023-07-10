@@ -16,7 +16,7 @@ class UbuntuDebFileList(html.parser.HTMLParser):
 
     def handle_data(self, data):
         if self.file_list == []:
-            self.file_list.extend(list(filter(None, data.split('\n'))))
+            self.file_list.extend(filter(None, data.split('\n')))
 
 def makedirs_open(path, mode):
     dirname = os.path.dirname(path)
@@ -31,7 +31,7 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
     if skip_log:
         preload.add((skip_log, os.path.join(varlog, os.path.basename(skip_log))))
    
-    skip_log = makedirs_open(skip_log, 'w')if skip_log else sys.stderr
+    skip_log = makedirs_open(skip_log, 'w') if skip_log else sys.stderr
     providespackage_log = makedirs_open(providespackage_log, 'wb') if providespackage_log else sys.stderr.buffer
     good_log = makedirs_open(good_log, 'w') if good_log else sys.stderr
     
