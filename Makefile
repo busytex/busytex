@@ -173,6 +173,7 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 
 .PHONY: all
 all: build/versions.txt
+	$(MAKE) checkurlsfor404
 	$(MAKE) texlive
 	$(MAKE) native
 	$(MAKE) test
