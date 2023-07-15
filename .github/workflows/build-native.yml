@@ -19,6 +19,9 @@ jobs:
         run:  apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/v3.17/testing github-cli
 
       - uses: actions/checkout@v2
+            
+      - name: Check URLs exist
+        run:  make checkurlsfor404
       
       - name: Clone TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
