@@ -12,11 +12,8 @@ jobs:
     runs-on: ubuntu-20.04
     container: alpine:3.18
     steps:
-      - name: Install Prerequisites
-        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace && ln -sf python3 /usr/bin/python
-
-      - name: Install github.com/cli/cli
-        run:  apk add --no-cache github-cli && gh --version #  -X http://dl-cdn.alpinelinux.org/alpine/v3.17/testing 
+      - name: Install Prerequisites including github.com/cli/cli
+        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace  github-cli && ln -sf python3 /usr/bin/python
 
       - uses: actions/checkout@v2
             
@@ -44,4 +41,4 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: chown $(whoami) -R . && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
+        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/texlive/texk/web2c/busyweb2c build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
