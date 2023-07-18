@@ -186,11 +186,11 @@ all: build/versions.txt
 
 .PHONY: checkurlsfor404
 checkurlsfor404:
-	wget -q --spider $(URL_texlive_full_iso)
-	wget -q --spider $(URL_texlive)
-	wget -q --spider $(URL_expat)
-	wget -q --spider $(URL_fontconfig)
-	wget -q --spider $(URL_ubuntu_release)
+	wget --spider $(URL_texlive_full_iso)
+	wget --spider $(URL_texlive)
+	wget --spider $(URL_expat)
+	wget --spider $(URL_fontconfig)
+	wget --spider $(URL_ubuntu_release)
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded source/perl.downloaded:
 	mkdir -p $(basename $@)
