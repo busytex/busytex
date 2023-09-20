@@ -460,6 +460,8 @@ build/texlive-full.profile:
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native) $(basename $@)/$(BINARCH_native) 
+	pwd
+	$(basename $@)/$(BINARCH_native)/busytex
 	$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex
 	#
 	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
