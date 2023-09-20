@@ -458,9 +458,13 @@ build/texlive-full.profile:
 	#echo TEXMFVAR $(ROOT)/$(basename $@)/home/texmf-var >> build/texlive-$*.profile
 
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
+	pwd
+	echo $(ROOT)
+	chmod +x $(BUSYTEX_native)
+	$(BUSYTEX_native)
+	#
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native) $(basename $@)/$(BINARCH_native) 
-	pwd
 	$(basename $@)/$(BINARCH_native)/busytex
 	$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex
 	#
