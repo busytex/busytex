@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
             
       - name: Check URLs exist
-        run:  make checkurlsfor404
+        run:  make checkurlsfor404 || make checkurlsfor404 || make checkurlsfor404
       
       - name: Clone TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
