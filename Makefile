@@ -5,7 +5,8 @@
 #URL_texlive_full_iso = ftp://tug.org/historic/systems/texlive/2021/texlive2021-20210325.iso
 #URL_texlive_full_iso = https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2021/texlive2021-20210325.iso
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
-URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
+#URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
+URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2023.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
