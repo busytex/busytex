@@ -188,6 +188,7 @@ all: build/versions.txt
 
 .PHONY: checkurlsfor404
 checkurlsfor404:
+	sleep 10s
 	wget --spider $(URL_texlive_full_iso)
 	wget --spider $(URL_texlive)
 	wget --spider $(URL_expat)
