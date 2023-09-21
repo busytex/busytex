@@ -51,7 +51,8 @@ jobs:
       - name: Install TexLive
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run: make build/texlive-basic.txt build/texlive-full.txt
+        run: make build/texlive-basic.txt
+#        build/texlive-full.txt
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
