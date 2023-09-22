@@ -6,7 +6,7 @@ on:
       busytexreleasetag:
         description: 'busytex release tag'
         required: false
-        default: 'build_native_ea51fcd9a3ae9336402f596dac2d44f43cb2e87a_6272966814_1'
+        default: 'build_native_1e26725a948d524525b696807689387a673c4fe6_6276429335_1'
         #default: 'build_1c187d6a3a4bc48787e9def12554eb0dc8740b93'
 
 env:
