@@ -167,7 +167,7 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 #OPTS_BUSYTEX_LINK = --static -static -static-libstdc++ -static-libgcc
-OPTS_BUSYTEX_LINK = -static    -static-libstdc++ -static-libgcc
+OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 
 
 OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
