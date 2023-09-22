@@ -123,6 +123,8 @@ CFLAGS_TEXLIVE_native = -I$(abspath build/native/texlive/libs/icu/include) -I$(a
 #-static-libstdc++ -static-libgcc
 # -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc
 #-fno-common 
+LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
+
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 
 ##############################################################################################################################
@@ -165,9 +167,10 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 #OPTS_BUSYTEX_LINK = --static -static -static-libstdc++ -static-libgcc
+OPTS_BUSYTEX_LINK = -static-libstdc++ -static-libgcc
+
 
 OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
-LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
 #OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all -Wl,-E build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lutil
 
