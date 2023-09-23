@@ -29,7 +29,7 @@ jobs:
         run:  make native
       
       - name: Smoke native
-        run:  make test
+        run:  make test_native
 
       - name: Test native 
         run: |
