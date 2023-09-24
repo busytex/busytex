@@ -113,7 +113,7 @@ make clean
 - https://github.com/AppImage/AppImageKit/issues/267
 - https://avf.sourceforge.net/
 - https://gist.github.com/przemoc/571086
-- https://adared.ch/unionfs_by_intercept/
+- https://adared.ch/unionfs_by_intercept/ https://adared.ch/wp-content/uploads/2012/01/unionfs_by_intercept.c
 - https://arxiv.org/abs/1908.10740
 - http://ordiluc.net/fs/libetc/
 - https://pages.stern.nyu.edu/~marriaga/software/libtrash/
