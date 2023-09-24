@@ -346,7 +346,7 @@ build/%/busytex build/%/busytex.js:
 	$(AR_$*) x libc.a open.lo fopen.lo
 	$(OBJCOPY_$*) --redefine-sym open=orig_open open.lo
 	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
-	(AR_$*) r libc.a open.lo fopen.lo
+	$(AR_$*) r libc.a open.lo fopen.lo
 	$(NM_$*) libc.a
 	
 
