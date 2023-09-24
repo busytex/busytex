@@ -2,11 +2,23 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef BUSYTEX_TRACEFS_DYNAMIC
-#include <dlfcn.h>
+#ifdef BUSYTEX_TRACEFS
+FILE* orig_fopen(const char *path, const char *mode);
+FILE* fopen(const char *path, const char *mode)
+{
+    fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
+    return orig_fopen(path, mode);
+}
+int orig_open(const char *pathname, int flags);
+int open(const char *path, int flags)
+{
+    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
+    return orig_open(path, flags);
+}
 #endif
 
-#ifdef BUSYTEX_TRACEFS
+#ifdef BUSYTEX_TRACEFS_DYNAMIC
+#include <dlfcn.h>
 #include <unistd.h>
 #include <errno.h>
 typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
@@ -24,6 +36,7 @@ int open(const char *path, int flags)
     return orig_open(path, flags);
 }
 #endif
+
 
 //#define concat2(X, Y) X ## Y
 //#define concat(X, Y) concat2(X, Y)
