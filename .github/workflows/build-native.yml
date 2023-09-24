@@ -31,11 +31,11 @@ jobs:
       - name: Smoke native
         run:  make test_native
         
-#      - name: Archive artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: build
-#          path: build/native/
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build/native/
 
       - name: Test native 
         run: |
