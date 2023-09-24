@@ -9,12 +9,12 @@ FILE* fopen(const char *path, const char *mode)
     fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
     return orig_fopen(path, mode);
 }
-int orig_open(const char *pathname, int flags);
+/*int orig_open(const char *pathname, int flags);
 int open(const char *path, int flags)
 {
     fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
     return orig_open(path, flags);
-}
+}*/
 #endif
 
 #ifdef BUSYTEX_TRACEFS_DYNAMIC
