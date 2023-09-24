@@ -340,6 +340,15 @@ build/%/busytex build/%/busytex.js:
 	#$(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) 
 	#$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*) $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
+	#
+	cp $(shell $(CC_$*) -print-file-name=libc.a) .
+	$(NM_$*) libc.a
+	$(AR_$*) x libc.a open.lo fopen.lo
+	$(OBJCOPY_$*) --redefine-sym open=orig_open open.lo
+	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
+	(AR_$*) r libc.a open.lo fopen.lo
+	$(NM_$*) libc.a
+	
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
