@@ -588,7 +588,7 @@ native: build/native/fonts.conf
 	$(MAKE) build/native/texlive.configured
 	$(MAKE) build/native/texlivedependencies
 	$(MAKE) build/native/busytexapplets
-	$(MAKE) build/native/texlive/texk/web2c/busyweb2c
+	#$(MAKE) build/native/texlive/texk/web2c/busyweb2c
 	$(MAKE) build/native/busytex
 
 .PHONY: wasm
