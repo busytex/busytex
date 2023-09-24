@@ -160,15 +160,16 @@ OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
 OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
-OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX  -DBUSYTEX_TRACE_FS      
+OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX  -DBUSYTEX_TRACEFS
 OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 #OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX      -I$(ROOT)/build/native/perl -Wimplicit -Wreturn-type -fstack-protector-strong  -fwrapv -fno-strict-aliasing   -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE  -DBUSYTEX_FMTUTILUPDMAP
 
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
-#OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
+OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread libc.a    -Wl,--unresolved-symbols=ignore-all
 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
+#OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
 #OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all -Wl,-E build/native/perl/busytex_perltools.a -L/usr/local/lib $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/Fcntl/Fcntl.a $(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/auto/IO/IO.a -L$(ROOT)/build/native/perl/prefix/lib/perl5/5.35.4/x86_64-linux/CORE -lperl -lutil
 
@@ -332,6 +333,14 @@ build/%/texlive/texk/web2c/busyweb2c:
 	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o cweb.o busytex_tie.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 
 build/%/busytex build/%/busytex.js: 
+	cp $(shell $(CC_$*) -print-file-name=libc.a) .
+	$(NM_$*) libc.a
+	$(AR_$*) x libc.a open.lo fopen.lo
+	$(OBJCOPY_$*) --redefine-sym open=orig_open open.lo
+	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
+	$(AR_$*) r libc.a open.lo fopen.lo
+	$(NM_$*) libc.a
+	#
 	mkdir -p $(dir $@)
 	#$(CC_$*) -E -nostdinc  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
 	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
@@ -340,15 +349,6 @@ build/%/busytex build/%/busytex.js:
 	#$(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) 
 	#$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*) $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
-	#
-	cp $(shell $(CC_$*) -print-file-name=libc.a) .
-	$(NM_$*) libc.a
-	$(AR_$*) x libc.a open.lo fopen.lo
-	$(OBJCOPY_$*) --redefine-sym open=orig_open open.lo
-	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
-	$(AR_$*) r libc.a open.lo fopen.lo
-	$(NM_$*) libc.a
-	
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
