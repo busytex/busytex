@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef BUSYTEX_TRACE_FS
+#ifdef BUSYTEX_TRACEFS_DYNAMIC
+#include <dlfcn.h>
+#endif
+
+#ifdef BUSYTEX_TRACEFS
 #include <unistd.h>
 #include <errno.h>
-#include <dlfcn.h>
 typedef FILE* (*orig_fopen_func_type)(const char *path, const char *mode);
 static orig_fopen_func_type orig_fopen;
 FILE* fopen(const char *path, const char *mode)
@@ -63,18 +66,15 @@ extern int busymain_kpsereadlink(int argc, char* argv[]);
 #endif
 
 #ifdef BUSYTEX_FMTUTILUPDMAP
-
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <stdarg.h>
-
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
-
 extern char _binary_fmtutil_pl_start[];
 extern char _binary_fmtutil_pl_end[];
 extern char _binary_updmap_pl_start[];
@@ -84,35 +84,29 @@ extern char _binary_pack_perl_modules_pl_end[];
 extern void boot_Fcntl      (pTHX_ CV* cv);
 extern void boot_IO         (pTHX_ CV* cv);
 extern void boot_DynaLoader (pTHX_ CV* cv);
-
 void xs_init                (pTHX)
 {
     static const char file[] = __FILE__;
     dXSUB_SYS;
     PERL_UNUSED_CONTEXT;
-
     newXS("Fcntl::bootstrap", boot_Fcntl, file);
     newXS("IO::bootstrap", boot_IO, file);
     newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
-
 int busymain_fmtutil(int argc, char* argv[])
 {
     PERL_SYS_INIT3(&argc, &argv, NULL);
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-
     static char script[1 << 20];
     static char* my_args[1 << 10] = {(const char*)"my_perl", (const char*)"-e", NULL, (const char*)"--", (const char*)"--sys"};
     int my_argc = 5;
-    
     int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
     strncpy(script,    _binary_pack_perl_modules_pl_start, iSize);
     script[iSize] = '\0';
     iSize =  (int)(_binary_fmtutil_pl_end - _binary_fmtutil_pl_start);
     strncat(script,    _binary_fmtutil_pl_start, iSize);
-
     my_args[2] = script;
     memcpy(my_args + my_argc, argv + 1, (argc - 1) * sizeof(char*));
     my_argc += (argc - 1);
@@ -121,7 +115,6 @@ int busymain_fmtutil(int argc, char* argv[])
     perl_destruct(my_perl);
     perl_free(my_perl);
     PERL_SYS_TERM();
-
     return 0;
 }
 
@@ -131,32 +124,24 @@ int busymain_updmap(int argc, char* argv[])
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
     PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-    
     static char script[1 << 20];
     static char* my_args[1 << 10] = {(const char*)"my_perl", (const char*)"-e", NULL, (const char*)"--", (const char*)"--sys"};
     int my_argc = 5;
-    
     int iSize =  (int)(_binary_pack_perl_modules_pl_end - _binary_pack_perl_modules_pl_start);
     strncpy(script,    _binary_pack_perl_modules_pl_start, iSize);
     script[iSize] = '\0';
     iSize =  (int)(_binary_updmap_pl_end - _binary_updmap_pl_start);
     strncat(script,    _binary_updmap_pl_start, iSize);
-
     my_args[2] = script;
     memcpy(my_args + my_argc, argv + 1, (argc - 1) * sizeof(char*));
     my_argc += (argc - 1);
-
     perl_parse(my_perl, xs_init, my_argc, my_args, (char **)NULL);
-    
     perl_run(my_perl);
     perl_destruct(my_perl);
     perl_free(my_perl);
     PERL_SYS_TERM();
-
     return 0;
 }
-
-
 #endif
 
 void flush_streams()
@@ -168,7 +153,7 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
-#ifdef BUSYTEX_TRACE_FS
+#ifdef BUSYTEX_TRACEFS_DYNAMIC
     orig_fopen = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
     orig_open = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
 #endif
