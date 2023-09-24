@@ -335,10 +335,9 @@ build/%/texlive/texk/web2c/busyweb2c:
 build/%/busytex build/%/busytex.js: 
 	cp $(shell $(CC_$*) -print-file-name=libc.a) .
 	$(NM_$*) libc.a
-	$(AR_$*) x libc.a open.lo fopen.lo
-	#$(OBJCOPY_$*) --redefine-sym open=orig_open open.lo
+	$(AR_$*) x libc.a fopen.lo
 	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
-	$(AR_$*) r libc.a open.lo fopen.lo
+	$(AR_$*) r libc.a fopen.lo
 	$(NM_$*) libc.a
 	#
 	mkdir -p $(dir $@)
