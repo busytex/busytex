@@ -167,7 +167,7 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread libc.a    -Wl,--unresolved-symbols=ignore-all
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread build/native/libc.a    -Wl,--unresolved-symbols=ignore-all
 
 #OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
@@ -333,12 +333,12 @@ build/%/texlive/texk/web2c/busyweb2c:
 	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o cweb.o busytex_tie.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 
 build/%/busytex build/%/busytex.js: 
-	cp $(shell $(CC_$*) -print-file-name=libc.a) .
-	$(NM_$*) libc.a
-	$(AR_$*) x libc.a fopen.lo
+	cp $(shell $(CC_$*) -print-file-name=libc.a) build/native/libc.a
+	$(NM_$*) build/native/libc.a
+	$(AR_$*) x build/native/libc.a fopen.lo
 	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
-	$(AR_$*) r libc.a fopen.lo
-	$(NM_$*) libc.a
+	$(AR_$*) r build/native/libc.a fopen.lo
+	$(NM_$*) build/native/libc.a
 	#
 	mkdir -p $(dir $@)
 	#$(CC_$*) -E -nostdinc  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
