@@ -166,6 +166,8 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
+    fopen("foo.txt", "w");
+    
 #ifdef BUSYTEX_TRACEFS_DYNAMIC
     orig_fopen = (orig_fopen_func_type)dlsym(RTLD_NEXT, "fopen");
     orig_open = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
