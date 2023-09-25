@@ -625,8 +625,8 @@ build/versions.txt:
 	echo fontconfig: \\url{$(URL_fontconfig)}                          >> $@
 	echo emscripten: $(EMSCRIPTEN_VERSION)                             >> $@
 
-.PHONY: test_native
-test_native: build/native/busytex
+.PHONY: smoke_native
+smoke_native: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
 	-$(BUSYTEX_native) fmtutil-sys --help
