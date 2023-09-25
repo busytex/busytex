@@ -339,8 +339,8 @@ build/%/busytex build/%/busytex.js:
 	$(NM_$*) build/native/libc.a
 	$(AR_$*) x build/native/libc.a fopen.lo
 	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen fopen.lo
-	$(AR_$*) r build/native/libc.a fopen.lo
-	$(AR_$*) rb aio.lo build/native/libc.a build/native/tracefs.lo
+	$(AR_$*) rs build/native/libc.a fopen.lo
+	$(AR_$*) rbs aio.lo build/native/libc.a build/native/tracefs.lo
 	$(NM_$*) build/native/libc.a
 	#
 	mkdir -p $(dir $@)
