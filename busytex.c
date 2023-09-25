@@ -2,21 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef BUSYTEX_TRACEFS
-FILE* orig_fopen(const char *path, const char *mode);
-FILE* fopen(const char *path, const char *mode)
-{
-    fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
-    return orig_fopen(path, mode);
-}
-/*int orig_open(const char *pathname, int flags);
-int open(const char *path, int flags)
-{
-    fprintf(stderr, "log_file_access_preload: open(\"%s\", %d)\n", path, flags);
-    return orig_open(path, flags);
-}*/
-#endif
-
 #ifdef BUSYTEX_TRACEFS_DYNAMIC
 #include <dlfcn.h>
 #include <unistd.h>
@@ -130,7 +115,6 @@ int busymain_fmtutil(int argc, char* argv[])
     PERL_SYS_TERM();
     return 0;
 }
-
 int busymain_updmap(int argc, char* argv[])
 {
     PERL_SYS_INIT3(&argc, &argv, NULL);
