@@ -168,7 +168,7 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread build/native/libc.a    -Wl,--unresolved-symbols=ignore-all
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK)  build/native/libc.a -ldl -lm -pthread -lpthread -Wl,--unresolved-symbols=ignore-all
 
 #OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
@@ -346,8 +346,11 @@ build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
 	#$(CC_$*) -E -nostdinc  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
 	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
-	$(CXX_$*) -o $@ $(OPTS_BUSYTEX_LINK_$*) $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
-	-$(LDD_$*) $@
+	#$(CXX_$*) -o $@ $(OPTS_BUSYTEX_LINK_$*) $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
+	#
+	$(CXX_$*) -o $@ $(OPTS_BUSYTEX_LINK_$*) $(basename $@).o $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
+	#
+	#$(LDD_$*) $@
 	#$(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) 
 	#$(CXX_$*) busytex.c -o $@ $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*) $(OPTS_BUSYTEX_LINK_$*) $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX)) $(addprefix -Ibuild/$*/, $(CPATH_BUSYTEX)) $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
@@ -627,11 +630,11 @@ build/versions.txt:
 
 .PHONY: smoke_native
 smoke_native: build/native/busytex
-	-$(LDD_native) $(BUSYTEX_native)
+	#$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
-	-$(BUSYTEX_native) fmtutil-sys --help
-	-$(BUSYTEX_native)  updmap-sys --help
-	-$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	#$(BUSYTEX_native) fmtutil-sys --help
+	#$(BUSYTEX_native)  updmap-sys --help
+	#$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
 
