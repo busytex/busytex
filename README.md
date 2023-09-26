@@ -31,6 +31,11 @@ python3 example/example.py
 sh example/example.sh
 ```
 
+```shell
+wget http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
+split -b2G -d texlive2023-20230313.iso texlive2023-20230313.iso.
+```
+
 ### Help needed
 - refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385
 - LLVM's support for localizing global system in WASM object files: https://bugs.llvm.org/show_bug.cgi?id=51279
