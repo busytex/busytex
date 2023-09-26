@@ -334,7 +334,7 @@ build/%/texlive/texk/web2c/busyweb2c:
 	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o cweb.o busytex_tie.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 
 build/%/busytex build/%/busytex.js:
-	$(CC_$*) -o build/native/log_file_access.lo -c log_file_access.c
+	$(CC_$*) -o build/native/log_file_access.lo -c log_file_access.c -DLOGFILEACCESSSTATIC
 	cp $(shell $(CC_$*) -print-file-name=libc.a) build/native/libc.a
 	$(NM_$*) build/native/libc.a
 	$(AR_$*) x build/native/libc.a fopen.lo open.lo
