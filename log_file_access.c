@@ -14,7 +14,7 @@ FILE* fopen(const char *path, const char *mode)
 int orig_open(const char *path, int mode);
 int open(const char *path, int mode)
 {
-    fprintf(stderr, "log_file_access: open(\"%s\", \"%d\")\n", path, mode);
+    fprintf(stderr, "log_file_access: open(\"%s\", %d)\n", path, mode);
     return orig_open(path, mode);
 }
 
