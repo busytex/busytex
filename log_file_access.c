@@ -1,7 +1,8 @@
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <string.h>
 
 #ifdef LOGFILEACCESSSTATIC
-
-#include <stdio.h>
 
 FILE* orig_fopen(const char *path, const char *mode);
 FILE* fopen(const char *path, const char *mode)
@@ -22,11 +23,8 @@ int open(const char *path, int mode)
 #ifdef LOGFILEACCESSDYNAMIC
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 
-#define _GNU_SOURCE
-#include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
-#include <string.h>
 #include <dlfcn.h>
 
 FILE* fopen(const char *path, const char *mode)
