@@ -630,11 +630,10 @@ build/versions.txt:
 
 .PHONY: smoke_native
 smoke_native: build/native/busytex
-	#$(LDD_native) $(BUSYTEX_native)
+	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
-	#$(BUSYTEX_native) fmtutil-sys --help
-	#$(BUSYTEX_native)  updmap-sys --help
-	#$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	#$(foreach applet,fmtutil-sys updmap-sys,echo $(BUSYTEX_native) $(applet) --help; $(BUSYTEX_native) $(applet) --help; )
 
 ################################################################################################################
 
