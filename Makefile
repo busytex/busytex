@@ -6,6 +6,7 @@
 #URL_texlive_full_iso = https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2021/texlive2021-20210325.iso
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2022-20220321.iso
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
+URL_texlive_full_iso_cache = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.00 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.01 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.02 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.03 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.04
 URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2023.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
@@ -452,7 +453,8 @@ build/%/perl/busytex_perltools.a: source/perl.downloaded
 
 source/texmfrepo.txt:
 	mkdir -p source/texmfrepo
-	wget --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso) -P source
+	wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso)
+	# wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > source/texlive.iso && 7z x source/texlive.iso -osource/texmfrepo
 	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
 	rm source/$(notdir $(URL_texlive_full_iso))
 	find     ./source/texmfrepo > source/texmfrepo.txt
