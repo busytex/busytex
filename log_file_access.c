@@ -1,4 +1,4 @@
-// gcc -shared -fPIC log_file_access_preload.c -o log_file_access_preload.so -ldl
+// gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 
 #define _GNU_SOURCE
 #include <stdio.h>
