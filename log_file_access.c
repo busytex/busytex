@@ -1,3 +1,25 @@
+
+#ifdef LOGFILEACCESSSTATIC
+
+#include <stdio.h>
+
+FILE* orig_fopen(const char *path, const char *mode);
+FILE* fopen(const char *path, const char *mode)
+{
+    fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
+    return orig_fopen(path, mode);
+}
+
+int orig_open(const char *path, int mode);
+int open(const char *path, int mode)
+{
+    fprintf(stderr, "log_file_access_preload: open(\"%s\", \"%d\")\n", path, mode);
+    return orig_open(path, mode);
+}
+
+#endif
+
+#ifdef LOGFILEACCESSDYNAMIC
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 
 #define _GNU_SOURCE
@@ -24,3 +46,4 @@ int open(const char *path, int flags)
     orig_open_func_type orig_func = (orig_open_func_type)dlsym(RTLD_NEXT, "open");
     return orig_func(path, flags);
 }
+#endif
