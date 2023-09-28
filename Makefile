@@ -456,8 +456,8 @@ source/texmfrepo.txt:
 	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso)
 	wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > source/texlive.iso && 7z x source/texlive.iso -osource/texmfrepo
 	7z x source/texlive.iso -osource/texmfrepo
-	rm source/$(notdir $(URL_texlive_full_iso))
-	find     ./source/texmfrepo > source/texmfrepo.txt
+	#rm source/$(notdir $(URL_texlive_full_iso))
+	find source/texmfrepo > $@
 
 build/texlive-basic.profile:
 	mkdir -p $(dir $@)
