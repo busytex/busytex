@@ -455,7 +455,7 @@ source/texmfrepo.txt:
 	mkdir -p source/texmfrepo
 	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso)
 	wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > source/texlive.iso && 7z x source/texlive.iso -osource/texmfrepo
-	7z x source/$(notdir $(URL_texlive_full_iso)) -osource/texmfrepo
+	7z x source/texlive.iso -osource/texmfrepo
 	rm source/$(notdir $(URL_texlive_full_iso))
 	find     ./source/texmfrepo > source/texmfrepo.txt
 
