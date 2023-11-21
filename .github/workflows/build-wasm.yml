@@ -27,7 +27,7 @@ jobs:
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Clone/patch TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
