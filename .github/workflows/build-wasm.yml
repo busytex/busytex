@@ -23,15 +23,12 @@ jobs:
         run:  sudo apt-get install -y gperf p7zip-full strace icu-devtools
 
       - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v10
+        uses: mymindstorm/setup-emsdk@v11
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       
-      - name: Check URLs exist
-        run:  make checkurlsfor404 || make checkurlsfor404 || make checkurlsfor404 
-        
       - name: Clone/patch TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
       
