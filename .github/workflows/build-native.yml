@@ -14,7 +14,7 @@ jobs:
       - name: Install Prerequisites including github.com/cli/cli
         run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace gdb  github-cli && ln -sf python3 /usr/bin/python
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
             
       - name: Clone TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
