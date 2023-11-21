@@ -1,4 +1,4 @@
-# Programs from TexLive 2021 compiled with Emscripten into a single fully static binary (x86_64-linux / WASM)
+# Programs from TexLive 2023 compiled with Emscripten into a single fully static binary (x86_64-linux / WASM)
 
 Currently compiles into a **fully static binary** (via musl on Alpine Linux):
 - xetex
