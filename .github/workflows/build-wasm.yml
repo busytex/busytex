@@ -6,13 +6,11 @@ on:
       busytexreleasetag:
         description: 'busytex release tag'
         required: false
-        default: 'build_native_1e26725a948d524525b696807689387a673c4fe6_6276429335_1'
-        #default: 'build_1c187d6a3a4bc48787e9def12554eb0dc8740b93'
+        default: 'build_native_418c9bc5edfd99fdb560cff956d3f10d3e598bcf_6949768401_1'
 
 env:
   # texlive-base 
   UBUNTUPACKAGES: texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-science texlive-fonts-recommended
-  # EMSCRIPTEN_VERSION: 2.0.30
   EMSCRIPTEN_VERSION: 3.1.43
   MAKE_PARALLELISM: -j2
 
@@ -29,7 +27,7 @@ jobs:
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       - name: Check URLs exist
         run:  make checkurlsfor404 || make checkurlsfor404 || make checkurlsfor404 
