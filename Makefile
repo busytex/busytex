@@ -24,7 +24,6 @@ ROOT                := $(CURDIR)
 EMROOT              := $(dir $(shell which emcc))
 
 BUSYTEX_native       = $(abspath build/native/busytex)
-BUSYWEB2C_native     = $(abspath build/native/texlive/texk/web2c/busyweb2c)
 TEXMFFULL            = $(abspath build/texlive-full)
 PREFIX_wasm          = $(abspath build/wasm/prefix)
 PREFIX_native        = $(abspath build/native/prefix)
@@ -287,18 +286,6 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	rm $(dir $@)/bibtex8-bibtex.o
 	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
-
-build/%/texlive/texk/web2c/busyweb2c:
-	echo BEGINLDD
-	-ldd build/native/texlive/texk/web2c/web2c/web2c
-	-ldd $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN))
-	echo ENDLDD
-	mkdir -p $(dir $@)
-	cp $(dir $@)/tie-tie.o $(dir $@)/tie.o; $(foreach binname,$(BUSYTEX_TEXBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/$(binname).o       $(dir $@)/busytex_$(binname).o;)
-	$(OBJCOPY_$*) --redefine-sym main=busymain_tie --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL) $(dir $@)/lib/lib.a $(dir $@)/lib/busytex_lib.a; $(AR_$*) dv $(dir $@)/lib/busytex_lib.a main.o
-	cp $(dir $@)/web2c/main.o $(dir $@)/web2c/web2c.o; $(foreach binname,$(BUSYTEX_WEB2CBIN), $(OBJCOPY_$*) --redefine-sym main=busymain_$(binname) --localize-hidden $(BUSYWEB2C_LOCALIZE_SYMBOL)  $(dir $@)/web2c/$(binname).o $(dir $@)/web2c/busytex_$(binname).o;)
-	$(CC_$*) -o    $(basename $@).o -c busyweb2c.c
-	$(CC_$*) -o $@ $(basename $@).o $(OPTS_BUSYTEX_LINK_$*) $(addprefix $(dir $@)/, busytex_ctangle.o busytex_tangle.o busytex_otangle.o busytex_tangleboot.o busytex_ctangleboot.o cweb.o busytex_tie.o lib/busytex_lib.a) $(addprefix $(dir $@)/web2c/, busytex_splitup.o busytex_fixwrites.o busytex_makecpool.o web2c-parser.o web2c-lexer.o busytex_web2c.o libweb2c.a)
 
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
@@ -570,7 +557,6 @@ dist-native: build/native/busytex build/native/fonts.conf
 download-native:
 	mkdir -p source build/native build/native/texlive/texk/web2c/web2c
 	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
-	wget  -P build/native/texlive/texk/web2c              -nc $(URLRELEASE)/busyweb2c
 	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
 	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
 	chown $(shell whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x  $(BUSYWEB2C_native) $(BUSYTEX_native); file $(BUSYWEB2C_native) $(BUSYTEX_native); $(BUSYTEX_native);
