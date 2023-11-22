@@ -23,7 +23,7 @@ jobs:
         run:  sudo apt-get install -y gperf p7zip-full strace icu-devtools
 
       - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v11
+        uses: mymindstorm/setup-emsdk@v13
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
