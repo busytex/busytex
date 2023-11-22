@@ -25,7 +25,7 @@ jobs:
         run:  make native
       
       - name: Smoke native
-        run:  make smoke_native
+        run:  make smoke-native
         
 #      - name: Archive artifacts
 #        uses: actions/upload-artifact@v2

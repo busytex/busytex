@@ -500,8 +500,8 @@ build/versions.txt:
 	echo fontconfig: \\url{$(URL_fontconfig)}                          >> $@
 	echo emscripten: $(EMSCRIPTEN_VERSION)                             >> $@
 
-.PHONY: smoke_native
-smoke_native: build/native/busytex
+.PHONY: smoke-native
+smoke-native: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
 	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
