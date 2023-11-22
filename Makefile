@@ -116,9 +116,11 @@ CFLAGS_ICU_wasm       = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0
 CFLAGS_TEXLIVE_wasm   = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
 CFLAGS_TEXLIVE_native = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
 # https://tug.org/pipermail/tlbuild/2021q1/004774.html
-#-static-libstdc++ -static-libgcc
+# https://github.com/emscripten-core/emscripten/issues/14973
+# -static-libstdc++ -static-libgcc
 # -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc
-#-fno-common 
+# -fno-common 
+
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
