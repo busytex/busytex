@@ -121,6 +121,7 @@ CFLAGS_TEXLIVE_native = -I$(abspath build/native/texlive/libs/icu/include) -I$(a
 # -nodefaultlibs -Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc
 # -fno-common 
 
+# https://www.openwall.com/lists/musl/2017/02/16/3
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
 PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
