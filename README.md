@@ -37,6 +37,7 @@ split -b2G -d texlive2023-20230313.iso texlive2023-20230313.iso.
 ```
 
 ### Help needed
+- single page HTML5 webapp: https://diveinto.html5doctor.com/offline.html
 - refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385
 - LLVM's support for localizing global system in WASM object files: https://bugs.llvm.org/show_bug.cgi?id=51279
 - upstream build sequence to TexLive: https://tug.org/pipermail/tlbuild/2021q1/004806.html
