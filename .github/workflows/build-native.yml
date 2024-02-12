@@ -12,7 +12,7 @@ jobs:
     container: alpine:3.18.3
     steps:
       - name: Install Prerequisites including github.com/cli/cli
-        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 strace gdb  github-cli && ln -sf python3 /usr/bin/python
+        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 github-cli && ln -sf python3 /usr/bin/python
 
       - uses: actions/checkout@v4
             
@@ -39,6 +39,7 @@ jobs:
             make build/texlive-basic.txt
             make dist-native
             sh example/example.sh
+
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
