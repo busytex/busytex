@@ -23,18 +23,18 @@ jobs:
       
       - name: Smoke native
         run:  make smoke-native
-
-      - name: Download TexLive Full
-        run:  make source/texmfrepo.txt
-
-      - name: Install TexLive
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run: make build/texlive-basic.txt build/texlive-full.txt
-
+      
       - name: Test native 
-        run: sh example/example.sh
+        run: |
+            make source/texmfrepo.txt
+            make build/texlive-basic.txt
+            make dist-native
+            sh example/example.sh
 
+#      - name: Install TexLive
+#        env:
+#            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+#        run: make build/texlive-basic.txt build/texlive-full.txt
 #      - name: Archive artifacts
 #        uses: actions/upload-artifact@v2
 #        with:
