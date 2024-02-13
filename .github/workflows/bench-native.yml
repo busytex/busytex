@@ -10,6 +10,7 @@ on:
 
 env:
   MAKE_PARALLELISM: -j2
+  BENCHSETURLS: https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_001.tar
 
 jobs:
 
@@ -30,6 +31,13 @@ jobs:
             make build/texlive-basic.txt
             make dist-native
             sh example/example.sh
+
+      - name: Download benchset
+        run: | 
+          wget ${{env.BENCHSETURLS}}
+          mkdir -p ./benchset/
+          tar -xf arXiv_src_1702_001.tar --directory ./benchset/
+          find ./benchset/
 
 #      - name: Install TexLive
 #        env:
