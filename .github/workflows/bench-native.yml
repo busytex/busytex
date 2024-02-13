@@ -19,19 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-#      - name: Download native binaries
-#        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
-#      
-#      - name: Smoke native
-#        run:  make smoke-native
-#      
-#      - name: Test native 
-#        run: |
-#            make source/texmfrepo.txt
-#            make build/texlive-basic.txt
-#            make dist-native
-#            sh example/example.sh
-
       - name: Download benchset
         run: | 
           wget ${{env.BENCHSETURLS}}
@@ -45,6 +32,19 @@ jobs:
 
       - name: List benchset
         run: find ./benchset/tar
+      
+      - name: Download native binaries
+        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
+      
+      - name: Smoke native
+        run:  make smoke-native
+      
+      - name: Test native 
+        run: |
+            make source/texmfrepo.txt
+            make build/texlive-basic.txt
+            make dist-native
+            sh example/example.sh
 
 #      - name: Install TexLive
 #        env:
