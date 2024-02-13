@@ -35,9 +35,10 @@ jobs:
       - name: Download benchset
         run: | 
           wget ${{env.BENCHSETURLS}}
-          mkdir -p ./benchset/
+          mkdir -p ./benchset/ ./benchset/tar
           tar -xf arXiv_src_1702_001.tar --directory ./benchset/
-          find ./benchset/
+          for f in ./benchset/0031*.gz; do tar -xf $f --directory=./benchset/tar; done
+          find ./benchset/tar
 
 #      - name: Install TexLive
 #        env:
