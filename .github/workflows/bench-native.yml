@@ -37,8 +37,12 @@ jobs:
           wget ${{env.BENCHSETURLS}}
           mkdir -p ./benchset/tar
           tar -xf arXiv_src_1702_001.tar --directory ./benchset/
-          for f in ./benchset/*/*.gz; do echo $f && file $f && mkdir -p ./benchset/tar/$(basename $f) && tar -xf $f --directory=./benchset/tar/$(basename $f); done
-          #find ./benchset/tar
+          for f in ./benchset/*/*.gz; do
+            mkdir -p ./benchset/tar/$(basename $f) && 
+            gzip -c -d $f > ./benchset/tar/$(basename $f)/$(basename $f).tex
+            tar -xf ./benchset/tar/$(basename $f)/$(basename $f).tex --directory=./benchset/tar/$(basename $f) && rm ./benchset/tar/$(basename $f)/$(basename $f).tex || true
+          done
+          find ./benchset/tar
 
 #      - name: Install TexLive
 #        env:
