@@ -38,11 +38,13 @@ jobs:
           mkdir -p ./benchset/tar
           tar -xf arXiv_src_1702_001.tar --directory ./benchset/
           for f in ./benchset/*/*.gz; do
-            echo $f && mkdir -p ./benchset/tar/$(basename $f)
+            mkdir -p ./benchset/tar/$(basename $f)
             gzip -c -d $f > ./benchset/tar/$(basename $f)/$(basename $f).tex
             tar -xf ./benchset/tar/$(basename $f)/$(basename $f).tex --directory=./benchset/tar/$(basename $f) && rm ./benchset/tar/$(basename $f)/$(basename $f).tex || true
           done
-          find ./benchset/tar
+
+      - name: List benchset
+        run: find ./benchset/tar
 
 #      - name: Install TexLive
 #        env:
