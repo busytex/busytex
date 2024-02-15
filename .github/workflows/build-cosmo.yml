@@ -1,0 +1,44 @@
+name: build-cosmo
+on: workflow_dispatch
+
+env:
+  MAKE_PARALLELISM: -j2
+  TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
+
+  CC:      cosmocc/cosmocc
+  CXX:     cosmocc/cosmoc++
+  AR:      cosmocc/cosmoar
+  INSTALL: cosmocc/cosmoinstall
+
+jobs:
+  build-cosmo:
+    runs-on: ubuntu-22.04
+    steps:
+      - name:  Download and unpack Cosmo toolchain
+        run: |
+             curl -O https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_b5e622e7692a959ea021d95451ff155f84518b0a_7922511901_1/cosmocc.zip
+             unzip -d cosmocc/ cosmocc.zip
+
+      - uses: actions/checkout@v4
+
+      - name: Clone TexLive and dependencies
+        run:  make source/texlive.downloaded build/versions.txt
+
+      - name: Build native busytex with Cosmo
+        env:
+            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+        run:  make native
+
+      - name: Smoke native
+        run:  make smoke-native
+
+      - name: Test native
+        run: |
+            make source/texmfrepo.txt
+            make build/texlive-basic.txt
+            make dist-native
+            sh example/example.sh
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Cosmo assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
