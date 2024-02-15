@@ -32,10 +32,10 @@ jobs:
 
       - name: Set environment for Cosmo toolchain (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable)
         run: |
-             echo "CC=$(command -v cosmocc/bin/cosmocc)" >> "$GITHUB_ENV"
-             echo "CXX=$(command -v cosmocc/bin/cosmoc++)" >> "$GITHUB_ENV"
-             echo "AR=$(command -v cosmocc/bin/cosmoar)" >> "$GITHUB_ENV"
-             echo "INSTALL=$(command -v cosmocc/bin/cosmoinstall)" >> "$GITHUB_ENV"
+             echo "CC=$(pwd)/cosmocc/bin/cosmocc" >> "$GITHUB_ENV"
+             echo "CXX=$(pwd)/cosmocc/bin/cosmoc++" >> "$GITHUB_ENV"
+             echo "AR=$(pwd)/cosmocc/bin/cosmoar" >> "$GITHUB_ENV"
+             echo "INSTALL=$(pwd)/cosmocc/bin/cosmoinstall" >> "$GITHUB_ENV"
 
       - name: Clone TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
