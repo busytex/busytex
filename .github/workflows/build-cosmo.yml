@@ -21,10 +21,6 @@ jobs:
   build-cosmo:
     runs-on: ubuntu-22.04
     steps:
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate_enabled }}
-
       - name:  Download and unpack Cosmo toolchain
         run: |
              curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_b5e622e7692a959ea021d95451ff155f84518b0a_7922511901_1/cosmocc.zip
@@ -39,6 +35,10 @@ jobs:
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
         run:  make native
+
+      - name: Run a debugging tmate sesion if the build failed
+        uses: mxschmitt/action-tmate@v3
+        if: ${{github.event_name == 'workflow_dispatch' && inputs.tmate_enabled && failure()}}
 
       - name: Smoke native
         run:  make smoke-native
