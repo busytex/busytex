@@ -1,5 +1,12 @@
 name: build-cosmo
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      tmate_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (to interactively debug weird errors)'
+        required: false
+        default: false
 
 env:
   MAKE_PARALLELISM: -j2
@@ -14,6 +21,10 @@ jobs:
   build-cosmo:
     runs-on: ubuntu-22.04
     steps:
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+
       - name:  Download and unpack Cosmo toolchain
         run: |
              curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_b5e622e7692a959ea021d95451ff155f84518b0a_7922511901_1/cosmocc.zip
