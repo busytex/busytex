@@ -16,6 +16,9 @@ jobs:
   build-cosmo:
     runs-on: ubuntu-22.04
     steps:
+      - name: Install prerequisites
+        run:  sudo apt install gperf
+
       - name: Disable binfmt_misc shenanigans (https://github.com/jart/cosmopolitan/tree/master/tool/cosmocc#gotchas)
         run: |
              sudo wget -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
