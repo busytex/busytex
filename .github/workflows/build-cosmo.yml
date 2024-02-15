@@ -12,21 +12,30 @@ env:
   MAKE_PARALLELISM: -j2
   TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
 
-  CC:      cosmocc/bin/cosmocc
-  CXX:     cosmocc/bin/cosmoc++
-  AR:      cosmocc/bin/cosmoar
-  INSTALL: cosmocc/bin/cosmoinstall
-
 jobs:
   build-cosmo:
     runs-on: ubuntu-22.04
     steps:
+      - name: Disable binfmt_misc shenanigans (https://github.com/jart/cosmopolitan/tree/master/tool/cosmocc#gotchas)
+        run: |
+             sudo wget -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
+             sudo chmod +x /usr/bin/ape
+             sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register"
+             sudo sh -c "echo ':APE-jart:M::jartsr::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register"
+
+      - uses: actions/checkout@v4
+
       - name:  Download and unpack Cosmo toolchain
         run: |
              curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_b5e622e7692a959ea021d95451ff155f84518b0a_7922511901_1/cosmocc.zip
              unzip -d cosmocc/ cosmocc.zip
 
-      - uses: actions/checkout@v4
+      - name: Set environment for Cosmo toolchain (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable)
+        run: |
+             echo "CC=$(command -v cosmocc/bin/cosmocc)" >> "$GITHUB_ENV"
+             echo "CXX=$(command -v cosmocc/bin/cosmoc++)" >> "$GITHUB_ENV"
+             echo "AR=$(command -v cosmocc/bin/cosmoar)" >> "$GITHUB_ENV"
+             echo "INSTALL=$(command -v cosmocc/bin/cosmoinstall)" >> "$GITHUB_ENV"
 
       - name: Clone TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt
