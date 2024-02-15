@@ -5,10 +5,10 @@ env:
   MAKE_PARALLELISM: -j2
   TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
 
-  CC:      cosmocc/cosmocc
-  CXX:     cosmocc/cosmoc++
-  AR:      cosmocc/cosmoar
-  INSTALL: cosmocc/cosmoinstall
+  CC:      cosmocc/bin/cosmocc
+  CXX:     cosmocc/bin/cosmoc++
+  AR:      cosmocc/bin/cosmoar
+  INSTALL: cosmocc/bin/cosmoinstall
 
 jobs:
   build-cosmo:
