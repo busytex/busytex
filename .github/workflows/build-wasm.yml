@@ -45,9 +45,6 @@ jobs:
       
       - name: Clean-up texmf sources
         run:  rm -rf source/texmfrepo
-      
-      - name: Clone/patch TexLive and dependencies
-        run:  make source/texlive.downloaded build/versions.txt
 
       - name: Build wasm busytex
         env:
