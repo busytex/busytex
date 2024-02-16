@@ -6,7 +6,10 @@ ARXIV_ID=$1
 OUT_DIR=${2:-.}
 
 workdir=${OUT_DIR}/${ARXIV_ID}
-rm -r ${workdir}/
+if [ -d ${workdir}/ ]
+then
+    rm -r ${workdir}/
+fi
 mkdir ${workdir}/
 
 printf "Downloading %s\n" ${ARXIV_ID}
