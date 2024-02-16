@@ -18,6 +18,8 @@ BUSYWEB2C_LOCALIZE_SYMBOL = $(addprefix --localize-symbol=,filename tex out temp
 
 TOTAL_MEMORY         = 536870912
 CFLAGS_OPT_native    = -O3
+# Explicitly enable exceptions and RTTI in case they are disabled by default (such as in Cosmopolitan Libc).
+CXXFLAGS_native      = -fexceptions -frtti
 CFLAGS_OPT_wasm      = -Oz
 
 ROOT                := $(CURDIR)
@@ -94,27 +96,48 @@ DVIPDFMX_REDEFINE = cff_stdstr agl_chop_suffix agl_sput_UTF16BE agl_get_unicodes
 EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
 REDEFINE_SYM        := $(PYTHON) -c "import sys; print(' '.join('-D{func}={prefix}_{func}'.format(func = func, prefix = sys.argv[1]) for func in sys.argv[2:]))"
 
-CFLAGS_KPSESTAT     := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsestat'
-CFLAGS_KPSEACCESS   := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpseaccess'
-CFLAGS_KPSEREADLINK := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsereadlink'
-CFLAGS_KPSEWHICH    := -Dmain='__attribute__((visibility(\"default\"))) busymain_kpsewhich'
-CFLAGS_MAKEINDEX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_makeindex'
-CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\"))) busymain_xetex'
-CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_bibtex8'   $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
-CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\"))) busymain_xdvipdfmx' $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
-CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_pdftex'    $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
-CFLAGS_LUAHBTEX     := -Dmain='__attribute__((visibility(\"default\"))) busymain_luahbtex'  $(shell $(REDEFINE_SYM) busyluahbtex   $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
-CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\"))) busymain_luatex'    $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+# LuaTeX unconditionally builds the `luasocket` module: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/Makefile.am#L292
+# `luasocket` depends on various macros that require additional feature test macros. For example `gethostbyaddr()` requires `_GNU_SOURCE` or similar:
+# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/luatexdir/luasocket/src/usocket.c#L381
+# The `configure.ac` for `web2c` (which also configures LuaTeX) should therefore contain something like `AC_USE_SYSTEM_EXTENSIONS`:
+# https://www.gnu.org/software/autoconf/manual/autoconf-2.67/html_node/Posix-Variants.html
+# However, it doesn't. The build still works with musl because some of its headers indirectly include `features.h` that defaults to `_BSD_SOURCE`, which is enough:
+# https://git.musl-libc.org/cgit/musl/tree/include/features.h?h=v1.2.4#n15
+# Cosmopolitan doesn't include `features.h` indirectly, so we have to define a sufficiently powerful macro (`_GNU_SOURCE`) right here.
+# Also, the default `socket_waitfd()` implementation in `luasocket` includes a non-standard `sys/poll.h` header, which doesn't contain `struct pollfd` in Cosmopolitan:
+# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/luatexdir/luasocket/src/usocket.c#L19
+# By defining `SOCKET_SELECT`, we fall back to a simple `socket_waitfd()` implementation that uses `select()` instead, which is perfectly fine for LuaTeX.
+LUATEX_SOCKET_DEFINES = -D_GNU_SOURCE -DSOCKET_SELECT
+
+CFLAGS_KPSESTAT     := -Dmain='__attribute__((visibility(\"default\")))busymain_kpsestat'
+CFLAGS_KPSEACCESS   := -Dmain='__attribute__((visibility(\"default\")))busymain_kpseaccess'
+CFLAGS_KPSEREADLINK := -Dmain='__attribute__((visibility(\"default\")))busymain_kpsereadlink'
+CFLAGS_KPSEWHICH    := -Dmain='__attribute__((visibility(\"default\")))busymain_kpsewhich'
+CFLAGS_MAKEINDEX    := -Dmain='__attribute__((visibility(\"default\")))busymain_makeindex'
+# The TeX sources contains a function called `privileged`, which is then translated into a C function:
+# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/tex.web#L20459
+# The prelude from Cosmopolitan Libc #defines `privileged` to mean something else, unless the macro is already defined:
+# https://github.com/jart/cosmopolitan/blob/d5225a693bbb6c916d84c0f3e88a9156707d461f/libc/integral/c.inc#L194
+# Use a dummy define to prevent Cosmopolitan from clobbering `privileged`. This only applies to XeTeX
+# because other TeX versions already have `privileged` re-defined to `busytex_privileged`.
+CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\")))busymain_xetex'    -Dprivileged=privileged
+CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_bibtex8'                           $(shell $(REDEFINE_SYM) busybibtex     $(BIBTEX_REDEFINE) )
+CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\")))busymain_xdvipdfmx'                         $(shell $(REDEFINE_SYM) busydvipdfmx $(DVIPDFMX_REDEFINE) )
+CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_pdftex'                            $(shell $(REDEFINE_SYM) busypdftex     $(PDFTEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUAHBTEX     := -Dmain='__attribute__((visibility(\"default\")))busymain_luahbtex' $(LUATEX_SOCKET_DEFINES) $(shell $(REDEFINE_SYM) busyluahbtex   $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
+CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_luatex'   $(LUATEX_SOCKET_DEFINES) $(shell $(REDEFINE_SYM) busyluatex     $(LUATEX_REDEFINE) $(SYNCTEX_REDEFINE))
 
 ##############################################################################################################################
 
 # uuid_generate_random feature request: https://github.com/emscripten-core/emscripten/issues/12093
 CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate -pthread
 # -pthread
-CFLAGS_BIBTEX_wasm    = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
-CFLAGS_ICU_wasm       = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 
-CFLAGS_TEXLIVE_wasm   = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
-CFLAGS_TEXLIVE_native = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
+CFLAGS_BIBTEX_wasm      = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
+CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0
+CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
+CXXFLAGS_TEXLIVE_wasm   = $(CFLAGS_TEXLIVE_wasm)
+CFLAGS_TEXLIVE_native   = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
+CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 # https://tug.org/pipermail/tlbuild/2021q1/004774.html
 # https://github.com/emscripten-core/emscripten/issues/14973
 # -static-libstdc++ -static-libgcc
@@ -124,7 +147,10 @@ CFLAGS_TEXLIVE_native = -I$(abspath build/native/texlive/libs/icu/include) -I$(a
 # https://www.openwall.com/lists/musl/2017/02/16/3
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
 
-PKGDATAFLAGS_ICU_wasm = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
+# The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
+PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
+# Cosmopolitan builds a fat multi-arch executable, so it, too, refuses to process raw `.s` files.
+PKGDATAFLAGS_ICU_native = --without-assembly -O $(ROOT)/build/native/texlive/libs/icu/icu-build/data/icupkg.inc
 
 ##############################################################################################################################
 
@@ -133,20 +159,22 @@ CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(RO
 CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
 OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
-OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
-OPTS_ICU_configure_make_wasm = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
+OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
+OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CC="$(CC_native) $(CFLAGS_OPT_native)"          -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
+OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
 OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
 OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" CXX="em++          $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
-OPTS_XDVIPDFMX_native    = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CPPFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)"
-OPTS_BIBTEX_native       = -e CFLAGS="$(CFLAGS_BIBTEX)         $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX)       $(CFLAGS_OPT_native)"
-OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native)"
-OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native)"
-OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)"
+OPTS_XDVIPDFMX_native    = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CXXFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_BIBTEX_native       = -e CFLAGS="$(CFLAGS_BIBTEX)         $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CFLAGS_BIBTEX)       $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
-OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)"
+OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
@@ -159,6 +187,12 @@ OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
 OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
 OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 
+# Some of the libraries in libs/ don't use `libtool`, which leads to `AR` being hardcoded to `ar`.
+# An example of a "bad" library: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/teckit/Makefile.in#L113
+# An example of a "good" library: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/pplib/Makefile.in#L537
+# Force everyone to respect proper `AR`.
+OPTS_LIBS_native         = AR=$(AR_native)
+
 OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 
@@ -169,70 +203,88 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 
 ##############################################################################################################################
 
+# These macros append a unique prefix to selected `.o`/`.a` files.
+# Cosmopolitan Libc creates shadow copies of `.o`/`.a` files for each supported architecture,
+# so we have to find and process all of them.
+BUSYTEXIZE_O = find $(1) -name $(2) -exec sh -c 'cp {} `dirname {}`/$(notdir $@)' ';'
+BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)' ';'
+
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
 	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
 	touch $@
 
-build/%/texlive.configured: source/texlive.downloaded
+source/texlive.patched: source/texlive.downloaded
+	# Cosmopolitan Libc doesn't support arguments with spaces; remove an extra trailing space here:
+	# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/icu/icu-src/source/common/Makefile.in#L72
+	sed -i 's@" "@""@' $(abspath source/texlive/libs/icu/icu-src/source/common/Makefile.in)
+	# See the contents of `cosmo_getpass.h` for more details.
+	cp cosmo_getpass.h                    $(abspath source/texlive/texk/dvipdfm-x/cosmo_getpass.h)
+	sed -i '1i#include "cosmo_getpass.h"' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
+	touch $@
+
+build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
 	#CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		
-	cd $(basename $@) &&                                            \
-	$(CONFIGURE_$*) $(abspath source/texlive/configure)		\
-	  --cache-file=$(CACHE_TEXLIVE_$*)  	        \
-	  --prefix="$(PREFIX_$*)"			\
-	  --enable-dump-share				\
-	  --enable-static				\
-	  --enable-freetype2				\
-	  --disable-shared				\
-	  --disable-multiplatform			\
-	  --disable-native-texlive-build		\
-	  --disable-all-pkgs				\
-	  --without-x					\
-	  --without-system-cairo			\
-	  --without-system-gmp				\
-	  --without-system-graphite2			\
-	  --without-system-harfbuzz			\
-	  --without-system-libgs			\
-	  --without-system-libpaper			\
-	  --without-system-mpfr				\
-	  --without-system-pixman			\
-	  --without-system-poppler			\
-	  --without-system-xpdf				\
-	  --without-system-icu				\
-	  --without-system-fontconfig			\
-	  --without-system-freetype2			\
-	  --without-system-libpng			\
-	  --without-system-zlib				\
-	  --without-system-zziplib			\
-	  --with-banner-add="_busytex$*"                \
-	  --enable-cxx-runtime-hack=yes                 \
-	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"	        \
-	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
-	  CXXFLAGS="$(CFLAGS_TEXLIVE_$*)"               \
-	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"               \
+	cd $(basename $@) &&                                \
+	$(CONFIGURE_$*) $(abspath source/texlive/configure) \
+	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
+	  --prefix="$(PREFIX_$*)"                           \
+	  --enable-dump-share                               \
+	  --enable-static                                   \
+	  --enable-freetype2                                \
+	  --disable-shared                                  \
+	  --disable-multiplatform                           \
+	  --disable-native-texlive-build                    \
+	  --disable-all-pkgs                                \
+	  --without-x                                       \
+	  --without-system-cairo                            \
+	  --without-system-gmp                              \
+	  --without-system-graphite2                        \
+	  --without-system-harfbuzz                         \
+	  --without-system-libgs                            \
+	  --without-system-libpaper                         \
+	  --without-system-mpfr                             \
+	  --without-system-pixman                           \
+	  --without-system-poppler                          \
+	  --without-system-xpdf                             \
+	  --without-system-icu                              \
+	  --without-system-fontconfig                       \
+	  --without-system-freetype2                        \
+	  --without-system-libpng                           \
+	  --without-system-zlib                             \
+	  --without-system-zziplib                          \
+	  --with-banner-add="_busytex$*"                    \
+	  --enable-cxx-runtime-hack=yes                     \
+	  --enable-cxx-runtime-hack=yes                     \
+	  --enable-arm-neon=no --enable-powerpc-vsx=no      \
+	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
+	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
+	  CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"                 \
+	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
           ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
 
 build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) 
+	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
 
 build/%/expat/libexpat.a: source/expat.downloaded
-	mkdir -p $(dir $@) && cd $(dir $@) && \
-	$(CMAKE_$*)                           \
-	   -DCMAKE_C_FLAGS="$(CFLAGS_$*_OPT)" \
-	   -DEXPAT_BUILD_DOCS=off             \
-	   -DEXPAT_SHARED_LIBS=off            \
-	   -DEXPAT_BUILD_EXAMPLES=off         \
-	   -DEXPAT_BUILD_FUZZERS=off          \
-	   -DEXPAT_BUILD_TESTS=off            \
-	   -DEXPAT_BUILD_TOOLS=off            \
+	mkdir -p $(dir $@) && cd $(dir $@) &&        \
+	$(CMAKE_$*)                                  \
+	   -DCMAKE_C_FLAGS="$(CFLAGS_$*_OPT)"        \
+	   -DCMAKE_AR="$(shell command -v $(AR_$*))" \
+	   -DEXPAT_BUILD_DOCS=off                    \
+	   -DEXPAT_SHARED_LIBS=off                   \
+	   -DEXPAT_BUILD_EXAMPLES=off                \
+	   -DEXPAT_BUILD_FUZZERS=off                 \
+	   -DEXPAT_BUILD_TESTS=off                   \
+	   -DEXPAT_BUILD_TOOLS=off                   \
 	   $(abspath $(basename $<)) 
 	$(MAKE_$*) -C $(dir $@)
 
@@ -262,21 +314,25 @@ build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
 	-rm build/$*/texlive/texk/kpathsea/kpsewhich.o 
 	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
 	cp $(dir $@)/kpsewhich.o $@
+	$(call BUSYTEXIZE_O,$(dir $@),kpsewhich.o)
 
 build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
 	-rm build/$*/texlive/texk/kpathsea/kpsestat.o 
 	$(MAKE_$*) -C $(dir $@) kpsestat.o $(OPTS_KPSESTAT_$*)
 	cp $(dir $@)/kpsestat.o $@
+	$(call BUSYTEXIZE_O,$(dir $@),kpsestat.o)
 
 build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
 	-rm build/$*/texlive/texk/kpathsea/access.o 
 	$(MAKE_$*) -C $(dir $@) access.o $(OPTS_KPSEACCESS_$*)
 	cp $(dir $@)/access.o $@
+	$(call BUSYTEXIZE_O,$(dir $@),access.o)
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	-rm build/$*/texlive/texk/kpathsea/readlink.o 
 	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
+	$(call BUSYTEXIZE_O,$(dir $@),readlink.o)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
@@ -293,7 +349,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
 	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
-	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*) 	
+	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
@@ -313,6 +369,7 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
 	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
 	mv $(dir $@)/libxetex.a $@
+	$(call BUSYTEXIZE_A,$(dir $@),libxetex.a)
 
 build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
@@ -323,12 +380,12 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	$(EXTERN_SYM)     $(dir $@)/pdftexd.h                   $(PDFTEX_EXTERN)
 	$(MAKE_$*) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_$*)
 	$(MAKE_$*) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_$*)
-	mv $(dir $@)/libpdftex.a $@
+	$(call BUSYTEXIZE_A,$(dir $@),libpdftex.a)
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
 	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUAHBTEX_$*)
-	mv $(dir $@)/libluatex.a $@
+	$(call BUSYTEXIZE_A,$(dir $@),libluatex.a)
 	#echo AR1; $(AR_$*) t $@; echo NM1; $(NM_$*) $@
 	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a $(OPTS_LUATEX_$*)
 	#$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUATEX_$*)
