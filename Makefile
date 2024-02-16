@@ -268,8 +268,14 @@ build/%/texlive.configured: source/texlive.patched
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
 
-build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
+build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+
+build/%/texlive/libs/freetype2/libfreetype.a: build/%/texlive.configured
+	mkdir -p build/native/texlive/libs/freetype2/ft-build
+	$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
+	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
@@ -627,6 +633,6 @@ download-native:
 	-rm build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata build/native/texlive/libs/freetype2/ft-build/apinames
 	-ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	-ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
-	-$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
+	#-$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
 
