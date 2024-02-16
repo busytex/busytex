@@ -34,19 +34,25 @@ jobs:
       
       - name: Download native binaries
         run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
+      
+      - name: Download TexLive Full
+        run:  make source/texmfrepo.txt
+      
+      - name: Install TexLive
+        env:
+            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+        run: make build/texlive-basic.txt build/texlive-full.txt
+      
+      - name: Clean-up texmf sources
+        run:  rm -rf source/texmfrepo
+      
+      - name: Clone/patch TexLive and dependencies
+        run:  make source/texlive.downloaded build/versions.txt
 
       - name: Build wasm busytex
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
         run: make wasm
-
-      - name: Download TexLive Full
-        run:  make source/texmfrepo.txt
-
-      - name: Install TexLive
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run: make build/texlive-basic.txt build/texlive-full.txt
 
 #      - name: Archive native artifacts
 #        uses: actions/upload-artifact@v2
