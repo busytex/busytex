@@ -81,6 +81,18 @@
 #const is_bibtex = cmd[0].startsWith('bibtex');
 #            const cmd_log_path = is_bibtex ? blg_path : log_path;
 #            const cmd_aux_path = is_bibtex ? bbl_path : aux_path;
+#TAGS = {
+#    # TODO: this is output from xdvipdfmx
+#    'no-font-for-pdf': "Cannot proceed without .vf or \"physical\" font for PDF output...",
+#    'latex-pstricks-not-found': "! LaTeX Error: File `pstricks.sty' not found.",
+#    'latex-file-not-found': "LaTeX Error: File",
+#    'undefined-control-sequence': "! Undefined control sequence.",
+#    'not-latex': "LaTeX Error: Missing \\begin{document}",
+#    'uses-inputenc': "Package inputenc Error: inputenc is not designed for xetex or luatex.",
+#    'latex-error': "LaTeX Error",
+#    'bad-character-code': "! Bad character code",
+#    'bib-failed': "\\end{thebibliography}"
+#}
 
 
 import argparse
