@@ -18,6 +18,9 @@
 #	#<cachedir prefix="relative">./cache</cachedir>
 #	echo '</fontconfig>'                                 >> $@
 
+# https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
+# FC_DEVUG=MATCHV
+
 #DIST=$PWD/dist-native
 #XELATEXFMT=$DIST/xelatex.fmt
 #PDFLATEXFMT=$DIST/pdflatex.fmt
