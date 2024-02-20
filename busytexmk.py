@@ -130,6 +130,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-path', '-i')
     parser.add_argument('--driver', default = 'xelatex', choices = ['xelatex', 'pdflatex'])
-    parser.add_argument('--busytex')
+    parser.add_argument('--busytex', default = 'build/native/busytex')
     args = parser.parse_args()
     main(args)
