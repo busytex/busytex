@@ -86,12 +86,19 @@
 import argparse
 import subprocess
 
+def xelatex():
+    pass
+
+def pdflatex():
+    pass
+
 def main(args):
     pass
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-path', '-i')
+    parser.add_argument('--driver', default = 'xelatex', choices = ['xelatex', 'pdflatex'])
     parser.add_argument('--busytex')
     args = parser.parse_args()
     main(args)
