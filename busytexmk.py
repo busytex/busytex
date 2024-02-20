@@ -112,6 +112,7 @@
 #xdvipdfmx:fatal: Cannot proceed without .vf or "physical" font for PDF output...
 #No output PDF file written.
 
+# return *.synctex.gz https://tex.stackexchange.com/a/118491/115598
 
 
 import argparse
