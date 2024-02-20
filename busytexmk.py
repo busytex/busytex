@@ -97,6 +97,22 @@
 #    'bib-failed': "\\end{thebibliography}"
 #}
 
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+
+#kpathsea: Running mktexpk --mfmode / --bdpi 600 --mag 1+264/600 --dpi 864 ec-qhvr
+#kpathsea: fork(): Function not implemented
+#kpathsea: Appending font creation commands to missfont.log.
+#xdvipdfmx:warning: Could not locate a virtual/physical font for TFM "ec-qhvr".
+#xdvipdfmx:warning: >> There are no valid font mapping entry for this font.
+#xdvipdfmx:warning: >> Font file name "ec-qhvr" was assumed but failed to locate that font.
+#xdvipdfmx:fatal: Cannot proceed without .vf or "physical" font for PDF output...
+#No output PDF file written.
+
+
 
 import argparse
 import subprocess
