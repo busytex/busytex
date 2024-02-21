@@ -21,18 +21,6 @@
 # https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
 # FC_DEVUG=MATCHV
 
-#DIST=$PWD/dist-native
-#XELATEXFMT=$DIST/xelatex.fmt
-#PDFLATEXFMT=$DIST/pdflatex.fmt
-#LUAHBLATEXFMT=$DIST/luahblatex.fmt
-#LUALATEXFMT=$DIST/lualatex.fmt
-#BUSYTEX=$DIST/busytex
-#export TEXMFDIST=$DIST/texlive/texmf-dist
-#export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
-#export TEXMFCNF=$TEXMFDIST/web2c
-#export FONTCONFIG_PATH=$DIST
-#cd example
-
 #class BusytexBibtexResolver
 #{
 #    resolve (files, bib_tex_commands = ['\\bibliography', '\\printbibliography'])
@@ -41,25 +29,6 @@
 #        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
 #    }
 #}
-# this.verbose_args = 
-#        {
-#            [BusytexPipeline.VerboseInfo] : {
-#                pdftex    : ['-kpathsea-debug', '32'],
-#                xetex     : ['-kpathsea-debug', '32'],
-#                luatex  : ['-kpathsea-debug', '32'],
-#                luahbtex  : ['-kpathsea-debug', '32'],
-#                xdvipdfmx : ['--kpathsea-debug','32', '-v'],
-#                bibtex8   : ['--debug', 'search'],
-#            },
-#            [BusytexPipeline.VerboseDebug] : {
-#                pdftex    : ['-kpathsea-debug', '63', '-recorder'],
-#                xetex     : ['-kpathsea-debug', '63', '-recorder'],
-#                luatex  : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
-#                luahbtex  : ['-kpathsea-debug', '63', '-recorder', '--debug-format'],
-#                xdvipdfmx : ['--kpathsea-debug','63', '-vv'],
-#                bibtex8   : ['--debug', 'all'],
-#            },
-#        };
 #this.error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', 'undefined old font command'];
 #this.error_messages_all = this.error_messages_fatal.concat(['no output PDF file produced', 'No pages of output.']);
 #this.env = {TEXMFDIST       : this.dir_texmfdist, TEXMFVAR        : this.dir_texmfvar, TEXMFCNF        : this.dir_cnf, TEXMFLOG        : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
@@ -85,20 +54,9 @@
 #    'bib-failed': "\\end{thebibliography}"
 #}
 
-#xdvipdfmx:warning: Color stack underflow. Just ignore.
-#xdvipdfmx:warning: Color stack underflow. Just ignore.
-#xdvipdfmx:warning: Color stack underflow. Just ignore.
-#xdvipdfmx:warning: Color stack underflow. Just ignore.
-#xdvipdfmx:warning: Color stack underflow. Just ignore.
-
 #kpathsea: Running mktexpk --mfmode / --bdpi 600 --mag 1+264/600 --dpi 864 ec-qhvr
 #kpathsea: fork(): Function not implemented
 #kpathsea: Appending font creation commands to missfont.log.
-#xdvipdfmx:warning: Could not locate a virtual/physical font for TFM "ec-qhvr".
-#xdvipdfmx:warning: >> There are no valid font mapping entry for this font.
-#xdvipdfmx:warning: >> Font file name "ec-qhvr" was assumed but failed to locate that font.
-#xdvipdfmx:fatal: Cannot proceed without .vf or "physical" font for PDF output...
-#No output PDF file written.
 
 # return *.synctex.gz https://tex.stackexchange.com/a/118491/115598
 
@@ -106,7 +64,41 @@
 import argparse
 import subprocess
 
-def xelatex(main_tex_path):
+def xelatex(main_tex_path, busytex):
+#DIST=$PWD/dist-native
+#XELATEXFMT=$DIST/xelatex.fmt
+#BUSYTEX=$DIST/busytex
+#export TEXMFDIST=$DIST/texlive/texmf-dist
+#export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
+#export TEXMFCNF=$TEXMFDIST/web2c
+#export FONTCONFIG_PATH=$DIST
+#xdvipdfmx:warning: Could not locate a virtual/physical font for TFM "ec-qhvr".
+#xdvipdfmx:warning: >> There are no valid font mapping entry for this font.
+#xdvipdfmx:warning: >> Font file name "ec-qhvr" was assumed but failed to locate that font.
+#xdvipdfmx:fatal: Cannot proceed without .vf or "physical" font for PDF output...
+#No output PDF file written.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Color stack underflow. Just ignore.
+#xdvipdfmx:warning: Could not locate a virtual/physical font for TFM "ec-qhvr".
+#xdvipdfmx:warning: >> There are no valid font mapping entry for this font.
+#xdvipdfmx:warning: >> Font file name "ec-qhvr" was assumed but failed to locate that font.
+#xdvipdfmx:fatal: Cannot proceed without .vf or "physical" font for PDF output...
+# this.verbose_args = 
+#        {
+#            [BusytexPipeline.VerboseInfo] : {
+#                xetex     : ['-kpathsea-debug', '32'],
+#                xdvipdfmx : ['--kpathsea-debug','32', '-v'],
+#                bibtex8   : ['--debug', 'search'],
+#            },
+#            [BusytexPipeline.VerboseDebug] : {
+#                xetex     : ['-kpathsea-debug', '63', '-recorder'],
+#                xdvipdfmx : ['--kpathsea-debug','63', '-vv'],
+#                bibtex8   : ['--debug', 'all'],
+#            },
+#        };
 #$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
 #$BUSYTEX bibtex8 --8bit example.aux
 #$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
@@ -115,13 +107,70 @@ def xelatex(main_tex_path):
 #rm example.aux
     pass
 
-def pdflatex(main_tex_path):
-    #$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-    #$BUSYTEX bibtex8 --8bit example.aux
-    #$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-    #$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-    #mv example.pdf example_pdflatex.pdf
-    #rm example.aux
+def pdflatex(main_tex_path, busytex):
+#DIST=$PWD/dist-native
+#PDFLATEXFMT=$DIST/pdflatex.fmt
+#BUSYTEX=$DIST/busytex
+#export TEXMFDIST=$DIST/texlive/texmf-dist
+#export TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
+#export TEXMFCNF=$TEXMFDIST/web2c
+#export FONTCONFIG_PATH=$DIST
+# this.verbose_args = 
+#        {
+#            [BusytexPipeline.VerboseInfo] : {
+#                pdftex    : ['-kpathsea-debug', '32'],
+#                bibtex8   : ['--debug', 'search'],
+#            },
+#            [BusytexPipeline.VerboseDebug] : {
+#                pdftex    : ['-kpathsea-debug', '63', '-recorder'],
+#                bibtex8   : ['--debug', 'all'],
+#            },
+#        };
+    subprocess.run([busytex, 'pdflatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', PDFLATEXFMT, main_tex_path])
+    subprocess.run([busytex, 'bibtex8', '--8bit', main_tex_path.removesuffix('.tex') + '.aux'])
+    subprocess.run([busytex, 'pdflatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', PDFLATEXFMT, main_tex_path])
+    subprocess.run([busytex, 'pdflatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', PDFLATEXFMT, main_tex_path])
+    #mv example.pdf  example.aux
+#     const tex_path = PATH.basename(main_tex_path), dirname = PATH.dirname(main_tex_path);
+#
+#        const [xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path] = ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'].map(ext => tex_path.replace('.tex', ext));
+#
+#        const xetex     = ['xelatex' ,   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
+#        const pdftex    = ['pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+#        const pdftex_not_final    = ['pdflatex',   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--fmt', this.fmt.pdftex, tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).pdftex);
+#
+#        const luahbtex  = ['luahblatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luahbtex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+#        const luahbtex_not_final  = ['luahblatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt.luahbtex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+#
+#        const luatex  = ['lualatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+#        const luatex_not_final  = ['lualatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--no-pdf', '--fmt', this.fmt.luatex, '--nosocket', tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).luahbtex);
+#
+#        const bibtex8   = ['bibtex8', '--8bit', aux_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).bibtex8);
+#
+#        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
+#  const logcat = logs.map(({cmd, texmflog, missfontlog, log, exit_code, stdout, stderr}) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'MISSFONTLOG:', missfontlog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
+#  logs.push({
+#                cmd : cmd.join(' '),
+#                texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
+#                missfontlog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.missfontlog) : '',
+#                log : log.trim(),
+#                aux : aux.trim(),
+#                stdout : stdout.trim(),
+#                stderr : stderr.trim(),
+#                exit_code : exit_code
+#            });
+#             cmds = bibtex ?
+#                [
+#                    [pdftex_not_final, this.error_messages_fatal, false],
+#                    [bibtex8, this.error_messages_fatal, true],
+#                    [pdftex_not_final, this.error_messages_fatal, true],
+#                    [pdftex, this.error_messages_all, false]
+#                ] :
+#                [
+#                    [pdftex, this.error_messages_all]
+#                ];
+
+
 
 def detect_main_tex_path(dirname):
     #const basename = this.PATH.basename(dirname);
@@ -155,10 +204,10 @@ def main(args):
     main_tex_path = detect_main_tex_path(args.input_path)
 
     if args.driver == 'pdflatex':
-        pdflatex(main_tex_path)
+        pdflatex(main_tex_path, args.busytex)
     
     if args.driver == 'xelatex':
-        xelatex(main_tex_path)
+        xelatex(main_tex_path, args.busytex)
 
 
 if __name__ == '__main__':
