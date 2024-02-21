@@ -30,7 +30,7 @@ jobs:
 
       - name:  Download and unpack Cosmo toolchain
         run: |
-             curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_b5e622e7692a959ea021d95451ff155f84518b0a_7922511901_1/cosmocc.zip
+             curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_ec56536281a3a7804cd5ce6b755cf3da0190156a_7983203814_1/cosmocc.zip
              unzip -d cosmocc/ cosmocc.zip
 
       - name: Set environment for Cosmo toolchain (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable)
