@@ -32,18 +32,6 @@
 #export TEXMFCNF=$TEXMFDIST/web2c
 #export FONTCONFIG_PATH=$DIST
 #cd example
-#$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
-#$BUSYTEX bibtex8 --8bit example.aux
-#$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
-#$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
-#$BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
-#rm example.aux
-#$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-#$BUSYTEX bibtex8 --8bit example.aux
-#$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-#$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-#mv example.pdf example_pdflatex.pdf
-#rm example.aux
 
 #class BusytexBibtexResolver
 #{
@@ -118,18 +106,64 @@
 import argparse
 import subprocess
 
-def xelatex():
+def xelatex(main_tex_path):
+#$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
+#$BUSYTEX bibtex8 --8bit example.aux
+#$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
+#$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
+#$BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
+#rm example.aux
     pass
 
-def pdflatex():
-    pass
+def pdflatex(main_tex_path):
+    #$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+    #$BUSYTEX bibtex8 --8bit example.aux
+    #$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+    #$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+    #mv example.pdf example_pdflatex.pdf
+    #rm example.aux
+
+def detect_main_tex_path(dirname):
+    #const basename = this.PATH.basename(dirname);
+    #const tex_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext));
+    #let default_path = null;
+    #
+    #if(tex_files.length == 1)
+    #    default_path = tex_files[0].path;
+
+    #else if(tex_files.length > 1)
+    #{
+    #    const main_tex_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext) && (f.path.includes('main') || f.path.includes(basename)));
+    #    default_path = main_tex_files.length > 0 ? main_tex_files[0].path : tex_files[0].path;
+    #}
+
+    #if(default_path == null)
+    #{
+    #    const text_files = this.find(dirname, '', false).filter(f => f.contents != null && this.text_extensions.some(ext => f.path.toLowerCase().endsWith(ext)));
+    #    if(text_files.length == 1)
+    #        default_path = text_files[0].path;
+    #    else if(text_files.length > 1)
+    #    {
+    #        const main_text_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.toUpperCase().includes('README'));
+    #        default_path = main_text_files.length > 0 ? main_text_files[0].path : text_files[0].path;
+    #    }
+    #}
+    default_path = None
+    return default_path
 
 def main(args):
-    pass
+    main_tex_path = detect_main_tex_path(args.input_path)
+
+    if args.driver == 'pdflatex':
+        pdflatex(main_tex_path)
+    
+    if args.driver == 'xelatex':
+        xelatex(main_tex_path)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input-path', '-i')
+    parser.add_argument('--input-path', '-i', required = True)
     parser.add_argument('--driver', default = 'xelatex', choices = ['xelatex', 'pdflatex'])
     parser.add_argument('--busytex', default = 'build/native/busytex')
     args = parser.parse_args()
