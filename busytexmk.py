@@ -18,14 +18,6 @@
 #	#<cachedir prefix="relative">./cache</cachedir>
 #	echo '</fontconfig>'                                 >> $@
 
-#class BusytexBibtexResolver
-#{
-#    resolve (files, bib_tex_commands = ['\\bibliography', '\\printbibliography'])
-#    {
-#        return files.some(f => f.path.endsWith('.tex') && typeof(f.contents) == 'string' && bib_tex_commands.some(b => f.contents.includes(b)));
-#        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
-#    }
-#}
 #this.error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', 'undefined old font command'];
 #this.error_messages_all = this.error_messages_fatal.concat(['no output PDF file produced', 'No pages of output.']);
 #this.env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
@@ -133,7 +125,7 @@ def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
     fmt = os.path.join(DIST, 'pdflatex.fmt')
     texmflog = 'texmf.log'
     missfontlog = 'missfont.log'
-    xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = map(lambda ext: main_tex_path.replace('.tex', ext), ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'])
+    xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = map(lambda ext: main_tex_path.removesuffix('.tex') + ext, ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'])
 
     arg_pdftex_verbose = ['-kpathsea-debug', '32']
     arg_pdftex_debug = ['-kpathsea-debug', '63', '-recorder']
@@ -201,6 +193,11 @@ def detect_main_tex_path(dirname):
     #        default_path = main_text_files.length > 0 ? main_text_files[0].path : text_files[0].path;
     #    }
     #}
+#    if bibtex is None:
+#        bibtex = any(bib_cmd in open(path).read() for path in file_paths if path.endswith('.tex') for bib_cmd in ['\\bibliography', '\\printbibliography'])
+#        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
+#        bibtex = 
+
     default_path = None
     return default_path
 
