@@ -48,4 +48,5 @@ jobs:
       
       - name: Bench
         run: |
-            python busytexmk.py -i ./benchset/tar/1702.00331.gz --driver pdflatex --busytex ./dist-native/busytex --tex-relative-path ./Arxiv_SiEr_Celebrano.tex --DIST dist-native
+            ls
+            python busytexmk.py --driver pdflatex -i ./benchset/tar/1702.00331.gz --tex-relative-path ./Arxiv_SiEr_Celebrano.tex --DIST ./dist-native --busytex ./dist-native/busytex || find
