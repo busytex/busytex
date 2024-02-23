@@ -203,11 +203,12 @@ def detect_main_tex_path(dirname):
 #        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
 #        bibtex = 
 
-    default_path = None
-    return default_path
+    file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
+    print(file_paths)
+    return None, None
 
 def main(args):
-    #cwd, main_tex_path = detect_main_tex_path(args.input_dir)
+    cwd, main_tex_path = detect_main_tex_path(args.input_dir)
     if args.driver == 'pdflatex':
         return pdflatex(args.tex_relative_path, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = args.bibtex)
 
