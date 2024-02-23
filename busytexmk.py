@@ -119,7 +119,7 @@ def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
         TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'),
         TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'),
         TEXMFCNF  = os.path.join(DIST, 'texlive/texmf-dist/web2c'),
-        FONTCONFIG_PATH = DIST
+        FONTCONFIG_PATH = DIST,
         FC_DEBUG = 'SCANV'
     )
     fmt = os.path.join(DIST, 'pdflatex.fmt')
