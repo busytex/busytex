@@ -143,6 +143,8 @@ def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
     else:
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
 
+    return cmd4res.returncode
+
 # aux = this.read_all_text(FS, cmd_aux_path);
 # log = this.read_all_text(FS, cmd_log_path);
 # exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
@@ -202,18 +204,18 @@ def detect_main_tex_path(dirname):
     return default_path
 
 def main(args):
-    cwd = args.input_dir
-    main_tex_path = detect_main_tex_path(args.input_dir)
-
+    #cwd, main_tex_path = detect_main_tex_path(args.input_dir)
     if args.driver == 'pdflatex':
-        pdflatex(main_tex_path, args.busytex, cwd = cwd)
+        return pdflatex(args.tex_relative_path, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = args.bibtex)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', '-i', required = True)
-    parser.add_argument('--driver', default = 'xelatex', choices = ['xelatex', 'pdflatex'])
-    parser.add_argument('--busytex', default = 'build/native/busytex')
+    parser.add_argument('--driver', default = 'pdflatex', choices = ['xelatex', 'pdflatex'])
+    parser.add_argument('--tex-relative-path')
+    parser.add_argument('--busytex')
+    parser.add_argument('--DIST')
     parser.add_argument('--bibtex', action = 'store_true')
     args = parser.parse_args()
     main(args)
