@@ -48,6 +48,7 @@
 # return *.synctex.gz https://tex.stackexchange.com/a/118491/115598
 
 
+import os
 import argparse
 import subprocess
 
