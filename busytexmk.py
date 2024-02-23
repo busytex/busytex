@@ -117,6 +117,7 @@ def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
 #         OBJTYPES      4096    Display message when value typechecks fail
 
     DIST = os.path.abspath(DIST)
+    busytex = os.path.abspath(busytex)
     env = dict(
         TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'),
         TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'),
