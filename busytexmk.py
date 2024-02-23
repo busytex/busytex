@@ -116,6 +116,7 @@ def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
 #         LANGSET       2048    Dump char sets used to construct lang values
 #         OBJTYPES      4096    Display message when value typechecks fail
 
+    DIST = os.path.abspath(DIST)
     env = dict(
         TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'),
         TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'),
