@@ -51,3 +51,4 @@ jobs:
             ls ./benchset/tar/1702.00331.gz
             python busytexmk.py --driver pdflatex -i ./benchset/tar/1702.00331.gz --tex-relative-path ./Arxiv_SiEr_Celebrano.tex --DIST ./dist-native --busytex ./dist-native/busytex
             ls ./benchset/tar/1702.00331.gz
+            cat ./benchset/tar/1702.00331.gz/Arxiv_SiEr_Celebrano.log
