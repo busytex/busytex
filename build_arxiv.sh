@@ -36,7 +36,7 @@ export FONTCONFIG_PATH=$DIST
 
 cd ${workdir}
 
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}"
-$BUSYTEX bibtex8 --8bit "${main_file%.tex}.aux"
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}"
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}"
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" >/dev/null 2>&1
+$BUSYTEX bibtex8 --8bit "${main_file%.tex}.aux" >/dev/null 2>&1
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" >/dev/null 2>&1
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" >/dev/null 2>&1
