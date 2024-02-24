@@ -2,6 +2,8 @@
 
 set -eu
 
+export SOURCE_DATE_EPOCH=1234567890
+
 ARXIV_ID=$1
 OUT_DIR=${2:-.}
 
