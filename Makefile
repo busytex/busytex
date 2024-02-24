@@ -104,14 +104,14 @@ CFLAGS_MAKEINDEX    := -Dmain='__attribute__((visibility(\"default\")))busymain_
 # https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/tex.web#L20459
 # The prelude from Cosmopolitan Libc #defines `privileged` to mean something else, unless the macro is already defined:
 # https://github.com/jart/cosmopolitan/blob/d5225a693bbb6c916d84c0f3e88a9156707d461f/libc/integral/c.inc#L194
-# Use a dummy define to prevent Cosmopolitan from clobbering `privileged`. This only applies to XeTeX
-# because other TeX versions already have `privileged` re-defined to `busytex_privileged`.
-CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\")))busymain_xetex'    -Dprivileged=privileged
-CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_bibtex8'
-CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\")))busymain_xdvipdfmx'
-CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_pdftex'
-CFLAGS_LUAHBTEX     := -Dmain='__attribute__((visibility(\"default\")))busymain_luahbtex'
-CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_luatex'
+# Use a dummy define to prevent Cosmopolitan from clobbering `privileged`.
+UNPRIVILEGED        := -Dprivileged=privileged
+CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\")))busymain_xetex'     $(UNPRIVILEGED)
+CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_bibtex8'   $(UNPRIVILEGED)
+CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\")))busymain_xdvipdfmx' $(UNPRIVILEGED)
+CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_pdftex'    $(UNPRIVILEGED)
+CFLAGS_LUAHBTEX     := -Dmain='__attribute__((visibility(\"default\")))busymain_luahbtex'  $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
+CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_luatex'    $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
 
 ##############################################################################################################################
 
