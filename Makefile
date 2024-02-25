@@ -76,6 +76,8 @@ OBJ_DEPS_XETEX= fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, 
 
 ##############################################################################################################################
 
+PDFTEX_EXTERN =   namelength nameoffile
+
 EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
 
 # LuaTeX unconditionally builds the `luasocket` module: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/Makefile.am#L292
