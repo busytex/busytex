@@ -40,7 +40,7 @@ AR_wasm       = emar
 CC_wasm       = emcc
 CXX_wasm      = em++
 NM_wasm       = $(EMROOT)/../bin/llvm-nm
-OBJCOPY_wasm  = echo
+OBJCOPY_wasm  = echo # TODO: use llvm-objcopy here
 CC_native     = $(CC)
 CXX_native    = $(CXX)
 MAKE_native   = $(MAKE)
@@ -61,7 +61,6 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
 ##############################################################################################################################
 
-#OBJ_LUAHBTEX = luatexdir/luahbtex-luatex.o luatexdir/luatex-luatex.o    mplibdir/luahbtex-lmplib.o mplibdir/luatex-lmplib.o    libluahbtexspecific.a libluatexspecific.a     libluaharfbuzz.a  busytex_libluahbtex.a busytex_libluatex.a   libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a
 OBJ_LUAHBTEX  = luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a  busytex_libluahbtex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a
 OBJ_LUATEX    = luatexdir/luatex-luatex.o   mplibdir/luatex-lmplib.o  libluatexspecific.a                     busytex_libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
 OBJ_PDFTEX    = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a busytex_libpdftex.a
@@ -95,11 +94,6 @@ EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.arg
 # By defining `SOCKET_SELECT`, we fall back to a simple `socket_waitfd()` implementation that uses `select()` instead, which is perfectly fine for LuaTeX.
 LUATEX_SOCKET_DEFINES = -D_GNU_SOURCE -DSOCKET_SELECT
 
-CFLAGS_KPSESTAT     := -Dmain='__attribute__((visibility(\"default\")))busymain_kpsestat'
-CFLAGS_KPSEACCESS   := -Dmain='__attribute__((visibility(\"default\")))busymain_kpseaccess'
-CFLAGS_KPSEREADLINK := -Dmain='__attribute__((visibility(\"default\")))busymain_kpsereadlink'
-CFLAGS_KPSEWHICH    := -Dmain='__attribute__((visibility(\"default\")))busymain_kpsewhich'
-CFLAGS_MAKEINDEX    := -Dmain='__attribute__((visibility(\"default\")))busymain_makeindex'
 # The TeX sources contains a function called `privileged`, which is then translated into a C function:
 # https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/tex.web#L20459
 # The prelude from Cosmopolitan Libc #defines `privileged` to mean something else, unless the macro is already defined:
@@ -162,16 +156,16 @@ OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_nati
 OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
 OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
-OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
-OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
-OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_native)"
-OPTS_KPSESTAT_wasm       = CFLAGS="$(CFLAGS_KPSESTAT)     $(CFLAGS_OPT_wasm)"
-OPTS_KPSEACCESS_native   = CFLAGS="$(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_native)"
-OPTS_KPSEACCESS_wasm     = CFLAGS="$(CFLAGS_KPSEACCESS)   $(CFLAGS_OPT_wasm)"
-OPTS_KPSEREADLINK_native = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_native)"
-OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_KPSEREADLINK) $(CFLAGS_OPT_wasm)"
-OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_native)"
-OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
+OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_OPT_native)"
+OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_OPT_wasm)"
+OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_OPT_native)"
+OPTS_KPSESTAT_wasm       = CFLAGS="$(CFLAGS_OPT_wasm)"
+OPTS_KPSEACCESS_native   = CFLAGS="$(CFLAGS_OPT_native)"
+OPTS_KPSEACCESS_wasm     = CFLAGS="$(CFLAGS_OPT_wasm)"
+OPTS_KPSEREADLINK_native = CFLAGS="$(CFLAGS_OPT_native)"
+OPTS_KPSEREADLINK_wasm   = CFLAGS="$(CFLAGS_OPT_wasm)"
+OPTS_MAKEINDEX_native    = CFLAGS="$(CFLAGS_OPT_native)"
+OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_OPT_wasm)"
 
 # Some of the libraries in libs/ don't use `libtool`, which leads to `AR` being hardcoded to `ar`.
 # An example of a "bad" library: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/teckit/Makefile.in#L113
@@ -189,11 +183,12 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 
 ##############################################################################################################################
 
-# These macros append a unique prefix to selected `.o`/`.a` files.
+# These macros hide everything except the main function in `.o`/`.a` files.
 # Cosmopolitan Libc creates shadow copies of `.o`/`.a` files for each supported architecture,
 # so we have to find and process all of them.
-BUSYTEXIZE_O = find $(1) -name $(2) -exec sh -c 'cp {} `dirname {}`/$(notdir $@)' ';'
-BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)' ';'
+BUSYTEXIZE = find $(1) -name $(2) -exec sh -c \
+	'$(OBJCOPY_$*) --keep-global-symbol=main --redefine-sym main=busymain_$(3) {}' \
+	';'
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
@@ -301,30 +296,23 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.downloaded build
 build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) genind.o mkind.o qsort.o scanid.o scanst.o sortid.o $(OPTS_MAKEINDEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/*.o
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_makeindex)
 
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
-	-rm build/$*/texlive/texk/kpathsea/kpsewhich.o 
-	$(MAKE_$*) -C $(dir $@) kpsewhich.o $(OPTS_KPSEWHICH_$*)
 	cp $(dir $@)/kpsewhich.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),kpsewhich.o)
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_kpsewhich)
 
 build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
-	-rm build/$*/texlive/texk/kpathsea/kpsestat.o 
-	$(MAKE_$*) -C $(dir $@) kpsestat.o $(OPTS_KPSESTAT_$*)
 	cp $(dir $@)/kpsestat.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),kpsestat.o)
+	$(call BUSYTEXIZE_O,$(dir $@),$(notdir $@),busymain_kpsestat)
 
 build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
-	-rm build/$*/texlive/texk/kpathsea/access.o 
-	$(MAKE_$*) -C $(dir $@) access.o $(OPTS_KPSEACCESS_$*)
 	cp $(dir $@)/access.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),access.o)
+	$(call BUSYTEXIZE_O,$(dir $@),$(notdir $@),busymain_kpseaccess)
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
-	-rm build/$*/texlive/texk/kpathsea/readlink.o 
-	$(MAKE_$*) -C $(dir $@) readlink.o $(OPTS_KPSEREADLINK_$*)
 	cp $(dir $@)/readlink.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),readlink.o)
+	$(call BUSYTEXIZE_O,$(dir $@),$(notdir $@),busymain_kpsereadlink)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
@@ -378,11 +366,6 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
 	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUAHBTEX_$*)
 	$(call BUSYTEXIZE_A,$(dir $@),libluatex.a)
-	#echo AR1; $(AR_$*) t $@; echo NM1; $(NM_$*) $@
-	#$(MAKE_$*) -C $(dir $@) luatexdir/luatex-luatex.o mplibdir/luatex-lmplib.o libluatexspecific.a $(OPTS_LUATEX_$*)
-	#$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUATEX_$*)
-	#mv $(dir $@)/libluatex.a $(dir $@)/busytex_libluatex.a
-	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
 
 ################################################################################################################
 
