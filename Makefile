@@ -62,7 +62,6 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 ##############################################################################################################################
 
 OBJ_LUAHBTEX  = luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a  busytex_libluahbtex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a
-OBJ_LUATEX    = luatexdir/luatex-luatex.o   mplibdir/luatex-lmplib.o  libluatexspecific.a                     busytex_libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a libmd5.a lib/lib.a 
 OBJ_PDFTEX    = synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o lib/lib.a libmd5.a busytex_libpdftex.a
 OBJ_XETEX     = synctexdir/xetex-synctex.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o xetexdir/xetex-xetexextra.o lib/lib.a libmd5.a busytex_libxetex.a
 OBJ_DVIPDF    = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a
@@ -76,10 +75,6 @@ OBJ_DEPS_XETEX= fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, 
 
 
 ##############################################################################################################################
-
-PDFTEX_EXTERN =   namelength nameoffile
-
-EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
 
 # LuaTeX unconditionally builds the `luasocket` module: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/Makefile.am#L292
 # `luasocket` depends on various macros that require additional feature test macros. For example `gethostbyaddr()` requires `_GNU_SOURCE` or similar:
@@ -100,12 +95,12 @@ LUATEX_SOCKET_DEFINES = -D_GNU_SOURCE -DSOCKET_SELECT
 # https://github.com/jart/cosmopolitan/blob/d5225a693bbb6c916d84c0f3e88a9156707d461f/libc/integral/c.inc#L194
 # Use a dummy define to prevent Cosmopolitan from clobbering `privileged`.
 UNPRIVILEGED        := -Dprivileged=privileged
-CFLAGS_XETEX        := -Dmain='__attribute__((visibility(\"default\")))busymain_xetex'     $(UNPRIVILEGED)
-CFLAGS_BIBTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_bibtex8'   $(UNPRIVILEGED)
-CFLAGS_XDVIPDFMX    := -Dmain='__attribute__((visibility(\"default\")))busymain_xdvipdfmx' $(UNPRIVILEGED)
-CFLAGS_PDFTEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_pdftex'    $(UNPRIVILEGED)
-CFLAGS_LUAHBTEX     := -Dmain='__attribute__((visibility(\"default\")))busymain_luahbtex'  $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
-CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_luatex'    $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
+CFLAGS_XETEX        := $(UNPRIVILEGED)
+CFLAGS_BIBTEX       := $(UNPRIVILEGED)
+CFLAGS_XDVIPDFMX    := $(UNPRIVILEGED)
+CFLAGS_PDFTEX       := $(UNPRIVILEGED)
+CFLAGS_LUAHBTEX     := $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
+CFLAGS_LUATEX       := $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
 
 ##############################################################################################################################
 
@@ -154,8 +149,6 @@ OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_nati
 OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
-OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
-OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_OPT_wasm)"
 OPTS_KPSESTAT_native     = CFLAGS="$(CFLAGS_OPT_native)"
@@ -304,27 +297,25 @@ build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
 
 build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
 	cp $(dir $@)/kpsestat.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),$(notdir $@),busymain_kpsestat)
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_kpsestat)
 
 build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
 	cp $(dir $@)/access.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),$(notdir $@),busymain_kpseaccess)
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_kpseaccess)
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
 	cp $(dir $@)/readlink.o $@
-	$(call BUSYTEXIZE_O,$(dir $@),$(notdir $@),busymain_kpsereadlink)
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_kpsereadlink)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_XDVIPDFMX_$*))
-	rm $(dir $@)/dvipdfmx.o
-	$(MAKE_$*) -C $(dir $@) dvipdfmx.o $(OPTS_XDVIPDFMX_$*)
+	$(MAKE_$*) -C $(dir $@) $(OPTS_XDVIPDFMX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/*.o
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_xdvipdfmx)
 
 build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(subst -Dmain=, -Dbusymain=, $(OPTS_BIBTEX_$*))
-	rm $(dir $@)/bibtex8-bibtex.o
-	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
+	$(MAKE_$*) -C $(dir $@) $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_bibtex8)
 
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
@@ -345,27 +336,23 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
 	# xetexini.c, xetex0.c xetex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(subst -Dmain=, -Dbusymain=, $(OPTS_XETEX_$*))
-	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
-	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
+	$(MAKE_$*) -C $(dir $@) libxetex.a $(OPTS_XETEX_$*)
 	mv $(dir $@)/libxetex.a $@
-	$(call BUSYTEXIZE_A,$(dir $@),libxetex.a)
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_xetex)
 
 build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	# pdftexini.c, pdftex0.c pdftex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(subst -Dmain=, -Dbusymain=, $(OPTS_PDFTEX_$*))
-	$(EXTERN_SYM)     $(dir $@)/pdftexd.h                   $(PDFTEX_EXTERN)
-	$(MAKE_$*) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_$*)
-	$(MAKE_$*) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_$*)
-	$(call BUSYTEXIZE_A,$(dir $@),libpdftex.a)
+	$(MAKE_$*) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_$*)
+	mv $(dir $@)/libpdftex.a $@
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_pdftex)
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
 	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUAHBTEX_$*)
-	$(call BUSYTEXIZE_A,$(dir $@),libluatex.a)
+	mv $(dir $@)/libluatex.a $@
+	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_luahbtex)
 
 ################################################################################################################
 
