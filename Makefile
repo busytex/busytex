@@ -76,6 +76,8 @@ OBJ_DEPS_XETEX= fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, 
 
 ##############################################################################################################################
 
+EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
+
 # LuaTeX unconditionally builds the `luasocket` module: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/Makefile.am#L292
 # `luasocket` depends on various macros that require additional feature test macros. For example `gethostbyaddr()` requires `_GNU_SOURCE` or similar:
 # https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/luatexdir/luasocket/src/usocket.c#L381
@@ -180,7 +182,7 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 # Cosmopolitan Libc creates shadow copies of `.o`/`.a` files for each supported architecture,
 # so we have to find and process all of them.
 BUSYTEXIZE = find $(1) -name $(2) -exec sh -c \
-	'$(OBJCOPY_$*) --keep-global-symbol=main --redefine-sym main=busymain_$(3) {}' \
+	'$(OBJCOPY_$*) --redefine-sym main=$(3) --keep-global-symbol=$(3) {}' \
 	';'
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
@@ -336,7 +338,9 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
 	# xetexini.c, xetex0.c xetex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) libxetex.a $(OPTS_XETEX_$*)
+	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(OPTS_XETEX_$*)
+	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
+	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
 	mv $(dir $@)/libxetex.a $@
 	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_xetex)
 
@@ -345,7 +349,10 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
 	# pdftexini.c, pdftex0.c pdftex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) libpdftex.a $(OPTS_PDFTEX_$*)
+	$(MAKE_$*) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(OPTS_PDFTEX_$*)
+	$(EXTERN_SYM)     $(dir $@)/pdftexd.h                   $(PDFTEX_EXTERN)
+	$(MAKE_$*) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_$*)
+	$(MAKE_$*) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_$*)
 	mv $(dir $@)/libpdftex.a $@
 	$(call BUSYTEXIZE,$(dir $@),$(notdir $@),busymain_pdftex)
 
