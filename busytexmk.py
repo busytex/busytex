@@ -205,18 +205,21 @@ def detect_main_tex_path(dirname):
 
     file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
     print(file_paths)
-    return None, None
+    return None, None, None
 
 def main(args):
-    cwd, main_tex_path = detect_main_tex_path(args.input_dir)
+    cwd, main_tex_path, bibtex = detect_main_tex_path(args.input_dir)
+    
     if args.driver == 'pdflatex':
         return pdflatex(args.tex_relative_path, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = args.bibtex)
+    else:
+        print(args.input_dir, cwd, main_tex_path, bibtex)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', '-i', required = True)
-    parser.add_argument('--driver', default = 'pdflatex', choices = ['xelatex', 'pdflatex'])
+    parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--tex-relative-path')
     parser.add_argument('--busytex')
     parser.add_argument('--DIST')
