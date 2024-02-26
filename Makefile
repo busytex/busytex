@@ -45,7 +45,7 @@ CC_native     = $(CC)
 CXX_native    = $(CXX)
 MAKE_native   = $(MAKE)
 CMAKE_native  = cmake
-OBJCOPY_native= objcopy
+OBJCOPY_native= llvm-objcopy
 AR_native     = $(AR)
 LD_native     = $(LD)
 NM_native     = nm
@@ -336,9 +336,7 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
 	# xetexini.c, xetex0.c xetex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o      xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o  $(OPTS_XETEX_$*)
-	$(MAKE_$*) -C $(dir $@) xetexdir/xetex-xetexextra.o     $(OPTS_XETEX_$*)
-	$(MAKE_$*) -C $(dir $@) libxetex.a                      $(OPTS_XETEX_$*)
+	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o xetexdir/xetex-xetexextra.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o libxetex.a $(OPTS_XETEX_$*)
 	$(call BUSYTEXIZE,libxetex.a,busymain_xetex)
 
 build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
@@ -346,15 +344,13 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	mkdir -p $(dir $@)
 	# pdftexini.c, pdftex0.c pdftex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o $(OPTS_PDFTEX_$*)
-	$(EXTERN_SYM)     $(dir $@)/pdftexd.h                   $(PDFTEX_EXTERN)
-	$(MAKE_$*) -C $(dir $@) pdftexdir/pdftex-pdftexextra.o  $(OPTS_PDFTEX_$*)
-	$(MAKE_$*) -C $(dir $@) libpdftex.a                     $(OPTS_PDFTEX_$*)
+	$(MAKE_$*) -C $(dir $@) pdftexd.h $(OPTS_PDFTEX_$*)
+	$(EXTERN_SYM) $(dir $@)/pdftexd.h $(PDFTEX_EXTERN)
+	$(MAKE_$*) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o libpdftex.a $(OPTS_PDFTEX_$*)
 	$(call BUSYTEXIZE,libpdftex.a,busymain_pdftex)
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
-	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a $(OPTS_LUAHBTEX_$*)
-	$(MAKE_$*) -C $(dir $@) libluatex.a $(OPTS_LUAHBTEX_$*)
+	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a $(OPTS_LUAHBTEX_$*)
 	$(call BUSYTEXIZE,libluatex.a,busymain_luahbtex)
 
 ################################################################################################################
