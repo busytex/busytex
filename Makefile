@@ -180,11 +180,15 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 
 ##############################################################################################################################
 
-# These macros hide everything except the main function in `.o`/`.a` files.
+# This macro hides everything except the main function in `.o`/`.a` files.
 # Cosmopolitan Libc creates shadow copies of `.o`/`.a` files for each supported architecture,
 # so we have to find and process all of them.
-BUSYTEXIZE = find $(dir $@) -name $(1) -exec sh -c \
-	'$(OBJCOPY_$*) --redefine-sym main=$(2) --keep-global-symbol=$(2) {} `dirname {}`/$(notdir $@)' \
+# Arguments:
+#   * $(1): the original `.o` or `.a` basename
+#   * $(2): the basename of the `.o` or `.a` to write the result to
+#   * $(3): the new name of the main function
+BUSYTEXIZE = find $(dir $@) -name $(notdir $(1)) -exec sh -c \
+	'$(OBJCOPY_$*) --redefine-sym main=$(3) --keep-global-symbol=main {} `dirname {}`/$(notdir $(2))' \
 	';'
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
@@ -293,29 +297,29 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.downloaded build
 build/%/texlive/texk/makeindexk/busytex_makeindex.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) genind.o mkind.o qsort.o scanid.o scanst.o sortid.o $(OPTS_MAKEINDEX_$*)
 	$(AR_$*) -crs $(dir $@)/makeindex.a $(dir $@)/*.o
-	$(call BUSYTEXIZE,makeindex.a,busymain_makeindex)
+	$(call BUSYTEXIZE,makeindex.a,$(notdir $@),busymain_makeindex)
 
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,kpsewhich.o,busymain_kpsewhich)
+	$(call BUSYTEXIZE,kpsewhich.o,$(notdir $@),busymain_kpsewhich)
 
 build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,kpsestat.o,busymain_kpsestat)
+	$(call BUSYTEXIZE,kpsestat.o,$(notdir $@),busymain_kpsestat)
 
 build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,access.o,busymain_kpseaccess)
+	$(call BUSYTEXIZE,access.o,$(notdir $@),busymain_kpseaccess)
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,readlink.o,busymain_kpsereadlink)
+	$(call BUSYTEXIZE,readlink.o,$(notdir $@),busymain_kpsereadlink)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_XDVIPDFMX_$*)
 	$(AR_$*) -crs $(dir $@)/xdvipdfmx.a $(dir $@)/*.o
-	$(call BUSYTEXIZE,xdvipdfmx.a,busymain_xdvipdfmx)
+	$(call BUSYTEXIZE,xdvipdfmx.a,$(notdir $@),busymain_xdvipdfmx)
 
 build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $(dir $@)/bibtex8.a $(dir $@)/bibtex8-*.o
-	$(call BUSYTEXIZE,bibtex8.a,busymain_bibtex8)
+	$(call BUSYTEXIZE,bibtex8.a,$(notdir $@),busymain_bibtex8)
 
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
@@ -337,7 +341,8 @@ build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	# xetexini.c, xetex0.c xetex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o xetexdir/xetex-xetexextra.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o libxetex.a $(OPTS_XETEX_$*)
-	$(call BUSYTEXIZE,libxetex.a,busymain_xetex)
+	$(foreach name,synctexdir/xetex-synctex.o xetexdir/xetex-xetexextra.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o,$(call BUSYTEXIZE,$(name),$(name),busymain_xetex); )
+	$(call BUSYTEXIZE,libxetex.a,$(notdir $@),busymain_xetex)
 
 build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
@@ -347,11 +352,13 @@ build/%/texlive/texk/web2c/busytex_libpdftex.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) pdftexd.h $(OPTS_PDFTEX_$*)
 	$(EXTERN_SYM) $(dir $@)/pdftexd.h $(PDFTEX_EXTERN)
 	$(MAKE_$*) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o libpdftex.a $(OPTS_PDFTEX_$*)
-	$(call BUSYTEXIZE,libpdftex.a,busymain_pdftex)
+	$(foreach name,synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o,$(call BUSYTEXIZE,$(name),$(name),busymain_pdftex); )
+	$(call BUSYTEXIZE,libpdftex.a,$(notdir $@),busymain_pdftex)
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a $(OPTS_LUAHBTEX_$*)
-	$(call BUSYTEXIZE,libluatex.a,busymain_luahbtex)
+	$(foreach name,luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a,$(call BUSYTEXIZE,$(name),$(name),busymain_luahbtex); )
+	$(call BUSYTEXIZE,libluatex.a,$(notdir $@),busymain_luahbtex)
 
 ################################################################################################################
 
