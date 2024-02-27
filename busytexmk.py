@@ -201,7 +201,7 @@ def prepare_tex_params(dirname):
     file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
     has_bib_files = any(file_path.endswith('.bib') for file_path in file_paths)
 
-    bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_text(file_path) for bib_cmd in ['\\bibliography', '\\printbibliography']])
+    bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_text(file_path)] for bib_cmd in ['\\bibliography', '\\printbibliography'])
     #TODO: split running bibtex from running the other commands?
     
     return main_tex_path, bibtex
