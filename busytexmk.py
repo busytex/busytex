@@ -197,7 +197,7 @@ def prepare_tex_params(dirname):
 #        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
 #        bibtex = 
     
-    main_tex_path = None
+    main_tex_path = ''
     file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
     has_bib_files = any(file_path.endswith('.bib') for file_path in file_paths)
 
