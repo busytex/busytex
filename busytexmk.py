@@ -52,6 +52,10 @@ import os
 import argparse
 import subprocess
 
+def read_all_text(path):
+    with open(path) as f:
+        return f.read()
+
 def xelatex():
 #        const xetex     = ['xelatex' ,   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xetex);
 #        const xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path].concat((this.verbose_args[verbose] || this.verbose_args[BusytexPipeline.VerboseSilent]).xdvipdfmx);
@@ -173,7 +177,7 @@ def lualatex():
     
 
 
-def detect_main_tex_path(dirname):
+def prepare_tex_params(dirname):
     #const basename = this.PATH.basename(dirname);
     #const tex_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext));
     #let default_path = null;
@@ -202,18 +206,26 @@ def detect_main_tex_path(dirname):
 #        bibtex = any(bib_cmd in open(path).read() for path in file_paths if path.endswith('.tex') for bib_cmd in ['\\bibliography', '\\printbibliography'])
 #        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
 #        bibtex = 
-
+    
+    main_tex_path = None
     file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
-    print(file_paths)
-    return None, None, None
+    has_bib_files = any(file_path.endswith('.bib') for file_path in file_paths)
+
+    bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_text(file_path) for bib_cmd in ['\\bibliography', '\\printbibliography']])
+    #TODO: split running bibtex from running the other commands?
+    
+    return main_tex_path, bibtex
 
 def main(args):
-    cwd, main_tex_path, bibtex = detect_main_tex_path(args.input_dir)
-    
+    main_tex_path, bibtex = prepare_tex_params(args.input_dir)
+    if args.bibtex:
+        bibtex = True
+    if args.tex_relative_path:
+        main_tex_path = args.tex_relative_path
+
+    print(args.input_dir, main_tex_path, bibtex)
     if args.driver == 'pdflatex':
-        return pdflatex(args.tex_relative_path, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = args.bibtex)
-    else:
-        print(args.input_dir, cwd, main_tex_path, bibtex)
+        return pdflatex(main_tex_path, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = bibtex)
 
 
 if __name__ == '__main__':
