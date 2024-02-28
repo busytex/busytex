@@ -77,7 +77,7 @@ def xelatex():
     #$BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
     pass
 
-def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
+def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
 # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
 # https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
 #         Name         Value    Meaning
@@ -115,15 +115,15 @@ def pdflatex(main_tex_path, busytex, cwd, DIST, bibtex):
     # dir_cnf = '/texlive/texmf-dist/web2c';
     # dir_fontconfig = '/etc/fonts';
 
-    xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = map(lambda ext: main_tex_path.removesuffix('.tex') + ext, ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'])
+    xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = map(lambda ext: tex_relative_path.removesuffix('.tex') + ext, ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'])
 
     arg_pdftex_verbose = ['-kpathsea-debug', '32']
     arg_pdftex_debug = ['-kpathsea-debug', '63', '-recorder']
     arg_bibtex_verbose = ['--debug', 'search']
     arg_bibtex_debug = ['--debug', 'all']
-    cmd_pdftex    = [busytex, 'pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', fmt, main_tex_path]
-    cmd_pdftex_not_final    = [busytex, 'pdflatex', '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--fmt', fmt, main_tex_path]
-    cmd_bibtex = [busytex, 'bibtex8', '--8bit', main_tex_path.removesuffix('.tex') + '.aux']
+    cmd_pdftex    = [busytex, 'pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', fmt, tex_relative_path]
+    cmd_pdftex_not_final    = [busytex, 'pdflatex', '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--fmt', fmt, tex_relative_path]
+    cmd_bibtex = [busytex, 'bibtex8', '--8bit', tex_relative_path.removesuffix('.tex') + '.aux']
 
     logs = []
     
@@ -197,34 +197,34 @@ def prepare_tex_params(dirname):
 #        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
 #        bibtex = 
     
-    main_tex_path = ''
+    tex_relative_path = ''
     file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
     has_bib_files = any(file_path.endswith('.bib') for file_path in file_paths)
 
     bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_text(file_path)] for bib_cmd in ['\\bibliography', '\\printbibliography'])
     #TODO: split running bibtex from running the other commands?
     
-    return main_tex_path, bibtex
+    tex_params = dict(bibtex = bibtex, tex_relative_path = tex_relative_path)
+    return tex_params
 
 def main(args):
-    main_tex_path, bibtex = prepare_tex_params(args.input_dir)
-    if args.bibtex:
-        bibtex = True
-    if args.tex_relative_path:
-        main_tex_path = args.tex_relative_path
+    tex_params = prepare_tex_params(args.input_dir)
+    for k in tex_params:
+        if getattr(args, k, None):
+            tex_params[k] = getattr(args, k)
 
-    print(args.input_dir, main_tex_path, bibtex)
+    print(args.input_dir, tex_params)
     if args.driver == 'pdflatex':
-        return pdflatex(main_tex_path, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = bibtex)
+        return pdflatex(**tex_params, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = bibtex)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', '-i', required = True)
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
-    parser.add_argument('--tex-relative-path')
     parser.add_argument('--busytex')
     parser.add_argument('--DIST')
+    parser.add_argument('--tex-relative-path')
     parser.add_argument('--bibtex', action = 'store_true')
     args = parser.parse_args()
     main(args)
