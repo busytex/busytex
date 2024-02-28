@@ -61,9 +61,9 @@ CPATH_BUSYTEX = texlive/libs/icu/include fontconfig
 
 ##############################################################################################################################
 
-OBJ_LUAHBTEX  = busytex_libluahbtex.o lib/lib.a libmd5.a
-OBJ_PDFTEX    = busytex_libpdftex.o   lib/lib.a libmd5.a
-OBJ_XETEX     = busytex_libxetex.o    lib/lib.a libmd5.a
+OBJ_LUAHBTEX  = busytex_libluahbtex.o libmd5.a
+OBJ_PDFTEX    = busytex_libpdftex.o   libmd5.a
+OBJ_XETEX     = busytex_libxetex.o    libmd5.a
 OBJ_DVIPDF    = texlive/texk/dvipdfm-x/busytex_xdvipdfmx.o
 OBJ_MAKEINDEX = texlive/texk/makeindexk/busytex_makeindex.o
 OBJ_BIBTEX    = texlive/texk/bibtex-x/busytex_bibtex8.o
@@ -75,10 +75,6 @@ OBJ_DEPS_XETEX= fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, 
 
 
 ##############################################################################################################################
-
-PDFTEX_EXTERN =   namelength nameoffile
-
-EXTERN_SYM           = $(PYTHON) -c "import sys; syms = set(filter(bool, sys.argv[2:])); f = open(sys.argv[1], 'r+'); lines = list(f); f.seek(0); f.writelines(l.replace('EXTERN', 'extern') if any((' ' + sym + ' ') in l for sym in syms) and l.startswith('EXTERN') else l for l in lines)"
 
 # LuaTeX unconditionally builds the `luasocket` module: https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/texk/web2c/Makefile.am#L292
 # `luasocket` depends on various macros that require additional feature test macros. For example `gethostbyaddr()` requires `_GNU_SOURCE` or similar:
@@ -124,7 +120,7 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 # -fno-common 
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
-LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
+LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc
 
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
 PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
@@ -175,7 +171,7 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK)    -ldl -lm -pthread -lpthread -Wl,--unresolved-symbols=ignore-all
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
 ##############################################################################################################################
@@ -262,8 +258,14 @@ build/%/texlive.configured: source/texlive.patched
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
 
-build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
+build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+
+build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+	find $(dir $@) -name $(notdir $@) -exec sh -c \
+		'$(OBJCOPY_$*) --weaken-symbol=main --weaken-symbol=argc --weaken-symbol=argv {}' \
+		';'
 
 build/%/texlive/libs/freetype2/libfreetype.a: build/%/texlive.configured
 	mkdir -p build/native/texlive/libs/freetype2/ft-build
@@ -350,21 +352,19 @@ build/%/texlive/texk/web2c/busytex_libxetex.o: build/%/texlive.configured
 	# xetexini.c, xetex0.c xetex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
 	$(MAKE_$*) -C $(dir $@) synctexdir/xetex-synctex.o xetexdir/xetex-xetexextra.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o libxetex.a $(OPTS_XETEX_$*)
-	$(call PRELINK,$(addprefix $(dir $@),synctexdir/xetex-synctex.o xetexdir/xetex-xetexextra.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o libxetex.a),busymain_xetex)
+	$(call PRELINK,$(addprefix $(dir $@),synctexdir/xetex-synctex.o xetexdir/xetex-xetexextra.o xetex-xetexini.o xetex-xetex0.o xetex-xetex-pool.o libxetex.a lib/lib.a),busymain_xetex)
 
 build/%/texlive/texk/web2c/busytex_libpdftex.o: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
 	mkdir -p $(dir $@)
 	# pdftexini.c, pdftex0.c pdftex-pool.c
 	-cp $(subst wasm,native,$(dir $@))*.c $(dir $@)
-	$(MAKE_$*) -C $(dir $@) pdftexd.h $(OPTS_PDFTEX_$*)
-	$(EXTERN_SYM) $(dir $@)/pdftexd.h $(PDFTEX_EXTERN)
-	$(MAKE_$*) -C $(dir $@) synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o libpdftex.a $(OPTS_PDFTEX_$*)
-	$(call PRELINK,$(addprefix $(dir $@),synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o libpdftex.a),busymain_pdftex)
+	$(MAKE_$*) -C $(dir $@) pdftexd.h synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o libpdftex.a $(OPTS_PDFTEX_$*)
+	$(call PRELINK,$(addprefix $(dir $@),synctexdir/pdftex-synctex.o pdftex-pdftexini.o pdftex-pdftex0.o pdftex-pdftex-pool.o pdftexdir/pdftex-pdftexextra.o libpdftex.a lib/lib.a),busymain_pdftex)
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.o: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a $(OPTS_LUAHBTEX_$*)
-	$(call PRELINK,$(addprefix $(dir $@),luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libmputil.a libunilib.a),busymain_luahbtex)
+	$(call PRELINK,$(addprefix $(dir $@),luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libunilib.a lib/lib.a),busymain_luahbtex)
 
 ################################################################################################################
 
