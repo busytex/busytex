@@ -211,7 +211,7 @@ def main(args):
 
     if args.driver == 'pdflatex':
         logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST))
-        output_exists = os.path.exists(args.input_dir, tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf')
+        output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
 
         if logs[-1]['returncode'] == 0:
             return print(args.input_dir, tex_params, output_exists, 'OK')
