@@ -30,8 +30,12 @@ import os
 import argparse
 import subprocess
 
-def read_all_text(path):
-    with open(path) as f:
+def read_all_text(path, encoding = 'utf-8', errors = 'replace'):
+    with open(path, 'r', encoding = encoding, errors = errors) as f:
+        return f.read()
+
+def read_all_bytes(path):
+    with open(path, 'rb') as f:
         return f.read()
 
 def xelatex():
@@ -184,10 +188,10 @@ def prepare_tex_params(dirname):
     os.chdir(dirname)
     
     file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk('.') for f in filenames]
-    tex_relative_path = ([file_path for file_path in file_paths  for contents in [read_all_text(file_path)] if '\\begin{document}' in contents ] or [''])[0]
+    tex_relative_path = ([file_path for file_path in file_paths  for contents in [read_all_bytes(file_path)] if b'\\begin{document}' in contents] or [''])[0]
     has_bib_files = any(file_path.endswith('.bib') for file_path in file_paths)
 
-    bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_text(file_path)] for bib_cmd in ['\\bibliography', '\\printbibliography'])
+    bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_bytes(file_path)] for bib_cmd in [b'\\bibliography', b'\\printbibliography'])
     #TODO: split running bibtex from running the other commands?
 
     
