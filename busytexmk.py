@@ -18,20 +18,6 @@
 #	#<cachedir prefix="relative">./cache</cachedir>
 #	echo '</fontconfig>'                                 >> $@
 
-#this.error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', 'undefined old font command'];
-#this.error_messages_all = this.error_messages_fatal.concat(['no output PDF file produced', 'No pages of output.']);
-#TAGS = {
-## TODO: this is output from xdvipdfmx
-#'no-font-for-pdf': "Cannot proceed without .vf or \"physical\" font for PDF output...",
-#'latex-pstricks-not-found': "! LaTeX Error: File `pstricks.sty' not found.",
-#'latex-file-not-found': "LaTeX Error: File",
-#'undefined-control-sequence': "! Undefined control sequence.",
-#'not-latex': "LaTeX Error: Missing \\begin{document}",
-#'uses-inputenc': "Package inputenc Error: inputenc is not designed for xetex or luatex.",
-#'latex-error': "LaTeX Error",
-#'bad-character-code': "! Bad character code",
-#'bib-failed': "\\end{thebibliography}"
-#}
 
 #kpathsea: Running mktexpk --mfmode / --bdpi 600 --mag 1+264/600 --dpi 864 ec-qhvr
 #kpathsea: fork(): Function not implemented
@@ -96,8 +82,6 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
 #         LANGSET       2048    Dump char sets used to construct lang values
 #         OBJTYPES      4096    Display message when value typechecks fail
 
-    DIST = os.path.abspath(DIST)
-    busytex = os.path.abspath(busytex)
     env = dict(
         TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'),
         TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'),
@@ -109,6 +93,10 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
     texmflog = 'texmf.log'
     missfontlog = 'missfont.log'
     
+    error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', '! Bad character code', 'undefined old font command', 'LaTeX Error', 'Cannot proceed without .vf or \"physical\" font for PDF output...', 'LaTeX Error: File', 'Package inputenc Error: inputenc is not designed for xetex or luatex.', 'LaTeX Error: Missing \\begin{document}', '\\end{thebibliography}']
+    error_messages_all = error_messages_fatal + ['no output PDF file produced', 'No pages of output.']
+    has_error = lambda cmdres, errors: any(e.encode() in cmdres.stdout + cmdres.stderr for e in errors)
+
     # env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
     # dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
     # dir_texmfvar = '/texlive/texmf-dist/texmf-var';
@@ -129,34 +117,29 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
     
     if bibtex:
         cmd1res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
-        print(cmd1res)
+        logs.append(dict(vars(cmd1res), has_error = has_error(cmd1res, error_messages_fatal))
         cmd2res = subprocess.run(cmd_bibtex, env = env, cwd = cwd, capture_output = True)
+        logs.append(dict(vars(cmd2res), has_error = has_error(cmd1res, error_messages_fatal))
         cmd3res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
+        logs.append(dict(vars(cmd3res), has_error = has_error(cmd1res, error_messages_fatal))
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
+        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all))
         
         # is_bibtex = cmd[0].startsWith('bibtex');
-        # cmd_log_path = is_bibtex ? blg_path : log_path;
-        # cmd_aux_path = is_bibtex ? bbl_path : aux_path;
-        # aux = read_all_text(cmd_aux_path);
-        # log = read_all_text(cmd_log_path);
-        # exit_code = stdout.trim() ? (error_messages.some(err => stdout.includes(err)) ? exit_code : 0) : exit_code;
         #  logs.push({
-        #      cmd : cmd.join(' '),
         #      texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
         #      missfontlog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.missfontlog) : '',
-        #      log : log.trim(),
-        #      aux : aux.trim(),
-        #      stdout : stdout.trim(),
-        #      stderr : stderr.trim(),
-        #      exit_code : exit_code
+        #      log : read_all_text(is_bibtex ? blg_path : log_path).trim(),
+        #      aux : read_all_text(is_bibtex ? bbl_path : aux_path).trim(),
         #  });
 
     else:
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
+        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all))
 
-    logcat = '\n\n'.join('\n'.join(['$ ' + log['cmd'], 'EXITCODE: ' + str(log['exit_code']), '', 'TEXMFLOG:', log['texmflog'], '==', 'MISSFONTLOG:', log['missfontlog'], '==', 'LOG:', log['log'], '==', 'STDOUT:', log['stdout'], '==', 'STDERR:', log['stderr'], '======']) for log in logs)
+    logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
 
-    return cmd4res.returncode
+    return logs
 
 def lualatex():
     luahbtex  = ['luahblatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', FMT, '--nosocket', tex_path]
@@ -196,15 +179,21 @@ def prepare_tex_params(dirname):
 #        bibtex = any(bib_cmd in open(path).read() for path in file_paths if path.endswith('.tex') for bib_cmd in ['\\bibliography', '\\printbibliography'])
 #        // files.some(({path, contents}) => contents != null && path.endsWith('.bib'));
 #        bibtex = 
+   
+    prevcwd = os.getcwd()
+    os.chdir(dirname)
     
-    tex_relative_path = ''
-    file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk(dirname) for f in filenames]
+    file_paths = [os.path.join(dirpath, f) for dirpath, dirnames, filenames in os.walk('.') for f in filenames]
+    tex_relative_path = ([file_path for file_path in file_paths  for contents in [read_all_text(file_path)] if '\\begin{document}' in contents ] or [''])[0]
     has_bib_files = any(file_path.endswith('.bib') for file_path in file_paths)
 
     bibtex = any(bib_cmd in contents for file_path in file_paths if file_path.endswith('.tex') for contents in [read_all_text(file_path)] for bib_cmd in ['\\bibliography', '\\printbibliography'])
     #TODO: split running bibtex from running the other commands?
+
     
-    tex_params = dict(bibtex = bibtex, tex_relative_path = tex_relative_path)
+    tex_params = dict(bibtex = bibtex, tex_relative_path = tex_relative_path, cwd = dirname)
+    
+    os.chdir(prevcwd)
     return tex_params
 
 def main(args):
@@ -213,9 +202,17 @@ def main(args):
         if getattr(args, k, None):
             tex_params[k] = getattr(args, k)
 
-    print(args.input_dir, tex_params)
+    if not tex_params['tex_relative_path']:
+        return print(args.input_dir, tex_params, False, 'FAIL', 'NOTEXPATH')
+
     if args.driver == 'pdflatex':
-        return pdflatex(**tex_params, busytex = args.busytex, cwd = args.input_dir, DIST = args.DIST, bibtex = bibtex)
+        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.absplath(args.DIST), bibtex = bibtex)
+        output_exists = os.path.exists(tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf')
+
+        if logs[-1]['returncode'] == 0:
+            return print(args.input_dir, tex_params, output_exists, 'OK')
+        else:
+            return print(args.input_dir, tex_params, output_exists, 'FAIL', logs[-1]['returncode'])
 
 
 if __name__ == '__main__':
