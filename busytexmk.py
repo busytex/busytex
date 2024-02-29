@@ -210,7 +210,7 @@ def main(args):
         return print(args.input_dir, tex_params, False, 'FAIL', 'NOTEXPATH')
 
     if args.driver == 'pdflatex':
-        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.absplath(args.DIST), bibtex = bibtex)
+        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST))
         output_exists = os.path.exists(tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf')
 
         if logs[-1]['returncode'] == 0:
