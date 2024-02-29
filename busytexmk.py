@@ -216,7 +216,7 @@ def main(args):
         if logs[-1]['returncode'] == 0:
             return print(args.input_dir, tex_params, output_exists, 'OK')
         else:
-            return print(args.input_dir, tex_params, output_exists, 'FAIL', logs[-1]['returncode'])
+            return print(args.input_dir, tex_params, output_exists, 'FAIL', logs[-1]['returncode'], os.listdir(tex_params['cwd']))
 
 
 if __name__ == '__main__':
