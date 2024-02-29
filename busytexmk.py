@@ -117,13 +117,13 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
     
     if bibtex:
         cmd1res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd1res), has_error = has_error(cmd1res, error_messages_fatal))
+        logs.append(dict(vars(cmd1res), has_error = has_error(cmd1res, error_messages_fatal)))
         cmd2res = subprocess.run(cmd_bibtex, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd2res), has_error = has_error(cmd1res, error_messages_fatal))
+        logs.append(dict(vars(cmd2res), has_error = has_error(cmd1res, error_messages_fatal)))
         cmd3res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd3res), has_error = has_error(cmd1res, error_messages_fatal))
+        logs.append(dict(vars(cmd3res), has_error = has_error(cmd1res, error_messages_fatal)))
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all))
+        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all)))
         
         # is_bibtex = cmd[0].startsWith('bibtex');
         #  logs.push({
@@ -135,7 +135,7 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
 
     else:
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all))
+        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all)))
 
     logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
 
