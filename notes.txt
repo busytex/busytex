@@ -1,0 +1,4 @@
+* Cosmo lacks `llround()` for some reason
+
+`.text._ZNSt3__127__tree_balance_after_insertIPNS_16__tree_node_baseIPvEEEEvT_S5_' referenced in section `__patchable_function_entries' of build/native/texlive/texk/web2c/libxetex.a(libxetex_a-hz.o): defined in discarded section `.text._ZNSt3__127__tree_balance_after_insertIPNS_16__tree_node_baseIPvEEEEvT_S5_[_ZNSt3__127__tree_balance_after_insertIPNS_16__tree_node_baseIPvEEEEvT_S5_]' of build/native/texlive/texk/web2c/libxetex.a(libxetex_a-hz.o)
+`.text._ZNSt3__127__tree_balance_after_insertIPNS_16__tree_node_baseIPvEEEEvT_S5_' referenced in section `__patchable_function_entries' of build/native/texlive/texk/web2c/libxetex.a(libxetex_a-XeTeXFontMgr.o): defined in discarded section `.text._ZNSt3__127__tree_balance_after_insertIPNS_16__tree_node_baseIPvEEEEvT_S5_[_ZNSt3__127__tree_balance_after_insertIPNS_16__tree_node_baseIPvEEEEvT_S5_]' of build/native/texlive/texk/web2c/libxetex.a(libxetex_a-XeTeXFontMgr.o)
