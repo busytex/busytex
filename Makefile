@@ -184,8 +184,8 @@ COSMO_MANGLE = $(dir $(1))/.aarch64/$(notdir $(1))
 #   * $(1): the files to prelink
 #   * $(2): the new name of the main function
 define PRELINK
-ld.lld -r --whole-archive -o $@                      $(1)
-ld.lld -r --whole-archive -o $(call COSMO_MANGLE,$@) $(foreach name,$(1),$(call COSMO_MANGLE,$(name)))
+ld.lld -r -o $@                      $(1)
+ld.lld -r -o $(call COSMO_MANGLE,$@) $(foreach name,$(1),$(call COSMO_MANGLE,$(name)))
 $(call BUSYTEXIZE,$(notdir $@),$(2))
 endef
 
