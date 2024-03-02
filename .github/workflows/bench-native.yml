@@ -28,9 +28,8 @@ jobs:
       - name: Test native 
         run: |
             make source/texmfrepo.txt
-            make build/texlive-full.txt # build/texlive-basic.txt 
-            make dist-native
-            ln -s $PWD/build/texlive-full dist-native/texlive
+            make build/texlive-full.txt 
+            make dist-native-full
             sh example/example.sh
             rm -rf source/texmfrepo
         env:
