@@ -31,12 +31,109 @@ import argparse
 import subprocess
 
 def read_all_text(path, encoding = 'utf-8', errors = 'replace'):
+    if not os.path.exists(path):
+        return ''
     with open(path, 'r', encoding = encoding, errors = errors) as f:
         return f.read()
 
 def read_all_bytes(path):
+    if not os.path.exists(path):
+        return b''
     with open(path, 'rb') as f:
         return f.read()
+
+def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
+    # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
+    # https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
+    #         Name         Value    Meaning
+    #         ---------------------------------------------------------
+    #         MATCH            1    Brief information about font matching
+    #         MATCHV           2    Extensive font matching information
+    #         EDIT             4    Monitor match/test/edit execution
+    #         FONTSET          8    Track loading of font information at startup
+    #         CACHE           16    Watch cache files being written
+    #         CACHEV          32    Extensive cache file writing information
+    #         PARSE           64    (no longer in use)
+    #         SCAN           128    Watch font files being scanned to build caches
+    #         SCANV          256    Verbose font file scanning information
+    #         MEMORY         512    Monitor fontconfig memory usage
+    #         CONFIG        1024    Monitor which config files are loaded
+    #         LANGSET       2048    Dump char sets used to construct lang values
+    #         OBJTYPES      4096    Display message when value typechecks fail
+    
+    error_messages_fatal = [
+        'Fatal error occurred', 
+        'That was a fatal error', 
+        ':fatal:', 
+        '! Undefined control sequence.', 
+        '! Bad character code', 
+        'undefined old font command', 
+        'LaTeX Error', 
+        'Cannot proceed without .vf or \"physical\" font for PDF output...', 
+        'LaTeX Error: File', 
+        'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
+        'LaTeX Error: Missing \\begin{document}', 
+        '\\end{thebibliography}', 
+        'That was a fatal error'
+    ]
+    error_messages_extra = [
+        'no output PDF file produced', 
+        'No pages of output.'
+    ]
+
+    extra_messages_all = extra_messages_extra + error_messages_fatal
+
+    texmflog = 'texmf.log' # /tmp/texmf.log
+    missfontlog = 'missfont.log'
+    fmt = os.path.join(DIST, 'pdflatex.fmt')
+    xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = [tex_relative_path.removesuffix('.tex') + ext for ext in ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl']] # https://github.com/github/gitignore/blob/main/TeX.gitignore
+
+    env = dict(
+        TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'), # ':'.join(os.path.join(texmf, 'texmf-dist') for texmf in texmf_system + texmf_local])
+        TEXMFCNF  = os.path.join(DIST, 'texlive/texmf-dist/web2c'),
+        TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'), # TODO: change to a separate out-of-tree non-readonly directory
+        TEXMFLOG  = texmflog, 
+        FONTCONFIG_PATH = DIST, # /etc/fonts
+        FC_DEBUG = 'SCANV',
+        SOURCE_DATE_EPOCH = str(1234567890) # https://wiki.debian.org/ReproducibleBuilds/TimestampsInPDFGeneratedByLaTeX
+    )
+
+    has_error = lambda cmdres, errors: any(e.encode() in cmdres.stdout + cmdres.stderr for e in errors)
+    collect_logs = lambda cmdres, errors, aux_path = '': dict( vars(cmdres), has_error = has_error(cmdres, errors), texlog = read_all_text(log_path), biblog = read_all_text(blg_path), texmflog = read_all_text(texmflog), missfontlog = read_all_text(missfontlog), aux = read_all_text(aux_path) ) # TODO: replace read_all_text by read_all_bytes
+
+    arg_pdftex_verbose = ['-kpathsea-debug', '32']
+    arg_pdftex_debug = ['-kpathsea-debug', '63', '-recorder']
+    arg_bibtex_verbose = ['--debug', 'search']
+    arg_bibtex_debug = ['--debug', 'all']
+    cmd_pdftex    = [busytex, 'pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', fmt, tex_relative_path]
+    cmd_pdftex_not_final    = [busytex, 'pdflatex', '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--fmt', fmt, tex_relative_path]
+    cmd_bibtex = [busytex, 'bibtex8', '--8bit', tex_relative_path.removesuffix('.tex') + '.aux']
+
+    logs = []
+    
+    if bibtex:
+        cmd1res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
+        logs.append(collect_logs(cmd1res, error_messages_fatal, aux_path))
+        
+        cmd2res = subprocess.run(cmd_bibtex, env = env, cwd = cwd, capture_output = True)
+        logs.append(collect_logs(cmd2res, error_messages_fatal, bbl_path))
+        
+        cmd3res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
+        logs.append(collect_logs(cmd3res, error_messages_fatal, aux_path))
+        
+        cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
+        logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
+
+    else:
+        cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
+        logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
+
+    logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
+
+    if log:
+        with open(log, 'w') as f:
+            f.write(logcat)
+    return logs
 
 def xelatex():
     xetex     = ['xelatex' ,   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path]
@@ -67,87 +164,6 @@ def xelatex():
     #$BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
     pass
 
-def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
-# http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
-# https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
-#         Name         Value    Meaning
-#         ---------------------------------------------------------
-#         MATCH            1    Brief information about font matching
-#         MATCHV           2    Extensive font matching information
-#         EDIT             4    Monitor match/test/edit execution
-#         FONTSET          8    Track loading of font information at startup
-#         CACHE           16    Watch cache files being written
-#         CACHEV          32    Extensive cache file writing information
-#         PARSE           64    (no longer in use)
-#         SCAN           128    Watch font files being scanned to build caches
-#         SCANV          256    Verbose font file scanning information
-#         MEMORY         512    Monitor fontconfig memory usage
-#         CONFIG        1024    Monitor which config files are loaded
-#         LANGSET       2048    Dump char sets used to construct lang values
-#         OBJTYPES      4096    Display message when value typechecks fail
-
-    env = dict(
-        TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'),
-        TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'),
-        TEXMFCNF  = os.path.join(DIST, 'texlive/texmf-dist/web2c'),
-        FONTCONFIG_PATH = DIST,
-        FC_DEBUG = 'SCANV'
-    )
-    fmt = os.path.join(DIST, 'pdflatex.fmt')
-    texmflog = 'texmf.log'
-    missfontlog = 'missfont.log'
-    
-    error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', '! Bad character code', 'undefined old font command', 'LaTeX Error', 'Cannot proceed without .vf or \"physical\" font for PDF output...', 'LaTeX Error: File', 'Package inputenc Error: inputenc is not designed for xetex or luatex.', 'LaTeX Error: Missing \\begin{document}', '\\end{thebibliography}', 'That was a fatal error']
-    error_messages_all = error_messages_fatal + ['no output PDF file produced', 'No pages of output.']
-    has_error = lambda cmdres, errors: any(e.encode() in cmdres.stdout + cmdres.stderr for e in errors)
-
-    # env = {TEXMFDIST : this.dir_texmfdist, TEXMFVAR : this.dir_texmfvar, TEXMFCNF : this.dir_cnf, TEXMFLOG : this.texmflog, FONTCONFIG_PATH : this.dir_fontconfig};
-    # dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
-    # dir_texmfvar = '/texlive/texmf-dist/texmf-var';
-    # dir_cnf = '/texlive/texmf-dist/web2c';
-    # dir_fontconfig = '/etc/fonts';
-
-    xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = map(lambda ext: tex_relative_path.removesuffix('.tex') + ext, ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl'])
-
-    arg_pdftex_verbose = ['-kpathsea-debug', '32']
-    arg_pdftex_debug = ['-kpathsea-debug', '63', '-recorder']
-    arg_bibtex_verbose = ['--debug', 'search']
-    arg_bibtex_debug = ['--debug', 'all']
-    cmd_pdftex    = [busytex, 'pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', fmt, tex_relative_path]
-    cmd_pdftex_not_final    = [busytex, 'pdflatex', '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--fmt', fmt, tex_relative_path]
-    cmd_bibtex = [busytex, 'bibtex8', '--8bit', tex_relative_path.removesuffix('.tex') + '.aux']
-
-    logs = []
-    
-    if bibtex:
-        cmd1res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd1res), has_error = has_error(cmd1res, error_messages_fatal)))
-        cmd2res = subprocess.run(cmd_bibtex, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd2res), has_error = has_error(cmd1res, error_messages_fatal)))
-        cmd3res = subprocess.run(cmd_pdftex_not_final, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd3res), has_error = has_error(cmd1res, error_messages_fatal)))
-        cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all)))
-        
-        # is_bibtex = cmd[0].startsWith('bibtex');
-        #  logs.push({
-        #      texmflog    : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.texmflog) : '',
-        #      missfontlog : (verbose == BusytexPipeline.VerboseInfo || verbose == BusytexPipeline.VerboseDebug) ? this.read_all_text(FS, this.missfontlog) : '',
-        #      log : read_all_text(is_bibtex ? blg_path : log_path).trim(),
-        #      aux : read_all_text(is_bibtex ? bbl_path : aux_path).trim(),
-        #  });
-
-    else:
-        cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
-        logs.append(dict(vars(cmd4res), has_error = has_error(cmd1res, error_messages_all)))
-
-    logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
-
-    if log:
-        with open(log, 'w') as f:
-            f.write(logcat)
-    
-    return logs
 
 def lualatex():
     luahbtex  = ['luahblatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', FMT, '--nosocket', tex_path]
@@ -211,16 +227,16 @@ def main(args):
             tex_params[k] = getattr(args, k)
 
     if not tex_params['tex_relative_path']:
-        return print(args.input_dir, tex_params, False, 'FAIL', 'NOTEXPATH')
+        return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH')
 
     if args.driver == 'pdflatex':
         logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
 
-        if logs[-1]['returncode'] == 0:
-            return print(args.input_dir, tex_params, output_exists, 'OK', args.log)
+        if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
+            return print(args.input_dir, 'OK', tex_params, output_exists, args.log)
         else:
-            return print(args.input_dir, tex_params, output_exists, 'FAIL', args.log, logs[-1]['returncode'])
+            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log)
 
 
 if __name__ == '__main__':
