@@ -19,20 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Download benchset
-        run: | 
-          wget ${{env.BENCHSETURLS}}
-          mkdir -p ./benchset/tar
-          tar -xf arXiv_src_1702_001.tar --directory ./benchset/
-          for f in ./benchset/*/*.gz; do
-            mkdir -p ./benchset/tar/$(basename $f)
-            gzip -c -d $f > ./benchset/tar/$(basename $f)/$(basename $f).tex
-            tar -xf ./benchset/tar/$(basename $f)/$(basename $f).tex --directory=./benchset/tar/$(basename $f) && rm ./benchset/tar/$(basename $f)/$(basename $f).tex || true
-          done
-
-      - name: List benchset
-        run: find ./benchset/tar
-      
       - name: Download native binaries
         run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
       
@@ -49,7 +35,23 @@ jobs:
             ln -s $PWD/build/texlive-full dist-native/texlive
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+      
+      - name: Clean-up texmf sources
+        run:  rm -rf source/texmfrepo
 
+      - name: Download benchset
+        run: | 
+          wget ${{env.BENCHSETURLS}}
+          mkdir -p ./benchset/tar
+          tar -xf arXiv_src_1702_001.tar --directory ./benchset/ && rm arXiv_src_1702_001.tar 
+          for f in ./benchset/*/*.gz; do
+            mkdir -p ./benchset/tar/$(basename $f)
+            gzip -c -d $f > ./benchset/tar/$(basename $f)/$(basename $f).tex && rm $f
+            tar -xf ./benchset/tar/$(basename $f)/$(basename $f).tex --directory=./benchset/tar/$(basename $f) && rm ./benchset/tar/$(basename $f)/$(basename $f).tex || true
+          done
+
+      - name: List benchset
+        run: find ./benchset/tar
       
       - name: Bench
         run: |
