@@ -258,14 +258,8 @@ build/%/texlive.configured: source/texlive.patched
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
 
-build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a: build/%/texlive.configured
+build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
-
-build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
-	find $(dir $@) -name $(notdir $@) -exec sh -c \
-		'$(OBJCOPY_$*) --weaken-symbol=main --weaken-symbol=argc --weaken-symbol=argv {}' \
-		';'
 
 build/%/texlive/libs/freetype2/libfreetype.a: build/%/texlive.configured
 	mkdir -p build/native/texlive/libs/freetype2/ft-build
