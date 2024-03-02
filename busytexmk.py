@@ -81,7 +81,7 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         'No pages of output.'
     ]
 
-    extra_messages_all = extra_messages_extra + error_messages_fatal
+    extra_messages_all = error_messages_extra + error_messages_fatal
 
     texmflog = 'texmf.log' # /tmp/texmf.log
     missfontlog = 'missfont.log'
