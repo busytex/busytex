@@ -218,9 +218,9 @@ def main(args):
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
 
         if logs[-1]['returncode'] == 0:
-            return print(args.input_dir, tex_params, output_exists, 'OK')
+            return print(args.input_dir, tex_params, output_exists, 'OK', args.log)
         else:
-            return print(args.input_dir, tex_params, output_exists, 'FAIL', logs[-1]['returncode'], args.log)
+            return print(args.input_dir, tex_params, output_exists, 'FAIL', args.log, logs[-1]['returncode'])
 
 
 if __name__ == '__main__':
