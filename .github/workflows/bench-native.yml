@@ -28,12 +28,11 @@ jobs:
       - name: Test native 
         run: |
             make source/texmfrepo.txt
-            make build/texlive-basic.txt # build/texlive-full.txt
+            make build/texlive-full.txt # build/texlive-basic.txt 
             make dist-native
+            ln -s $PWD/build/texlive-full dist-native/texlive
             sh example/example.sh
-            #rm -rf dist-native/texlive
-            #ln -s $PWD/build/texlive-full dist-native/texlive
-            #rm -rf source/texmfrepo build/texlive-basic
+            rm -rf source/texmfrepo
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
 

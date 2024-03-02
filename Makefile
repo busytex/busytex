@@ -617,7 +617,7 @@ dist-native: build/native/busytex build/native/fonts.conf
 	cp $(addprefix build/native/, busytex fonts.conf) $@
 	#  luahbtex/lualatex.fmt
 	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) $@
-	cp -r build/texlive-basic $@/texlive
+	-cp -r build/texlive-basic $@/texlive
 
 .PHONY: download-native
 download-native:
