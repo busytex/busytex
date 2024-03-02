@@ -97,7 +97,7 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
     texmflog = 'texmf.log'
     missfontlog = 'missfont.log'
     
-    error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', '! Bad character code', 'undefined old font command', 'LaTeX Error', 'Cannot proceed without .vf or \"physical\" font for PDF output...', 'LaTeX Error: File', 'Package inputenc Error: inputenc is not designed for xetex or luatex.', 'LaTeX Error: Missing \\begin{document}', '\\end{thebibliography}']
+    error_messages_fatal = ['Fatal error occurred', 'That was a fatal error', ':fatal:', '! Undefined control sequence.', '! Bad character code', 'undefined old font command', 'LaTeX Error', 'Cannot proceed without .vf or \"physical\" font for PDF output...', 'LaTeX Error: File', 'Package inputenc Error: inputenc is not designed for xetex or luatex.', 'LaTeX Error: Missing \\begin{document}', '\\end{thebibliography}', 'That was a fatal error']
     error_messages_all = error_messages_fatal + ['no output PDF file produced', 'No pages of output.']
     has_error = lambda cmdres, errors: any(e.encode() in cmdres.stdout + cmdres.stderr for e in errors)
 
