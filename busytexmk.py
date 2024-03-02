@@ -29,6 +29,56 @@
 import os
 import argparse
 import subprocess
+    
+error_messages_fatal = [
+    'Fatal error occurred', 
+    'That was a fatal error', 
+    ':fatal:', 
+    '! Undefined control sequence.', 
+    '! Bad character code', 
+    'undefined old font command',
+    'LaTeX Error: Invalid UTF-8 byte',
+    'LaTeX Error', 
+    'Cannot proceed without .vf or \"physical\" font for PDF output...', 
+    'LaTeX Error: File', 
+    'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
+    'LaTeX Error: Missing \\begin{document}', 
+    '\\end{thebibliography}', 
+    'That was a fatal error'
+]
+error_messages_extra = [
+    'no output PDF file produced', 
+    'No pages of output.'
+]
+
+error_messages_all = error_messages_extra + error_messages_fatal
+
+SOURCE_DATE_EPOCH = 1234567890
+
+FONTCONFIG_DEBUG_MATCH     =       1   # Brief information about font matching
+FONTCONFIG_DEBUG_MATCHV    =       2   # Extensive font matching information
+FONTCONFIG_DEBUG_EDIT      =       4   # Monitor match/test/edit execution
+FONTCONFIG_DEBUG_FONTSET   =       8   # Track loading of font information at startup
+FONTCONFIG_DEBUG_CACHE     =      16   # Watch cache files being written
+FONTCONFIG_DEBUG_CACHEV    =      32   # Extensive cache file writing information
+FONTCONFIG_DEBUG_PARSE     =      64   # (no longer in use)
+FONTCONFIG_DEBUG_SCAN      =     128   # Watch font files being scanned to build caches
+FONTCONFIG_DEBUG_SCANV     =     256   # Verbose font file scanning information
+FONTCONFIG_DEBUG_MEMORY    =     512   # Monitor fontconfig memory usage
+FONTCONFIG_DEBUG_CONFIG    =    1024   # Monitor which config files are loaded
+FONTCONFIG_DEBUG_LANGSET   =    2048   # Dump char sets used to construct lang values
+FONTCONFIG_DEBUG_OBJTYPES  =    4096   # Display message when value typechecks fail
+
+
+KPSE_DEBUG_STAT   = 1
+KPSE_DEBUG_HASH   = 2
+KPSE_DEBUG_FOPEN  = 4
+KPSE_DEBUG_PATHS  = 8
+KPSE_DEBUG_EXPAND = 16
+KPSE_DEBUG_SEARCH = 32
+KPSE_DEBUG_VARS   = 64
+
+KPSE_DEBUG_EVERYTHING = -1
 
 def read_all_text(path, encoding = 'utf-8', errors = 'replace'):
     if not os.path.exists(path):
@@ -44,65 +94,26 @@ def read_all_bytes(path):
 
 def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
     # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
-    # https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
-    #         Name         Value    Meaning
-    #         ---------------------------------------------------------
-    #         MATCH            1    Brief information about font matching
-    #         MATCHV           2    Extensive font matching information
-    #         EDIT             4    Monitor match/test/edit execution
-    #         FONTSET          8    Track loading of font information at startup
-    #         CACHE           16    Watch cache files being written
-    #         CACHEV          32    Extensive cache file writing information
-    #         PARSE           64    (no longer in use)
-    #         SCAN           128    Watch font files being scanned to build caches
-    #         SCANV          256    Verbose font file scanning information
-    #         MEMORY         512    Monitor fontconfig memory usage
-    #         CONFIG        1024    Monitor which config files are loaded
-    #         LANGSET       2048    Dump char sets used to construct lang values
-    #         OBJTYPES      4096    Display message when value typechecks fail
-    
-    error_messages_fatal = [
-        'Fatal error occurred', 
-        'That was a fatal error', 
-        ':fatal:', 
-        '! Undefined control sequence.', 
-        '! Bad character code', 
-        'undefined old font command', 
-        'LaTeX Error', 
-        'Cannot proceed without .vf or \"physical\" font for PDF output...', 
-        'LaTeX Error: File', 
-        'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
-        'LaTeX Error: Missing \\begin{document}', 
-        '\\end{thebibliography}', 
-        'That was a fatal error'
-    ]
-    error_messages_extra = [
-        'no output PDF file produced', 
-        'No pages of output.'
-    ]
-
-    error_messages_all = error_messages_extra + error_messages_fatal
-
     texmflog = 'texmf.log' # /tmp/texmf.log
     missfontlog = 'missfont.log'
     fmt = os.path.join(DIST, 'pdflatex.fmt')
     xdv_path, pdf_path, log_path, aux_path, blg_path, bbl_path = [tex_relative_path.removesuffix('.tex') + ext for ext in ['.xdv', '.pdf', '.log', '.aux', '.blg', '.bbl']] # https://github.com/github/gitignore/blob/main/TeX.gitignore
 
     env = dict(
-        TEXMFDIST = os.path.join(DIST, 'texlive/texmf-dist'), # ':'.join(os.path.join(texmf, 'texmf-dist') for texmf in texmf_system + texmf_local])
-        TEXMFCNF  = os.path.join(DIST, 'texlive/texmf-dist/web2c'),
-        TEXMFVAR  = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'), # TODO: change to a separate out-of-tree non-readonly directory
-        TEXMFLOG  = texmflog, 
-        FONTCONFIG_PATH = DIST, # /etc/fonts
-        FC_DEBUG = 'SCANV',
-        SOURCE_DATE_EPOCH = str(1234567890) # https://wiki.debian.org/ReproducibleBuilds/TimestampsInPDFGeneratedByLaTeX
+        TEXMFDIST         = os.path.join(DIST, 'texlive/texmf-dist'), # ':'.join(os.path.join(texmf, 'texmf-dist') for texmf in texmf_system + texmf_local])
+        TEXMFCNF          = os.path.join(DIST, 'texlive/texmf-dist/web2c'),
+        TEXMFVAR          = os.path.join(DIST, 'texlive/texmf-dist/texmf-var'), # TODO: change to a separate out-of-tree non-readonly directory
+        TEXMFLOG          = texmflog, 
+        FONTCONFIG_PATH   = DIST, # /etc/fonts
+        FC_DEBUG          = str(FONTCONFIG_DEBUG_MATCHV),# https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
+        SOURCE_DATE_EPOCH = str(SOURCE_DATE_EPOCH) # https://wiki.debian.org/ReproducibleBuilds/TimestampsInPDFGeneratedByLaTeX
     )
 
     has_error = lambda cmdres, errors: any(e.encode() in cmdres.stdout + cmdres.stderr for e in errors)
     collect_logs = lambda cmdres, errors, aux_path = '': dict( vars(cmdres), has_error = has_error(cmdres, errors), texlog = read_all_text(log_path), biblog = read_all_text(blg_path), texmflog = read_all_text(texmflog), missfontlog = read_all_text(missfontlog), aux = read_all_text(aux_path) ) # TODO: replace read_all_text by read_all_bytes
 
-    arg_pdftex_verbose = ['-kpathsea-debug', '32']
-    arg_pdftex_debug = ['-kpathsea-debug', '63', '-recorder']
+    arg_pdftex_verbose = ['-kpathsea-debug', str(KPSE_DEBUG_SEARCH)] # https://www.tug.org/texinfohtml/kpathsea.html#Debugging You can get this by setting the environment variable KPATHSEA_DEBUG to ‘-1’
+    arg_pdftex_debug = ['-kpathsea-debug', str(KPSE_DEBUG_EVERYTHING), '-recorder']
     arg_bibtex_verbose = ['--debug', 'search']
     arg_bibtex_debug = ['--debug', 'all']
     cmd_pdftex    = [busytex, 'pdflatex',   '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', fmt, tex_relative_path]
@@ -128,11 +139,11 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
         logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
 
-    logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
-
     if log:
+        logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
         with open(log, 'w') as f:
             f.write(logcat)
+    
     return logs
 
 def xelatex():
