@@ -67,7 +67,7 @@ def xelatex():
     #$BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
     pass
 
-def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
+def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
 # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
 # https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
 #         Name         Value    Meaning
@@ -143,6 +143,10 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex):
 
     logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
 
+    if log:
+        with open(log, 'w') as f:
+            f.write(logcat)
+    
     return logs
 
 def lualatex():
@@ -210,13 +214,13 @@ def main(args):
         return print(args.input_dir, tex_params, False, 'FAIL', 'NOTEXPATH')
 
     if args.driver == 'pdflatex':
-        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST))
+        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
 
         if logs[-1]['returncode'] == 0:
             return print(args.input_dir, tex_params, output_exists, 'OK')
         else:
-            return print(args.input_dir, tex_params, output_exists, 'FAIL', logs[-1]['returncode'], os.listdir(tex_params['cwd']))
+            return print(args.input_dir, tex_params, output_exists, 'FAIL', logs[-1]['returncode'], args.log)
 
 
 if __name__ == '__main__':
@@ -227,5 +231,6 @@ if __name__ == '__main__':
     parser.add_argument('--DIST')
     parser.add_argument('--tex-relative-path')
     parser.add_argument('--bibtex', action = 'store_true')
+    parser.add_argument('--log')
     args = parser.parse_args()
     main(args)
