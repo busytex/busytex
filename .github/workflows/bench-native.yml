@@ -53,11 +53,10 @@ jobs:
       
       - name: Bench
         run: |
-            find ./benchset/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' 1> bench.log 2> bencherr.log
-            cat bencherr.log
+            find ./benchset/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
             mkdir OK FAIL
-            grep   OK bench.log | while read dirname remainder; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log || true; done
-            grep FAIL bench.log | while read dirname remainder; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log || true; done
+            grep   OK bench.log | while read dirname remainder; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
+            grep FAIL bench.log | while read dirname remainder; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
             echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
 
       - name: Archive logs
@@ -65,7 +64,6 @@ jobs:
         with:
           name: logs
           path: |
-            bench*.log
+            bench.log
             OK/*busytexmk.log
             FAIL/*busytexmk.log
-            ./benchset/tar/*/busytexmk.log

@@ -227,6 +227,7 @@ def main(args):
             tex_params[k] = getattr(args, k)
 
     if not tex_params['tex_relative_path']:
+        if args.log: print('NOTEXPATH', str(os.listdir(args.input_dir)), file = open(args.log, 'w'))
         return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH')
 
     if args.driver == 'pdflatex':
