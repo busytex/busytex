@@ -33,6 +33,7 @@ jobs:
             #sh example/example.sh
             rm -rf dist-native/texlive
             ln -s $PWD/build/texlive-full dist-native/texlive
+            rm -rf build/texlive-basic
         env:
             MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
       
