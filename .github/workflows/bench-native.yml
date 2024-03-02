@@ -3,8 +3,12 @@ name: bench-native
 on: 
   workflow_dispatch:
     inputs:
-      busytexreleasetag:
-        description: 'busytex release tag'
+      busytexcosmoreleasetag:
+        description: 'busytex cosmo release tag'
+        required: false
+        default: 'build_native_c88efc04ba7f3b04c8d0c32d646646a39791e689_8031878137_1'
+      busytexnativereleasetag:
+        description: 'busytex native release tag'
         required: false
         default: 'build_native_418c9bc5edfd99fdb560cff956d3f10d3e598bcf_6949768401_1'
 
@@ -19,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Download native binaries
-        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
+        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexnativereleasetag }} download-native
       
       - name: Smoke native
         run:  make smoke-native
@@ -44,9 +48,6 @@ jobs:
             tar -xf ./benchset/tar/$(basename $f)/$(basename $f).tex --directory=./benchset/tar/$(basename $f) && rm ./benchset/tar/$(basename $f)/$(basename $f).tex || true
           done
 
-      - name: List benchset
-        run: find ./benchset/tar
-      
       - name: Bench
         run: |
             find ./benchset/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
