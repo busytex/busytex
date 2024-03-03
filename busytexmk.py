@@ -80,12 +80,6 @@ KPSE_DEBUG_VARS   = 64
 
 KPSE_DEBUG_EVERYTHING = -1
 
-def read_all_text(path, encoding = 'utf-8', errors = 'replace'):
-    if not os.path.exists(path):
-        return ''
-    with open(path, 'r', encoding = encoding, errors = errors) as f:
-        return f.read()
-
 def read_all_bytes(path):
     if not os.path.exists(path):
         return b''
@@ -110,7 +104,7 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
     )
 
     has_error = lambda cmdres, errors: any(e.encode() in cmdres.stdout + cmdres.stderr for e in errors)
-    collect_logs = lambda cmdres, errors, aux_path = '': dict( vars(cmdres), has_error = has_error(cmdres, errors), texlog = read_all_text(log_path), biblog = read_all_text(blg_path), texmflog = read_all_text(texmflog), missfontlog = read_all_text(missfontlog), aux = read_all_text(aux_path) ) # TODO: replace read_all_text by read_all_bytes
+    collect_logs = lambda cmdres, errors, aux_path = '': dict( vars(cmdres), has_error = has_error(cmdres, errors), texlog = read_all_bytes(log_path), biblog = read_all_bytes(blg_path), texmflog = read_all_bytes(texmflog), missfontlog = read_all_bytes(missfontlog), aux = read_all_bytes(aux_path) )
 
     arg_pdftex_verbose = ['-kpathsea-debug', str(KPSE_DEBUG_SEARCH)] # https://www.tug.org/texinfohtml/kpathsea.html#Debugging You can get this by setting the environment variable KPATHSEA_DEBUG to ‘-1’
     arg_pdftex_debug = ['-kpathsea-debug', str(KPSE_DEBUG_EVERYTHING), '-recorder']
@@ -140,8 +134,28 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
 
     if log:
-        logcat = '\n\n'.join('\n'.join(['$ ' + ' '.join(log['args']), 'EXITCODE: ' + str(log['returncode']), '', 'TEXMFLOG:', log.get('texmflog', ''), '==', 'MISSFONTLOG:', log.get('missfontlog', ''), '==', 'LOG:', log.get('log', ''), '==', 'STDOUT:', log['stdout'].decode('utf-8', errors = 'replace'), '==', 'STDERR:', log['stderr'].decode('utf-8', errors = 'replace'), '======']) for log in logs)
-        with open(log, 'w') as f:
+        logcat = b'\n\n'.join(b'\n'.join([
+                b'$ ' + ' '.join(log['args']).encode(), 
+                b'EXITCODE: ' + str(log['returncode']).encode(), 
+                b'', 
+                b'TEXMFLOG:', 
+                log.get('texmflog', b''), 
+                b'==', 
+                b'MISSFONTLOG:', 
+                log.get('missfontlog', b''), 
+                b'==', 
+                b'LOG:', 
+                log.get('log', b''), 
+                b'==', 
+                b'STDOUT:', 
+                log['stdout'], 
+                b'==', 
+                b'STDERR:', 
+                log['stderr'], 
+                b'======'
+            ]) for log in logs)
+
+        with open(log, 'wb') as f:
             f.write(logcat)
     
     return logs
@@ -174,7 +188,6 @@ def xelatex():
     #$BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
     #$BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
     pass
-
 
 def lualatex():
     luahbtex  = ['luahblatex', '--no-shell-escape', '--interaction=nonstopmode', '--halt-on-error', '--output-format=pdf', '--fmt', FMT, '--nosocket', tex_path]
