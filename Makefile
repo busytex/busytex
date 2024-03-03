@@ -361,7 +361,7 @@ build/%/texlive/texk/web2c/busytex_libpdftex.o: build/%/texlive.configured
 
 build/%/texlive/texk/web2c/busytex_libluahbtex.o: build/%/texlive.configured build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/libs/lua53/.libs/libtexlua53.a
 	$(MAKE_$*) -C $(dir $@) luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a $(OPTS_LUAHBTEX_$*)
-	$(call PRELINK,$(addprefix $(dir $@),luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmputil.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libmplibcore.a libunilib.a lib/lib.a),busymain_luahbtex)
+	$(call PRELINK,$(addprefix $(dir $@),luatexdir/luahbtex-luatex.o mplibdir/luahbtex-lmplib.o libluahbtexspecific.a libluaharfbuzz.a libmplibcore.a libmputil.a libluatex.a libff.a libluamisc.a libluasocket.a libluaffi.a libunilib.a lib/lib.a),busymain_luahbtex)
 
 ################################################################################################################
 
