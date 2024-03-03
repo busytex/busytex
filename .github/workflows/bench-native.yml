@@ -66,7 +66,7 @@ jobs:
         run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
 
       - name: Cleanup
-        run: rm -rf bench.log ./source/ ./build/ ./dist-native/ ./benchset_native/
+        run: rm -rf ./dist-native/ ./benchset_native/
 
 
 
@@ -76,11 +76,11 @@ jobs:
       
       - name: Install cosmo 
         run: |
-            make source/texmfrepo.txt
-            make build/texlive-full.txt 
+            #make source/texmfrepo.txt
+            #make build/texlive-full.txt 
             make dist-native-full
             sh example/example.sh
-            rm -rf source/texmfrepo
+            #rm -rf source/texmfrepo
       
       - name: Bench cosmo
         run: |
@@ -92,10 +92,6 @@ jobs:
 
       - name: Copy logs cosmo
         run: mkdir -p cosmo_logs/ && mv OK FAIL bench.log cosmo_logs/
-
-      
-
-
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
