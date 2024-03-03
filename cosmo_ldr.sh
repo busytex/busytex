@@ -15,11 +15,18 @@ shift
 # corresponding to one of the entries might reference a COMDAT group
 # from a C++ file (for example, in XeTeX) that is discarded on `ld -r`.
 # This leads to a linker warning in `ld.lld` and an error in `ld.bfd`.
+AFTER_OUT=0
 for arg
 do
-    if [ "${arg}" = "${arg#-}" ]
+    if [ "${arg}" = "${arg#-}" -a $AFTER_OUT -eq 0 ]
     then
         ${COSMIZE} objcopy --remove-section=__patchable_function_entries "${arg}"
+    fi
+    if [ "${arg}" = "-o" ]
+    then
+        AFTER_OUT=1
+    else
+        AFTER_OUT=0
     fi
 done
 

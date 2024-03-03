@@ -184,7 +184,7 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 #   * $(1): the files to prelink
 #   * $(2): the new name of the main function
 define PRELINK
-$(LDR_$*) --output=$@ $(1)
+$(LDR_$*) -o $@ $(1)
 $(call BUSYTEXIZE,$@,$(2))
 endef
 
@@ -192,7 +192,15 @@ endef
 # Arguments:
 #   * $(1): the original `.o` or `.a` basename
 #   * $(2): the new name of the main function
-BUSYTEXIZE = $(OBJCOPY_$*) --redefine-sym main=$(2) --keep-global-symbol=main $(1) $@
+define BUSYTEXIZE
+# We could do it in one pass, but `llvm-objcopy` and `objcopy` have a different
+# order of actions in a single invocation:
+#   * `llvm-objcopy` changes the flags of a symbol, then renames it
+#   * `objcopy` renames a symbol, then changes its flags
+# Therefore, two passes are needed.
+$(OBJCOPY_$*) --keep-global-symbol=main $(1)
+$(OBJCOPY_$*) --redefine-sym main=$(2)  $(1) $@
+endef
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
