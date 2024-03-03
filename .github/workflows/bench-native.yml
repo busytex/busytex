@@ -20,6 +20,13 @@ jobs:
   bench-native:
     runs-on: ubuntu-22.04
     steps:
+      - name: Disable binfmt_misc shenanigans (https://github.com/jart/cosmopolitan/tree/master/tool/cosmocc#gotchas)
+        run: |
+             sudo wget -O /usr/bin/ape https://cosmo.zip/pub/cosmos/bin/ape-$(uname -m).elf
+             sudo chmod +x /usr/bin/ape
+             sudo sh -c "echo ':APE:M::MZqFpD::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register"
+             sudo sh -c "echo ':APE-jart:M::jartsr::/usr/bin/ape:' >/proc/sys/fs/binfmt_misc/register"
+
       - uses: actions/checkout@v4
       
       - name: Download native binaries
@@ -87,6 +94,8 @@ jobs:
         run: mkdir -p cosmo_logs/ && mv OK FAIL bench.log cosmo_logs/
 
       
+
+
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
