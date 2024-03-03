@@ -199,7 +199,7 @@ define BUSYTEXIZE
 #   * `objcopy` renames a symbol, then changes its flags
 # Therefore, two passes are needed.
 $(OBJCOPY_$*) --keep-global-symbol=main $(1)
-$(OBJCOPY_$*) --redefine-sym main=$(2)  $(1) $@
+$(OBJCOPY_$*) --redefine-sym=main=$(2)  $(1) $@
 endef
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
