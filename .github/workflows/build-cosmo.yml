@@ -30,7 +30,7 @@ jobs:
 
       - name:  Download and unpack Cosmo toolchain
         run: |
-             curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_a8ccd63956f47aea3f866c519efd2f1bb577748a_8031824493_1/cosmocc.zip
+             curl -OL https://github.com/dfyz/cosmopolitan/releases/download/cosmocc_fed105c635ab323af1d805ed3b2ea9def75ca3c1_8126981156_1/cosmocc.zip
              unzip -d cosmocc/ cosmocc.zip
 
       - name: Set environment for Cosmo toolchain (https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable)
@@ -39,6 +39,8 @@ jobs:
              echo "CXX=$(pwd)/cosmocc/bin/cosmoc++" >> "$GITHUB_ENV"
              echo "AR=$(pwd)/cosmocc/bin/cosmoar" >> "$GITHUB_ENV"
              echo "INSTALL=$(pwd)/cosmocc/bin/cosmoinstall" >> "$GITHUB_ENV"
+             echo "LDR=$(pwd)/cosmize.sh ld -r" >> "$GITHUB_ENV"
+             echo "OBJCOPY=$(pwd)/cosmize.sh objcopy" >> "$GITHUB_ENV"
 
       - name: Clone TexLive and dependencies
         run:  make source/texlive.downloaded build/versions.txt

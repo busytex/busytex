@@ -10,7 +10,7 @@ shift
 
 COSMO_BIN_DIR=$(dirname ${CC})
 X86_64_TOOL="${COSMO_BIN_DIR}/x86_64-linux-cosmo-${TOOL}"
-echo ${X86_64_TOOL} "$@"
+${X86_64_TOOL} "$@"
 
 AARCH_64_TOOL="${COSMO_BIN_DIR}/aarch64-linux-cosmo-${TOOL}"
 FIRST=1
@@ -29,4 +29,4 @@ do
     fi
     set -- "$@" "$arg"
 done
-echo ${AARCH_64_TOOL} "$@"
+${AARCH_64_TOOL} "$@"

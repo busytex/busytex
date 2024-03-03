@@ -14,4 +14,6 @@ CC="${COSMODIR}/cosmocc" \
 CXX="${COSMODIR}/cosmoc++" \
 AR="${COSMODIR}/cosmoar" \
 INSTALL="${COSMODIR}/cosmoinstall" \
+LDR="$(pwd)/cosmize.sh ld -r" \
+OBJCOPY="$(pwd)/cosmize.sh objcopy" \
 make native
