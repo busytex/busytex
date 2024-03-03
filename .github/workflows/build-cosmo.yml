@@ -39,7 +39,7 @@ jobs:
              echo "CXX=$(pwd)/cosmocc/bin/cosmoc++" >> "$GITHUB_ENV"
              echo "AR=$(pwd)/cosmocc/bin/cosmoar" >> "$GITHUB_ENV"
              echo "INSTALL=$(pwd)/cosmocc/bin/cosmoinstall" >> "$GITHUB_ENV"
-             echo "LDR=$(pwd)/cosmize.sh ld -r" >> "$GITHUB_ENV"
+             echo "LDR=$(pwd)/cosmo_ldr.sh $(pwd)/cosmize.sh" >> "$GITHUB_ENV"
              echo "OBJCOPY=$(pwd)/cosmize.sh objcopy" >> "$GITHUB_ENV"
 
       - name: Clone TexLive and dependencies
