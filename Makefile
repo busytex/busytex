@@ -40,14 +40,17 @@ AR_wasm       = emar
 CC_wasm       = emcc
 CXX_wasm      = em++
 NM_wasm       = $(EMROOT)/../bin/llvm-nm
-OBJCOPY_wasm  = echo # TODO: use llvm-objcopy here
+OBJCOPY_wasm  = echo # TODO: use `llvm-objcopy` here
+LDR_wasm      = echo # TODO: use `wasm-ld -r` here
 CC_native     = $(CC)
 CXX_native    = $(CXX)
 MAKE_native   = $(MAKE)
 CMAKE_native  = cmake
-OBJCOPY_native= llvm-objcopy
+OBJCOPY      ?= objcopy
+OBJCOPY_native= $(OBJCOPY)
 AR_native     = $(AR)
-LD_native     = $(LD)
+LDR          ?= ld -r
+LDR_native    = $(LDR)
 NM_native     = nm
 LDD_native    = ldd
 
@@ -176,28 +179,20 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 
 ##############################################################################################################################
 
-COSMO_MANGLE = $(dir $(1))/.aarch64/$(notdir $(1))
-
-# TODO: make this work for musl and wasm
 # Prelinks the given `.o`/`.a` files into a new `.o` file.
 # Arguments:
 #   * $(1): the files to prelink
 #   * $(2): the new name of the main function
 define PRELINK
-ld.lld -r -o $@                      $(1)
-ld.lld -r -o $(call COSMO_MANGLE,$@) $(foreach name,$(1),$(call COSMO_MANGLE,$(name)))
-$(call BUSYTEXIZE,$(notdir $@),$(2))
+$(LDR_$*) $@ $(1)
+$(call BUSYTEXIZE,$@,$(2))
 endef
 
 # This macro hides everything except the main function in `.o`/`.a` files.
-# Cosmopolitan Libc creates shadow copies of `.o`/`.a` files for each supported architecture,
-# so we have to find and process all of them.
 # Arguments:
 #   * $(1): the original `.o` or `.a` basename
 #   * $(2): the new name of the main function
-BUSYTEXIZE = find $(dir $@) -name $(notdir $(1)) -exec sh -c \
-	'$(OBJCOPY_$*) --redefine-sym main=$(2) --keep-global-symbol=main {} `dirname {}`/$(notdir $@)' \
-	';'
+BUSYTEXIZE = $(OBJCOPY_$*) --redefine-sym main=$(2) --keep-global-symbol=main $(1) $@
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
@@ -307,16 +302,16 @@ build/%/texlive/texk/makeindexk/busytex_makeindex.o: build/%/texlive.configured
 	$(call PRELINK,$(dir $@)/*.o,busymain_makeindex)
 
 build/%/texlive/texk/kpathsea/busytex_kpsewhich.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,kpsewhich.o,busymain_kpsewhich)
+	$(call BUSYTEXIZE,$(dir $@)/kpsewhich.o,busymain_kpsewhich)
 
 build/%/texlive/texk/kpathsea/busytex_kpsestat.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,kpsestat.o,busymain_kpsestat)
+	$(call BUSYTEXIZE,$(dir $@)/kpsestat.o,busymain_kpsestat)
 
 build/%/texlive/texk/kpathsea/busytex_kpseaccess.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,access.o,busymain_kpseaccess)
+	$(call BUSYTEXIZE,$(dir $@)/access.o,busymain_kpseaccess)
 
 build/%/texlive/texk/kpathsea/busytex_kpsereadlink.o: build/%/texlive.configured
-	$(call BUSYTEXIZE,readlink.o,busymain_kpsereadlink)
+	$(call BUSYTEXIZE,$(dir $@)/readlink.o,busymain_kpsereadlink)
 
 build/%/texlive/texk/dvipdfm-x/busytex_xdvipdfmx.o: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) $(OPTS_XDVIPDFMX_$*)
