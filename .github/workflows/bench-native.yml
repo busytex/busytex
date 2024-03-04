@@ -63,7 +63,7 @@ jobs:
             echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
       
       - name: Analyze logs native
-        run: python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep "$err" {} ';' | wc -l ; echo "!!!"; done
+        run: python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l ; echo "¡¡¡"; done
       
       - name: Copy logs native
         run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
