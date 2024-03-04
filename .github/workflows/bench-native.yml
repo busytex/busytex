@@ -63,10 +63,12 @@ jobs:
             echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
       
       - name: Analyze logs native
-        run: python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l ; echo "¡¡¡"; done
+        run: |
+            python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l ; echo "¡¡¡"; done
+            find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "LaTeX Error"
       
-      #- name: Copy logs native
-      #  run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
+      - name: Copy logs native
+        run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
 
       #- name: Cleanup natvie
       #  run: rm -rf ./dist-native/ ./benchset_native/
@@ -87,11 +89,11 @@ jobs:
 
       #- name: Copy logs cosmo
       #  run: mkdir -p cosmo_logs/ && mv OK FAIL bench.log cosmo_logs/
-      #
-      #- name: Archive logs
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: logs
-      #    path: |
-      #      native_logs/
-      #      cosmo_logs/
+      
+      - name: Archive logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            native_logs/
+            cosmo_logs/
