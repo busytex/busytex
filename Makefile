@@ -408,7 +408,7 @@ source/texmfrepo.txt:
 	find $(basename $@) > $@
 
 build/texlive-basic.profile:
-	mkdir -p $(dir $@)
+	mkdir -p $(dir $@) # https://tex.stackexchange.com/questions/500339/what-makes-up-each-tex-live-install-tl-scheme https://tug.org/svn/texlive/trunk/Master/tlpkg/tlpsrc/collection-basic.tlpsrc?view=markup
 	echo selected_scheme scheme-basic                                   > $@
 	echo TEXDIR $(ROOT)/$(basename $@)                                 >> $@ 
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> $@
