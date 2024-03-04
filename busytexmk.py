@@ -42,11 +42,14 @@ error_messages_fatal = [
     "Something's wrong--perhaps a missing \\item",
     'Cannot proceed without .vf or \"physical\" font for PDF output...', 
     'LaTeX Error: File', 
-    'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
+    'LaTeX Error: Unicode character',
+    'LaTeX Error: Invalid UTF-8 byte',
     'LaTeX Error: Missing \\begin{document}', 
+    'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
     '\\end{thebibliography}', 
     'That was a fatal error',
     'Fatal format file error',
+    'not set up for use with LaTeX',
     
     'Could not locate a virtual/physical font for TFM', # xdvipdfmx:warning: 
     'There are no valid font mapping entry for this font', # xdvipdfmx:warning: 
