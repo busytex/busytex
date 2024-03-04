@@ -40,8 +40,8 @@ AR_wasm       = emar
 CC_wasm       = emcc
 CXX_wasm      = em++
 NM_wasm       = $(EMROOT)/../bin/llvm-nm
-OBJCOPY_wasm  = echo # TODO: use `llvm-objcopy` here
-LDR_wasm      = echo # TODO: use `wasm-ld -r` here
+OBJCOPY_wasm  = llvm-objcopy
+LDR_wasm      = wasm-ld -r
 CC_native     = $(CC)
 CXX_native    = $(CXX)
 MAKE_native   = $(MAKE)
@@ -198,8 +198,8 @@ define BUSYTEXIZE
 #   * `llvm-objcopy` changes the flags of a symbol, then renames it
 #   * `objcopy` renames a symbol, then changes its flags
 # Therefore, two passes are needed.
-$(OBJCOPY_$*) --keep-global-symbol=main $(1)
-$(OBJCOPY_$*) --redefine-sym=main=$(2)  $(1) $@
+$(OBJCOPY_$*) --keep-global-symbol=main --keep-global-symbol=__main_argc_argv $(1)
+$(OBJCOPY_$*) --redefine-sym=main=$(2) --redefine-sym=__main_argc_argv=$(2) $(1) $@
 endef
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
