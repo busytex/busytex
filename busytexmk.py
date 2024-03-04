@@ -45,7 +45,8 @@ error_messages_fatal = [
     'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
     'LaTeX Error: Missing \\begin{document}', 
     '\\end{thebibliography}', 
-    'That was a fatal error'
+    'That was a fatal error',
+    'Fatal format file error'
 ]
 error_messages_extra = [
     'no output PDF file produced', 
