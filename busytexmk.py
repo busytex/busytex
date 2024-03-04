@@ -31,26 +31,25 @@ import argparse
 import subprocess
     
 error_messages_fatal = [
-    'Fatal error occurred', 
-    'That was a fatal error', 
-    ':fatal:', 
-    '! Undefined control sequence.', 
-    '! Bad character code', 
-    'undefined old font command',
-    'LaTeX Error: Invalid UTF-8 byte',
     'LaTeX Error',
-    "Something's wrong--perhaps a missing \\item",
-    'Cannot proceed without .vf or \"physical\" font for PDF output...', 
+    'LaTeX Error: Invalid UTF-8 byte',
     'LaTeX Error: File', 
     'LaTeX Error: Unicode character',
     'LaTeX Error: Invalid UTF-8 byte',
     'LaTeX Error: Missing \\begin{document}', 
+    '! Undefined control sequence.', 
+    '! Bad character code', 
+    'undefined old font command',
+    "Something's wrong--perhaps a missing \\item",
     'Package inputenc Error: inputenc is not designed for xetex or luatex.', 
     '\\end{thebibliography}', 
-    'That was a fatal error',
-    'Fatal format file error',
     'not set up for use with LaTeX',
+    'That was a fatal error', 
+    'Fatal format file error',
+    'Fatal error occurred', 
     
+    ':fatal:', 
+    'Cannot proceed without .vf or \"physical\" font for PDF output...',  # xdvipdfmx:fatal: 
     'Could not locate a virtual/physical font for TFM', # xdvipdfmx:warning: 
     'There are no valid font mapping entry for this font', # xdvipdfmx:warning: 
     'was assumed but failed to locate that font', # xdvipdfmx:warning: 
