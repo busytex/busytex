@@ -198,6 +198,7 @@ define BUSYTEXIZE
 #   * `llvm-objcopy` changes the flags of a symbol, then renames it
 #   * `objcopy` renames a symbol, then changes its flags
 # Therefore, two passes are needed.
+# Also, WASM mangles `main` to `__main_argc_argv`, so we have to specify both names.
 $(OBJCOPY_$*) --keep-global-symbol=main --keep-global-symbol=__main_argc_argv $(1)
 $(OBJCOPY_$*) --redefine-sym=main=$(2) --redefine-sym=__main_argc_argv=$(2) $(1) $@
 endef
