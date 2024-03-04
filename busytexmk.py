@@ -245,6 +245,9 @@ def prepare_tex_params(dirname):
     return tex_params
 
 def main(args):
+    if not args.input_dir:
+        return print('\n'.join(error_messages_fatal))
+
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
         if getattr(args, k, None):
@@ -266,7 +269,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input-dir', '-i', required = True)
+    parser.add_argument('--input-dir', '-i')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')
     parser.add_argument('--DIST')
