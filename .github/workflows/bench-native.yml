@@ -65,33 +65,33 @@ jobs:
       - name: Analyze logs native
         run: python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l ; echo "¡¡¡"; done
       
-      - name: Copy logs native
-        run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
+      #- name: Copy logs native
+      #  run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
 
-      - name: Cleanup natvie
-        run: rm -rf ./dist-native/ ./benchset_native/
-      
-      - name: Download cosmo binaries
-        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
-      
-      - name: Install cosmo 
-        run: make dist-native-full && sh example/example.sh
-      
-      - name: Bench cosmo
-        run: |
-            find ./benchset_cosmo/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
-            mkdir OK FAIL
-            grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
-            grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
-            echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
+      #- name: Cleanup natvie
+      #  run: rm -rf ./dist-native/ ./benchset_native/
+      #
+      #- name: Download cosmo binaries
+      #  run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
+      #
+      #- name: Install cosmo 
+      #  run: make dist-native-full && sh example/example.sh
+      #
+      #- name: Bench cosmo
+      #  run: |
+      #      find ./benchset_cosmo/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
+      #      mkdir OK FAIL
+      #      grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
+      #      grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
+      #      echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
 
-      - name: Copy logs cosmo
-        run: mkdir -p cosmo_logs/ && mv OK FAIL bench.log cosmo_logs/
-      
-      - name: Archive logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs
-          path: |
-            native_logs/
-            cosmo_logs/
+      #- name: Copy logs cosmo
+      #  run: mkdir -p cosmo_logs/ && mv OK FAIL bench.log cosmo_logs/
+      #
+      #- name: Archive logs
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: logs
+      #    path: |
+      #      native_logs/
+      #      cosmo_logs/
