@@ -98,7 +98,7 @@ def read_all_bytes(path):
     with open(path, 'rb') as f:
         return f.read()
 
-def logcat(logs):
+def log_cat_bytes(logs):
     return b'\n\n'.join(b'\n'.join([
         b'$ ' + ' '.join(log['args']).encode(), 
         b'EXITCODE: ' + str(log['returncode']).encode(), 
@@ -166,10 +166,8 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
         logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
 
-    if log:
-        with open(log, 'wb') as f:
-            f.write(logcat(logs))
-    
+    with open(log or os.devnull, 'wb') as f:
+        f.write(log_cat_bytes(logs))
     return logs
 
 def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
@@ -201,7 +199,7 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
     cmd_bibtex = [busytex, 'bibtex8', '--8bit', tex_relative_path.removesuffix('.tex') + '.aux']
     
     cmd_xetex     = [busytex, 'xelatex', '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf', '--fmt', fmt , tex_relative_path] #TODO: nonstopmode?
-    cmd_xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path]
+    cmd_xdvipdfmx = [busytex, 'xdvipdfmx', '-o', pdf_path, xdv_path]
 
     logs = []
     
@@ -227,10 +225,8 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
         logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
 
-    if log:
-        with open(log, 'wb') as f:
-            f.write(logcat(logs))
-    
+    with open(log or os.devnull, 'wb') as f:
+        f.write(log_cat_bytes(logs))
     return logs
 
 def lualatex():
