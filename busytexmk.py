@@ -6,7 +6,7 @@
 # https://github.com/schlamar/latexmk.py -> https://github.com/JanKanis/latexmk.py
 # https://metacpan.org/release/TSCHWAND/TeX-AutoTeX-v0.906.0/view/lib/TeX/AutoTeX/File.pm
 # https://github.com/Mrmaxmeier/tectonic-on-arXiv/blob/master/report.py
-
+# https://tex.stackexchange.com/a/118491/115598
 
 #build/native/fonts.conf:
 #	mkdir -p $(dir $@)
@@ -17,13 +17,6 @@
 #	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/type1</dir>
 #	#<cachedir prefix="relative">./cache</cachedir>
 #	echo '</fontconfig>'                                 >> $@
-
-
-#kpathsea: Running mktexpk --mfmode / --bdpi 600 --mag 1+264/600 --dpi 864 ec-qhvr
-#kpathsea: fork(): Function not implemented
-#kpathsea: Appending font creation commands to missfont.log.
-
-# return *.synctex.gz https://tex.stackexchange.com/a/118491/115598
 
 
 import os
@@ -48,6 +41,11 @@ error_messages_fatal = [
     'Fatal format file error',
     'Fatal error occurred', 
     
+    'fork(): Function not implemented', # kpathsea
+    'Appending font creation commands to', # kpathsea
+    'kpathsea: Running mktexpk ', #kpathsea
+    
+    'Filtering file via command',
     ':fatal:',
     'Something is wrong. Are you sure this is a DVI file', # xdvipdfmx:fatal: 
     'passed invalid object',  # xdvipdfmx:fatal: 
