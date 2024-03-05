@@ -64,7 +64,7 @@ jobs:
       
       - name: Analyze logs native
         run: |
-            python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l ; echo "¡¡¡"; done
+            python busytexmk.py | while read err; do echo $err : $(find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
             find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
             find ./benchset_native/tar/ -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
             find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
