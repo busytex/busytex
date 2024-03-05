@@ -48,7 +48,9 @@ error_messages_fatal = [
     'Fatal format file error',
     'Fatal error occurred', 
     
-    ':fatal:', 
+    ':fatal:',
+    'Something is wrong. Are you sure this is a DVI file', # xdvipdfmx:fatal: 
+    'passed invalid object',  # xdvipdfmx:fatal: 
     'Cannot proceed without .vf or \"physical\" font for PDF output...',  # xdvipdfmx:fatal: 
     'Could not locate a virtual/physical font for TFM', # xdvipdfmx:warning: 
     'There are no valid font mapping entry for this font', # xdvipdfmx:warning: 
