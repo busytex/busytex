@@ -66,6 +66,7 @@ jobs:
         run: |
             python busytexmk.py | while read err; do echo "!!! $err"; find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l ; echo "¡¡¡"; done
             find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
+            find ./benchset_native/tar/ -name busytexmk.log -exec grep -a ":fatal:" ';' | sort
       
       - name: Copy logs native
         run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
