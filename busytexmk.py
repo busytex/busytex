@@ -98,6 +98,28 @@ def read_all_bytes(path):
     with open(path, 'rb') as f:
         return f.read()
 
+def logcat(logs):
+    return b'\n\n'.join(b'\n'.join([
+        b'$ ' + ' '.join(log['args']).encode(), 
+        b'EXITCODE: ' + str(log['returncode']).encode(), 
+        b'', 
+        b'TEXMFLOG:', 
+        log.get('texmflog', b''), 
+        b'==', 
+        b'MISSFONTLOG:', 
+        log.get('missfontlog', b''), 
+        b'==', 
+        b'LOG:', 
+        log.get('log', b''), 
+        b'==', 
+        b'STDOUT:', 
+        log['stdout'], 
+        b'==', 
+        b'STDERR:', 
+        log['stderr'], 
+        b'======'
+    ]) for log in logs)
+
 def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
     # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
     texmflog = 'texmf.log' # /tmp/texmf.log
@@ -145,29 +167,8 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
 
     if log:
-        logcat = b'\n\n'.join(b'\n'.join([
-                b'$ ' + ' '.join(log['args']).encode(), 
-                b'EXITCODE: ' + str(log['returncode']).encode(), 
-                b'', 
-                b'TEXMFLOG:', 
-                log.get('texmflog', b''), 
-                b'==', 
-                b'MISSFONTLOG:', 
-                log.get('missfontlog', b''), 
-                b'==', 
-                b'LOG:', 
-                log.get('log', b''), 
-                b'==', 
-                b'STDOUT:', 
-                log['stdout'], 
-                b'==', 
-                b'STDERR:', 
-                log['stderr'], 
-                b'======'
-            ]) for log in logs)
-
         with open(log, 'wb') as f:
-            f.write(logcat)
+            f.write(logcat(logs))
     
     return logs
 
@@ -227,29 +228,8 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
 
     if log:
-        logcat = b'\n\n'.join(b'\n'.join([
-                b'$ ' + ' '.join(log['args']).encode(), 
-                b'EXITCODE: ' + str(log['returncode']).encode(), 
-                b'', 
-                b'TEXMFLOG:', 
-                log.get('texmflog', b''), 
-                b'==', 
-                b'MISSFONTLOG:', 
-                log.get('missfontlog', b''), 
-                b'==', 
-                b'LOG:', 
-                log.get('log', b''), 
-                b'==', 
-                b'STDOUT:', 
-                log['stdout'], 
-                b'==', 
-                b'STDERR:', 
-                log['stderr'], 
-                b'======'
-            ]) for log in logs)
-
         with open(log, 'wb') as f:
-            f.write(logcat)
+            f.write(logcat(logs))
     
     return logs
 
