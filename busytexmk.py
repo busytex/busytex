@@ -54,6 +54,8 @@ error_messages_fatal = [
     'There are no valid font mapping entry for this font', # xdvipdfmx:warning: 
     'was assumed but failed to locate that font', # xdvipdfmx:warning: 
     'Color stack underflow. Just ignore.', # xdvipdfmx:warning: 
+
+    'busytexmk xetex error: no xdv file produced'
 ]
 error_messages_extra = [
     'no output PDF file produced', 
@@ -216,14 +218,22 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
         cmd4res = subprocess.run(cmd_xetex, env = env, cwd = cwd, capture_output = True)
         logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
 
-        cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
-        logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
+        if os.path.exists(xdv_path):
+            cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
+            logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
+        else:
+            logs[-1]['stdout'] += b'\n' + error_messages_all[-1]
+            logs[-1]['has_error'] = True
     else:
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
         logs.append(collect_logs(cmd4res, error_messages_all, aux_path))
 
-        cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
-        logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
+        if os.path.exists(xdv_path):
+            cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
+            logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
+        else:
+            logs[-1]['stdout'] += b'\n' + error_messages_all[-1]
+            logs[-1]['has_error'] = True
 
     with open(log or os.devnull, 'wb') as f:
         f.write(log_cat_bytes(logs))
