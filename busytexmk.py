@@ -199,7 +199,7 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
     arg_bibtex_debug = ['--debug', 'all']
     cmd_bibtex = [busytex, 'bibtex8', '--8bit', tex_relative_path.removesuffix('.tex') + '.aux']
     
-    cmd_xetex     = [busytex, 'xelatex' ,   '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf'           , '--fmt', this.fmt.xetex , tex_path] #TODO: nonstopmode?
+    cmd_xetex     = [busytex, 'xelatex', '--no-shell-escape', '--interaction=batchmode', '--halt-on-error', '--no-pdf', '--fmt', fmt , tex_relative_path] #TODO: nonstopmode?
     cmd_xdvipdfmx = ['xdvipdfmx', '-o', pdf_path, xdv_path]
 
     logs = []
