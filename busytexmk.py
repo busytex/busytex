@@ -294,7 +294,7 @@ def main(args):
     tar = tarfile.open(args.tar) if args.tar else None
     if tar is not None:
         members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.input_dir)]
-        data = gzip.open(tar.extractfile(members[0].path)).read()
+        data = gzip.open(fileobj = tar.extractfile(members[0].path)).read()
         try:
             tarfile.open(io.BytesIO(data)).extractall('.')
             print('extracted', args.input_dir)
