@@ -24,6 +24,7 @@ import argparse
 import subprocess
 import tarfile
 import gzip
+import io
     
 error_messages_fatal = [
     'LaTeX Error',
@@ -292,11 +293,15 @@ def main(args):
 
     tar = tarfile.open(args.tar) if args.tar else None
     if tar is not None:
-        print(tar.getnames())
-        members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.input_dir)]
-        if members:
-            print('YAHOO')
-            tarfd = tar.extractfile(members[0].path)
+        member = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.input_dir)]
+        data = gzip.open(tar.extractfile(members[0].path)).read()
+        try:
+            tarfile.open(io.BytesIO(data)).extractall('.')
+            print('extracted', args.input_dir)
+        except:
+            print('failed', args.input_dir)
+            continue
+            
 
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
