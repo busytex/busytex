@@ -111,8 +111,8 @@ CFLAGS_LUATEX       := $(UNPRIVILEGED) $(LUATEX_SOCKET_DEFINES)
 CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate -pthread
 # -pthread
 CFLAGS_BIBTEX_wasm      = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
-CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0
-CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable
+CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm)
+CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -Wno-error=unused-but-set-variable
 CXXFLAGS_TEXLIVE_wasm   = $(CFLAGS_TEXLIVE_wasm)
 CFLAGS_TEXLIVE_native   = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
 CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
@@ -175,7 +175,7 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK) -ldl -lm -pthread -lpthread
-OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore-all -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sERROR_ON_UNDEFINED_SYMBOLS=0 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
+OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,-error-limit=0 -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
 ##############################################################################################################################
 
@@ -213,9 +213,9 @@ source/texlive.patched: source/texlive.downloaded
 	# Cosmopolitan Libc doesn't support arguments with spaces; remove an extra trailing space here:
 	# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/icu/icu-src/source/common/Makefile.in#L72
 	sed -i 's@" "@""@' $(abspath source/texlive/libs/icu/icu-src/source/common/Makefile.in)
-	# See the contents of `cosmo_getpass.h` for more details.
-	cp cosmo_getpass.h                    $(abspath source/texlive/texk/dvipdfm-x/cosmo_getpass.h)
-	sed -i '1i#include "cosmo_getpass.h"' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
+	# See the contents of `fake_getpass.h` for more details.
+	cp fake_getpass.h                    $(abspath source/texlive/texk/dvipdfm-x/fake_getpass.h)
+	sed -i '1i#include "fake_getpass.h"' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
