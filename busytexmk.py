@@ -224,7 +224,7 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
             cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
             logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
         else:
-            logs[-1]['stdout'] += b'\n' + error_messages_all[-1]
+            logs[-1]['stdout'] += b'\n' + error_messages_all[-1].encode()
             logs[-1]['has_error'] = True
     else:
         cmd4res = subprocess.run(cmd_pdftex, env = env, cwd = cwd, capture_output = True)
@@ -234,7 +234,7 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
             cmd5res = subprocess.run(cmd_xdvipdfmx, env = env, cwd = cwd, capture_output = True)
             logs.append(collect_logs(cmd5res, error_messages_all, aux_path))
         else:
-            logs[-1]['stdout'] += b'\n' + error_messages_all[-1]
+            logs[-1]['stdout'] += b'\n' + error_messages_fatal[-1].encode()
             logs[-1]['has_error'] = True
 
     with open(log or os.devnull, 'wb') as f:
