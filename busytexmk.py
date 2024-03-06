@@ -298,9 +298,9 @@ def main(args):
         try:
             tarfile.open(io.BytesIO(data)).extractall('.')
             print('extracted', args.input_dir)
-        except:
+        except Exception as e:
             print('failed', args.input_dir)
-            continue
+            print(e)
             
 
     tex_params = prepare_tex_params(args.input_dir)
