@@ -22,6 +22,8 @@
 import os
 import argparse
 import subprocess
+import tarfile
+import gzip
     
 error_messages_fatal = [
     'LaTeX Error',
@@ -255,20 +257,14 @@ def prepare_tex_params(dirname):
     #if(tex_files.length == 1)
     #    default_path = tex_files[0].path;
     #else if(tex_files.length > 1)
-    #{
-    #    const main_tex_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext) && (f.path.includes('main') || f.path.includes(basename)));
-    #    default_path = main_tex_files.length > 0 ? main_tex_files[0].path : tex_files[0].path;
-    #}
+    #    const main_tex_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.endsWith(this.tex_ext) && (f.path.includes('main') || f.path.includes(basename)));; default_path = main_tex_files.length > 0 ? main_tex_files[0].path : tex_files[0].path;
     #if(default_path == null)
     #{
     #    const text_files = this.find(dirname, '', false).filter(f => f.contents != null && this.text_extensions.some(ext => f.path.toLowerCase().endsWith(ext)));
     #    if(text_files.length == 1)
     #        default_path = text_files[0].path;
     #    else if(text_files.length > 1)
-    #    {
-    #        const main_text_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.toUpperCase().includes('README'));
-    #        default_path = main_text_files.length > 0 ? main_text_files[0].path : text_files[0].path;
-    #    }
+    #        const main_text_files = this.find(dirname, '', false).filter(f => f.contents != null && f.path.toUpperCase().includes('README')); default_path = main_text_files.length > 0 ? main_text_files[0].path : text_files[0].path;
     #}
     #if bibtex is None:
     #    bibtex = any(bib_cmd in open(path).read() for path in file_paths if path.endswith('.tex') for bib_cmd in ['\\bibliography', '\\printbibliography'])
@@ -293,6 +289,8 @@ def prepare_tex_params(dirname):
 def main(args):
     if not args.input_dir:
         return print('\n'.join(error_messages_fatal))
+
+    tar = tarfile.open(args.tar) if args.tar else None
 
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
@@ -322,6 +320,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--tar')
     parser.add_argument('--input-dir', '-i')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')
