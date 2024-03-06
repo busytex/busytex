@@ -291,6 +291,12 @@ def main(args):
         return print('\n'.join(error_messages_fatal))
 
     tar = tarfile.open(args.tar) if args.tar else None
+    if tar is not None:
+        print(tar.getnames())
+        members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.input_dir)]
+        if members:
+            print('YAHOO')
+            tarfd = tar.extractfile(members[0].path)
 
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
