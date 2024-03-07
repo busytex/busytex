@@ -41,34 +41,17 @@ jobs:
             rm -rf source/texmfrepo
 
       - name: Download benchset
-        run:  wget ${{env.BENCHSETURLS}}
+        run: wget ${{env.BENCHSETURLS}}
 
       - name: Bench native
         run: |
-            tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --input-tar ./arXiv_src_1702_001.tar --input-gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir {} --log {}/busytexmk.log
-
-      #- name: Download benchset
-      #  run: | 
-      #    wget ${{env.BENCHSETURLS}}
-      #    mkdir -p ./benchset/tar
-      #    # https://info.arxiv.org/help/bulk_data_s3.html#bulk-source-file-access
-      #    tar -tvf arXiv_src_1702_001.tar &&  tar -xf arXiv_src_1702_001.tar --directory ./benchset/ #&& rm arXiv_src_1702_001.tar 
-      #    for f in ./benchset/*/*.gz; do
-      #      mkdir -p ./benchset/tar/$(basename $f)
-      #      gzip -c -d $f > ./benchset/tar/$(basename $f)/$(basename $f).tex && rm $f
-      #      tar -xf ./benchset/tar/$(basename $f)/$(basename $f).tex --directory=./benchset/tar/$(basename $f) && rm ./benchset/tar/$(basename $f)/$(basename $f).tex || true
-      #    done
-      #    cp -r benchset benchset_cosmo
-      #    mv benchset benchset_native
-
-      #- name: Bench native
-      #  run: |
-      #      find ./benchset_native/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --tar ./arXiv_src_1702_001.tar --gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
-      #      mkdir  OK FAIL
-      #      grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
-      #      grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
-      #      echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
-      #
+            mkdir -p OK FAIL tmp native_logs 
+            tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --input-tar ./arXiv_src_1702_001.tar --input-gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
+            grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
+            grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
+            echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
+            mv OK FAIL bench.log native_logs
+      
       #- name: Analyze logs native
       #  run: |
       #      python busytexmk.py | while read err; do echo $err : $(find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
@@ -76,9 +59,6 @@ jobs:
       #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
       #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
       #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
-     
-      #- name: Copy logs native
-      #  run: mkdir -p native_logs/ && mv OK FAIL bench.log native_logs/
 
       #- name: Cleanup natvie
       #  run: rm -rf ./dist-native/ ./benchset_native/
