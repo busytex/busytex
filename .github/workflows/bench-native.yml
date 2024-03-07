@@ -29,16 +29,16 @@ jobs:
 
       - uses: actions/checkout@v4
       
-      - name: Download native binaries
-        run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexnativereleasetag }} download-native
-      
-      - name: Install native
-        run: |
-            make source/texmfrepo.txt
-            make build/texlive-full.txt 
-            make dist-native-full
-            sh example/example.sh
-            rm -rf source/texmfrepo
+      #- name: Download native binaries
+      #  run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexnativereleasetag }} download-native
+      #
+      #- name: Install native
+      #  run: |
+      #      make source/texmfrepo.txt
+      #      make build/texlive-full.txt 
+      #      make dist-native-full
+      #      sh example/example.sh
+      #      rm -rf source/texmfrepo
 
       - name: Download benchset
         run:  wget ${{env.BENCHSETURLS}}
