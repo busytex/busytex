@@ -52,13 +52,13 @@ jobs:
             echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
             mv OK FAIL bench.log native_logs
       
-      #- name: Analyze logs native
-      #  run: |
-      #      python busytexmk.py | while read err; do echo $err : $(find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
-      #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
-      #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
-      #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
-      #      find ./benchset_native/tar/ -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
+      - name: Analyze logs native
+        run: |
+            python busytexmk.py | while read err; do echo $err : $(find tmp -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
+            find tmp -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
+            find tmp -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
+            find tmp -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
+            find tmp -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
 
       #- name: Cleanup natvie
       #  run: rm -rf ./dist-native/ ./benchset_native/
