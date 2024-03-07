@@ -292,7 +292,7 @@ def main(args):
         return print('\n'.join(error_messages_fatal))
 
     if args.input_tar and args.input_gz:
-        tar = tarfile.open(args.input_tar) if  else None
+        tar = tarfile.open(args.input_tar)
         member = tar.getmember(args.input_gz)
         data = gzip.open(tar.extractfile(member)).read()
         os.makedirs(exist_ok = True)
