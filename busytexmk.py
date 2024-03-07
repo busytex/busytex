@@ -293,7 +293,10 @@ def main(args):
 
     tar = tarfile.open(args.tar) if args.tar else None
     if tar is not None:
-        members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.input_dir)]
+        print(args.gz, tar.getnames())
+        member_ = tar.getmember(args.gz.removeprefix('./'))
+        print(member_)
+        members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.gz)]
         data = gzip.open(tar.extractfile(members[0].path)).read()
         try:
             tarfile.open(fileobj = io.BytesIO(data)).extractall('.')
@@ -332,6 +335,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--tar')
+    parser.add_argument('--gz')
     parser.add_argument('--input-dir', '-i')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')

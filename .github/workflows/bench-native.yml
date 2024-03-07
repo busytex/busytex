@@ -56,7 +56,7 @@ jobs:
 
       - name: Bench native
         run: |
-            find ./benchset_native/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --tar ./arXiv_src_1702_001.tar --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
+            find ./benchset_native/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --tar ./arXiv_src_1702_001.tar --gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
             mkdir  OK FAIL
             grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
             grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
