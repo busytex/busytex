@@ -288,22 +288,19 @@ def prepare_tex_params(dirname):
     return tex_params
 
 def main(args):
-    if not args.input_dir:
+    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz):
         return print('\n'.join(error_messages_fatal))
 
-    tar = tarfile.open(args.tar) if args.tar else None
-    if tar is not None:
-        member_ = tar.getmember(args.gz)
-        members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.gz)]
-        data = gzip.open(tar.extractfile(members[0].path)).read()
+    if args.input_tar and args.input_gz:
+        tar = tarfile.open(args.input_tar) if  else None
+        member = tar.getmember(args.input_gz)
+        data = gzip.open(tar.extractfile(member)).read()
+        os.makedirs(exist_ok = True)
         try:
-            tarfile.open(fileobj = io.BytesIO(data)).extractall('.')
-            print('extracted', args.input_dir)
-        except Exception as e:
-            print('failed', args.input_dir)
-            print(e)
-
-    import sys; sys.exit(0)   
+            tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
+        except:
+            with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
+                f.write(data)
 
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
@@ -333,8 +330,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--tar')
-    parser.add_argument('--gz')
+    parser.add_argument('--input-tar')
+    parser.add_argument('--input-gz')
     parser.add_argument('--input-dir', '-i')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')
