@@ -291,11 +291,11 @@ def main(args):
     if (not args.input_dir) and (not args.input_tar) and (not args.input_gz):
         return print('\n'.join(error_messages_fatal))
 
-    if args.input_tar and args.input_gz:
+    if args.input_dir and args.input_tar and args.input_gz:
         tar = tarfile.open(args.input_tar)
         member = tar.getmember(args.input_gz)
         data = gzip.open(tar.extractfile(member)).read()
-        os.makedirs(exist_ok = True)
+        os.makedirs(args.input_dir, exist_ok = True)
         try:
             tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
         except:
