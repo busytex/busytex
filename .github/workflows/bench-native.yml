@@ -45,7 +45,7 @@ jobs:
 
       - name: Bench native
         run: |
-            tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | python busytexmk.py --tar ./arXiv_src_1702_001.tar --gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
+            tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | python busytexmk.py --tar ./arXiv_src_1702_001.tar --gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log
 
       #- name: Download benchset
       #  run: | 
