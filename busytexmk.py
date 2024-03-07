@@ -293,9 +293,7 @@ def main(args):
 
     tar = tarfile.open(args.tar) if args.tar else None
     if tar is not None:
-        print(args.gz, tar.getnames())
-        member_ = tar.getmember(args.gz.removeprefix('./'))
-        print(member_)
+        member_ = tar.getmember(args.gz)
         members = [member for member in tar.getmembers() if os.path.basename(member.name) == os.path.basename(args.gz)]
         data = gzip.open(tar.extractfile(members[0].path)).read()
         try:
@@ -304,7 +302,8 @@ def main(args):
         except Exception as e:
             print('failed', args.input_dir)
             print(e)
-            
+
+    import sys; sys.exit(0)   
 
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
