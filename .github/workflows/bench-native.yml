@@ -45,45 +45,52 @@ jobs:
 
       - name: Bench native
         run: |
-            mkdir -p OK FAIL tmp native_logs 
-            tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --input-tar ./arXiv_src_1702_001.tar --input-gz {} --driver xelatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
-            grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
-            grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
-            echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
-            mv OK FAIL bench.log native_logs
+            for driver in pdflatex xelatex; do
+                mkdir -p OK FAIL tmp logs_cosmo$driver
+                tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --input-gz {} --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
+                grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
+                grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
+                echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
+                mv OK FAIL bench.log logs_cosmo$driver
+                python busytexmk.py | while read err; do echo $err : $(find tmp -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
+                find tmp -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
+                find tmp -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
+                find tmp -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
+                find tmp -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
+                rm -rf tmp
+            done
       
-      - name: Analyze logs native
+      - name: Download cosmo binaries
+        run:  |
+            mv logs_cosmopdflatex logs_nativepdflatex && mv logs_cosmoxelatex logs_nativexelatex
+            rm -rf ./dist-native
+            make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
+            make dist-native-full
+            sh example/example.sh
+      
+      - name: Bench cosmo
         run: |
-            python busytexmk.py | while read err; do echo $err : $(find tmp -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
-            find tmp -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
-            find tmp -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
-            find tmp -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
-            find tmp -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
-
-      #- name: Cleanup natvie
-      #  run: rm -rf ./dist-native/ ./benchset_native/
-      #
-      #- name: Download cosmo binaries
-      #  run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
-      #
-      #- name: Install cosmo 
-      #  run: make dist-native-full && sh example/example.sh
-      #
-      #- name: Bench cosmo
-      #  run: |
-      #      find ./benchset_cosmo/tar/ -type d -mindepth 1 -maxdepth 1 -exec python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex -i {} --log {}/busytexmk.log ';' > bench.log
-      #      mkdir OK FAIL
-      #      grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
-      #      grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
-      #      echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
-
-      #- name: Copy logs cosmo
-      #  run: mkdir -p cosmo_logs/ && mv OK FAIL bench.log cosmo_logs/
+            for driver in pdflatex xelatex; do
+                mkdir -p OK FAIL tmp logs_cosmo$driver
+                tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --input-gz {} --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
+                grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
+                grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
+                echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
+                mv OK FAIL bench.log logs_cosmo$driver
+                python busytexmk.py | while read err; do echo $err : $(find tmp -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
+                find tmp -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
+                find tmp -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
+                find tmp -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
+                find tmp -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
+                rm -rf tmp
+            done
       
       - name: Archive logs
         uses: actions/upload-artifact@v4
         with:
           name: logs
           path: |
-            native_logs/
-            cosmo_logs/
+            logs_nativexelatex/
+            logs_nativepdflatex/
+            logs_cosmoxelatex/
+            logs_cosmopdflatex/
