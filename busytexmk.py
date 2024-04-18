@@ -288,8 +288,11 @@ def prepare_tex_params(dirname):
     return tex_params
 
 def main(args):
-    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz):
+    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and (not args.tabulate):
         return print('\n'.join(error_messages_fatal))
+
+    if args.tabulate:
+        return
 
     if args.input_dir and args.input_tar and args.input_gz:
         tar = tarfile.open(args.input_tar)
@@ -330,6 +333,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--tabulate', action = 'store_true')
     parser.add_argument('--input-tar')
     parser.add_argument('--input-gz')
     parser.add_argument('--input-dir', '-i')
