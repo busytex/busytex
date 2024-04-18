@@ -290,9 +290,7 @@ def prepare_tex_params(dirname):
 def main(args):
     if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and (not args.tabulate):
         return print('\n'.join(error_messages_fatal))
-
-    if args.tabulate:
-        return
+        # TODO: run log analysis
 
     if args.input_dir and args.input_tar and args.input_gz:
         tar = tarfile.open(args.input_tar)
@@ -333,7 +331,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--tabulate', action = 'store_true')
+    parser.add_argument('--log-ok-dir', default = 'OK')
+    parser.add_argument('--log-fail-dir', default = 'FAIL')
     parser.add_argument('--input-tar')
     parser.add_argument('--input-gz')
     parser.add_argument('--input-dir', '-i')
