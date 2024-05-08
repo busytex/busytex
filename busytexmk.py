@@ -310,6 +310,8 @@ def main(args, sep = '\t'):
         print('TOTAL:', total, 'OK:', ok, 'FAIL:', fail)
         
         paths = glob.glob(args.log.replace('{}', '*'))
+        print(args.log.replace('{}', '*'), paths)
+
         for err in error_messages_fatal:
             print(err, sum(err.encode() in open(path, 'rb').read() for path in paths))
         for err in [b"LaTeX Error", b":fatal:", b"Filtering file via command", b"kpathsea: Running"]:
