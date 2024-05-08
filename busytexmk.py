@@ -20,6 +20,7 @@
 
 
 import os
+import glob
 import argparse
 import subprocess
 import tarfile
@@ -287,10 +288,31 @@ def prepare_tex_params(dirname):
     os.chdir(prevcwd)
     return tex_params
 
-def main(args):
-    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and (not args.tabulate):
-        return print('\n'.join(error_messages_fatal))
-        # TODO: run log analysis
+def main(args, sep = '\t'):
+    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and (args.log and args.logall):
+        os.makedirs(args.log_ok_dir, exist_ok = True)
+        os.makedirs(args.log_fail_dir, exist_ok = True)
+
+        total, ok, fail = 0, 0, 0
+        for line in open(args.logall):
+            dirname = line.split(sep)[0]
+            basename = os.path.basename(args.log) 
+            path = os.path.join(dirname, basename)
+
+            with open(path) as f, open(os.path.join(args.log_ok_dir if 'OK' in line else args.log_fail_dir, os.path.basename(dirname) + '_' + basename), 'w') as h:
+                h.write(f.read())
+
+            ok += bool('OK' in line)
+            fail += bool('FAIL' in line)
+            total += 1
+
+        print('TOTAL:', total, 'OK:', ok, 'FAIL:', fail)
+        
+        paths = glob.glob(args.log.replace('{}', '*'))
+        for err in error_messages_fatal:
+            print(err, sum(err in open(path).read() for path in paths))
+        for err in ["LaTeX Error", ":fatal:", "Filtering file via command", "kpathsea: Running"]:
+            print(line for path in paths for line in open(path) if err in line)
 
     if args.input_dir and args.input_tar and args.input_gz:
         tar = tarfile.open(args.input_tar)
@@ -310,29 +332,27 @@ def main(args):
 
     if not tex_params['tex_relative_path']:
         if args.log: print('NOTEXPATH', str(os.listdir(args.input_dir)), file = open(args.log, 'w'))
-        return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH')
+        return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH', sep = sep)
 
     if args.driver == 'pdflatex':
         logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
-            return print(args.input_dir, 'OK', tex_params, output_exists, args.log)
+            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep)
         else:
-            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log)
+            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep)
     
     if args.driver == 'xelatex':
         logs = xelatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
-            return print(args.input_dir, 'OK', tex_params, output_exists, args.log)
+            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep)
         else:
-            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log)
+            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--log-ok-dir', default = 'OK')
-    parser.add_argument('--log-fail-dir', default = 'FAIL')
     parser.add_argument('--input-tar')
     parser.add_argument('--input-gz')
     parser.add_argument('--input-dir', '-i')
@@ -342,5 +362,8 @@ if __name__ == '__main__':
     parser.add_argument('--tex-relative-path')
     parser.add_argument('--bibtex', action = 'store_true')
     parser.add_argument('--log')
+    parser.add_argument('--logall')
+    parser.add_argument('--log-ok-dir', default = 'OK')
+    parser.add_argument('--log-fail-dir', default = 'FAIL')
     args = parser.parse_args()
     main(args)

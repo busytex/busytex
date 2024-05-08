@@ -48,16 +48,8 @@ jobs:
             for driver in pdflatex xelatex; do
                 mkdir -p OK FAIL tmp logs_cosmo$driver
                 tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --input-gz {} --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
-                python busytexmk.py --log ./tmp/{}/busytexmk.log
-                #grep   OK bench.log | while read dirname rest; do cp $dirname/busytexmk.log   OK/$(basename $dirname)_busytexmk.log; done
-                #grep FAIL bench.log | while read dirname rest; do cp $dirname/busytexmk.log FAIL/$(basename $dirname)_busytexmk.log; done
-                #echo TOTAL: $(wc -l bench.log) OK: $(grep OK bench.log | wc -l) FAIL: $(grep FAIL bench.log | wc -l)
+                python busytexmk.py --log ./tmp/{}/busytexmk.log --log-ok-dir=OK --log-fail-dir=FAIL --logall=bench.log 
                 mv OK FAIL bench.log logs_cosmo$driver
-                #python busytexmk.py | while read err; do echo $err : $(find tmp -name busytexmk.log -exec grep -a "$err" {} ';' | wc -l); done
-                #find tmp -name busytexmk.log -exec grep -a "LaTeX Error" {} ';' | sort
-                #find tmp -name busytexmk.log -exec grep -a ":fatal:" {} ';' | sort
-                #find tmp -name busytexmk.log -exec grep -a "Filtering file via command" {} ';' | sort
-                #find tmp -name busytexmk.log -exec grep -a "kpathsea: Running" {} ';' | sort
                 rm -rf tmp
             done
       
