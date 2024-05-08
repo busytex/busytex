@@ -317,6 +317,8 @@ def main(args, sep = '\t'):
         for err in [b"LaTeX Error", b":fatal:", b"Filtering file via command", b"kpathsea: Running"]:
             sys.stdout.buffer.write(b''.join(line for path in paths for line in open(path, 'rb') if err in line))
 
+        return
+
     if args.input_dir and args.input_tar and args.input_gz:
         tar = tarfile.open(args.input_tar)
         member = tar.getmember(args.input_gz)
