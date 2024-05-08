@@ -299,7 +299,7 @@ def main(args, sep = '\t'):
             basename = os.path.basename(args.log) 
             path = os.path.join(dirname, basename)
 
-            with open(path) as f, open(os.path.join(args.log_ok_dir if 'OK' in line else args.log_fail_dir, os.path.basename(dirname) + '_' + basename), 'w') as h:
+            with open(path, 'rb') as f, open(os.path.join(args.log_ok_dir if 'OK' in line else args.log_fail_dir, os.path.basename(dirname) + '_' + basename), 'wb') as h:
                 h.write(f.read())
 
             ok += bool('OK' in line)
@@ -310,9 +310,9 @@ def main(args, sep = '\t'):
         
         paths = glob.glob(args.log.replace('{}', '*'))
         for err in error_messages_fatal:
-            print(err, sum(err in open(path).read() for path in paths))
-        for err in ["LaTeX Error", ":fatal:", "Filtering file via command", "kpathsea: Running"]:
-            print(line for path in paths for line in open(path) if err in line)
+            print(err, sum(err.encode() in open(path, 'rb').read() for path in paths))
+        for err in [b"LaTeX Error", b":fatal:", b"Filtering file via command", b"kpathsea: Running"]:
+            sys.stdout.buffer.write(b''.join(line for path in paths for line in open(path, 'rb') if err in line))
 
     if args.input_dir and args.input_tar and args.input_gz:
         tar = tarfile.open(args.input_tar)
