@@ -340,7 +340,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                 except:
                     with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
                         f.write(data)
-                runtex(args, file = file)
+                returncode = runtex(args, file = file)
         return
     
     if args.input_dir:
@@ -355,24 +355,30 @@ def runtex(args, file = sys.stdout):
             tex_params[k] = getattr(args, k)
 
     if not tex_params['tex_relative_path']:
-        if args.log: print('NOTEXPATH', str(os.listdir(args.input_dir)), file = open(args.log, 'w'))
-        return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH', sep = sep, file = file)
+        with open(args.log if args.log else os.devnull, 'w') as f:
+            print('NOTEXPATH', str(os.listdir(args.input_dir)), file = f)
+        print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH', sep = sep, file = file)
+        return 2
 
     if args.driver == 'pdflatex':
         logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
-            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
+            print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
+            return 0
         else:
-            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep, file = file)
+            print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep, file = file)
+            return 1
     
     if args.driver == 'xelatex':
         logs = xelatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
-            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
+            print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
+            return 0
         else:
-            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep, file = file)
+            print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep, file = file)
+            return 1
 
 
 if __name__ == '__main__':
@@ -380,7 +386,7 @@ if __name__ == '__main__':
     parser.add_argument('--input-tar')
     parser.add_argument('--input-gz')
     parser.add_argument('--input-dir', '-i')
-    parser.add_arugment('--tmp-dir')
+    parser.add_argument('--tmp-dir')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')
     parser.add_argument('--DIST')
