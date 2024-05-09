@@ -48,8 +48,6 @@ jobs:
             for driver in pdflatex xelatex; do
                 mkdir -p tmp logs_cosmo$driver
                 tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --input-gz {} --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
-                find ./tmp -name busytexmk.log
-                python -c 'import glob, os; print(111, glob.glob("./tmp/*/*")); print(222, glob.glob("./tmp/*/busytexmk.log")); print(333, glob.glob("tmp/*/busytexmk.log")); print(444, os.getcwd());'
                 python busytexmk.py --log ./tmp/{}/busytexmk.log --log-ok-dir=OK --log-fail-dir=FAIL --logall=bench.log 
                 mv OK FAIL bench.log logs_cosmo$driver
                 rm -rf tmp
