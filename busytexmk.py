@@ -289,7 +289,7 @@ def prepare_tex_params(dirname):
     os.chdir(prevcwd)
     return tex_params
 
-def main(args, sep = '\t'):
+def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
     if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and (args.log and args.logall):
         os.makedirs(args.log_ok_dir, exist_ok = True)
         os.makedirs(args.log_fail_dir, exist_ok = True)
@@ -297,18 +297,16 @@ def main(args, sep = '\t'):
         total, ok, fail = 0, 0, 0
         for line in open(args.logall):
             dirname = line.split(sep)[0]
-            basename = os.path.basename(args.log) 
-            path = os.path.join(dirname, basename)
-
-            with open(path, 'rb') as f, open(os.path.join(args.log_ok_dir if 'OK' in line else args.log_fail_dir, os.path.basename(dirname) + '_' + basename), 'wb') as h:
+            path = os.path.join(dirname, busytexmk_log)
+            with open(path, 'rb') as f, open(os.path.join(args.log_ok_dir if 'OK' in line else args.log_fail_dir, os.path.basename(dirname) + '_' + busytexmk_log), 'wb') as h:
                 h.write(f.read())
-
             ok += bool('OK' in line)
             fail += bool('FAIL' in line)
             total += 1
 
         print('TOTAL:', total, 'OK:', ok, 'FAIL:', fail)
-        paths = glob.glob(args.log.replace('{}', '*/*'))
+        paths = glob.glob(os.path.join(args.tmp_dir, '*', '*', busytexmk_log))
+        print(paths)
         for err in error_messages_fatal:
             print(err, sum(err.encode() in open(path, 'rb').read() for path in paths), sep = sep)
         for err in [b"LaTeX Error", b":fatal:", b"Filtering file via command", b"kpathsea: Running"]:
@@ -326,6 +324,30 @@ def main(args, sep = '\t'):
         except:
             with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
                 f.write(data)
+        return runtex(args)
+
+    if args.input_dir and args.input_tar and args.tmp_dir and not args.input_gz:
+        tar = tarfile.open(args.input_tar)
+        file = open(args.logall, 'w')
+        for member in tar.getmembers():
+            if member.name.endswith('.gz'):
+                data = gzip.open(tar.extractfile(member)).read()
+                args.input_dir = os.path.join(args.tmp_dir, member.name)
+                args.log = os.path.join(args.input_dir, busytexmk_log)
+                os.makedirs(args.input_dir, exist_ok = True)
+                try:
+                    tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
+                except:
+                    with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
+                        f.write(data)
+                runtex(args, file = file)
+        return
+    
+    if args.input_dir:
+        return runtex(args)
+
+def runtex(args, file = sys.stdout):
+    assert args.input_dir and args.busytex
 
     tex_params = prepare_tex_params(args.input_dir)
     for k in tex_params:
@@ -334,23 +356,23 @@ def main(args, sep = '\t'):
 
     if not tex_params['tex_relative_path']:
         if args.log: print('NOTEXPATH', str(os.listdir(args.input_dir)), file = open(args.log, 'w'))
-        return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH', sep = sep)
+        return print(args.input_dir, 'FAIL', tex_params, False, 'NOTEXPATH', sep = sep, file = file)
 
     if args.driver == 'pdflatex':
         logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
-            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep)
+            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
         else:
-            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep)
+            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep, file = file)
     
     if args.driver == 'xelatex':
         logs = xelatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
-            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep)
+            return print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
         else:
-            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep)
+            return print(args.input_dir, 'FAIL', tex_params, output_exists, args.log, sep = sep, file = file)
 
 
 if __name__ == '__main__':
@@ -358,6 +380,7 @@ if __name__ == '__main__':
     parser.add_argument('--input-tar')
     parser.add_argument('--input-gz')
     parser.add_argument('--input-dir', '-i')
+    parser.add_arugment('--tmp-dir')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')
     parser.add_argument('--DIST')
