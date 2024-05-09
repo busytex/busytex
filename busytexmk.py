@@ -346,7 +346,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
     if args.input_dir:
         return runtex(args)
 
-def runtex(args, file = sys.stdout):
+def runtex(args, file = sys.stdout, sep = '\t'):
     assert args.input_dir and args.busytex
 
     tex_params = prepare_tex_params(args.input_dir)
