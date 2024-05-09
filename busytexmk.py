@@ -326,7 +326,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                 f.write(data)
         return runtex(args)
 
-    if args.input_dir and args.input_tar and args.tmp_dir and not args.input_gz:
+    if args.input_tar and args.tmp_dir and not args.input_gz and not args.input_dir:
         tar = tarfile.open(args.input_tar)
         file = open(args.logall, 'w')
         for member in tar.getmembers():

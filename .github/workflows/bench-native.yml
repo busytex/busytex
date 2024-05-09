@@ -45,7 +45,7 @@ jobs:
 
       - name: Bench native
         run: |
-            for driver in pdflatex xelatex; do
+            for driver in pdflatex ; do
                 mkdir -p tmp logs_cosmo$driver
                 #tar -tf ./arXiv_src_1702_001.tar | grep '.gz' | xargs -I '{}' python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --input-gz {} --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-dir ./tmp/{} --log ./tmp/{}/busytexmk.log > bench.log
                 python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --tmp-dir=./tmp/ --logall=bench.log
