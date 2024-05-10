@@ -325,7 +325,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                 ok += returncode == 0
                 fail += returncode != 0
 
-                with open(args.log, 'rb') as f, open(os.path.join(args.log_ok_dir if returncode == 0 else args.log_fail_dir, os.path.basename(dirname) + '_' + busytexmk_log), 'wb') as h:
+                with open(args.log, 'rb') as f, open(os.path.join(args.log_ok_dir if returncode == 0 else args.log_fail_dir, os.path.basename(args.input_dir) + '_' + busytexmk_log), 'wb') as h:
                     logsall.append(f.read())
                     h.write(logsall[-1])
         
