@@ -290,7 +290,7 @@ def prepare_tex_params(dirname):
     return tex_params
 
 def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
-    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and (args.log and args.logall):
+    if (not args.input_dir) and (not args.input_tar) and (not args.input_gz) and args.logall:
         os.makedirs(args.log_ok_dir, exist_ok = True)
         os.makedirs(args.log_fail_dir, exist_ok = True)
 
@@ -330,7 +330,6 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         tar = tarfile.open(args.input_tar)
         file = open(args.logall, 'w')
         for member in tar.getmembers():
-            print(member.name)
             if member.name.endswith('.gz'):
                 data = gzip.open(tar.extractfile(member)).read()
                 args.input_dir = os.path.join(args.tmp_dir, member.name)
