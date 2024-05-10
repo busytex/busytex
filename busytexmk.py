@@ -330,6 +330,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         tar = tarfile.open(args.input_tar)
         file = open(args.logall, 'w')
         for member in tar.getmembers():
+            print(member.name)
             if member.name.endswith('.gz'):
                 data = gzip.open(tar.extractfile(member)).read()
                 args.input_dir = os.path.join(args.tmp_dir, member.name)
