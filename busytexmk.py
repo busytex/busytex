@@ -308,6 +308,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         total, ok, fail = 0, 0, 0
         tar = tarfile.open(args.input_tar)
         file = open(args.logall, 'w')
+        logsall = []
         for member in tar.getmembers():
             if member.name.endswith('.gz'):
                 data = gzip.open(tar.extractfile(member)).read()
@@ -324,14 +325,15 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                 ok += returncode == 0
                 fail += returncode != 0
 
-                #with open(path, 'rb') as f, open(os.path.join(args.log_ok_dir if 'OK' in line else args.log_fail_dir, os.path.basename(dirname) + '_' + busytexmk_log), 'wb') as h:
-                #    h.write(f.read())
-                #for err in error_messages_fatal:
-                #    print(err, sum(err.encode() in open(path, 'rb').read() for path in paths), sep = sep)
-                #for err in [b"LaTeX Error", b":fatal:", b"Filtering file via command", b"kpathsea: Running"]:
-                #    sys.stdout.buffer.write(b''.join(line for path in paths for line in open(path, 'rb') if err in line))
+                with open(args.log, 'rb') as f, open(os.path.join(args.log_ok_dir if returncode == 0 else args.log_fail_dir, os.path.basename(dirname) + '_' + busytexmk_log), 'wb') as h:
+                    logsall.append(f.read())
+                    h.write(logsall[-1])
         
-        print('TOTAL:', total, 'OK:', ok, 'FAIL:', fail)
+        for err in error_messages_fatal:
+            print(err, sum(err.encode() in log for log in logsall), sep = sep)
+        for err in [b"LaTeX Error", b":fatal:", b"Filtering file via command", b"kpathsea: Running"]:
+            sys.stdout.buffer.write(b'\n'.join(line for log in logsall for line in log.splitlines() if err in line))
+        sys.stdout.buffer.write(f'\n{total=} {ok=} {fail=}\n'.encode())
         return
     
     if args.input_dir:
