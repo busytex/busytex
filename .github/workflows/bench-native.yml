@@ -47,8 +47,7 @@ jobs:
         run: |
             for driver in pdflatex ; do
                 mkdir -p tmp logs_cosmo$driver
-                python busytexmk.py --driver $driver --input-tar ./arXiv_src_1702_001.tar --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --tmp-dir=./tmp/ --logall=bench.log
-                python busytexmk.py --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --logall=bench.log 
+                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex                     --tmp-dir=./tmp/ --logall=bench.log --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
                 mv OK FAIL bench.log logs_cosmo$driver
                 rm -rf tmp
             done
