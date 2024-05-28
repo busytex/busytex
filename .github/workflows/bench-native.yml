@@ -45,34 +45,41 @@ jobs:
 
       - name: Bench native
         run: |
-            for driver in pdflatex xelatex; do
+            mkdir testarch1 testarch2
+            ARXIV_ID=1702.00186
+            curl -JOsS "https://arxiv.org/src/${ARXIV_ID}" --output-dir testarch1
+            wget "https://arxiv.org/src/${ARXIV_ID}" -P testarch2
+
+            for driver in pdflatex; do # xelatex
                 mkdir -p tmp logs_cosmo$driver
                 python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex                     --tmp-dir=./tmp/ --logall=bench.log --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
                 rm -rf tmp && mv OK FAIL bench.log logs_cosmo$driver 
             done
       
-      - name: Download cosmo binaries
-        run:  |
-            mv logs_cosmopdflatex logs_nativepdflatex && mv logs_cosmoxelatex logs_nativexelatex
-            rm -rf ./dist-native
-            make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
-            make dist-native-full
-            sh example/example.sh
-      
-      - name: Bench native
-        run: |
-            for driver in pdflatex xelatex; do
-                mkdir -p tmp logs_cosmo$driver
-                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex                     --tmp-dir=./tmp/ --logall=bench.log --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
-                rm -rf tmp && mv OK FAIL bench.log logs_cosmo$driver
-            done
+      #- name: Download cosmo binaries
+      #  run:  |
+      #      mv logs_cosmopdflatex logs_nativepdflatex && mv logs_cosmoxelatex logs_nativexelatex
+      #      rm -rf ./dist-native
+      #      make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
+      #      make dist-native-full
+      #      sh example/example.sh
+      #
+      #- name: Bench native
+      #  run: |
+      #      for driver in pdflatex xelatex; do
+      #          mkdir -p tmp logs_cosmo$driver
+      #          python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex                     --tmp-dir=./tmp/ --logall=bench.log --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
+      #          rm -rf tmp && mv OK FAIL bench.log logs_cosmo$driver
+      #      done
       
       - name: Archive logs
         uses: actions/upload-artifact@v4
         with:
           name: logs
           path: |
-            logs_nativexelatex/
+            testarch1/
+            testarch2/
             logs_nativepdflatex/
-            logs_cosmoxelatex/
-            logs_cosmopdflatex/
+      #      logs_nativexelatex/
+      #      logs_cosmopdflatex/
+      #      logs_cosmoxelatex/
