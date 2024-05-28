@@ -46,15 +46,18 @@ jobs:
       - name: Bench native
         run: |
             mkdir testarch1 testarch2
-            ARXIV_ID=1702.00186
-            curl -JOsS "https://arxiv.org/src/${ARXIV_ID}" --output-dir testarch1
-            wget "https://arxiv.org/src/${ARXIV_ID}" -P testarch2
+            ARXIVID=1702.00186
+            curl -JOsS https://arxiv.org/src/$ARXIVID --output-dir testarch1
+            wget https://arxiv.org/src/$ARXIVID -P testarch2
+            
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz testarch1/arXiv-${ARXIVID}*.tar.gz
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz testarch2/$ARXIVID
 
-            for driver in pdflatex; do # xelatex
-                mkdir -p tmp logs_cosmo$driver
-                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex                     --tmp-dir=./tmp/ --logall=bench.log --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
-                rm -rf tmp && mv OK FAIL bench.log logs_cosmo$driver 
-            done
+      #      for driver in pdflatex; do # xelatex
+      #          mkdir -p logs_cosmo$driver
+      #          python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --logall=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
+      #          rm -rf ./.busytexmk/ && mv OK FAIL bench.log logs_cosmo$driver 
+      #      done
       
       #- name: Download cosmo binaries
       #  run:  |
@@ -68,7 +71,7 @@ jobs:
       #  run: |
       #      for driver in pdflatex xelatex; do
       #          mkdir -p tmp logs_cosmo$driver
-      #          python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex                     --tmp-dir=./tmp/ --logall=bench.log --tmp-dir=./tmp/ --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
+      #          python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --logall=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --input-tar ./arXiv_src_1702_001.tar 
       #          rm -rf tmp && mv OK FAIL bench.log logs_cosmo$driver
       #      done
       
@@ -79,7 +82,8 @@ jobs:
           path: |
             testarch1/
             testarch2/
-            logs_nativepdflatex/
+            .busytexmk/
+      #      logs_nativepdflatex/
       #      logs_nativexelatex/
       #      logs_cosmopdflatex/
       #      logs_cosmoxelatex/
