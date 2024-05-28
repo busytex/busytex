@@ -46,17 +46,17 @@ jobs:
       - name: Bench native
         run: |
             ARXIVID1=1702.00186
-            curl -JOsS https://arxiv.org/src/$ARXIVID1
-            wget https://arxiv.org/src/$ARXIVID1
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz ./arXiv-${ARXIVID1}*.tar.gz
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz ./$ARXIVID1
+            curl https://arxiv.org/src/$ARXIVID1 -o curl.$ARXIVID1.tar.gz
+            wget https://arxiv.org/src/$ARXIVID1 -O wget.$ARXIVID1.tar.gz
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz curl.$ARXIVID1.tar.gz
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz wget.$ARXIVID1.tar.gz
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id $ARXIVID1
             
             ARXIVID2=1702.00172
-            curl -JOsS https://arxiv.org/src/$ARXIVID2
-            wget https://arxiv.org/src/$ARXIVID2
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz ./arXiv-${ARXIVID2}*.tar.gz
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz ./$ARXIVID2
+            curl https://arxiv.org/src/$ARXIVID1 -o curl.$ARXIVID1.tar.gz
+            wget https://arxiv.org/src/$ARXIVID1 -O wget.$ARXIVID1.tar.gz
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz curl.$ARXIVID2.tar.gz
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz wget.$ARXIVID2.tar.gz
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id $ARXIVID2
 
       #      for driver in pdflatex; do # xelatex
