@@ -330,23 +330,11 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                 f.write(data)
         return runtex(args)
 
-    if args.input_tar_gz and args.tmp_dir:
-        args.input_dir = os.path.join(args.tmp_dir, os.path.basename(args.input_tar_gz))
-        os.makedirs(args.input_dir, exist_ok = True)
-        data = gzip.open(args.input_tar_gz).read()
-        try:
-            tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
-        except:
-            with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
-                f.write(data)
-        #tar = tarfile.open(args.input_tar); data = gzip.open(tar.extractfile(tar.getmember(args.input_gz))).read()
-        return runtex(args)
-
-    if args.input_tar and args.tmp_dir:
+    if args.arxiv_tar and args.tmp_dir:
         os.makedirs(args.log_ok_dir, exist_ok = True)
         os.makedirs(args.log_fail_dir, exist_ok = True)
         total, ok, fail = 0, 0, 0
-        tar = tarfile.open(args.input_tar)
+        tar = tarfile.open(args.arxiv_tar)
         file = open(args.logall, 'w')
         logsall = []
         for member in tar.getmembers():
@@ -376,6 +364,18 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         sys.stdout.buffer.write(f'\n{total=} {ok=} {fail=}\n'.encode())
         return
     
+    if args.input_tar_gz and args.tmp_dir:
+        args.input_dir = os.path.join(args.tmp_dir, os.path.basename(args.input_tar_gz))
+        os.makedirs(args.input_dir, exist_ok = True)
+        data = gzip.open(args.input_tar_gz).read()
+        try:
+            tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
+        except:
+            with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
+                f.write(data)
+        # data = gzip.open(tar.extractfile(tar.getmember(args.input_gz))).read()
+        return runtex(args)
+    
     if args.input_dir:
         return runtex(args)
 
@@ -383,8 +383,8 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', '-i')
-    parser.add_argument('--input-tar')
     parser.add_argument('--input-tar-gz')
+    parser.add_argument('--arxiv-tar')
     parser.add_argument('--arxiv-id')
     
     parser.add_argument('--tmp-dir', default = '.busytexmk')
