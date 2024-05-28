@@ -45,13 +45,13 @@ jobs:
 
       - name: Bench native
         run: |
-            mkdir testarch1 testarch2
             ARXIVID=1702.00186
-            curl -JOsS https://arxiv.org/src/$ARXIVID --output-dir testarch1
-            wget https://arxiv.org/src/$ARXIVID -P testarch2
+            curl -JOsS https://arxiv.org/src/$ARXIVID
+            wget https://arxiv.org/src/$ARXIVID
             
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz testarch1/arXiv-${ARXIVID}*.tar.gz
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz testarch2/$ARXIVID
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz ./arXiv-${ARXIVID}*.tar.gz
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz ./$ARXIVID
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id $ARXIVID
 
       #      for driver in pdflatex; do # xelatex
       #          mkdir -p logs_cosmo$driver
@@ -80,8 +80,6 @@ jobs:
         with:
           name: logs
           path: |
-            testarch1/
-            testarch2/
             .busytexmk/
       #      logs_nativepdflatex/
       #      logs_nativexelatex/

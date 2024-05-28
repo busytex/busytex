@@ -27,6 +27,7 @@ import subprocess
 import tarfile
 import gzip
 import io
+import urllib.request
     
 error_messages_fatal = [
     'LaTeX Error',
@@ -315,19 +316,25 @@ def runtex(args, file = sys.stdout, sep = '\t'):
 
 
 def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
+    if args.arxiv_id and args.tmp_dir:
+        args.input_dir = os.path.join(args.tmp_dir, 'arxiv' + args.arxiv_id)
+        os.makedirs(args.input_dir, exist_ok = True)
+        resp = urllib.request.urlopen(urllib.request.Request(os.path.join('https://arxiv.org/src/', args.arxiv_id), headers={'Accept-Encoding': 'gzip;'}))
+        data = resp.read()
+        try:
+            tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
+        except:
+            if resp.info().get('Content-Encoding') == 'gzip':
+                data = gzip.decompress(data)
+            with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
+                f.write(data)
+        return runtex(args)
+
     if args.input_tar_gz and args.tmp_dir:
         args.input_dir = os.path.join(args.tmp_dir, os.path.basename(args.input_tar_gz))
         os.makedirs(args.input_dir, exist_ok = True)
         tarfile.open(args.input_tar_gz).extractall(args.input_dir)
-        #tar = tarfile.open(args.input_tar)
-        #member = tar.getmember(args.input_gz)
-        #data = gzip.open(tar.extractfile(member)).read()
-        #os.makedirs(args.input_dir, exist_ok = True)
-        #try:
-        #    tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
-        #except:
-        #    with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
-        #        f.write(data)
+        #tar = tarfile.open(args.input_tar); data = gzip.open(tar.extractfile(tar.getmember(args.input_gz))).read()
         return runtex(args)
 
     if args.input_tar and args.tmp_dir:
