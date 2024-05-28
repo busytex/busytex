@@ -321,7 +321,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         os.makedirs(args.input_dir, exist_ok = True)
         resp = urllib.request.urlopen(urllib.request.Request(os.path.join('https://arxiv.org/src/', args.arxiv_id), headers={'Accept-Encoding': 'gzip;'}))
         data = resp.read()
-        if resp.info().get('Content-Encoding') == 'gzip':
+        if resp.info().get('Content-Encoding') == 'gzip' or resp.info().get('Content-Type') == 'application/gzip':
             data = gzip.decompress(data)
         try:
             tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
