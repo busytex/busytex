@@ -53,8 +53,8 @@ jobs:
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id $ARXIVID1
             
             ARXIVID2=1702.00172
-            curl https://arxiv.org/src/$ARXIVID1 -o curl.$ARXIVID1.tar.gz
-            wget https://arxiv.org/src/$ARXIVID1 -O wget.$ARXIVID1.tar.gz
+            curl https://arxiv.org/src/$ARXIVID2 -o curl.$ARXIVID2.tar.gz
+            wget https://arxiv.org/src/$ARXIVID2 -O wget.$ARXIVID2.tar.gz
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz curl.$ARXIVID2.tar.gz
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --input-tar-gz wget.$ARXIVID2.tar.gz
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id $ARXIVID2
