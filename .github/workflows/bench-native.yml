@@ -39,6 +39,8 @@ jobs:
             make dist-native-full
             sh example/example.sh
             rm -rf source/texmfrepo
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00186
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00172 
 
       - name: Download benchset
         run: wget ${{env.BENCHSETURLS}}
@@ -47,8 +49,6 @@ jobs:
         run: |
             for driver in pdflatex xelatex; do
                 mkdir -p logs_cosmo$driver
-                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00186
-                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00172 
                 python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --logall=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
                 rm -rf ./.busytexmk/ && mv OK FAIL bench.log logs_cosmo$driver 
             done
@@ -64,11 +64,9 @@ jobs:
       - name: Bench native
         run: |
             for driver in pdflatex xelatex; do
-                mkdir -p tmp logs_cosmo$driver
-                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00186
-                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00172 
+                mkdir -p logs_cosmo$driver
                 python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --logall=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
-                rm -rf tmp && mv OK FAIL bench.log logs_cosmo$driver
+                rm -rf ./.busytexmk/ && mv OK FAIL bench.log logs_cosmo$driver
             done
       
       - name: Archive logs
@@ -76,8 +74,7 @@ jobs:
         with:
           name: logs
           path: |
-            .busytexmk/
-      #      logs_nativepdflatex/
-      #      logs_nativexelatex/
-      #      logs_cosmopdflatex/
-      #      logs_cosmoxelatex/
+            logs_nativepdflatex/
+            logs_nativexelatex/
+            logs_cosmopdflatex/
+            logs_cosmoxelatex/
