@@ -321,11 +321,11 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         os.makedirs(args.input_dir, exist_ok = True)
         resp = urllib.request.urlopen(urllib.request.Request(os.path.join('https://arxiv.org/src/', args.arxiv_id), headers={'Accept-Encoding': 'gzip;'}))
         data = resp.read()
+        if resp.info().get('Content-Encoding') == 'gzip':
+            data = gzip.decompress(data)
         try:
             tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
         except:
-            if resp.info().get('Content-Encoding') == 'gzip':
-                data = gzip.decompress(data)
             with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
                 f.write(data)
         return runtex(args)
@@ -333,7 +333,12 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
     if args.input_tar_gz and args.tmp_dir:
         args.input_dir = os.path.join(args.tmp_dir, os.path.basename(args.input_tar_gz))
         os.makedirs(args.input_dir, exist_ok = True)
-        tarfile.open(args.input_tar_gz).extractall(args.input_dir)
+        data = gzip.open(args.input_tar_gz).read()
+        try:
+            tarfile.open(fileobj = io.BytesIO(data)).extractall(args.input_dir)
+        except:
+            with open(os.path.join(args.input_dir, os.path.basename(args.input_dir) + '.tex'), 'wb') as f:
+                f.write(data)
         #tar = tarfile.open(args.input_tar); data = gzip.open(tar.extractfile(tar.getmember(args.input_gz))).read()
         return runtex(args)
 
