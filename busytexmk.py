@@ -117,7 +117,7 @@ def log_cat_bytes(logs):
         b'STDERR:', log['stderr'], b'======'
     ]) for log in logs)
 
-def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
+def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None, pdf = None):
     # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
     texmflog = 'texmf.log' # /tmp/texmf.log
     missfontlog = 'missfont.log'
@@ -165,9 +165,14 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
 
     with open(log or os.devnull, 'wb') as f:
         f.write(log_cat_bytes(logs))
+
+    if os.path.exists(pdf_path) and pdf:
+        with open(pdf, 'wb') as f, open(pdf_path, 'rb') as h:
+            f.write(h.read())
+
     return logs
 
-def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
+def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None, pdf = None):
     # http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
     texmflog = 'texmf.log' # /tmp/texmf.log
     missfontlog = 'missfont.log'
@@ -232,6 +237,11 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None):
 
     with open(log or os.devnull, 'wb') as f:
         f.write(log_cat_bytes(logs))
+    
+    if os.path.exists(pdf_path) and pdf:
+        with open(pdf, 'wb') as f, open(pdf_path, 'rb') as h:
+            f.write(h.read())
+
     return logs
 
 def lualatex():
@@ -294,7 +304,7 @@ def runtex(args, file = sys.stdout, sep = '\t'):
         return 2
 
     if args.driver == 'pdflatex':
-        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
+        logs = pdflatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log, pdf = args.output_path)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
             print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
@@ -304,7 +314,7 @@ def runtex(args, file = sys.stdout, sep = '\t'):
             return 1
     
     if args.driver == 'xelatex':
-        logs = xelatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log)
+        logs = xelatex(**tex_params, busytex = os.path.abspath(args.busytex), DIST = os.path.abspath(args.DIST), log = args.log, pdf = args.output_path)
         output_exists = os.path.exists(os.path.join(tex_params['cwd'], tex_params['tex_relative_path'].removesuffix('.tex') + '.pdf'))
         if logs[-1]['returncode'] == 0 and not logs[-1]['has_error']:
             print(args.input_dir, 'OK', tex_params, output_exists, args.log, sep = sep, file = file)
