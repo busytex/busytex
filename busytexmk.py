@@ -316,6 +316,9 @@ def runtex(args, file = sys.stdout, sep = '\t'):
 
 
 def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
+    if args.DIST and not args.busytex:
+        args.busytex = os.path.join(args.DIST, 'busytex')
+        
     if args.arxiv_id and args.tmp_dir:
         args.input_dir = os.path.join(args.tmp_dir, 'arxiv' + args.arxiv_id)
         os.makedirs(args.input_dir, exist_ok = True)
@@ -333,12 +336,13 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
     if args.arxiv_tar and args.tmp_dir:
         os.makedirs(args.log_ok_dir, exist_ok = True)
         os.makedirs(args.log_fail_dir, exist_ok = True)
-        total, ok, fail = 0, 0, 0
-        tar = tarfile.open(args.arxiv_tar)
+        total, ok, fail, logsall = 0, 0, 0, []
         file = open(args.logall, 'w')
-        logsall = []
-        for member in tar.getmembers():
-            if member.name.endswith('.gz'):
+        for tar_path in args.arxiv_tar:
+            tar = tarfile.open(tar_path)
+            for member in tar.getmembers():
+                if not member.name.endswith('.gz'):
+                    continue
                 data = gzip.open(tar.extractfile(member)).read()
                 args.input_dir = os.path.join(args.tmp_dir, member.name)
                 args.log = os.path.join(args.input_dir, busytexmk_log)
@@ -356,6 +360,14 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                 with open(args.log, 'rb') as f, open(os.path.join(args.log_ok_dir if returncode == 0 else args.log_fail_dir, os.path.basename(args.input_dir) + '_' + busytexmk_log), 'wb') as h:
                     logsall.append(f.read())
                     h.write(logsall[-1])
+                if args.tmp_dir_delete:
+                    for cur, dirs, files in os.walk(args.input_dir, topdown = False):
+                        for f in files:
+                            os.remove(os.path.join(cur, f))
+                        for d in dirs:
+                            os.rmdir(os.path.join(cur, d))
+                        os.rmdir(cur)
+                    
         
         for err in error_messages_fatal:
             print(err, sum(err.encode() in log for log in logsall), sep = sep)
@@ -383,11 +395,13 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', '-i')
+    parser.add_argument('--ouptut-path', '-o')
     parser.add_argument('--input-tar-gz')
-    parser.add_argument('--arxiv-tar')
+    parser.add_argument('--arxiv-tar', nargs = '*', default = [])
     parser.add_argument('--arxiv-id')
     
     parser.add_argument('--tmp-dir', default = '.busytexmk')
+    parser.add_argument('--tmp-dir-delete', action = 'store_true')
     parser.add_argument('--driver', default = '', choices = ['xelatex', 'pdflatex', ''])
     parser.add_argument('--busytex')
     parser.add_argument('--DIST')
