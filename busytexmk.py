@@ -166,6 +166,7 @@ def pdflatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None, pdf = No
     with open(log or os.devnull, 'wb') as f:
         f.write(log_cat_bytes(logs))
 
+    print(pdf_path, pdf)
     if os.path.exists(pdf_path) and pdf:
         with open(pdf, 'wb') as f, open(pdf_path, 'rb') as h:
             f.write(h.read())
@@ -238,6 +239,7 @@ def xelatex(tex_relative_path, busytex, cwd, DIST, bibtex, log = None, pdf = Non
     with open(log or os.devnull, 'wb') as f:
         f.write(log_cat_bytes(logs))
     
+    print(pdf_path, pdf)
     if os.path.exists(pdf_path) and pdf:
         with open(pdf, 'wb') as f, open(pdf_path, 'rb') as h:
             f.write(h.read())
