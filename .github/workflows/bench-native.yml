@@ -13,7 +13,8 @@ on:
         default: 'build_native_418c9bc5edfd99fdb560cff956d3f10d3e598bcf_6949768401_1'
 
 env:
-  BENCHSETURLS: https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_001.tar https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_002.tar
+  #BENCHSETURLS: https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_001.tar https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_002.tar
+  BENCHSETURLS: https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_1702_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_1802_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_1902_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2002_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2102_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2202_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2302_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2402_001.tar
 
 jobs:
 
@@ -49,8 +50,8 @@ jobs:
         run: |
             for driver in pdflatex xelatex; do
                 mkdir -p logs_cosmo$driver
-                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar ./arXiv_src_1702_002.tar 
-                mv OK FAIL bench.log logs_cosmo$driver 
+                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
+                mv bench.log OK FAIL logs_cosmo$driver 
             done
       
 #      - name: Download cosmo binaries
@@ -65,8 +66,8 @@ jobs:
 #        run: |
 #            for driver in pdflatex xelatex; do
 #                mkdir -p logs_cosmo$driver
-#                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
-#                rm -rf ./.busytexmk/ && mv OK FAIL bench.log logs_cosmo$driver
+#                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
+#                mv bench.log OK FAIL logs_cosmo$driver
 #            done
       
       - name: Archive logs
