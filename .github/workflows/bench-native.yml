@@ -43,8 +43,8 @@ jobs:
             sh example/example.sh
             rm -rf source/texmfrepo
             mkdir arxiv-pdf
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00186 -o arxiv-pdf/1702.00186.pdf
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00172 -o arxiv-pdf/1702.00172.pdf
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00186 --log arxiv-pdf/1702.00186.log -o arxiv-pdf/1702.00186.pdf
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00172 --log arxiv-pdf/1702.00172.log -o arxiv-pdf/1702.00172.pdf
 
 #      - name: Download benchset
 #        run: wget ${{env.BENCHSETURLS}}

@@ -334,7 +334,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
     if args.arxiv_id and args.tmp_dir:
         args.input_dir = os.path.join(args.tmp_dir, 'arxiv' + args.arxiv_id)
         os.makedirs(args.input_dir, exist_ok = True)
-        resp = urllib.request.urlopen(urllib.request.Request(os.path.join('https://arxiv.org/src/', args.arxiv_id), headers={'Accept-Encoding': 'gzip;'}))
+        resp = urllib.request.urlopen(urllib.request.Request(os.path.join('https://arxiv.org/src/', args.arxiv_id), headers = {'Accept-Encoding': 'gzip;'} ))
         data = resp.read()
         if resp.info().get('Content-Encoding') == 'gzip' or resp.info().get('Content-Type') == 'application/gzip':
             data = gzip.decompress(data)
