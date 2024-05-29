@@ -406,7 +406,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', '-i')
-    parser.add_argument('--ouptut-path', '-o')
+    parser.add_argument('--output-path', '-o')
     parser.add_argument('--input-tar-gz')
     parser.add_argument('--arxiv-tar', nargs = '*', default = [])
     parser.add_argument('--arxiv-id')
