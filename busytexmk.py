@@ -337,7 +337,7 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
         os.makedirs(args.log_ok_dir, exist_ok = True)
         os.makedirs(args.log_fail_dir, exist_ok = True)
         total, ok, fail, logsall = 0, 0, 0, []
-        file = open(args.logall, 'w')
+        file = open(args.log, 'w')
         for tar_path in args.arxiv_tar:
             tar = tarfile.open(tar_path)
             for member in tar.getmembers():
@@ -408,7 +408,6 @@ if __name__ == '__main__':
     parser.add_argument('--tex-relative-path')
     parser.add_argument('--bibtex', action = 'store_true')
     parser.add_argument('--log')
-    parser.add_argument('--logall')
     parser.add_argument('--log-ok-dir', default = 'OK')
     parser.add_argument('--log-fail-dir', default = 'FAIL')
     args = parser.parse_args()

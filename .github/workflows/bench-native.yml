@@ -49,7 +49,7 @@ jobs:
         run: |
             for driver in pdflatex xelatex; do
                 mkdir -p logs_cosmo$driver
-                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --logall=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar ./arXiv_src_1702_002.tar 
+                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar ./arXiv_src_1702_002.tar 
                 mv OK FAIL bench.log logs_cosmo$driver 
             done
       
@@ -65,7 +65,7 @@ jobs:
 #        run: |
 #            for driver in pdflatex xelatex; do
 #                mkdir -p logs_cosmo$driver
-#                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --logall=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
+#                python busytexmk.py --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ./arXiv_src_1702_001.tar 
 #                rm -rf ./.busytexmk/ && mv OK FAIL bench.log logs_cosmo$driver
 #            done
       
