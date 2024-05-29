@@ -365,7 +365,8 @@ def main(args, sep = '\t', busytexmk_log = 'busytexmk.log'):
                         for f in files:
                             os.remove(os.path.join(cur, f))
                         for d in dirs:
-                            os.rmdir(os.path.join(cur, d))
+                            if os.path.exists(os.path.join(cur, d)):
+                                os.rmdir(os.path.join(cur, d))
                         os.rmdir(cur)
                     
         
