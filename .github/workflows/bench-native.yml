@@ -15,7 +15,8 @@ on:
 env:
   #BENCHSETURLS: https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_001.tar https://github.com/busytex/busytex/releases/download/tectonicbenchset/arXiv_src_1702_002.tar
   BENCHSETURLS: https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_1702_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_1802_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_1902_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2002_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2102_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2202_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2302_001.tar https://github.com/busytex/busytex/releases/download/busytexbenchset/arXiv_src_2402_001.tar
-  BENCHSETTARS: arXiv_src_1702_001.tar arXiv_src_1802_001.tar arXiv_src_1902_001.tar arXiv_src_2002_001.tar arXiv_src_2102_001.tar arXiv_src_2202_001.tar arXiv_src_2302_001.tar arXiv_src_2402_001.tar
+  BENCHSETTARS: arXiv_src_1702_001.tar
+  #arXiv_src_1802_001.tar arXiv_src_1902_001.tar arXiv_src_2002_001.tar arXiv_src_2102_001.tar arXiv_src_2202_001.tar arXiv_src_2302_001.tar arXiv_src_2402_001.tar
 
 jobs:
 
@@ -45,32 +46,32 @@ jobs:
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00186 -o arxiv-pdf/1702.00186.pdf
             python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00172 -o arxiv-pdf/1702.00172.pdf
 
-      - name: Download benchset
-        run: wget ${{env.BENCHSETURLS}}
-
-      - name: Bench native
-        run: |
-            for driver in pdflatex xelatex; do
-                mkdir -p logs_cosmo$driver
-                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ${{env.BENCHSETTARS}}
-                mv bench.log OK FAIL logs_cosmo$driver 
-            done
-      
-      - name: Download cosmo binaries
-        run:  |
-            mv logs_cosmopdflatex logs_nativepdflatex && mv logs_cosmoxelatex logs_nativexelatex
-            rm -rf ./dist-native
-            make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
-            make dist-native-full
-            sh example/example.sh
-      
-      - name: Bench native
-        run: |
-            for driver in pdflatex xelatex; do
-                mkdir -p logs_cosmo$driver
-                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ${{env.BENCHSETTARS}}
-                mv bench.log OK FAIL logs_cosmo$driver
-            done
+#      - name: Download benchset
+#        run: wget ${{env.BENCHSETURLS}}
+#
+#      - name: Bench native
+#        run: |
+#            for driver in pdflatex xelatex; do
+#                mkdir -p logs_cosmo$driver
+#                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ${{env.BENCHSETTARS}}
+#                mv bench.log OK FAIL logs_cosmo$driver 
+#            done
+#      
+#      - name: Download cosmo binaries
+#        run:  |
+#            mv logs_cosmopdflatex logs_nativepdflatex && mv logs_cosmoxelatex logs_nativexelatex
+#            rm -rf ./dist-native
+#            make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexcosmoreleasetag }} download-native
+#            make dist-native-full
+#            sh example/example.sh
+#      
+#      - name: Bench native
+#        run: |
+#            for driver in pdflatex xelatex; do
+#                mkdir -p logs_cosmo$driver
+#                python busytexmk.py --tmp-dir-delete --driver $driver --bibtex --DIST ./dist-native --log=bench.log --log-ok-dir=OK --log-fail-dir=FAIL --arxiv-tar ${{env.BENCHSETTARS}}
+#                mv bench.log OK FAIL logs_cosmo$driver
+#            done
       
       - name: Archive logs
         uses: actions/upload-artifact@v4
@@ -78,7 +79,7 @@ jobs:
           name: logs
           path: |
             arxiv-pdf/
-            logs_cosmopdflatex/
-            logs_cosmoxelatex/
-            logs_nativepdflatex/
-            logs_nativexelatex/
+#            logs_cosmopdflatex/
+#            logs_cosmoxelatex/
+#            logs_nativepdflatex/
+#            logs_nativexelatex/
