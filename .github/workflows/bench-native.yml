@@ -74,7 +74,7 @@ jobs:
         with:
           name: logs
           path: |
-#            logs_nativepdflatex/
-#            logs_nativexelatex/
             logs_cosmopdflatex/
             logs_cosmoxelatex/
+#            logs_nativepdflatex/
+#            logs_nativexelatex/
