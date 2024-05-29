@@ -39,8 +39,8 @@ jobs:
             make dist-native-full
             sh example/example.sh
             rm -rf source/texmfrepo
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00186
-            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --busytex ./dist-native/busytex --arxiv-id 1702.00172 
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00186
+            python busytexmk.py --driver pdflatex --bibtex --DIST ./dist-native --arxiv-id 1702.00172 
 
       - name: Download benchset
         run: wget ${{env.BENCHSETURLS}}
