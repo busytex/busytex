@@ -22,7 +22,8 @@ printf "Unpacking %s\n" "${downloaded}"
 # TODO: handle non-tar files
 tar xf ${downloaded} -C ${workdir}/
 
-main_file=$(basename $(grep -l '^\\begin{document}' ${workdir}/* | grep -v _))
+#main_file=$(basename $(grep -l '^\\begin{document}' ${workdir}/* | grep -v _))
+main_file=$(basename $( find ${workdir} -maxdepth 1 -type f -name '*.tex' -exec grep -l '^\\begin{document}' {} \; | grep -v _ ) )
 printf "Using the main file: %s\n" "${main_file}"
 
 DIST=$PWD/dist-native
