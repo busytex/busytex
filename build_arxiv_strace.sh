@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -eu
+#set -eu
 
 export SOURCE_DATE_EPOCH=1234567890
 
@@ -37,7 +37,7 @@ export FONTCONFIG_PATH=$DIST
 
 cd ${workdir}
 
-strace -fff $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" >/dev/null 2>&1
-$BUSYTEX bibtex8 --8bit "${main_file%.tex}.aux" >/dev/null 2>&1
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" >/dev/null 2>&1
-$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" >/dev/null 2>&1
+strace -fff $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}" 2>&1
+$BUSYTEX bibtex8 --8bit "${main_file%.tex}.aux" 2>&1
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}"  2>&1
+$BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT "${main_file}"  2>&1
