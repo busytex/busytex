@@ -113,3 +113,4 @@ make clean
 - [JavascriptSubtitlesOctopus](https://github.com/Dador/JavascriptSubtitlesOctopus)
 - [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
 - [BLFS](http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html)
+- https://github.com/schlamar/latexmk.py/pull/11
