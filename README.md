@@ -114,3 +114,8 @@ make clean
 - [js-sha1](https://raw.githubusercontent.com/emn178/js-sha1)
 - [BLFS](http://www.linuxfromscratch.org/blfs/view/svn/pst/texlive.html)
 - https://github.com/schlamar/latexmk.py/pull/11
+- https://github.com/schlamar/latexmk.py
+- https://github.com/JanKanis/latexmk.py
+- https://mg.readthedocs.io/latexmk.html
+- https://ctan.org/tex-archive/support/latexmk
+- https://metacpan.org/release/TSCHWAND/TeX-AutoTeX-v0.906.0/view/lib/TeX/AutoTeX/File.pm
