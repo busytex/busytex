@@ -38,10 +38,8 @@ jobs:
       - name: Install native
         run: |
             make source/texmfrepo.txt
-            git clone https://github.com/busytex/busyfs
-            gcc -shared -fPIC busyfs/log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
-            #export LD_PRELOAD=$PWD/log_file_access_dynamic.so
-            make build/texlive-full.txt 
+            make build/texlive-basic.txt 
+#            make build/texlive-full.txt 
 #            make dist-native-full
 #            sh example/example.sh
 #            rm -rf source/texmfrepo
