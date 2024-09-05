@@ -24,14 +24,14 @@ int open(const char *path, int flags, ...)
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open");
     return orig_func(path, flags);
 }
+int open64(const char *path, int flags, ...)
+{
+    typedef int (*orig_func_type)(const char *pathname, int flags);
+    fprintf(stderr, "log_file_access_preload: open64(\"%s\", %d)\n", path, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open64");
+    return orig_func(path, flags);
+}
 
-//int open64(const char *path, int flags)
-//{
-//    typedef int (*orig_func_type)(const char *pathname, int flags);
-//    fprintf(stderr, "log_file_access_preload: open64(\"%s\", %d)\n", path, flags);
-//    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open64");
-//    return orig_func(path, flags);
-//}
 //int openat(int dirfd, const char *path, int flags, ...)
 //{
 //    typedef int (*orig_func_type)(int dirfd, const char *pathname, int flags);
