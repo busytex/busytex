@@ -10,13 +10,13 @@
 // gcc -shared -fPIC log_file_access.c -o log_file_access.so -ldl
 // override in fs: 'lstat', 'stat', 'access', 'fopen',
 
-//FILE* fopen(const char *path, const char *mode)
-//{
-//    typedef FILE* (*orig_func_type)(const char *path, const char *mode);
-//    fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
-//    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fopen");
-//    return orig_func(path, mode);
-//}
+FILE* fopen(const char *path, const char *mode)
+{
+    typedef FILE* (*orig_func_type)(const char *path, const char *mode);
+    fprintf(stderr, "log_file_access_preload: fopen(\"%s\", \"%s\")\n", path, mode);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "fopen");
+    return orig_func(path, mode);
+}
 //int open(const char *path, int flags)
 //{
 //    typedef int (*orig_func_type)(const char *pathname, int flags);
