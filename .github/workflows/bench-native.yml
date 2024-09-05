@@ -40,7 +40,7 @@ jobs:
             make source/texmfrepo.txt
             git clone https://github.com/busytex/busyfs
             gcc -shared -fPIC busyfs/log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
-            export LD_PRELOAD=$PWD/log_file_access_dynamic.so
+            #export LD_PRELOAD=$PWD/log_file_access_dynamic.so
             make build/texlive-full.txt 
 #            make dist-native-full
 #            sh example/example.sh
