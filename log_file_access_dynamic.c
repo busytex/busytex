@@ -31,13 +31,13 @@ FILE* fopen(const char *path, const char *mode)
 //    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "open64");
 //    return orig_func(path, flags);
 //}
-//int openat(int dirfd, const char *path, int flags, ...)
-//{
-//    typedef int (*orig_func_type)(int dirfd, const char *pathname, int flags);
-//    fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
-//    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "openat");
-//    return orig_func(dirfd, path, flags);
-//}
+int openat(int dirfd, const char *path, int flags, ...)
+{
+    typedef int (*orig_func_type)(int dirfd, const char *pathname, int flags);
+    fprintf(stderr, "log_file_access_preload: openat(%d, \"%s\", %d)\n", dirfd, path, flags);
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "openat");
+    return orig_func(dirfd, path, flags);
+}
 
 
 int fileno(FILE *stream)
