@@ -13,7 +13,7 @@
 int execve(const char *filename, char *const argv[], char *const envp[])
 {
     typedef int (*orig_func_type)(const char* filename, char * const argv[], char *const envp[]);
-    fprintf(stderr, "log_file_access_preload: execve(\"%s\", ...)\n", filename);
+    fprintf(stderr, "log_file_access_preload: execve(\"%s\", {", filename); for(int i = 0; argv[i] != NULL; i++) {fprintf(stderr, "\"%s\", ", argv[i]);}  fprintf(stderr, "}, {...})\n");
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "execve");
     return orig_func(filename, argv, envp);
 }
