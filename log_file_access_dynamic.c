@@ -17,6 +17,13 @@ int execve(const char *filename, char *const argv[], char *const envp[])
     orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "execve");
     return orig_func(filename, argv, envp);
 }
+int execvp(const char *filename, char *const argv[])
+{
+    typedef int (*orig_func_type)(const char* filename, char * const argv[]);
+    fprintf(stderr, "log_file_access_preload: execvp(\"%s\", {", filename); for(int i = 0; argv[i] != NULL; i++) {fprintf(stderr, "\"%s\", ", argv[i]);}  fprintf(stderr, "})\n");
+    orig_func_type orig_func = (orig_func_type)dlsym(RTLD_NEXT, "execvp");
+    return orig_func(filename, argv);
+}
 
 FILE* fopen(const char *path, const char *mode)
 {
