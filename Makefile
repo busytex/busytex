@@ -209,7 +209,7 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 # so we have to find and process all of them.
 BUSYTEXIZE_O = find $(1) -name $(2) -exec sh -c 'cp {} `dirname {}`/$(notdir $@)' ';'
 BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)' ';'
-
+          
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
@@ -353,12 +353,38 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
-build/%/busytex build/%/busytex.js:
+build/%/libc_busyfs.a:
+	cp $(shell $(CC) -print-file-name=libc.a) $@
+	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+	$(OBJCOPY_$*) --redefine-sym open=orig_open	 open.lo
+	$(OBJCOPY_$*) --redefine-sym close=orig_close   close.lo
+	$(OBJCOPY_$*) --redefine-sym read=orig_read	 read.lo
+	$(OBJCOPY_$*) --redefine-sym stat=orig_stat	 stat.lo
+	$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat   fstat.lo
+	$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek   lseek.lo
+	$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
+	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen   fopen.lo
+	$(OBJCOPY_$*) --redefine-sym fileno=orig_fileno fileno.lo
+	$(AR_$*) rs $@ open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+
+
+#build/%/busytex build/%/busytex.js:
+#	mkdir -p $(dir $@)
+#	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
+#	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
+#	#$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
+#	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
+
+build/native/busytex: build/native/libc_busyfs.a
 	mkdir -p $(dir $@)
-	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
-	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
-	#$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
-	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
+	$(CC_native)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_native) $(CFLAGS_OPT_native)
+	$(CXX_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native)
+	tar -cf $(basename $@).tar build/native/texlive/texk/web2c/*.c
+
+build/%/busytex.js:
+	mkdir -p $(dir $@)
+	$(CC_wasm)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_wasm) $(CFLAGS_OPT_wasm)
+	$(CXX_wasm -o $@ $(basename $@).o $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/wasm/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_wasm)
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
