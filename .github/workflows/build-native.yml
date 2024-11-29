@@ -39,7 +39,7 @@ jobs:
             make source/texmfrepo.txt
             make build/texlive-basic.txt
             make dist-native
-            sh example/example.sh
+            sh example/example.sh           pdflatex
 
       - name: Create Release
         env:
