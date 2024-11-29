@@ -1,11 +1,7 @@
-use strict;
-use warnings;
-use Getopt::Long;
-use File::Path;
-use File::Find;
-use File::Spec;
-use Cwd;
+import os
+import argparse
 
+parser = argparse.ArgumentParser()
 my $input_path = '';
 my $output_path = '';
 my $prefix = '';
@@ -18,6 +14,8 @@ Getopt::Long::GetOptions(
     'ld=s'            => \$ld,
     'skip=s'          => \$skip
 );
+args = parser.parse_args()
+
 die "Input path does not exist or is not a directory" unless -e $input_path && -d $input_path ;
 die "Output path not specified" if $output_path eq '';
 
