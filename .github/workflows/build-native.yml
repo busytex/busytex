@@ -27,12 +27,6 @@ jobs:
       
       - name: Smoke native
         run:  make smoke-native
-        
-#      - name: Archive artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: build
-#          path: build/native/busytex
 
       - name: Test native 
         run: |
@@ -41,8 +35,14 @@ jobs:
             python busypack.py -i build/texlive-basic/ -o texlive-basic.h --prefix /opt/texlive --ld ld --skip '\.a|\.so|\.pod|\.ld|\.h'
             make dist-native
             sh example/example.sh pdflatex
+        
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: texlive-basic.h
 
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz texlive-basic.h
+#      - name: Create Release
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz texlive-basic.h

@@ -23,7 +23,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
     
     for basename in filenames:
         p = os.path.join(dirpath, basename)
-        safepath = p.translate({ord('.') : '_', ord('-') : '_'})
+        safepath = p.translate({ord('.') : '_', ord('-') : '_', ord('/') : '_'})
         
         relpath = p.split(os.path.sep, maxsplit = 1)[-1]
         if not args.skip or not re.match('.+(' + args.skip + ')$', basename):
