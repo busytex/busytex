@@ -38,7 +38,7 @@ jobs:
         run: |
             make source/texmfrepo.txt
             make build/texlive-basic.txt
-            python busypack.py -i build/textlive-basic/  -o texlive-basic.h --prefix /opt/texlive --ld ld --skip '\.a|\.so|\.pod|\.ld|\.h'
+            python busypack.py -i build/texlive-basic/ -o texlive-basic.h --prefix /opt/texlive --ld ld --skip '\.a|\.so|\.pod|\.ld|\.h'
             make dist-native
             sh example/example.sh pdflatex
 
