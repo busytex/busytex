@@ -31,6 +31,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
             safepaths.append(safepath)
             relpaths.append(relpath)
             objects.append(os.path.join(args.output_path + '.o', safepath + '.o'))
+            os.makedirs(os.path.dirname(objects[-1]), exist_ok = True)
             subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', objects[-1], files[-1]])
 
 # problem: can produce the same symbol name because of this mapping
