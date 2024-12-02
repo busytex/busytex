@@ -31,7 +31,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
             safepaths.append(safepath)
             relpaths.append(relpath)
             objects.append(os.path.join(args.output_path + '.o', safepath + '.o'))
-            subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', objects[-1], files[-1])
+            subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', objects[-1], files[-1]])
 
 # problem: can produce the same symbol name because of this mapping
 
@@ -44,4 +44,4 @@ print("\n".join(f"extern char _binary_{_}_start[], _binary_{_}_end[];" for _ in 
 print("const char* packfs_builtin_safepaths[] = {\n\"", "\",\n\"".join(safepaths), "\"\n};\n", file = f)
 print("const char* packfs_builtin_abspaths[] = {\n\"" , "\",\n\"".join(os.path.join(args.prefix, _) for _ in relpaths), "\"\n};\n\n", file = f)
 print("const char* packfs_builtin_starts[] = {\n", "\n".join(f"_binary_{_}_start," for _ in safepaths), "\n};\n\n", file = f)
-print("const char* packfs_builtin_ends[] = {\n", "\n".join(f"_binary_{_}_end," for _ in safepaths), "\n};\n\n";
+print("const char* packfs_builtin_ends[] = {\n", "\n".join(f"_binary_{_}_end," for _ in safepaths), "\n};\n\n", file = f)
