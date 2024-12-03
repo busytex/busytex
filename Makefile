@@ -375,11 +375,17 @@ build/%/libc_busyfs.a:
 #	#$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
 #	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
-build/native/busytex: build/native/libc_busyfs.a
+build/native/busytex:
 	mkdir -p $(dir $@)
 	$(CC_native)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_native) $(CFLAGS_OPT_native)
 	$(CXX_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native)
 	tar -cf $(basename $@).tar build/native/texlive/texk/web2c/*.c
+
+build/native/busytexbasic: build/native/busytex build/native/libc_busyfs.a
+	python busypack.py -i build/texlive-basic/ -o busypack.h --prefix /opt/texlive/ --ld ld --skip '\.a|\.so|\.pod|\.ld|\.h'
+	cc -o busypack.a -c busypack.c -DPACKFS_BUILTIN_PREFIX=/opt/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 @busypack.h.txt
+	$(CXX_native) -o $@ busytex.o build/native/libc_busyfs.a busypack.a $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native)
+
 
 build/%/busytex.js:
 	mkdir -p $(dir $@)
