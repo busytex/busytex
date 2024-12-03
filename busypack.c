@@ -11,7 +11,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 
-#include "perlpack.h"
+#include "busypack.h"
 
 enum {
     packfs_filefd_min = 1000000000, 
