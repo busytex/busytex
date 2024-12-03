@@ -24,7 +24,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
     for basename in filenames:
         p = os.path.join(dirpath, basename)
         relpath = p.removeprefix(args.input_path).lstrip(os.path.sep)
-        safepath = relpath.translate({ord('.') : '_', ord('-') : '_', ord('/') : '_'})
+        safepath = relpath.translate({ord('.') : '_', ord('-') : '_', ord(os.path.sep) : '_'})
 
         if not args.skip or not re.match('.+(' + args.skip + ')$', basename):
             safepaths.append(safepath)
