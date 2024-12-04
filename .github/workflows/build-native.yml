@@ -53,3 +53,6 @@ jobs:
           name: build
           path: |
             build/texlive-basic/
+            dist-native/
+            build/native/busytex
+            build/native/busytexbasic
