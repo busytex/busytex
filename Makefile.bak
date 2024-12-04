@@ -192,7 +192,8 @@ OPTS_MAKEINDEX_wasm      = CFLAGS="$(CFLAGS_MAKEINDEX)    $(CFLAGS_OPT_wasm)"
 # Force everyone to respect proper `AR`.
 OPTS_LIBS_native         = AR=$(AR_native)
 
-OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
+OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8                                     -DBUSYTEX_PDFTEX                 
+#OPTS_BUSYTEX_COMPILE_native = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTEX8 -DBUSYTEX_XDVIPDFMX -DBUSYTEX_XETEX -DBUSYTEX_PDFTEX -DBUSYTEX_LUATEX
 
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
@@ -208,7 +209,7 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 # so we have to find and process all of them.
 BUSYTEXIZE_O = find $(1) -name $(2) -exec sh -c 'cp {} `dirname {}`/$(notdir $@)' ';'
 BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)' ';'
-
+          
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
@@ -352,11 +353,45 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
-build/%/busytex build/%/busytex.js:
+build/%/libc_busyfs.a:
+	cp $(shell $(CC) -print-file-name=libc.a) $@
+	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+	$(OBJCOPY_$*) --redefine-sym open=orig_open	 open.lo
+	$(OBJCOPY_$*) --redefine-sym close=orig_close   close.lo
+	$(OBJCOPY_$*) --redefine-sym read=orig_read	 read.lo
+	$(OBJCOPY_$*) --redefine-sym stat=orig_stat	 stat.lo
+	$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat   fstat.lo
+	$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek   lseek.lo
+	$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
+	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen   fopen.lo
+	$(OBJCOPY_$*) --redefine-sym fileno=orig_fileno fileno.lo
+	$(AR_$*) rs $@ open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+
+
+#build/%/busytex build/%/busytex.js:
+#	mkdir -p $(dir $@)
+#	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
+#	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
+#	#$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
+#	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
+
+build/native/busytex:
 	mkdir -p $(dir $@)
-	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
-	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
-	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
+	$(CC_native)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_native) $(CFLAGS_OPT_native)
+	$(CXX_native) -o $@ $(basename $@).o $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native)
+	tar -cf $(basename $@).tar build/native/texlive/texk/web2c/*.c
+
+build/native/busytexbasic: build/native/busytex build/native/libc_busyfs.a
+	$(PYTHON) busypack.py -i build/texlive-basic/ -o busypack.h --prefix /texlive/ --ld $(LD_native) --skip '\.a|\.so|\.pod|\.ld|\.h'
+	$(CC_native) -o busypack.a -c busypack.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+	$(AR_native) d build/native/texlive/texk/kpathsea/.libs/libkpathsea.a libkpathsea_la-getopt.o
+	$(CXX_native) -o $@ $<.o build/native/libc_busyfs.a busypack.a @busypack.h.txt $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native)
+
+
+build/%/busytex.js:
+	mkdir -p $(dir $@)
+	$(CC_wasm)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_wasm) $(CFLAGS_OPT_wasm)
+	$(CXX_wasm -o $@ $(basename $@).o $(addprefix build/wasm/texlive/texk/web2c/, $(OBJ_XETEX)               $(OBJ_LUAHBTEX)) $(addprefix build/wasm/, $(OBJ_BIBTEX)               $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/wasm/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_wasm)
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
@@ -404,7 +439,6 @@ source/texmfrepo.txt:
 	mkdir -p source/texmfrepo
 	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso)
 	wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > $@.iso && 7z x $@.iso -o$(basename $@)
-	#7z x source/texlive.iso -o$(basename $@)
 	rm source/*.iso
 	find $(basename $@) > $@
 
@@ -415,10 +449,10 @@ build/texlive-basic.profile:
 	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> $@
 	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> $@ 
 	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> $@ 
-	echo "collection-xetex  1"                                         >> $@ 
+	#echo "collection-xetex  1"                                         >> $@ 
 	echo "collection-latex  1"                                         >> $@ 
 	#echo "collection-latexrecommended  1"                              >> $@ 
-	echo "collection-luatex 1"                                         >> $@ 
+	#echo "collection-luatex 1"                                         >> $@ 
 
 build/texlive-full.profile:
 	mkdir -p $(dir $@)
@@ -440,9 +474,11 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#
 	#mkdir -p $(ROOT)/source/texmfrepotmp  # TMPDIR=$(ROOT)/source/texmfrepotmp 
-	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native)
+	#$(CC) -shared -fPIC log_file_access_dynamic.c -o log_file_access_dynamic.so -ldl
+	#export LD_PRELOAD=$(PWD)/log_file_access_dynamic.so && 
+	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --no-gui  --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) # --no-doc-install --no-src-install
 	# 
-	mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
+	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	##printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
 	##$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
 	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
@@ -571,7 +607,7 @@ build/versions.txt:
 smoke-native: build/native/busytex
 	-$(LDD_native) $(BUSYTEX_native)
 	$(BUSYTEX_native)
-	$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
+	-$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
 
@@ -617,14 +653,14 @@ dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p dist-native
 	cp $(addprefix build/native/, busytex fonts.conf) dist-native
 	#  luahbtex/lualatex.fmt
-	cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
+	-cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
 	cp -r build/texlive-basic dist-native/texlive
 
 .PHONY: dist-native-full
 dist-native-full: build/native/busytex build/native/fonts.conf
 	mkdir -p dist-native
 	cp $(addprefix build/native/, busytex fonts.conf) dist-native
-	cp $(addprefix build/texlive-full/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
+	-cp $(addprefix build/texlive-full/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
 	ln -s $(ROOT)/build/texlive-full dist-native/texlive
 
 .PHONY: download-native

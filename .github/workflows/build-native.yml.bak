@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Install Prerequisites including github.com/cli/cli
         #run: sudo apt-get install xz-utils strace cmake unzip gh gperf
-        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 github-cli   strace && ln -sf python3 /usr/bin/python
+        run: apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake git xz wget perl gperf p7zip python3 github-cli   strace && ln -sf python3 /usr/bin/python
 
       - uses: actions/checkout@v4
             
@@ -27,28 +27,27 @@ jobs:
       
       - name: Smoke native
         run:  make smoke-native
-        
-#      - name: Archive artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: build
-#          path: build/native/busytex
 
       - name: Test native 
         run: |
             make source/texmfrepo.txt
             make build/texlive-basic.txt
+            make build/native/busytexbasic
             make dist-native
             sh example/example.sh pdflatex
-
-#      - name: Create Release
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
-      
+#            sh example/examplebasic.sh
+        
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: |
+            busypack.h
+            busypack.a
+            build/native/busytexbasic
             build/texlive-basic/
+
+#      - name: Create Release
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/fonts.conf build/native/busytex build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz texlive-basic.h
