@@ -209,7 +209,7 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 # so we have to find and process all of them.
 BUSYTEXIZE_O = find $(1) -name $(2) -exec sh -c 'cp {} `dirname {}`/$(notdir $@)' ';'
 BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)' ';'
-          
+
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
 	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
