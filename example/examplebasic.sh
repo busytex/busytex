@@ -8,8 +8,7 @@ export TEXMFDIST=/texlive/texmf-dist
 export TEXMFVAR=/texlive/texmf-dist/texmf-var
 export TEXMFCNF=/texlive/texmf-dist/web2c
 export TEXMFLOG=/tmp/texmf.log
-export FONTCONFIG_PATH=$PWD/dist-native
-#/etc/fonts
+export FONTCONFIG_PATH=$PWD
 
 cd example
 

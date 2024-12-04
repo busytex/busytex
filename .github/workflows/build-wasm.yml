@@ -38,7 +38,6 @@ jobs:
       - name: Clean-up texmf sources
         run:  rm -rf source/texmfrepo
 
-      
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v13
         with:
