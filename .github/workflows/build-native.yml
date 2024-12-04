@@ -56,3 +56,4 @@ jobs:
             dist-native/
             build/native/busytex
             build/native/busytexbasic
+            busypack.h
