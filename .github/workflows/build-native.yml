@@ -38,11 +38,10 @@ jobs:
         run: |
             make source/texmfrepo.txt
             make build/texlive-basic.txt
-            #make dist-native
             make build/native/busytexbasic
-            #sh example/example.sh pdflatex
-            echo EXAMPLEBASIC
-            sh example/examplebasic.sh
+            make dist-native
+            sh example/example.sh pdflatex
+            echo EXAMPLEBASIC && sh example/examplebasic.sh
 
 #      - name: Create Release
 #        env:

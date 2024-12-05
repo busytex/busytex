@@ -16,29 +16,24 @@ ENGINES="${@:-pdflatex xelatex luahbtex}"
 
 cd example
 
-if [[ "$engines" == *"pdflatex"* ]]; then
+if [[ "$ENGINES" == *"pdflatex"* ]]; then
     $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
     $BUSYTEX bibtex8 --8bit example.aux
     $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-    mv example.pdf example_pdflatex.pdf
-    rm example.aux
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT --job-name example_pdflatex.pdf example.tex
 fi
 
-if [[ "$engines" == *"xelatex"* ]]; then
+if [[ "$ENGINES" == *"xelatex"* ]]; then
     $BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
     $BUSYTEX bibtex8 --8bit example.aux
     $BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
     $BUSYTEX xelatex --no-shell-escape --interaction nonstopmode --halt-on-error --no-pdf --fmt $XELATEXFMT example.tex
     $BUSYTEX xdvipdfmx -o example_xelatex.pdf example.xdv
-    rm example.aux
 fi
 
-if [[ "$engines" == *"luahblatex"* ]]; then
+if [[ "$ENGINES" == *"luahblatex"* ]]; then
     $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex
     $BUSYTEX bibtex8 --8bit example.aux
     $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex
-    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex
-    mv example.pdf example_luahblatex.pdf
-    rm example.aux
+    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --job-name example_luahblatex.pdf --nosocket example.tex
 fi
