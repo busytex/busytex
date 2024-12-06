@@ -20,7 +20,7 @@ if [[ "$ENGINES" == *"pdflatex"* ]]; then
     $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
     $BUSYTEX bibtex8 --8bit example.aux
     $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT --job-name example_pdflatex.pdf example.tex
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT --jobname example_pdflatex.pdf example.tex
 fi
 
 if [[ "$ENGINES" == *"xelatex"* ]]; then
@@ -35,5 +35,5 @@ if [[ "$ENGINES" == *"luahblatex"* ]]; then
     $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex
     $BUSYTEX bibtex8 --8bit example.aux
     $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --nosocket example.tex
-    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --job-name example_luahblatex.pdf --nosocket example.tex
+    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $LUAHBLATEXFMT --jobname example_luahblatex.pdf --nosocket example.tex
 fi

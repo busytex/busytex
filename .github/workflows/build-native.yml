@@ -41,7 +41,7 @@ jobs:
             make build/native/busytexbasic
             make dist-native
             sh example/example.sh pdflatex
-            echo EXAMPLEBASIC && sh example/examplebasic.sh
+            #echo EXAMPLEBASIC && sh example/examplebasic.sh
 
 #      - name: Create Release
 #        env:

@@ -354,17 +354,18 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/libc_busyfs.a:
 	cp $(shell $(CC) -print-file-name=libc.a) $@
-	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
-	$(OBJCOPY_$*) --redefine-sym open=orig_open	 open.lo
-	$(OBJCOPY_$*) --redefine-sym close=orig_close   close.lo
-	$(OBJCOPY_$*) --redefine-sym read=orig_read	 read.lo
-	$(OBJCOPY_$*) --redefine-sym stat=orig_stat	 stat.lo
-	$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat   fstat.lo
-	$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek   lseek.lo
+	$(AR_$*) t $@
+	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+	$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
+	$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
+	$(OBJCOPY_$*) --redefine-sym read=orig_read	  read.lo
+	$(OBJCOPY_$*) --redefine-sym stat=orig_stat	  stat.lo
+	$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat    fstat.lo
+	$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek    lseek.lo
 	$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
-	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen   fopen.lo
+	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen    fopen.lo
 	$(OBJCOPY_$*) --redefine-sym fileno=orig_fileno fileno.lo
-	$(AR_$*) rs $@ open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+	$(AR_$*) rs $@ open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo
 
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
