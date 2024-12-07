@@ -12,9 +12,13 @@ export FONTCONFIG_PATH=$PWD
 
 cd example
 
+echo 111
 $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+echo 222
 $BUSYTEX bibtex8 --8bit example.aux
+echo 333
 $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
+echo 444
 $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --fmt $PDFLATEXFMT example.tex
 mv example.pdf example_pdflatex.pdf
 rm example.aux
