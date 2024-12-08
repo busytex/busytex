@@ -16,7 +16,7 @@
 enum {
     packfs_filefd_min = 1000000000, 
     packfs_filefd_max = 1000001000, 
-    packfs_filepath_max_len = 128, 
+    packfs_filepath_max_len = 256, 
 };
 struct packfs_context
 {
@@ -375,33 +375,41 @@ off_t lseek(int fd, off_t offset, int whence)
 
 int access(const char *path, int flags) 
 {
+    fprintf(stderr, "busypack: access: \"%s\" -> ", path);
+    
     struct packfs_context* packfs_ctx = packfs_ensure_context();
     if(!packfs_ctx->disabled)
     {
         int res = packfs_access(packfs_ctx, path);
         if(res >= -1)
         {
+            fprintf(stderr, "%d\n", res);
             return res;
         }
     }
     
     int res = packfs_ctx->orig_access(path, flags); 
+    fprintf(stderr, "%d\n", res);
     return res;
 }
 
 int stat(const char *restrict path, struct stat *restrict statbuf)
 {
+    fprintf(stderr, "busypack: stat: \"%s\" -> ", path);
+
     struct packfs_context* packfs_ctx = packfs_ensure_context();
     if(!packfs_ctx->disabled)
     {
         int res = packfs_stat(packfs_ctx, path, -1, statbuf);
         if(res >= -1)
         {
+            fprintf(stderr, "%d\n", res);
             return res;
         }
     }
 
     int res = packfs_ctx->orig_stat(path, statbuf);
+    fprintf(stderr, "%d\n", res);
     return res;
 }
 
