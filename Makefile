@@ -355,7 +355,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 build/%/libc_busyfs.a:
 	cp $(shell $(CC) -print-file-name=libc.a) $@
 	#$(AR_$*) d $@ getopt.lo getopt_long.lo # $(AR_native) d build/native/texlive/texk/kpathsea/.libs/libkpathsea.a libkpathsea_la-getopt.o
-	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo getopt.lo
 	$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
 	$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
 	$(OBJCOPY_$*) --redefine-sym read=orig_read	  read.lo
@@ -365,7 +365,12 @@ build/%/libc_busyfs.a:
 	$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
 	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen    fopen.lo
 	$(OBJCOPY_$*) --redefine-sym fileno=orig_fileno fileno.lo
-	$(AR_$*) rs $@ open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+	$(OBJCOPY_$*) --redefine-sym optind=orig_optind getopt.lo
+	$(OBJCOPY_$*) --redefine-sym optarg=orig_optarg getopt.lo
+	$(OBJCOPY_$*) --redefine-sym opterr=orig_opterr getopt.lo
+	$(OBJCOPY_$*) --redefine-sym optopt=orig_optopt getopt.lo
+	$(OBJCOPY_$*) --redefine-sym getopt=orig_getopt getopt.lo
+	$(AR_$*) rs $@ open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo getopt.lo
 
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
