@@ -354,7 +354,7 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/libc_busyfs.a:
 	cp $(shell $(CC) -print-file-name=libc.a) $@
-	$(AR_$*) d $@ getopt.lo getopt_long.lo # $(AR_native) d build/native/texlive/texk/kpathsea/.libs/libkpathsea.a libkpathsea_la-getopt.o
+	#$(AR_$*) d $@ getopt.lo getopt_long.lo # $(AR_native) d build/native/texlive/texk/kpathsea/.libs/libkpathsea.a libkpathsea_la-getopt.o
 	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo
 	$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
 	$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
