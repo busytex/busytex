@@ -44,7 +44,7 @@ jobs:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
       - name: Clone/patch TexLive and dependencies
-        run:  make source/texlive.downloaded build/versions.txt
+        run:  make source/texlive.txt build/versions.txt
 
       - name: Build wasm busytex
         env:

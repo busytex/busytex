@@ -16,10 +16,10 @@ assert args.output_path, "Output path not specified"
 
 os.makedirs(args.output_path + '.o', exist_ok = True)
 
-objects, dirs_relpaths, safepaths, relpaths = [], [], [], []
+objects, relpaths_dirs, safepaths, relpaths = [], [], [], []
 
 for (dirpath, dirnames, filenames) in os.walk(args.input_path):
-    dirs_relpaths.extend(os.path.join(dirpath, basename).removeprefix(args.input_path).lstrip(os.path.sep) for basename in dirnames)
+    relpaths_dirs.extend(os.path.join(dirpath, basename).removeprefix(args.input_path).lstrip(os.path.sep) for basename in dirnames)
     
     for basename in filenames:
         p = os.path.join(dirpath, basename)
@@ -39,8 +39,9 @@ g = open(args.output_path + '.txt', 'w')
 print('\n'.join(objects), file = g)
 
 f = open(args.output_path, 'w')
-print("size_t packfs_builtin_files_num = ", len(relpaths), ";\n\n", file = f)
+print("size_t packfs_builtin_files_num = ", len(relpaths), ', packfs_builtin_dirs_num = ', len(dirs_relpaths) ";\n\n", file = f)
 print("\n".join(f"extern char _binary_{_}_start[], _binary_{_}_end[];" for _ in safepaths), "\n\n", file = f)
 print("const char* packfs_builtin_starts[] = {\n", "\n".join(f"_binary_{_}_start," for _ in safepaths), "\n};\n\n", file = f)
 print("const char* packfs_builtin_ends[] = {\n", "\n".join(f"_binary_{_}_end," for _ in safepaths), "\n};\n\n", file = f)
 print("const char* packfs_builtin_abspaths[] = {\n\"" , "\",\n\"".join(os.path.join(args.prefix, _) for _ in relpaths), "\"\n};\n\n", sep = '', file = f)
+print("const char* packfs_builtin_abspaths_dirs[] = {\n\"" , "\",\n\"".join(os.path.join(args.prefix, _) for _ in relpaths_dirs), "\"\n};\n\n", sep = '', file = f)

@@ -242,16 +242,18 @@ int packfs_stat(struct packfs_context* packfs_ctx, const char* path, int fd, str
             if(0 == strcmp(path_sanitized, packfs_ctx->packfs_builtin_abspaths[i]))
             {
                 *statbuf = (struct stat){0};
-                //if(packfs_builtin[i].isdir)
-                //{
-                //    statbuf->st_size = 0;
-                //    statbuf->st_mode = S_IFDIR;
-                //}
-                //else
-                {
-                    statbuf->st_size = (off_t)(packfs_ctx->packfs_builtin_ends[i] - packfs_ctx->packfs_builtin_starts[i]);
-                    statbuf->st_mode = S_IFREG;
-                }
+                statbuf->st_size = (off_t)(packfs_ctx->packfs_builtin_ends[i] - packfs_ctx->packfs_builtin_starts[i]);
+                statbuf->st_mode = S_IFREG;
+                return 0;
+            }
+        }
+        for(size_t i = 0; i < packfs_ctx->packfs_builtin_dirs_num; i++)
+        {
+            if(0 == strcmp(path_sanitized, packfs_ctx->packfs_builtin_abspaths_dirs[i]))
+            {
+                *statbuf = (struct stat){0};
+                statbuf->st_size = 0;
+                statbuf->st_mode = S_IFDIR;
                 return 0;
             }
         }

@@ -41,7 +41,7 @@ jobs:
              echo "INSTALL=$(pwd)/cosmocc/bin/cosmoinstall" >> "$GITHUB_ENV"
 
       - name: Clone TexLive and dependencies
-        run:  make source/texlive.downloaded build/versions.txt
+        run:  make source/texlive.txt build/versions.txt
 
       - name: Build native busytex with Cosmo
         env:
