@@ -83,7 +83,7 @@ struct packfs_context* packfs_ensure_context()
         packfs_ctx.disabled = 1;
 
 #ifdef PACKFS_BUILTIN_PREFIX
-/*
+
         packfs_ctx.disabled = 0;
         packfs_ctx.packfs_builtin_files_num = packfs_builtin_files_num;
         packfs_ctx.packfs_builtin_dirs_num = packfs_builtin_dirs_num;
@@ -91,7 +91,7 @@ struct packfs_context* packfs_ensure_context()
         packfs_ctx.packfs_builtin_ends = packfs_builtin_ends;
         packfs_ctx.packfs_builtin_abspaths = packfs_builtin_abspaths;
         packfs_ctx.packfs_builtin_abspaths_dirs = packfs_builtin_abspaths_dirs;
-*/
+
 #endif
     }
     
@@ -398,7 +398,7 @@ int access(const char *path, int flags)
     fprintf(stderr, "%d\n", res);
     return res;
 }
-/*
+
 int stat(const char *restrict path, struct stat *restrict statbuf)
 {
     fprintf(stderr, "busypack: stat: \"%s\" -> ", path);
@@ -421,7 +421,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     fprintf(stderr, "%d\n", res);
     return res;
 }
-*/
+
 
 int fstat(int fd, struct stat * statbuf)
 {
