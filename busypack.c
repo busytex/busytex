@@ -36,12 +36,12 @@ struct packfs_context
     FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
     size_t packfs_filesize[packfs_filefd_max - packfs_filefd_min];
     
-    size_t packfs_builtin_files_num;
+    size_t packfs_builtin_files_num, packfs_builtin_dirs_num;
     char packfs_builtin_prefix[packfs_filepath_max_len];
     const char** packfs_builtin_starts;
     const char** packfs_builtin_ends;
-    //const char** packfs_builtin_safepaths;
     const char** packfs_builtin_abspaths;
+    const char** packfs_builtin_abspaths_dirs;
 };
 
 struct packfs_context* packfs_ensure_context()
@@ -73,10 +73,11 @@ struct packfs_context* packfs_ensure_context()
 #undef PACKFS_STRING_VALUE
 
         packfs_ctx.packfs_builtin_files_num = 0;
+        packfs_ctx.packfs_builtin_dirs_num = 0;
         packfs_ctx.packfs_builtin_starts = NULL;
         packfs_ctx.packfs_builtin_ends = NULL;
-        //packfs_ctx.packfs_builtin_safepaths = NULL;
         packfs_ctx.packfs_builtin_abspaths = NULL;
+        packfs_ctx.packfs_builtin_abspaths_dirs = NULL;
         
         packfs_ctx.initialized = 1;
         packfs_ctx.disabled = 1;
@@ -85,10 +86,11 @@ struct packfs_context* packfs_ensure_context()
 /*
         packfs_ctx.disabled = 0;
         packfs_ctx.packfs_builtin_files_num = packfs_builtin_files_num;
+        packfs_ctx.packfs_builtin_dirs_num = packfs_builtin_dirs_num;
         packfs_ctx.packfs_builtin_starts = packfs_builtin_starts;
         packfs_ctx.packfs_builtin_ends = packfs_builtin_ends;
-        //packfs_ctx.packfs_builtin_safepaths = packfs_builtin_safepaths;
         packfs_ctx.packfs_builtin_abspaths = packfs_builtin_abspaths;
+        packfs_ctx.packfs_builtin_abspaths_dirs = packfs_builtin_abspaths_dirs;
 */
 #endif
     }
