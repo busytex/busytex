@@ -429,8 +429,9 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 source/texmfrepo.txt:
 	mkdir -p source/texmfrepo
 	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso)
-	wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > $@.iso && 7z x $@.iso -o$(basename $@)
-	rm source/*.iso
+	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > $@.iso && 7z x $@.iso -o$(basename $@)
+	#rm source/*.iso
+	curl -L $(URL_texlive_full_iso) | bsdtar -x -C $(basename $@)
 	find $(basename $@) > $@
 
 build/texlive-basic.profile:
