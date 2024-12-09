@@ -55,7 +55,7 @@ struct packfs_context* packfs_ensure_context()
         extern ssize_t orig_read(int fd, void* buf, size_t count); packfs_ctx.orig_read = orig_read;
         extern int orig_access(const char *path, int flags); packfs_ctx.orig_access = orig_access;
         extern off_t orig_lseek(int fd, off_t offset, int whence); packfs_ctx.orig_lseek = orig_lseek;
-        extern int orig_stat(const char *restrict path, struct stat *restrict statbuf); packfs_ctx.orig_stat = orig_stat;
+        //extern int orig_stat(const char *restrict path, struct stat *restrict statbuf); packfs_ctx.orig_stat = orig_stat;
         extern int orig_fstat(int fd, struct stat * statbuf); packfs_ctx.orig_fstat = orig_fstat;
         extern FILE* orig_fopen(const char *path, const char *mode); packfs_ctx.orig_fopen = orig_fopen;
         extern int orig_fileno(FILE* stream); packfs_ctx.orig_fileno = orig_fileno;
@@ -394,7 +394,7 @@ int access(const char *path, int flags)
     fprintf(stderr, "%d\n", res);
     return res;
 }
-
+/*
 int stat(const char *restrict path, struct stat *restrict statbuf)
 {
     fprintf(stderr, "busypack: stat: \"%s\" -> ", path);
@@ -417,6 +417,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     fprintf(stderr, "%d\n", res);
     return res;
 }
+*/
 
 int fstat(int fd, struct stat * statbuf)
 {

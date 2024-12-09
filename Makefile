@@ -209,14 +209,17 @@ OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore
 BUSYTEXIZE_O = find $(1) -name $(2) -exec sh -c 'cp {} `dirname {}`/$(notdir $@)' ';'
 BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)' ';'
 
-source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
+source/texlive.txt source/expat.txt source/fontconfig.txt:
 	mkdir -p $(basename $@)
-	#-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
-	#tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
 	curl -L $(URL_$(notdir $(basename $@))) | tar -xzf - -C $(basename $@) --strip-components=1
-	touch $@
+	find $(basename $@) > $@
 
-source/texlive.patched: source/texlive.downloaded
+source/texmfrepo.txt:
+	mkdir -p $(basename $@)
+	curl -L $(URL_texlive_full_iso_cache) | bsdtar -x -C $(basename $@)
+	find $(basename $@) > $@
+
+source/texlive.patched: source/texlive.txt
 	# Cosmopolitan Libc doesn't support arguments with spaces; remove an extra trailing space here:
 	# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/icu/icu-src/source/common/Makefile.in#L72
 	sed -i 's@" "@""@' $(abspath source/texlive/libs/icu/icu-src/source/common/Makefile.in)
@@ -281,7 +284,7 @@ build/%/texlive/libs/freetype2/libfreetype.a: build/%/texlive.configured
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
 
-build/%/expat/libexpat.a: source/expat.downloaded
+build/%/expat/libexpat.a: source/expat.txt
 	mkdir -p $(dir $@) && cd $(dir $@) &&        \
 	$(CMAKE_$*)                                  \
 	   -DCMAKE_C_FLAGS="$(CFLAGS_$*_OPT)"        \
@@ -295,7 +298,7 @@ build/%/expat/libexpat.a: source/expat.downloaded
 	   $(abspath $(basename $<)) 
 	$(MAKE_$*) -C $(dir $@)
 
-build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.downloaded build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
+build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.txt build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
 	echo > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
 	cd build/$*/fontconfig && \
@@ -360,7 +363,7 @@ build/%/libc_busyfs.a:
 	$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
 	$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
 	$(OBJCOPY_$*) --redefine-sym read=orig_read	  read.lo
-	$(OBJCOPY_$*) --redefine-sym stat=orig_stat	  stat.lo
+	#$(OBJCOPY_$*) --redefine-sym stat=orig_stat	  stat.lo
 	$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat    fstat.lo
 	$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek    lseek.lo
 	$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
@@ -425,14 +428,6 @@ build/%/texlive/texk/web2c/busytex_libluahbtex.a: build/%/texlive.configured bui
 	#echo AR2; $(AR_$*) t $(dir $@)/busytex_libluatex.a; echo NM2; $(NM_$*) $(dir $@)/busytex_libluatex.a
 
 ################################################################################################################
-
-source/texmfrepo.txt:
-	mkdir -p $(basename $@)
-	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso)
-	#wget -P source --no-verbose --no-clobber --no-check-certificate $(URL_texlive_full_iso_cache) && cat source/*.iso.* > $@.iso && 7z x $@.iso -o$(basename $@)
-	#rm source/*.iso
-	curl -L $(URL_texlive_full_iso_cache) | bsdtar -x -C $(basename $@)
-	find $(basename $@) > $@
 
 build/texlive-basic.profile:
 	mkdir -p $(dir $@) # https://tex.stackexchange.com/questions/500339/what-makes-up-each-tex-live-install-tl-scheme https://tug.org/svn/texlive/trunk/Master/tlpkg/tlpsrc/collection-basic.tlpsrc?view=markup
