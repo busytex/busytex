@@ -82,12 +82,14 @@ struct packfs_context* packfs_ensure_context()
         packfs_ctx.disabled = 1;
 
 #ifdef PACKFS_BUILTIN_PREFIX
+/*
         packfs_ctx.disabled = 0;
         packfs_ctx.packfs_builtin_files_num = packfs_builtin_files_num;
         packfs_ctx.packfs_builtin_starts = packfs_builtin_starts;
         packfs_ctx.packfs_builtin_ends = packfs_builtin_ends;
         //packfs_ctx.packfs_builtin_safepaths = packfs_builtin_safepaths;
         packfs_ctx.packfs_builtin_abspaths = packfs_builtin_abspaths;
+*/
 #endif
     }
     
@@ -400,7 +402,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     struct packfs_context* packfs_ctx = packfs_ensure_context();
     if(!packfs_ctx->disabled)
     {
-        fprintf(stderr, " packfs \n");
+        fprintf(stderr, " packfs ");
         int res = packfs_stat(packfs_ctx, path, -1, statbuf);
         fprintf(stderr, "%d\n", res);
         
@@ -410,7 +412,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
         }
     }
 
-    fprintf(stderr, " orig \n");
+    fprintf(stderr, " orig ");
     int res = packfs_ctx->orig_stat(path, statbuf);
     fprintf(stderr, "%d\n", res);
     return res;

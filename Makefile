@@ -211,8 +211,9 @@ BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)
 
 source/texlive.downloaded source/expat.downloaded source/fontconfig.downloaded:
 	mkdir -p $(basename $@)
-	-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
-	tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
+	#-wget --no-verbose --no-clobber $(URL_$(notdir $(basename $@))) -O $(basename $@).tar.gz 
+	#tar -xf "$(basename $@).tar.gz" --strip-components=1 --directory=$(basename $@)
+	curl -L $(URL_$(notdir $(basename $@))) | tar -xzf - -C $(basename $@) --strip-components=1
 	touch $@
 
 source/texlive.patched: source/texlive.downloaded
