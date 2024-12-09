@@ -356,19 +356,19 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
-build/%/libc_busyfs.a:
+build/%/libc_busypack.a:
 	cp $(shell $(CC) -print-file-name=libc.a) $@
 	#$(AR_$*) d $@ getopt.lo getopt_long.lo # $(AR_native) d build/native/texlive/texk/kpathsea/.libs/libkpathsea.a libkpathsea_la-getopt.o
 	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo getopt.lo
-	$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
-	$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
-	$(OBJCOPY_$*) --redefine-sym read=orig_read	  read.lo
+	#$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
+	#$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
+	#$(OBJCOPY_$*) --redefine-sym read=orig_read	  read.lo
 	#$(OBJCOPY_$*) --redefine-sym stat=orig_stat	  stat.lo
-	$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat    fstat.lo
-	$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek    lseek.lo
-	$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
-	$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen    fopen.lo
-	$(OBJCOPY_$*) --redefine-sym fileno=orig_fileno fileno.lo
+	#$(OBJCOPY_$*) --redefine-sym fstat=orig_fstat    fstat.lo
+	#$(OBJCOPY_$*) --redefine-sym lseek=orig_lseek    lseek.lo
+	#$(OBJCOPY_$*) --redefine-sym access=orig_access access.lo
+	#$(OBJCOPY_$*) --redefine-sym fopen=orig_fopen    fopen.lo
+	#$(OBJCOPY_$*) --redefine-sym fileno=orig_fileno fileno.lo
 	$(OBJCOPY_$*) --redefine-sym optind=orig_optind getopt.lo
 	$(OBJCOPY_$*) --redefine-sym optarg=orig_optarg getopt.lo
 	$(OBJCOPY_$*) --redefine-sym opterr=orig_opterr getopt.lo
@@ -382,10 +382,10 @@ build/%/busytex build/%/busytex.js:
 	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
-build/native/busytexbasic: build/native/busytex build/native/libc_busyfs.a
+build/native/busytexbasic: build/native/busytex build/native/libc_busypack.a
 	$(PYTHON) busypack.py -i build/texlive-basic/ -o busypack.h --prefix /texlive --ld $(LD_native) --skip '\.a|\.so|\.pod|\.ld|\.h'
 	$(CC_native) -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-	$(CXX_native) -o $@ $<.o build/native/libc_busyfs.a busypack.o @busypack.h.txt $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native)
+	$(CXX_native) -o $@ $<.o build/native/libc_busypack.a  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) # busypack.o @busypack.h.txt
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
@@ -461,7 +461,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#
 	#mkdir -p $(ROOT)/source/texmfrepotmp  # TMPDIR=$(ROOT)/source/texmfrepotmp 
-	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) # --no-doc-install --no-src-install
+	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) --no-doc-install --no-src-install
 	# 
 	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	##printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
