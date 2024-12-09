@@ -44,31 +44,21 @@ struct packfs_context
     const char** packfs_builtin_abspaths_dirs;
 };
 
-extern int orig_open(const char *path, int flags);
-extern int orig_close(int fd); 
-extern ssize_t orig_read(int fd, void* buf, size_t count);
-extern int orig_access(const char *path, int flags); 
-extern off_t orig_lseek(int fd, off_t offset, int whence);
-extern int orig_stat(const char *restrict path, struct stat *restrict statbuf); 
-extern int orig_fstat(int fd, struct stat * statbuf);
-extern FILE* orig_fopen(const char *path, const char *mode);
-extern int orig_fileno(FILE* stream);
-
 struct packfs_context* packfs_ensure_context()
 {
     static struct packfs_context packfs_ctx = {0};
 
     if(packfs_ctx.initialized != 1)
     {
-        packfs_ctx.orig_open = orig_open;
-        packfs_ctx.orig_close = orig_close;
-        packfs_ctx.orig_read = orig_read;
-        packfs_ctx.orig_access = orig_access;
-        packfs_ctx.orig_lseek = orig_lseek;
-        packfs_ctx.orig_stat = orig_stat;
-        packfs_ctx.orig_fstat = orig_fstat;
-        packfs_ctx.orig_fopen = orig_fopen;
-        packfs_ctx.orig_fileno = orig_fileno;
+        extern int orig_open(const char *path, int flags); packfs_ctx.orig_open = orig_open;
+        extern int orig_close(int fd); packfs_ctx.orig_close = orig_close;
+        extern ssize_t orig_read(int fd, void* buf, size_t count); packfs_ctx.orig_read = orig_read;
+        extern int orig_access(const char *path, int flags); packfs_ctx.orig_access = orig_access;
+        extern off_t orig_lseek(int fd, off_t offset, int whence); packfs_ctx.orig_lseek = orig_lseek;
+        extern int orig_stat(const char *restrict path, struct stat *restrict statbuf); packfs_ctx.orig_stat = orig_stat;
+        extern int orig_fstat(int fd, struct stat * statbuf); packfs_ctx.orig_fstat = orig_fstat;
+        extern FILE* orig_fopen(const char *path, const char *mode); packfs_ctx.orig_fopen = orig_fopen;
+        extern int orig_fileno(FILE* stream); packfs_ctx.orig_fileno = orig_fileno;
         // TODO: append / if missing
 #define PACKFS_STRING_VALUE_(x) #x
 #define PACKFS_STRING_VALUE(x) PACKFS_STRING_VALUE_(x)
@@ -82,7 +72,6 @@ struct packfs_context* packfs_ensure_context()
 #undef PACKFS_STRING_VALUE_
 #undef PACKFS_STRING_VALUE
 
-        fprintf(stderr, "packfs_init: %p\n", (void*)orig_stat);
         packfs_ctx.packfs_builtin_files_num = 0;
         packfs_ctx.packfs_builtin_dirs_num = 0;
         packfs_ctx.packfs_builtin_starts = NULL;
@@ -94,7 +83,6 @@ struct packfs_context* packfs_ensure_context()
         packfs_ctx.disabled = 1;
 
 #ifdef PACKFS_BUILTIN_PREFIX
-
         packfs_ctx.disabled = 0;
         packfs_ctx.packfs_builtin_files_num = packfs_builtin_files_num;
         packfs_ctx.packfs_builtin_dirs_num = packfs_builtin_dirs_num;
@@ -102,7 +90,6 @@ struct packfs_context* packfs_ensure_context()
         packfs_ctx.packfs_builtin_ends = packfs_builtin_ends;
         packfs_ctx.packfs_builtin_abspaths = packfs_builtin_abspaths;
         packfs_ctx.packfs_builtin_abspaths_dirs = packfs_builtin_abspaths_dirs;
-
 #endif
     }
     
@@ -392,34 +379,24 @@ off_t lseek(int fd, off_t offset, int whence)
 
 int access(const char *path, int flags) 
 {
-    fprintf(stderr, "busypack: access: \"%s\" -> ", path);
-    
     struct packfs_context* packfs_ctx = packfs_ensure_context();
     if(!packfs_ctx->disabled)
     {
         int res = packfs_access(packfs_ctx, path);
         if(res >= -1)
-        {
-            fprintf(stderr, "%d\n", res);
             return res;
-        }
     }
     
     int res = packfs_ctx->orig_access(path, flags); 
-    fprintf(stderr, "%d\n", res);
     return res;
 }
 
 int stat(const char *restrict path, struct stat *restrict statbuf)
 {
-    fprintf(stderr, "busypack: stat: \"%s\" -> ", path);
-
     struct packfs_context* packfs_ctx = packfs_ensure_context();
     if(!packfs_ctx->disabled)
     {
-        fprintf(stderr, " packfs ");
         int res = packfs_stat(packfs_ctx, path, -1, statbuf);
-        fprintf(stderr, "%d\n", res);
         
         if(res >= -1)
         {
@@ -427,9 +404,7 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
         }
     }
 
-    fprintf(stderr, " orig %p ", (void*)packfs_ctx->orig_stat);
     int res = packfs_ctx->orig_stat(path, statbuf);
-    fprintf(stderr, "%d\n", res);
     return res;
 }
 
@@ -449,5 +424,3 @@ int fstat(int fd, struct stat * statbuf)
     int res = packfs_ctx->orig_fstat(fd, statbuf);
     return res;
 }
-
-//struct packfs_context* packfs_ctx = packfs_ensure_context();
