@@ -400,14 +400,17 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
     struct packfs_context* packfs_ctx = packfs_ensure_context();
     if(!packfs_ctx->disabled)
     {
+        fprintf(stderr, " packfs \n");
         int res = packfs_stat(packfs_ctx, path, -1, statbuf);
+        fprintf(stderr, "%d\n", res);
+        
         if(res >= -1)
         {
-            fprintf(stderr, "%d\n", res);
             return res;
         }
     }
 
+    fprintf(stderr, " orig \n");
     int res = packfs_ctx->orig_stat(path, statbuf);
     fprintf(stderr, "%d\n", res);
     return res;
