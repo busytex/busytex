@@ -39,7 +39,7 @@ g = open(args.output_path + '.txt', 'w')
 print('\n'.join(objects), file = g)
 
 f = open(args.output_path, 'w')
-print("size_t packfs_builtin_files_num = ", len(relpaths), ', packfs_builtin_dirs_num = ', len(dirs_relpaths) ";\n\n", file = f)
+print("size_t packfs_builtin_files_num = ", len(relpaths), ', packfs_builtin_dirs_num = ', len(dirs_relpaths), ";\n\n", file = f)
 print("\n".join(f"extern char _binary_{_}_start[], _binary_{_}_end[];" for _ in safepaths), "\n\n", file = f)
 print("const char* packfs_builtin_starts[] = {\n", "\n".join(f"_binary_{_}_start," for _ in safepaths), "\n};\n\n", file = f)
 print("const char* packfs_builtin_ends[] = {\n", "\n".join(f"_binary_{_}_end," for _ in safepaths), "\n};\n\n", file = f)
