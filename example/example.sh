@@ -4,15 +4,18 @@ ENGINES="${@:-busytex pdflatex xelatex luahbtex}"
 
 if [[ "$ENGINES" == *"busytexbasic"* ]]; then
     export BUSYTEX=busytexbasic
+    
     export TEXMFVAR=/texlive/texmf-dist/texmf-var
+    
     export FONTCONFIG_PATH=$PWD
 else
     export BUSYTEX=busytex
 
-    export TEXMFLOG=/tmp/texmf.log
-    export TEXMFDIST=$(dirname $(which $BUSYTEX))/texlive/texmf-dist
-    export TEXMFCNF=$( dirname $(which $BUSYTEX))/texlive/texmf-dist/web2c
-    export TEXMFVAR=$( dirname $(which $BUSYTEX))/texlive/texmf-dist/texmf-var
+    export TEXMFLOG=$PWD/texmf.log
+    export DIST=$(dirname $(which $BUSYTEX))
+    export TEXMFDIST=$DIST/texlive/texmf-dist
+    export  TEXMFCNF=$DIST/texlive/texmf-dist/web2c
+    export  TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
 
     export FONTCONFIG_PATH=$DIST
 fi
