@@ -262,7 +262,6 @@ build/%/texlive.configured: source/texlive.patched
 	  --without-system-zziplib                          \
 	  --with-banner-add="_busytex$*"                    \
 	  --enable-cxx-runtime-hack=yes                     \
-	  --enable-cxx-runtime-hack=yes                     \
 	  --enable-arm-neon=no --enable-powerpc-vsx=no      \
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
@@ -635,16 +634,13 @@ dist-wasm:
 .PHONY: dist-native
 dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p dist-native
-	cp $(addprefix build/native/, busytex fonts.conf) dist-native
-	#  luahbtex/lualatex.fmt
-	#-cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
+	cp build/native/busytex build/native/fonts.conf dist-native
 	cp -r build/texlive-basic dist-native/texlive
 
 .PHONY: dist-native-full
 dist-native-full: build/native/busytex build/native/fonts.conf
 	mkdir -p dist-native
-	cp $(addprefix build/native/, busytex fonts.conf) dist-native
-	#-cp $(addprefix build/texlive-full/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
+	cp build/native/busytex build/native/fonts.conf dist-native
 	ln -s $(ROOT)/build/texlive-full dist-native/texlive
 
 .PHONY: download-native
