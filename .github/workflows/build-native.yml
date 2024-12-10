@@ -38,12 +38,10 @@ jobs:
         run: |
             make source/texmfrepo.txt
             make build/texlive-basic.txt
-            make build/native/busytexbasic
             make dist-native
-            PATH=$PWD/dist-native:$PATH   sh example/example.sh busytex      pdflatex
-      
-      - name: Test nativebasic 
-        run: PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasic pdflatex
+            PATH=$PWD/dist-native:$PATH  sh example/example.sh busytex      pdflatex
+            make build/native/busytexbasic
+            PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasic pdflatex
 
 #      - name: Create Release
 #        env:
