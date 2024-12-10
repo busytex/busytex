@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_##name1 (argc - 1, argv + 1); } }
 
@@ -46,7 +47,6 @@ void flush_streams()
 int main(int argc, char* argv[])
 {
 /*
-    export BUSYTEX=$PWD/build/native/busytexbasic
     export PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
     export TEXMFDIST=/texlive/texmf-dist
     export TEXMFVAR=/texlive/texmf-dist/texmf-var
