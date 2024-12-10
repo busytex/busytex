@@ -467,10 +467,8 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/texlive/texmf-dist/fonts/opentype</dir><dir>/texlive/texmf-dist/fonts/type1</dir></fontconfig>' > $(basename $@)/fonts.conf
 	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	ls $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt
-	#rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
-	#find $(basename $@)/ -type f -executable -delete || true
+	rm -rf $(addprefix $(basename $@)/, bin/ tlpkg/ texmf-dist/doc/ texmf-dist/source/ install-tl install-tl.log)
 	mkdir -p $(dir $@)
-
 	find $(basename $@) > $@
 	tar -czf $(basename $@).tar.gz $(basename $@)
 
