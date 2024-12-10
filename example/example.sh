@@ -1,15 +1,11 @@
 set -e
 
-ENGINES="${@:-busytex pdflatex xelatex luahbtex}"
+ENGINES="${@:-pdflatex xelatex luahbtex}"
 
 export BUSYTEX=$1
 export TEXMFLOG=$PWD/texmf.log
 
-if [[ "$BUSYTEX" == "busytexbasic" ]]; then
-    echo $1
-    #export TEXMFVAR=/texlive/texmf-dist/texmf-var
-else
-    echo $1
+if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
     export DIST=$(dirname $(which $BUSYTEX))
     export TEXMFDIST=$DIST/texlive/texmf-dist
