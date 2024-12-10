@@ -23,10 +23,10 @@ if [ -d example ]; then
 fi
 
 if [[ "$ENGINES" == *"pdflatex"* ]]; then
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf example.tex
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname pdflatex example.tex
     $BUSYTEX bibtex8 --8bit example.aux
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf example.tex
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --jobname example_pdflatex.pdf example.tex
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname pdflatex example.tex
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname pdflatex --jobname example_pdflatex.pdf example.tex
 fi
 
 #if [[ "$ENGINES" == *"pdflatex"* ]]; then
