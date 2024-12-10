@@ -231,7 +231,7 @@ class BusytexPipeline
         this.dir_texmfdist = [...BusytexPipeline.texmf_system, ...texmf_local].map(texmf => texmf + '/texmf-dist').join(':');
         this.dir_texmfvar = '/texlive/texmf-dist/texmf-var';
         this.dir_cnf = '/texlive/texmf-dist/web2c';
-        this.dir_fontconfig = '/etc/fonts';
+        this.dir_fontconfig = '/texlive';//'/etc/fonts';
         this.texmflog = '/tmp/texmf.log';
         this.missfontlog = 'missfont.log'; // http://tug.ctan.org/info/tex-font-errors-cheatsheet/tex-font-cheatsheet.pdf 
 

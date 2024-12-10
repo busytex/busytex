@@ -10,7 +10,7 @@ URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/lunar/
 
-BUSYTEX_BIN          = busytex fonts.conf
+BUSYTEX_BIN          = busytex busytexbasic
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
 
@@ -462,18 +462,21 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	#mkdir -p $(ROOT)/source/texmfrepotmp; export TMPDIR=$(ROOT)/source/texmfrepotmp 
 	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) --no-doc-install --no-src-install
 	# 
-	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	##printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
 	##$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
+	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/texlive/texmf-dist/fonts/opentype</dir><dir>/texlive/texmf-dist/fonts/type1</dir></fontconfig>' > $(basename $@)/fonts.conf
+	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	ls $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt
 	#rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
 	#find $(basename $@)/ -type f -executable -delete || true
+	mkdir -p $(dir $@)
+
 	find $(basename $@) > $@
 	tar -czf $(basename $@).tar.gz $(basename $@)
 
 ################################################################################################################
 
-build/wasm/texlive-%.js: build/texlive-%/texmf-dist build/wasm/fonts.conf 
+build/wasm/texlive-%.js: build/texlive-%/texmf-dist 
 	mkdir -p $(dir $@)
 	echo > build/empty
 	echo 'web_user:x:0:0:emscripten:/home/web_user:/bin/false' > build/passwd
@@ -481,8 +484,7 @@ build/wasm/texlive-%.js: build/texlive-%/texmf-dist build/wasm/fonts.conf
 		--lz4 --use-preload-cache \
 		--preload build/passwd@/etc/passwd \
 		--preload build/empty@/bin/busytex \
-		--preload build/wasm/fonts.conf@/etc/fonts/fonts.conf \
-		--preload build/texlive-$*@/texlive
+		--preload build/texlive-$*@/texlive # --preload build/wasm/fonts.conf@/etc/fonts/fonts.conf 
 	grep -r -I -h 'ProvidesPackage{' build/texlive-$* | grep '^[^%]' | sed -e 's/^/\/\/ /' > $@.providespackage.txt
 	cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
@@ -492,25 +494,6 @@ build/wasm/ubuntu-%.js: $(TEXMFFULL)
 		--lz4 --use-preload-cache \
 		$(shell $(PYTHON) ubuntu_package_preload.py --package $* --texmf $(TEXMFFULL) --url $(URL_ubuntu_release) --skip-log $@.skip.txt --good-log $@.good.txt --providespackage-log $@.providespackage.txt --ubuntu-log $@.ubuntu.txt)
 	-cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
-
-build/wasm/fonts.conf:
-	mkdir -p $(dir $@)
-	echo '<?xml version="1.0"?>'                          > $@
-	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">'      >> $@
-	echo '<fontconfig>'                                  >> $@
-	echo '<dir>/texlive/texmf-dist/fonts/opentype</dir>' >> $@
-	echo '<dir>/texlive/texmf-dist/fonts/type1</dir>'    >> $@
-	echo '</fontconfig>'                                 >> $@
-
-build/native/fonts.conf:
-	mkdir -p $(dir $@)
-	echo '<?xml version="1.0"?>'                          > $@
-	echo '<!DOCTYPE fontconfig SYSTEM "fonts.dtd">'      >> $@
-	echo '<fontconfig>'                                  >> $@
-	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/opentype</dir>
-	#<dir prefix="relative">../texlive-basic/texmf-dist/fonts/type1</dir>
-	#<cachedir prefix="relative">./cache</cachedir>
-	echo '</fontconfig>'                                 >> $@
 
 ################################################################################################################
 
@@ -549,14 +532,14 @@ build/native/busytexapplets build/wasm/busytexapplets:
 	$(MAKE) $(dir $@)texlive/texk/web2c/busytex_libluahbtex.a
 
 .PHONY: native
-native: build/native/fonts.conf
+native:
 	$(MAKE) build/native/texlive.configured
 	$(MAKE) build/native/texlivedependencies
 	$(MAKE) build/native/busytexapplets
 	$(MAKE) build/native/busytex
 
 .PHONY: wasm
-wasm: build/wasm/fonts.conf
+wasm:
 	$(MAKE) build/wasm/texlive.configured
 	$(MAKE) build/wasm/texlivedependencies
 	$(MAKE) build/wasm/busytexapplets
@@ -632,16 +615,18 @@ dist-wasm:
 	-cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data      $@ 
 
 .PHONY: dist-native
-dist-native: build/native/busytex build/native/fonts.conf
-	mkdir -p dist-native
-	cp build/native/busytex build/native/fonts.conf dist-native
-	cp -r build/texlive-basic dist-native/texlive
+dist-native: build/native/busytex
+	mkdir -p $@
+	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig></fontconfig>' > $@/fonts.conf # <dir prefix="relative">texlive/texmf-dist/fonts/opentype</dir><dir prefix="relative">texlive/texmf-dist/fonts/type1</dir><cachedir prefix="relative">cache</cachedir>
+	cp build/native/busytex $@
+	cp -r build/texlive-basic $@/texlive
 
 .PHONY: dist-native-full
-dist-native-full: build/native/busytex build/native/fonts.conf
-	mkdir -p dist-native
-	cp build/native/busytex build/native/fonts.conf dist-native
-	ln -s $(ROOT)/build/texlive-full dist-native/texlive
+dist-native-full: build/native/busytex
+	mkdir -p $@
+	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig></fontconfig>' > $@/fonts.conf # <dir prefix="relative">texlive/texmf-dist/fonts/opentype</dir><dir prefix="relative">texlive/texmf-dist/fonts/type1</dir><cachedir prefix="relative">cache</cachedir>
+	cp build/native/busytex $@
+	ln -s $(ROOT)/build/texlive-full $@/texlive
 
 .PHONY: download-native
 download-native:

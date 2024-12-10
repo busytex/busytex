@@ -51,8 +51,7 @@ int main(int argc, char* argv[])
         putenv("TEXMFDIST=/texlive/texmf-dist");
         putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
         putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
-        //export TEXMFLOG=/tmp/texmf.log
-        //export FONTCONFIG_PATH=$PWD
+        putenv("FONTCONFIG_PATH=/texlive");
         //export PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
     }
 

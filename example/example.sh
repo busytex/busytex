@@ -2,22 +2,17 @@ set -e
 
 ENGINES="${@:-busytex pdflatex xelatex luahbtex}"
 
-if [[ "$ENGINES" == *"busytexbasic"* ]]; then
-    export BUSYTEX=busytexbasic
-    
-    export TEXMFVAR=/texlive/texmf-dist/texmf-var
-    
-    export FONTCONFIG_PATH=$PWD
-else
-    export BUSYTEX=busytex
+export BUSYTEX=$1
 
+if [[ "$BUSYTEX" == "busytexbasic" ]]; then
+    export TEXMFVAR=/texlive/texmf-dist/texmf-var
+else
     export TEXMFLOG=$PWD/texmf.log
     export DIST=$(dirname $(which $BUSYTEX))
     export TEXMFDIST=$DIST/texlive/texmf-dist
     export  TEXMFCNF=$DIST/texlive/texmf-dist/web2c
     export  TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
-
-    export FONTCONFIG_PATH=$DIST
+    export FONTCONFIG_PATH=$DIST/texlive
 fi
 
 if [ -d example ]; then
