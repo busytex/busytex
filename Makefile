@@ -637,14 +637,14 @@ dist-native: build/native/busytex build/native/fonts.conf
 	mkdir -p dist-native
 	cp $(addprefix build/native/, busytex fonts.conf) dist-native
 	#  luahbtex/lualatex.fmt
-	#-cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
+	-cp $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
 	cp -r build/texlive-basic dist-native/texlive
 
 .PHONY: dist-native-full
 dist-native-full: build/native/busytex build/native/fonts.conf
 	mkdir -p dist-native
 	cp $(addprefix build/native/, busytex fonts.conf) dist-native
-	#-cp $(addprefix build/texlive-full/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
+	-cp $(addprefix build/texlive-full/texmf-dist/texmf-var/web2c/, pdftex/pdflatex.fmt xetex/xelatex.fmt luahbtex/luahblatex.fmt) dist-native
 	ln -s $(ROOT)/build/texlive-full dist-native/texlive
 
 .PHONY: download-native
