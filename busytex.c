@@ -86,29 +86,29 @@ int main(int argc, char* argv[])
     }
 
 #ifdef BUSYTEX_PDFTEX
-    if(strcmp("pdftex", argv[1]) == 0 || strcmp("pdflatex", argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_pdftex (argc - 1, argv + 1); } }
+    if(0 == strcmp("pdftex", argv[1]) || 0 == strcmp("pdflatex", argv[1]))     { argv[1] = argv[0]; optind = 1; return busymain_pdftex  (argc - 1, argv + 1); }
 #endif
-//    APPLET(luatex, lualatex)
 #ifdef BUSYTEX_LUATEX
-    if(strcmp("luahbtex", argv[1]) == 0 || strcmp("luahblatex", argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_luahbtex (argc - 1, argv + 1); } }
+    // luatex, lualatex
+    if(0 == strcmp("luahbtex", argv[1]) || 0 == strcmp("luahblatex", argv[1])) { argv[1] = argv[0]; optind = 1; return busymain_luahbtex(argc - 1, argv + 1); }
 #endif
 #ifdef BUSYTEX_XETEX
-    if(strcmp("xetex", argv[1]) == 0 || strcmp("xelatex", argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_xetex (argc - 1, argv + 1); } }
+    if(0 == strcmp("xetex", argv[1]) || 0 == strcmp("xelatex", argv[1]))       { argv[1] = argv[0]; optind = 1; return busymain_xetex   (argc - 1, argv + 1); }
 #endif
 #ifdef BUSYTEX_XDVIPDFMX
-    if(strcmp("xdvipdfmx", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_xdvipdfmx (argc - 1, argv + 1); } }
+    if(0 == strcmp("xdvipdfmx", argv[1]))    { argv[1] = argv[0]; optind = 1; return busymain_xdvipdfmx   (argc - 1, argv + 1); }
 #endif
 #ifdef BUSYTEX_BIBTEX8
-    if(strcmp("bibtex8", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_bibtex8 (argc - 1, argv + 1); } }
+    if(0 == strcmp("bibtex8", argv[1]))      { argv[1] = argv[0]; optind = 1; return busymain_bibtex8     (argc - 1, argv + 1); }
 #endif
 #ifdef BUSYTEX_MAKEINDEX
-    if(strcmp("makeindex", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_makeindex (argc - 1, argv + 1); } }
+    if(0 == strcmp("makeindex", argv[1]))    { argv[1] = argv[0]; optind = 1; return busymain_makeindex   (argc - 1, argv + 1); }
 #endif
 #ifdef BUSYTEX_KPSE
-    if(strcmp("kpsewhich", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpsewhich (argc - 1, argv + 1); } }
-    if(strcmp("kpsestat", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpsestat (argc - 1, argv + 1); } }
-    if(strcmp("kpseaccess", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpseaccess (argc - 1, argv + 1); } }
-    if(strcmp("kpsereadlink", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpsereadlink (argc - 1, argv + 1); } }
+    if(0 == strcmp("kpsewhich", argv[1]))    { argv[1] = argv[0]; optind = 1; return busymain_kpsewhich   (argc - 1, argv + 1); }
+    if(0 == strcmp("kpsestat", argv[1]))     { argv[1] = argv[0]; optind = 1; return busymain_kpsestat    (argc - 1, argv + 1); }
+    if(0 == strcmp("kpseaccess", argv[1]))   { argv[1] = argv[0]; optind = 1; return busymain_kpseaccess  (argc - 1, argv + 1); }
+    if(0 == strcmp("kpsereadlink", argv[1])) { argv[1] = argv[0]; optind = 1; return busymain_kpsereadlink(argc - 1, argv + 1); }
 #endif
     return 1;
 }
