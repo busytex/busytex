@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_##name1 (argc - 1, argv + 1); } }
-
 #ifdef __cplusplus
 #define extern  extern "C"
 #endif
@@ -88,29 +86,29 @@ int main(int argc, char* argv[])
     }
 
 #ifdef BUSYTEX_PDFTEX
-    APPLET(pdftex, pdflatex)
+    if(strcmp("pdftex", argv[1]) == 0 || strcmp("pdflatex", argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_pdftex (argc - 1, argv + 1); } }
 #endif
 //    APPLET(luatex, lualatex)
 #ifdef BUSYTEX_LUATEX
-    APPLET(luahbtex, luahblatex)
+    if(strcmp("luahbtex", argv[1]) == 0 || strcmp("luahblatex", argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_luahbtex (argc - 1, argv + 1); } }
 #endif
 #ifdef BUSYTEX_XETEX
-    APPLET(xetex, xelatex)
+    if(strcmp("xetex", argv[1]) == 0 || strcmp("xelatex", argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_xetex (argc - 1, argv + 1); } }
 #endif
 #ifdef BUSYTEX_XDVIPDFMX
-    APPLET(xdvipdfmx, xdvipdfmx)
+    if(strcmp("xdvipdfmx", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_xdvipdfmx (argc - 1, argv + 1); } }
 #endif
 #ifdef BUSYTEX_BIBTEX8
-    APPLET(bibtex8, bibtex8)
+    if(strcmp("bibtex8", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_bibtex8 (argc - 1, argv + 1); } }
 #endif
 #ifdef BUSYTEX_MAKEINDEX
-    APPLET(makeindex, makeindex)
+    if(strcmp("makeindex", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_makeindex (argc - 1, argv + 1); } }
 #endif
 #ifdef BUSYTEX_KPSE
-    APPLET(kpsewhich, kpsewhich)
-    APPLET(kpsestat, kpsestat)
-    APPLET(kpseaccess, kpseaccess)
-    APPLET(kpsereadlink, kpsereadlink)
+    if(strcmp("kpsewhich", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpsewhich (argc - 1, argv + 1); } }
+    if(strcmp("kpsestat", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpsestat (argc - 1, argv + 1); } }
+    if(strcmp("kpseaccess", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpseaccess (argc - 1, argv + 1); } }
+    if(strcmp("kpsereadlink", argv[1]) == 0) { argv[1] = argv[0]; optind = 1; return busymain_kpsereadlink (argc - 1, argv + 1); } }
 #endif
     return 1;
 }
