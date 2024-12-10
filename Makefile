@@ -453,7 +453,6 @@ build/texlive-full.profile:
 
 build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(BUSYTEX_native)
-	#
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native) $(basename $@)/$(BINARCH_native) 
 	#
@@ -461,16 +460,15 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#
-	#mkdir -p $(ROOT)/source/texmfrepotmp  # TMPDIR=$(ROOT)/source/texmfrepotmp 
+	#mkdir -p $(ROOT)/source/texmfrepotmp; export TMPDIR=$(ROOT)/source/texmfrepotmp 
 	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) --no-doc-install --no-src-install
 	# 
 	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	##printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
 	##$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
-	echo FINDLOG; cat  $(basename $@)/texmf-dist/texmf-var/web2c/*/*.log                                || true
-	echo FINDFMT; ls   $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt                                || true
-	rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
-	find $(basename $@)/ -type f -executable -delete || true
+	ls $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt
+	#rm -rf $(addprefix $(basename $@)/, bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/doc) || true
+	#find $(basename $@)/ -type f -executable -delete || true
 	find $(basename $@) > $@
 	tar -czf $(basename $@).tar.gz $(basename $@)
 

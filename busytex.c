@@ -46,7 +46,7 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
-    if(getenv("TEXMFDIST") == NULL)
+    if(argc >= 1 && strstr(argv[0], "busytexbasic") != NULL && getenv("TEXMFDIST") == NULL)
     {
         putenv("TEXMFDIST=/texlive/texmf-dist");
         putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
