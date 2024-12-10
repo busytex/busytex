@@ -39,23 +39,22 @@ jobs:
             make source/texmfrepo.txt
             make build/texlive-basic.txt
             make dist-native
-            echo HI
-            PATH=$PWD/dist-native:$PATH  sh example/example.sh busytex      pdflatex
+            PATH=$PWD/dist-native:$PATH  sh example/example.sh busytex      pdflatex xelatex luahblatex
             make build/native/busytexbasic
             PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasic pdflatex
 
-#      - name: Create Release
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytexbasic build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
       
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: |
-            texmf.log
-            build/texlive-basic/
-            build/native/busytex
-            build/native/busytexbasic
-            busypack.h
+#      - name: Archive artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: build
+#          path: |
+#            texmf.log
+#            build/texlive-basic/
+#            build/native/busytex
+#            build/native/busytexbasic
+#            busypack.h
