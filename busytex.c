@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-//#define concat2(X, Y) X ## Y
-//#define concat(X, Y) concat2(X, Y)
-//#define busymain(x) concat(busymain_, x)
-
-//#define busymain(x) busymain_##x
-
 #define APPLET(name1, name2) { if(strcmp(#name1, argv[1]) == 0 || strcmp(#name2, argv[1]) == 0)   { argv[1] = argv[0]; optind = 1; return busymain_##name1 (argc - 1, argv + 1); } }
 
 #ifdef __cplusplus
@@ -51,6 +45,16 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
+/*
+    export BUSYTEX=$PWD/build/native/busytexbasic
+    export PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
+    export TEXMFDIST=/texlive/texmf-dist
+    export TEXMFVAR=/texlive/texmf-dist/texmf-var
+    export TEXMFCNF=/texlive/texmf-dist/web2c
+    export TEXMFLOG=/tmp/texmf.log
+    export FONTCONFIG_PATH=$PWD
+*/
+
     if(argc < 2)
     {
         printf("\n"

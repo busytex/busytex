@@ -43,7 +43,6 @@ jobs:
             sh example/example.sh pdflatex
       
       - name: Test nativebasic 
-        #continue-on-error: true
         run: sh example/examplebasic.sh
 
 #      - name: Create Release
