@@ -20,6 +20,9 @@ Future work:
 - Biber (perl)
 - mktexlsr, fmtutil, updmap (perl)
 
+### License
+MIT
+
 ### Usage
 ```shell
 # wasm version, download latest compiled assets, launch the web server example.py and then go to http://localhost:8080/example/example.html
