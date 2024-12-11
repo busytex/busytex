@@ -381,9 +381,8 @@ build/%/busytex build/%/busytex.js:
 	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
-build/native/busytexbasic: build/native/busytex build/native/libc_busypack.a
-	rm $(addprefix build/texlive-basic/texmf-dist/texmf-var/web2c/, pdftex/latex.fmt pdftex/etex.fmt pdftex/pdfetex.fmt pdftex/pdftex.fmt pdftex/mptopdf.fmt xetex/xetex.fmt xetex/xelatex-dev.fmt luahbtex/luahbtex.fmt)
-	$(PYTHON) busypack.py -i build/texlive-basic/ -o busypack.h --prefix=/texlive --ld=$(LD_native) --skip '\.a|\.so|\.pod|\.ld|\.h|\.log'
+build/native/busytexbasicextra: build/native/busytex build/native/libc_busypack.a build/texlive-basicextra.txt 
+	$(PYTHON) busypack.py -i build/texlive-basicextra/ -o busypack.h --prefix=/texlive --ld=$(LD_native) --skip '\.a|\.so|\.pod|\.ld|\.h|\.log'
 	$(CC_native) -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 	$(CXX_native) -o $@ $<.o busypack.o build/native/libc_busypack.a  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) @busypack.h.txt
 
@@ -440,6 +439,20 @@ build/texlive-basic.profile:
 	echo "collection-latex  1"                                         >> $@ 
 	echo "collection-luatex 1"                                         >> $@ 
 	echo "collection-latexrecommended  1"                              >> $@ 
+	#echo "collection-latexextra  1"                                   >> $@ 
+
+build/texlive-basicextra.profile:
+	mkdir -p $(dir $@) # https://tex.stackexchange.com/questions/500339/what-makes-up-each-tex-live-install-tl-scheme https://tug.org/svn/texlive/trunk/Master/tlpkg/tlpsrc/collection-basic.tlpsrc?view=markup
+	echo selected_scheme scheme-basic                                   > $@
+	echo TEXDIR $(ROOT)/$(basename $@)                                 >> $@ 
+	echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> $@
+	echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> $@ 
+	echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> $@ 
+	echo "collection-xetex  1"                                         >> $@ 
+	echo "collection-latex  1"                                         >> $@ 
+	echo "collection-luatex 1"                                         >> $@ 
+	echo "collection-latexrecommended  1"                              >> $@ 
+	echo "collection-latexextra  1"                                    >> $@ 
 
 build/texlive-full.profile:
 	mkdir -p $(dir $@)
@@ -467,7 +480,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/texlive/texmf-dist/fonts/opentype</dir><dir>/texlive/texmf-dist/fonts/type1</dir></fontconfig>' > $(basename $@)/fonts.conf
 	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	ls $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt
-	rm -rf $(addprefix $(basename $@)/, bin/ tlpkg/ texmf-dist/doc/ texmf-dist/source/ install-tl install-tl.log)
+	rm -rf $(addprefix $(basename $@)/texmf-dist/texmf-var/web2c/, pdftex/latex.fmt pdftex/etex.fmt pdftex/pdfetex.fmt pdftex/pdftex.fmt pdftex/mptopdf.fmt xetex/xetex.fmt xetex/xelatex-dev.fmt luahbtex/luahbtex.fmt) $(addprefix $(basename $@)/, bin/ tlpkg/ texmf-dist/doc/ texmf-dist/source/ install-tl install-tl.log)
 	mkdir -p $(dir $@)
 	find $(basename $@) > $@
 	tar -czf $(basename $@).tar.gz $(basename $@)
