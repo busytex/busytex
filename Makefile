@@ -438,8 +438,6 @@ build/texlive-basic.profile:
 	echo "collection-xetex  1"                                         >> $@ 
 	echo "collection-latex  1"                                         >> $@ 
 	echo "collection-luatex 1"                                         >> $@ 
-	echo "collection-latexrecommended  1"                              >> $@ 
-	#echo "collection-latexextra  1"                                   >> $@ 
 
 build/texlive-basicextra.profile:
 	mkdir -p $(dir $@) # https://tex.stackexchange.com/questions/500339/what-makes-up-each-tex-live-install-tl-scheme https://tug.org/svn/texlive/trunk/Master/tlpkg/tlpsrc/collection-basic.tlpsrc?view=markup
