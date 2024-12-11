@@ -41,7 +41,7 @@ jobs:
             PATH=$PWD/dist-native:$PATH  sh example/example.sh busytex      pdflatex xelatex luahblatex
             
             make build/texlive-basicextra.txt
-            make build/native/busytexbasic
+            make build/native/busytexbasicextra
             PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasicextra pdflatex
 
       - name: Create Release
@@ -57,5 +57,5 @@ jobs:
 #            texmf.log
 #            build/texlive-basic/
 #            build/native/busytex
-#            build/native/busytexbasic
+#            build/native/busytexbasicextra
 #            busypack.h

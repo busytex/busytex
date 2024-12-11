@@ -11,7 +11,7 @@ URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/f
 URL_ubuntu_release   = https://packages.ubuntu.com/noble/
 URL_ubuntu_release_cache = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/
 
-BUSYTEX_BIN          = busytex busytexbasic
+BUSYTEX_BIN          = busytex busytexbasicextra
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
 BUSYTEX_WEB2CBIN     = fixwrites makecpool splitup web2c
 
