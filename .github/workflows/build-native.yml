@@ -4,6 +4,8 @@ on: workflow_dispatch
 env:
   MAKE_PARALLELISM: -j2
   TEXBIN: ctangle otangle tangle tangleboot ctangleboot tie web2c/fixwrites web2c/makecpool web2c/splitup web2c/web2c
+  UBUNTU: https://packages.ubuntu.com/noble/
+  UBUNTUPACKAGES: texlive-latex-extra texlive-latex-base texlive-latex-recommended texlive-science texlive-fonts-recommended
 
 jobs:
 
@@ -19,6 +21,9 @@ jobs:
             
       - name: Clone TexLive and dependencies
         run:  make source/texlive.txt build/versions.txt
+      
+      - name: Download Ubuntu package file lists
+        run: for PACKAGE in $UBUNTUPACKAGES; do python ubuntu_package_preload.py --url $UBUNTU --package $PACKAGE --ubuntu-log $PACKAGE.txt; done
 
       - name: Build native busytex
         env:

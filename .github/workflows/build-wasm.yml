@@ -23,7 +23,7 @@ jobs:
         run:  sudo apt-get install -y gperf p7zip-full strace icu-devtools
 
       - uses: actions/checkout@v4
-      
+
       - name: Download native binaries
         run:  make URLRELEASE=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/download/${{ github.event.inputs.busytexreleasetag }} download-native
       

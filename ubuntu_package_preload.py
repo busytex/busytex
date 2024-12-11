@@ -60,22 +60,8 @@ def generate_preload(texmf_src, package_file_list, skip, varlog, skip_log = None
 
     return preload
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--texmf', required = True)
-    parser.add_argument('--package', required = True)
-    parser.add_argument('--url', required = True)
-    parser.add_argument('--skip-log')
-    parser.add_argument('--good-log')
-    parser.add_argument('--ubuntu-log')
-    parser.add_argument('--providespackage-log')
-    parser.add_argument('--skip', nargs = '*', default = ['/usr/share/doc', '/usr/share/man'])
-    parser.add_argument('--varlog', default = '/var/log')
-    parser.add_argument('--retry', type = int, default = 10)
-    parser.add_argument('--retry-seconds', type = int, default = 60)
-    args = parser.parse_args()
-
-    filelist_url = os.path.join(args.url, 'all', args.package, 'filelist')
+def fetch_ubuntu_package_file_list(ubuntu_release_base_url, package):
+    filelist_url = os.path.join(ubuntu_release_base_url, 'all', package, 'filelist')
     print('File list URL', filelist_url, file = sys.stderr)
     for i in range(args.retry):
         try:
@@ -85,14 +71,38 @@ if __name__ == '__main__':
             assert i < args.retry - 1
             print('Retrying', err, file = sys.stderr)
             time.sleep(args.retry_seconds)
-    
     html_parser = UbuntuDebFileList()
     html_parser.feed(page)
     assert html_parser.file_list is not None
+    return html_parser.file_list
 
-    preload = generate_preload(args.texmf, html_parser.file_list, args.skip, skip_log = args.skip_log, good_log = args.good_log, varlog = args.varlog, providespackage_log = args.providespackage_log)
+def fetch_file_list(base_url, package):
+    if base_url:
+        return urllib.request.urlopen(os.path.join(base_url, package + '.txt')).read().decode('utf-8').split('\n')
+    else:
+        return open(package, 'r').read().split('\n')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--texmf')
+    parser.add_argument('--package', nargs = '*', default = [])
+    parser.add_argument('--url', required = True)
+    parser.add_argument('--skip-log')
+    parser.add_argument('--good-log')
+    parser.add_argument('--ubuntu-log')
+    parser.add_argument('--providespackage-log')
+    parser.add_argument('--skip', nargs = '*', default = ['/usr/bin', '/usr/share/doc', '/usr/share/man'])
+    parser.add_argument('--varlog', default = '/var/log')
+    parser.add_argument('--retry', type = int, default = 10)
+    parser.add_argument('--retry-seconds', type = int, default = 60)
+    args = parser.parse_args()
+
+    file_list = [path.strip() for package in args.package for path in [fetch_file_list, fetch_ubuntu_package_file_list]['packages.ubuntu.com' in args.url](args.url, package) if path]
 
     if args.ubuntu_log:
-        makedirs_open(args.ubuntu_log, 'w').writelines(line + '\n' for line in html_parser.file_list)
+        f = makedirs_open(args.ubuntu_log, 'w') if args.ubuntu_log != '-' else sys.stdout
+        f.writelines(line + '\n' for line in file_list)
 
-    print(' '.join(f'--preload {src}@{dst}' for src, dst in preload))
+    if args.texmf:
+        preload = generate_preload(args.texmf, file_list, args.skip, skip_log = args.skip_log, good_log = args.good_log, varlog = args.varlog, providespackage_log = args.providespackage_log)
+        print(' '.join(f'--preload {src}@{dst}' for src, dst in preload))

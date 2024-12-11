@@ -8,7 +8,8 @@ URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-2
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2023.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
-URL_ubuntu_release   = https://packages.ubuntu.com/lunar/
+URL_ubuntu_release   = https://packages.ubuntu.com/noble/
+URL_ubuntu_release_cache = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/
 
 BUSYTEX_BIN          = busytex busytexbasic
 BUSYTEX_TEXBIN       = ctangle otangle tangle tangleboot ctangleboot tie
@@ -357,7 +358,6 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 
 build/%/libc_busypack.a:
 	cp $(shell $(CC) -print-file-name=libc.a) $@
-	#$(AR_$*) d $@ getopt.lo getopt_long.lo # $(AR_native) d build/native/texlive/texk/kpathsea/.libs/libkpathsea.a libkpathsea_la-getopt.o
 	$(AR_$*) x $@  open.lo close.lo read.lo stat.lo  fstat.lo lseek.lo access.lo fopen.lo fileno.lo getopt.lo
 	$(OBJCOPY_$*) --redefine-sym open=orig_open	  open.lo
 	$(OBJCOPY_$*) --redefine-sym close=orig_close    close.lo
@@ -478,19 +478,13 @@ build/wasm/texlive-%.js: build/texlive-%/texmf-dist
 	mkdir -p $(dir $@)
 	echo > build/empty
 	echo 'web_user:x:0:0:emscripten:/home/web_user:/bin/false' > build/passwd
-	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
-		--lz4 --use-preload-cache \
-		--preload build/passwd@/etc/passwd \
-		--preload build/empty@/bin/busytex \
-		--preload build/texlive-$*@/texlive # --preload build/wasm/fonts.conf@/etc/fonts/fonts.conf 
+	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline --lz4 --use-preload-cache --preload build/passwd@/etc/passwd --preload build/empty@/bin/busytex --preload build/texlive-$*@/texlive 
 	grep -r -I -h 'ProvidesPackage{' build/texlive-$* | grep '^[^%]' | sed -e 's/^/\/\/ /' > $@.providespackage.txt
 	cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
-build/wasm/ubuntu-%.js: $(TEXMFFULL)
+build/wasm/ubuntu/%.js: $(TEXMFFULL)
 	mkdir -p $(dir $@)
-	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline \
-		--lz4 --use-preload-cache \
-		$(shell $(PYTHON) ubuntu_package_preload.py --package $* --texmf $(TEXMFFULL) --url $(URL_ubuntu_release) --skip-log $@.skip.txt --good-log $@.good.txt --providespackage-log $@.providespackage.txt --ubuntu-log $@.ubuntu.txt)
+	$(PYTHON) $(EMROOT)/tools/file_packager.py $(basename $@).data --js-output=$@ --export-name=BusytexPipeline --lz4 --use-preload-cache $(shell $(PYTHON) ubuntu_package_preload.py --package $(subst _, ,,$(notdir $(basename $@))) texlive-latex-base texlive-latex-recommended texlive-science texlive-fonts-recommended --texmf $(TEXMFFULL) --url $(URL_ubuntu_release_cache) --skip-log $@.skip.txt --good-log $@.good.txt --providespackage-log $@.providespackage.txt --ubuntu-log $@.ubuntu.txt)
 	-cat $@.providespackage.txt $@ > $@.tmp; mv $@.tmp $@
 
 ################################################################################################################
@@ -546,7 +540,7 @@ wasm:
 ################################################################################################################
 
 .PHONY: ubuntu-wasm
-ubuntu-wasm: build/wasm/ubuntu-texlive-latex-base.js build/wasm/ubuntu-texlive-latex-extra.js build/wasm/ubuntu-texlive-latex-recommended.js build/wasm/ubuntu-texlive-science.js build/wasm/ubuntu-texlive-fonts-recommended.js build/wasm/ubuntu-texlive-base.js
+ubuntu-wasm: build/wasm/ubuntu/texlive-latex-extra.js build/wasm/ubuntu/texlive-base_texlive-latex-base_texlive-latex-recommended_texlive-science_texlive-fonts-recommended.js
 
 ################################################################################################################
 
@@ -574,59 +568,42 @@ smoke-native: build/native/busytex
 	-$(foreach applet,xelatex pdflatex luahblatex lualatex bibtex8 xdvipdfmx kpsewhich kpsestat kpseaccess kpsereadlink,echo $(BUSYTEX_native) $(applet) --version; $(BUSYTEX_native) $(applet) --version; )
 
 ################################################################################################################
-
-.PHONY: clean-tds
-clean-tds:
-	rm -rf build/texlive-*
-
-.PHONY: clean-native
-clean-native:
-	rm -rf build/native
-
-.PHONY: clean-wasm
-clean-wasm:
-	rm -rf build/wasm
-
-.PHONY: clean_build
-clean-build:
-	rm -rf build
-
-.PHONY: clean-dist
-clean-dist:
-	rm -rf dist-*
-
-.PHONY: clean-example
-clean-example:
-	rm -rf example/*.aux example/*.bbl example/*.blg example/*.log example/*.xdv
-
-.PHONY: clean
+.PHONY: clean clean-tds clean-native clean-wasm clean_build clean-dist clean-example
 clean:
 	rm -rf build source
-
+clean-tds:
+	rm -rf build/texlive-*
+clean-native:
+	rm -rf build/native
+clean-wasm:
+	rm -rf build/wasm
+clean-build:
+	rm -rf build
+clean-dist:
+	rm -rf dist-*
+clean-example:
+	rm -rf example/*.aux example/*.bbl example/*.blg example/*.log example/*.xdv
 ################################################################################################################
 
-.PHONY: dist-wasm
+.PHONY: dist-wasm dist-native dist-native-full download-native
 dist-wasm:
 	mkdir -p $@
 	-cp build/wasm/busytex.js       build/wasm/busytex.wasm       $@ 
 	-cp build/wasm/texlive-basic.js build/wasm/texlive-basic.data $@ 
-	-cp build/wasm/ubuntu-*.js      build/wasm/ubuntu-*.data      $@ 
+	-cp build/wasm/ubuntu/*.js      build/wasm/ubuntu/*.data      $@ 
 
-.PHONY: dist-native
 dist-native: build/native/busytex
 	mkdir -p $@
 	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig></fontconfig>' > $@/fonts.conf # <dir prefix="relative">texlive/texmf-dist/fonts/opentype</dir><dir prefix="relative">texlive/texmf-dist/fonts/type1</dir><cachedir prefix="relative">cache</cachedir>
 	cp build/native/busytex $@
 	cp -r build/texlive-basic $@/texlive
 
-.PHONY: dist-native-full
 dist-native-full: build/native/busytex
 	mkdir -p $@
 	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig></fontconfig>' > $@/fonts.conf # <dir prefix="relative">texlive/texmf-dist/fonts/opentype</dir><dir prefix="relative">texlive/texmf-dist/fonts/type1</dir><cachedir prefix="relative">cache</cachedir>
 	cp build/native/busytex $@
 	ln -s $(ROOT)/build/texlive-full $@/texlive
 
-.PHONY: download-native
 download-native:
 	mkdir -p source build/native build/native/texlive/texk/web2c/web2c
 	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
