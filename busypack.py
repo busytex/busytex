@@ -24,13 +24,14 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
     for basename in filenames:
         p = os.path.join(dirpath, basename)
         relpath = p.removeprefix(args.input_path).lstrip(os.path.sep)
-        safepath = relpath.translate({ord('.') : '__', ord('-') : '__', ord('_') : '_', ord(os.path.sep) : '__'})
+        safepath = relpath.translate({ord('.') : '_', ord('-') : '_', ord('_') : '_', ord(os.path.sep) : '_'})
 
         if not args.skip or not re.match('.+(' + args.skip + ')$', basename):
             safepaths.append(safepath)
             relpaths.append(relpath)
             objects.append(os.path.join(args.output_path + '.o', safepath + '.o'))
             os.makedirs(os.path.dirname(objects[-1]), exist_ok = True)
+            # TODO: ln or mv the original file to makethe symbol names unique
             subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', os.path.abspath(objects[-1]), relpaths[-1]], cwd = args.input_path)
 
 # problem: can produce the same symbol name because of this mapping
