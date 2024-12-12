@@ -97,7 +97,7 @@ if __name__ == '__main__':
     parser.add_argument('--retry-seconds', type = int, default = 60)
     args = parser.parse_args()
 
-    file_list = [path.strip() for package in args.package for path in [fetch_file_list, fetch_ubuntu_package_file_list]['packages.ubuntu.com' in args.url](args.url, package) if path]
+    file_list = list(map(str.strip, filter(bool, sum([[fetch_file_list, fetch_ubuntu_package_file_list]['packages.ubuntu.com' in args.url](args.url, package) for package in args.package], []))))
 
     if args.ubuntu_log:
         f = makedirs_open(args.ubuntu_log, 'w') if args.ubuntu_log != '-' else sys.stdout
