@@ -450,7 +450,7 @@ build/texlive-basicextra.profile:
 	echo "collection-latex  1"                                         >> $@ 
 	echo "collection-luatex 1"                                         >> $@ 
 	echo "collection-latexrecommended  1"                              >> $@ 
-	#echo "collection-latexextra  1"                                    >> $@ 
+	echo "collection-latexextra  1"                                    >> $@ 
 
 build/texlive-full.profile:
 	mkdir -p $(dir $@)
