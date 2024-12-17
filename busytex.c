@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
     if(getenv("TEXMFDIST") == NULL)
     {
-        //if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL)
+        if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL)
         {
             putenv("TEXMFDIST=/texlive/texmf-dist");
             putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
