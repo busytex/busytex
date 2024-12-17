@@ -49,9 +49,8 @@ int main(int argc, char* argv[])
     for(int i = 0; i < argc; i++)
         fprintf(stderr, "%s ", argv[i]);
     fprintf(stderr, "\n");
-    char* envp = environ;
-    while(*envp)
-        fprintf(stderr, "%s\n",*envp++);
+    for(int i = 0; environ[i] != NULL; i++)
+        fprintf(stderr, "%s\n", environ[i]);
     fprintf(stderr, "\nENDBUSYTEX\n");
 
     if(getenv("TEXMFDIST") == NULL)
