@@ -8,6 +8,7 @@
 #endif
 
 extern int optind;
+extern char **environ;
 
 #ifdef BUSYTEX_PDFTEX 
 extern int busymain_pdftex(int argc, char* argv[]);
@@ -44,13 +45,25 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
-    if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL && getenv("TEXMFDIST") == NULL)
+    fprintf(stderr, "BEGINBUSYTEX\n");
+    for(int i = 0; i < argc; i++)
+        fprintf(stderr, "%s ", argv[i]);
+    fprintf(stderr, "\n");
+    char* envp = environ;
+    while(*envp)
+        fprintf(stderr, "%s\n",*envp++);
+    fprintf(stderr, "\nENDBUSYTEX\n");
+
+    if(getenv("TEXMFDIST") == NULL)
     {
-        putenv("TEXMFDIST=/texlive/texmf-dist");
-        putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
-        putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
-        putenv("FONTCONFIG_PATH=/texlive");
-        //export PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
+        if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL)
+        {
+            putenv("TEXMFDIST=/texlive/texmf-dist");
+            putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
+            putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
+            putenv("FONTCONFIG_PATH=/texlive");
+            //export PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
+        }
     }
 
     if(argc < 2)

@@ -40,14 +40,14 @@ jobs:
             make dist-native
             PATH=$PWD/dist-native:$PATH  sh example/example.sh busytex           pdflatex xelatex luahblatex
             
-            make build/texlive-basicextra.txt
-            make build/native/busytexbasicextra
-            PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasicextra pdflatex
+#            make build/texlive-basicextra.txt
+#            make build/native/busytexbasicextra
+#            PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasicextra pdflatex
 
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytexbasicextra build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
+#      - name: Create Release
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytexbasicextra build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
 
 #      - name: Archive artifacts
 #        uses: actions/upload-artifact@v4
