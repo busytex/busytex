@@ -55,13 +55,13 @@ int main(int argc, char* argv[])
 
     if(getenv("TEXMFDIST") == NULL)
     {
-        if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL)
+        //if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL)
         {
             putenv("TEXMFDIST=/texlive/texmf-dist");
             putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
             putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
             putenv("FONTCONFIG_PATH=/texlive");
-            //export PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt
+            //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
         }
     }
 
