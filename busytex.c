@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #ifdef __cplusplus
 #define extern  extern "C"
@@ -45,24 +46,22 @@ void flush_streams()
 
 int main(int argc, char* argv[])
 {
-    fprintf(stderr, "BEGINBUSYTEX\n");
+    /*fprintf(stderr, "BEGINBUSYTEX\n");
     for(int i = 0; i < argc; i++)
         fprintf(stderr, "%s ", argv[i]);
     fprintf(stderr, "\n");
     for(int i = 0; environ[i] != NULL; i++)
         fprintf(stderr, "%s\n", environ[i]);
-    fprintf(stderr, "\nENDBUSYTEX\n");
+    fprintf(stderr, "\nENDBUSYTEX\n");*/
 
-    if(getenv("TEXMFDIST") == NULL)
+    struct stat * statbuf;
+    if(getenv("TEXMFDIST") == NULL && stat("/texlive/", &statbuf) == 0)
     {
-        //if(argc >= 1 && strstr(argv[0], "busytexbasicextra") != NULL)
-        {
-            putenv("TEXMFDIST=/texlive/texmf-dist");
-            putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
-            putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
-            putenv("FONTCONFIG_PATH=/texlive");
-            //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
-        }
+        putenv("TEXMFDIST=/texlive/texmf-dist");
+        putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
+        putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
+        putenv("FONTCONFIG_PATH=/texlive/");
+        //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
     }
 
     if(argc < 2)
