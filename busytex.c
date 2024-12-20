@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
         fprintf(stderr, "%s\n", environ[i]);
     fprintf(stderr, "\nENDBUSYTEX\n");*/
 
-    struct stat * statbuf;
+    struct stat statbuf;
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/", &statbuf) == 0)
     {
         putenv("TEXMFDIST=/texlive/texmf-dist");
