@@ -44,6 +44,15 @@ void flush_streams()
     fflush(NULL);
 }
 
+void putenvjoin(const char* name, const char* value)
+{
+    enum {putenvjoinsize = 65536};
+    static char tmp[putenvjoinsize];
+    const char* cur = getenv(name);
+    snprintf(tmp, putenvjoinsize, (cur == NULL || cur[0] == '\0') ? "%s=%s" : "%s=%s:%s", name, value, cur);
+    putenv(tmp);
+}
+
 int main(int argc, char* argv[])
 {
     /*fprintf(stderr, "BEGINBUSYTEX\n");
@@ -57,10 +66,10 @@ int main(int argc, char* argv[])
     struct stat statbuf;
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/", &statbuf) == 0)
     {
-        putenv("TEXMFDIST=/texlive/texmf-dist");
-        putenv("TEXMFVAR=/texlive/texmf-dist/texmf-var");
-        putenv("TEXMFCNF=/texlive/texmf-dist/web2c");
-        putenv("FONTCONFIG_PATH=/texlive/");
+        putenvjoin("TEXMFDIST", "/texlive/texmf-dist");
+        putenvjoin("TEXMFVAR",  "/texlive/texmf-dist/texmf-var");
+        putenvjoin("TEXMFCNF",  "/texlive/texmf-dist/web2c");
+        putenvjoin("FONTCONFIG_PATH", "/texlive/");
         //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
     }
 
