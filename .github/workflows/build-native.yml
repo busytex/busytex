@@ -42,7 +42,7 @@ jobs:
            
             make build/texlive-basicextra.txt
             make build/native/busytexbasicextra
-            PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasicextra pdflatex
+            PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasicextra pdflatex xelatex luahblatex
 
 #      - name: Create Release
 #        env:
