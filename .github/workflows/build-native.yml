@@ -37,17 +37,17 @@ jobs:
         run: |
             make source/texmfrepo.txt
             make build/texlive-basic.txt
-            make dist-native
-            PATH=$PWD/dist-native:$PATH  sh example/example.sh busytex           pdflatex xelatex luahblatex
+	    ln -s $PWD/build/texlive-basic build/native/texlive
+            PATH=$PWD/build/native:$PATH sh example/example.sh busytex      pdflatex xelatex luahblatex
            
-            make build/texlive-basicextra.txt
-            make build/native/busytexbasicextra
-            PATH=$PWD/build/native:$PATH sh example/example.sh busytexbasicextra pdflatex xelatex luahblatex
+            make build/texlive-extra.txt
+            make build/native/busytexextra
+            PATH=$PWD/build/native:$PATH sh example/example.sh busytexextra pdflatex xelatex luahblatex
 
 #      - name: Create Release
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytexbasicextra build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
+#        run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytexextra build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
 
 #      - name: Archive artifacts
 #        uses: actions/upload-artifact@v4
@@ -55,9 +55,9 @@ jobs:
 #          name: build
 #          path: |
 #            build/texlive-basic/
-#            build/texlive-basicextra/
+#            build/texlive-extra/
 #            build/native/busytex
-#            build/native/busytexbasicextra
+#            build/native/busytexextra
 #            busypack.h
 #            busypack.h.txt
 #            busypack.h.o/

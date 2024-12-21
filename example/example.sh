@@ -1,8 +1,8 @@
 set -e
 
-ENGINES="${@:-pdflatex xelatex luahbtex}"
-
 export BUSYTEX=$1
+export ENGINES="${@:-pdflatex xelatex luahbtex}"
+
 export TEXMFLOG=$PWD/texmf.log
 
 if [[ "$BUSYTEX" == "busytex" ]]; then
