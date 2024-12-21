@@ -38,8 +38,7 @@ jobs:
             make source/texmfrepo.txt
             make build/texlive-basic.txt
             ln -s $PWD/build/texlive-basic build/native/texlive
-            PATH=$PWD/build/native:$PATH sh example/example.sh busytex      pdflatex xelatex luahblatex
-           
+            PATH=$PWD/build/native:$PATH sh example/example.sh busytex      pdflatex xelatex luahblatex           
             make build/texlive-extra.txt
             make build/native/busytexextra
             PATH=$PWD/build/native:$PATH sh example/example.sh busytexextra pdflatex xelatex luahblatex
