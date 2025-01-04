@@ -107,7 +107,7 @@ jobs:
   #        path: biberpp/biber
 
   busybiber:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     container: alpine:3.14
     steps:
       - name: Install Prerequisites
@@ -749,9 +749,9 @@ jobs:
           objcopy --redefine-sym fileno=orig_fileno fileno.lo
           ar rs libc_perlpack.a open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
           
-          #export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/localperlstatic
-          export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busybiber/packfs
-          export PERLPREFIX=/__w/busybiber/busybiber/packfs
+          export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busytex/packfs
+          export PERLPREFIX=$PERLINSTALLPREFIX
+          #export PERLPREFIX=/__w/busytex/busytex/packfs
           export LD_LIBRARY_PATH=$PERLINSTALLPREFIX/lib:$LD_LIBRARY_PATH
 
           mkdir perlsourcestatic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcestatic
