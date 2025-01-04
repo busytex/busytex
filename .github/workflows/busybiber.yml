@@ -1,0 +1,827 @@
+name: busybiber
+
+on: workflow_dispatch
+# https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
+env:
+  BIBER_DEV_TESTS: 0
+  PERLVER: "5.40.0"
+  PERLPLATFORM: "x86_64-linux"
+  URLPERL: https://www.cpan.org/src/5.0/perl-5.40.0.tar.gz
+  # curl https://fastapi.metacpan.org/v1/download_url/IO::Compress::Brotli | grep download_url | cut -d'"' -f4
+  URL_Biber: https://github.com/plk/biber/archive/v2.20.tar.gz
+  URL_Params_Validate_XS : https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Params-Validate-1.31.tar.gz
+  URL_Text_BibTeX        : https://cpan.metacpan.org/authors/id/A/AM/AMBS/Text-BibTeX-0.89.tar.gz
+  URL_IO_Compress_Brotli : https://cpan.metacpan.org/authors/id/T/TI/TIMLEGGE/IO-Compress-Brotli-0.017.tar.gz
+  
+jobs:
+  buildbiber:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Prerequisites
+        run: sudo apt-get install libxml2-dev libz-dev libxslt-dev
+      
+      - name: Install Perl and build, pack Biber
+        shell: bash
+        # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
+        run: |
+          mkdir biberpp && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biberpp
+          mkdir perlsourcedynamic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcedynamic
+          
+          cd perlsourcedynamic && sh +x ./Configure -sde -Dprefix="$PWD/../perlprefixdynamic" && make && make install && cd -
+          export PERLBIN=$PWD/perlprefixdynamic/bin/perl
+          export CPANBIN=$PWD/perlprefixdynamic/bin/cpan
+          export PATH="$PWD/perlprefixdynamic/bin:$PATH"
+          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PWD/perlprefixdynamic/lib"
+          cd biberpp
+          $CPANBIN -T Module::Build PAR::Packer
+          $PERLBIN Build.PL
+          $PERLBIN ./Build installdeps --cpan_client "$CPANBIN -T"
+          $PERLBIN ./Build test
+          $PERLBIN ./Build install
+          # declare -r perlv='5.38.2'
+          # bash ./dist/linux_x86_64/build.sh
+          # declare ucpath="/usr/local/perl/lib/${perlv}/Unicode/Collate"
+          # if [ -d "/usr/local/perl/lib/site_perl/${perlv}/$PERLPLATFORM-thread-multi/Unicode/Collate" ]; then ucpath="/usr/local/perl/lib/site_perl/${perlv}/$PERLPLATFORM-thread-multi/Unicode/Collate"; fi
+          # Unicode::Collate has a site_perl version so has been updated since this
+          # perl was released
+          ucpath="$PWD/../perlprefixdynamic/lib/$PERLVER/Unicode/Collate"
+          echo "USING Unicode::Collate at: ${ucpath}"
+          PAR_VERBATIM=1 $PWD/../perlprefixdynamic/bin/pp \
+            --module=deprecate \
+            --module=Biber::Input::file::bibtex \
+            --module=Biber::Input::file::biblatexml \
+            --module=Biber::Output::dot \
+            --module=Biber::Output::bbl \
+            --module=Biber::Output::bblxml \
+            --module=Biber::Output::bibtex \
+            --module=Biber::Output::biblatexml \
+            --module=Pod::Simple::TranscodeSmart \
+            --module=Pod::Simple::TranscodeDumb \
+            --module=List::MoreUtils::XS \
+            --module=List::SomeUtils::XS \
+            --module=List::MoreUtils::PP \
+            --module=HTTP::Status \
+            --module=HTTP::Date \
+            --module=Encode:: \
+            --module=File::Find::Rule \
+            --module=IO::Socket::SSL \
+            --module=IO::String \
+            --module=PerlIO::utf8_strict \
+            --module=Text::CSV_XS \
+            --module=DateTime \
+            --link=$PWD/../perlprefixdynamic/lib/libbtparse.so \
+            --link=/usr/lib/$PERLPLATFORM-gnu/libxml2.so \
+            --link=/usr/lib/$PERLPLATFORM-gnu/libz.so \
+            --link=/usr/lib/$PERLPLATFORM-gnu/libxslt.so \
+            --link=/usr/lib/$PERLPLATFORM-gnu/libexslt.so \
+            --link=/usr/lib/$PERLPLATFORM-gnu/libssl.so \
+            --link=/usr/lib/$PERLPLATFORM-gnu/libcrypto.so \
+            --addfile="data/biber-tool.conf;lib/Biber/biber-tool.conf" \
+            --addfile="data/schemata/config.rnc;lib/Biber/config.rnc" \
+            --addfile="data/schemata/config.rng;lib/Biber/config.rng"\
+            --addfile="data/schemata/bcf.rnc;lib/Biber/bcf.rnc" \
+            --addfile="data/schemata/bcf.rng;lib/Biber/bcf.rng" \
+            --addfile="lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml" \
+            --addfile="data/bcf.xsl;lib/Biber/bcf.xsl" \
+            --addfile="${ucpath}/Locale;lib/Unicode/Collate/Locale" \
+            --addfile="${ucpath}/CJK;lib/Unicode/Collate/CJK" \
+            --addfile="${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt" \
+            --addfile="${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt" \
+            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem" \
+            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/PerlIO;lib/PerlIO" \
+            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/auto/PerlIO;lib/auto/PerlIO" \
+            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml" \
+            --cachedeps=scancache \
+            --output=biber \
+            $PWD/../perlprefixdynamic/bin/biber
+          ./biber --help
+          unzip -l ./biber
+          cd testfiles && ../biber --validate-datamodel --convert-control test && test -f test.bcf.html
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: buildbiber
+          path: biberpp/biber
+
+  busybiber:
+    runs-on: ubuntu-20.04
+    container: alpine:3.14
+    steps:
+      - name: Install Prerequisites
+        run:  |
+          apk add --update --no-cache libnsl libnsl-dev build-base coreutils gdb cmake git xz curl gperf p7zip zip autoconf automake libtool pkgconfig gnupg libxml2-dev libxslt-dev expat-dev openssl-dev openssl  zlib-static expat-static wget
+          apk add --update --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main libxml2-static libxslt-static openssl-libs-static xz-static libgcrypt-static libgpg-error-static
+
+      - uses: actions/checkout@v4
+      
+      - name: perlpack.pl
+        run: |
+          cat <<'EOF' > perlpack.pl
+          use strict;
+          use warnings;
+          use Getopt::Long;
+          use File::Path;
+          use File::Find;
+          use File::Spec;
+          use Cwd;
+          my $input_path = '';
+          my $output_path = '';
+          my $prefix = '';
+          my $ld = 'ld';
+          my $skip = '';
+          Getopt::Long::GetOptions(
+              'input-path|i=s'  => \$input_path,
+              'output-path|o=s' => \$output_path,
+              'prefix=s'        => \$prefix,
+              'ld=s'            => \$ld,
+              'skip=s'          => \$skip
+          );
+          die "Input path does not exist or is not a directory" unless -e $input_path && -d $input_path ;
+          die "Output path not specified" if $output_path eq '';
+          File::Path::make_path($output_path . '.o');
+          my $oldcwd = Cwd::getcwd();
+          my (@objects, @files, @dirs_relpaths, @safepaths, @relpaths);
+          File::Find::find(sub {
+              my $newcwd = Cwd::getcwd(); chdir $oldcwd; 
+              my $p = $File::Find::name;
+              my $safepath = $p; $safepath =~ s/[\/.-]/_/g;
+              my $relpath = (split(/\//, $p, 2))[-1];
+              if (-d $p) {
+                  push @dirs_relpaths, $p;
+              } elsif ($skip eq '' or $p !~ /$skip\z/) {
+                  push @files, $p;
+                  push @safepaths, $safepath;
+                  push @relpaths, $relpath;
+                  push @objects, File::Spec->catfile($output_path . '.o', $safepath . '.o');
+                  system($ld, '-r', '-b', 'binary', '-o', $objects[-1], $files[-1]) == 0 or die "ld command failed: $?";
+              }
+              chdir $newcwd;
+          }, $input_path);
+          # problem: can produce the same symbol name because of this mapping
+          open my $g, '>', $output_path . '.txt' or die;
+          print $g join("\n", @objects);
+          open my $f, '>', $output_path or die;
+          print $f "size_t packfs_builtin_files_num = ", scalar(@files), ";\n\n";
+          print $f join("\n", map { "extern char _binary_${_}_start[], _binary_${_}_end[];" } @safepaths), "\n\n";
+          print $f "const char* packfs_builtin_safepaths[] = {\n\"", join("\",\n\"", @safepaths), "\"\n};\n";
+          print $f "const char* packfs_builtin_abspaths[] = {\n\"" , join("\",\n\"", map { File::Spec->catfile($prefix, $_) } @relpaths), "\"\n};\n\n";
+          print $f "const char* packfs_builtin_starts[] = {\n", join("\n", map { "_binary_${_}_start," } @safepaths), "\n};\n\n";
+          print $f "const char* packfs_builtin_ends[] = {\n", join("\n", map { "_binary_${_}_end," } @safepaths), "\n};\n\n";
+          EOF
+
+      - name: busybiber.c
+        run: |
+          cat <<'EOF' > busybiber.c
+          #define _GNU_SOURCE
+          #include <string.h>
+          #include <stdio.h>
+          #include <unistd.h>
+          #include <errno.h>
+          #include <stdarg.h>
+          #include <fcntl.h>
+          #include <stdlib.h>
+          
+          #include <sys/stat.h>
+          #include <sys/mman.h>
+          #include <sys/types.h>
+          
+          #include "perlpack.h"
+          // size_t packfs_builtin_files_num = 0; const char* packfs_builtin_safepaths[] = {}; const char* packfs_builtin_abspaths[] = {}; const char* packfs_builtin_starts[] = {}; const char* packfs_builtin_ends[] = {};
+          
+          enum {
+              packfs_filefd_min = 1000000000, 
+              packfs_filefd_max = 1000001000, 
+              packfs_filepath_max_len = 128, 
+          };
+          struct packfs_context
+          {
+              int initialized, disabled;
+              
+              int (*orig_open)(const char *path, int flags);
+              int (*orig_close)(int fd);
+              ssize_t (*orig_read)(int fd, void* buf, size_t count);
+              int (*orig_access)(const char *path, int flags);
+              off_t (*orig_lseek)(int fd, off_t offset, int whence);
+              int (*orig_stat)(const char *restrict path, struct stat *restrict statbuf);
+              int (*orig_fstat)(int fd, struct stat * statbuf);
+              FILE* (*orig_fopen)(const char *path, const char *mode);
+              int (*orig_fileno)(FILE* stream);
+              
+              int packfs_filefd[packfs_filefd_max - packfs_filefd_min];
+              FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
+              size_t packfs_filesize[packfs_filefd_max - packfs_filefd_min];
+              
+              size_t packfs_builtin_files_num;
+              char packfs_builtin_prefix[packfs_filepath_max_len];
+              const char** packfs_builtin_starts;
+              const char** packfs_builtin_ends;
+              const char** packfs_builtin_safepaths;
+              const char** packfs_builtin_abspaths;
+          };
+          
+          struct packfs_context* packfs_ensure_context()
+          {
+              static struct packfs_context packfs_ctx = {0};
+          
+              if(packfs_ctx.initialized != 1)
+              {
+                  extern int orig_open(const char *path, int flags); packfs_ctx.orig_open = orig_open;
+                  extern int orig_close(int fd); packfs_ctx.orig_close = orig_close;
+                  extern ssize_t orig_read(int fd, void* buf, size_t count); packfs_ctx.orig_read = orig_read;
+                  extern int orig_access(const char *path, int flags); packfs_ctx.orig_access = orig_access;
+                  extern off_t orig_lseek(int fd, off_t offset, int whence); packfs_ctx.orig_lseek = orig_lseek;
+                  extern int orig_stat(const char *restrict path, struct stat *restrict statbuf); packfs_ctx.orig_stat = orig_stat;
+                  extern int orig_fstat(int fd, struct stat * statbuf); packfs_ctx.orig_fstat = orig_fstat;
+                  extern FILE* orig_fopen(const char *path, const char *mode); packfs_ctx.orig_fopen = orig_fopen;
+                  extern int orig_fileno(FILE* stream); packfs_ctx.orig_fileno = orig_fileno;
+                  // TODO: append / if missing
+          #define PACKFS_STRING_VALUE_(x) #x
+          #define PACKFS_STRING_VALUE(x) PACKFS_STRING_VALUE_(x)
+                  strcpy(packfs_ctx.packfs_builtin_prefix,
+          #ifdef PACKFS_BUILTIN_PREFIX
+                      PACKFS_STRING_VALUE(PACKFS_BUILTIN_PREFIX)
+          #else
+                  ""
+          #endif
+                  );
+          #undef PACKFS_STRING_VALUE_
+          #undef PACKFS_STRING_VALUE
+          
+                  packfs_ctx.packfs_builtin_files_num = 0;
+                  packfs_ctx.packfs_builtin_starts = NULL;
+                  packfs_ctx.packfs_builtin_ends = NULL;
+                  packfs_ctx.packfs_builtin_safepaths = NULL;
+                  packfs_ctx.packfs_builtin_abspaths = NULL;
+                  
+                  packfs_ctx.initialized = 1;
+                  packfs_ctx.disabled = 1;
+          
+          #ifdef PACKFS_BUILTIN_PREFIX
+                  packfs_ctx.disabled = 0;
+                  packfs_ctx.packfs_builtin_files_num = packfs_builtin_files_num;
+                  packfs_ctx.packfs_builtin_starts = packfs_builtin_starts;
+                  packfs_ctx.packfs_builtin_ends = packfs_builtin_ends;
+                  packfs_ctx.packfs_builtin_safepaths = packfs_builtin_safepaths;
+                  packfs_ctx.packfs_builtin_abspaths = packfs_builtin_abspaths;
+          #endif
+              }
+              
+              return &packfs_ctx;
+          }
+          
+          void packfs_sanitize_path(char* path_sanitized, const char* path)
+          {
+              size_t len = path != NULL ? strlen(path) : 0;
+              if(len == 0)
+                  path_sanitized[0] = '\0';
+          
+              for(int i = (path != NULL && len > 2 && path[0] == '.' && path[1] == '/') ? 2 : 0, k = 0; len > 0 && i < len; i++)
+              {
+                  if(!(i > 1 && path[i] == '/' && path[i - 1] == '/'))
+                  {
+                      path_sanitized[k++] = path[i];
+                      path_sanitized[k] = '\0';
+                  }
+              }
+          }
+          
+          int packfs_strncmp(const char* prefix, const char* path, size_t count)
+          {
+              return (prefix != NULL && prefix[0] != '\0' && path != NULL && path[0] != '\0') ? strncmp(prefix, path, count) : 1;
+          }
+          
+          int packfs_open(struct packfs_context* packfs_ctx, const char* path, FILE** out)
+          {
+              char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
+          
+              FILE* fileptr = NULL;
+              size_t filesize = 0;
+              
+              if(packfs_ctx->packfs_builtin_files_num > 0 && 0 == packfs_strncmp(packfs_ctx->packfs_builtin_prefix, path_sanitized, strlen(packfs_ctx->packfs_builtin_prefix)))
+              {
+                  for(size_t i = 0; i < packfs_ctx->packfs_builtin_files_num; i++)
+                  {
+                      if(0 == strcmp(path_sanitized, packfs_ctx->packfs_builtin_abspaths[i]))
+                      {
+                          filesize = (size_t)(packfs_ctx->packfs_builtin_ends[i] - packfs_ctx->packfs_builtin_starts[i]);
+                          fileptr = fmemopen((void*)packfs_ctx->packfs_builtin_starts[i], filesize, "r");
+                          break;
+                      }
+                  }
+              }
+          
+              if(out != NULL)
+                  *out = fileptr;
+          
+              for(size_t k = 0; fileptr != NULL && k < packfs_filefd_max - packfs_filefd_min; k++)
+              {
+                  if(packfs_ctx->packfs_filefd[k] == 0)
+                  {
+                      packfs_ctx->packfs_filefd[k] = packfs_filefd_min + k;
+                      packfs_ctx->packfs_fileptr[k] = fileptr;
+                      packfs_ctx->packfs_filesize[k] = filesize;
+                      return packfs_ctx->packfs_filefd[k];
+                  }
+              }
+          
+              return -1;
+          }
+          
+          int packfs_close(struct packfs_context* packfs_ctx, int fd)
+          {
+              if(fd < packfs_filefd_min || fd >= packfs_filefd_max)
+                  return -2;
+          
+              for(size_t k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+              {
+                  if(packfs_ctx->packfs_filefd[k] == fd)
+                  {
+                      packfs_ctx->packfs_filefd[k] = 0;
+                      packfs_ctx->packfs_filesize[k] = 0;
+                      int res = fclose(packfs_ctx->packfs_fileptr[k]);
+                      packfs_ctx->packfs_fileptr[k] = NULL;
+                      return res;
+                  }
+              }
+              return -2;
+          }
+          
+          void* packfs_find(struct packfs_context* packfs_ctx, int fd, FILE* ptr)
+          {
+              if(ptr != NULL)
+              {
+                  for(size_t k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+                  {
+                      if(packfs_ctx->packfs_fileptr[k] == ptr)
+                          return &packfs_ctx->packfs_filefd[k];
+                  }
+                  return NULL;
+              }
+              else
+              {
+                  if(fd < packfs_filefd_min || fd >= packfs_filefd_max)
+                      return NULL;
+                  
+                  for(size_t k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+                  {
+                      if(packfs_ctx->packfs_filefd[k] == fd)
+                          return packfs_ctx->packfs_fileptr[k];
+                  }
+              }
+              return NULL;
+          }
+          
+          ssize_t packfs_read(struct packfs_context* packfs_ctx, int fd, void* buf, size_t count)
+          {
+              FILE* ptr = packfs_find(packfs_ctx, fd, NULL);
+              if(!ptr)
+                  return -1;
+              return (ssize_t)fread(buf, 1, count, ptr);
+          }
+          
+          int packfs_seek(struct packfs_context* packfs_ctx, int fd, long offset, int whence)
+          {
+              FILE* ptr = packfs_find(packfs_ctx, fd, NULL);
+              if(!ptr)
+                  return -1;
+              return fseek(ptr, offset, whence);
+          }
+          
+          int packfs_access(struct packfs_context* packfs_ctx, const char* path)
+          {
+              char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
+          
+              if(0 == packfs_strncmp(packfs_ctx->packfs_builtin_prefix, path_sanitized, strlen(packfs_ctx->packfs_builtin_prefix)))
+              {
+                  for(size_t i = 0; i < packfs_ctx->packfs_builtin_files_num; i++)
+                  {
+                      if(0 == strcmp(path_sanitized, packfs_ctx->packfs_builtin_abspaths[i]))
+                          return 0;
+                  }
+                  return -1;
+              }
+              
+              return -2;
+          }
+          
+          int packfs_stat(struct packfs_context* packfs_ctx, const char* path, int fd, struct stat *restrict statbuf)
+          {
+              char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
+              
+              if(0 == packfs_strncmp(packfs_ctx->packfs_builtin_prefix, path_sanitized, strlen(packfs_ctx->packfs_builtin_prefix)))
+              {
+                  for(size_t i = 0; i < packfs_ctx->packfs_builtin_files_num; i++)
+                  {
+                      if(0 == strcmp(path_sanitized, packfs_ctx->packfs_builtin_abspaths[i]))
+                      {
+                          *statbuf = (struct stat){0};
+                          //if(packfs_builtin[i].isdir)
+                          //{
+                          //    statbuf->st_size = 0;
+                          //    statbuf->st_mode = S_IFDIR;
+                          //}
+                          //else
+                          {
+                              statbuf->st_size = (off_t)(packfs_ctx->packfs_builtin_ends[i] - packfs_ctx->packfs_builtin_starts[i]);
+                              statbuf->st_mode = S_IFREG;
+                          }
+                          return 0;
+                      }
+                  }
+                  return -1;
+              }
+              
+              if(fd >= 0 && packfs_filefd_min <= fd && fd < packfs_filefd_max)
+              {
+                  for(size_t k = 0; k < packfs_filefd_max - packfs_filefd_min; k++)
+                  {
+                      if(packfs_ctx->packfs_filefd[k] == fd)
+                      {
+                          *statbuf = (struct stat){0};
+                          statbuf->st_size = packfs_ctx->packfs_filesize[k];
+                          statbuf->st_mode = S_IFREG;
+                          return 0;
+                      }
+                  }
+                  return -1;
+              }
+          
+              return -2;
+          }
+          
+          ///////////
+          
+          FILE* fopen(const char *path, const char *mode)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  FILE* res = NULL;
+                  if(packfs_open(packfs_ctx, path, &res) >= 0)
+                  {
+                      return res;
+                  }
+              }
+          
+              FILE* res = packfs_ctx->orig_fopen(path, mode);
+              return res;
+          }
+          
+          int fileno(FILE *stream)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              
+              int res = packfs_ctx->orig_fileno(stream);
+              
+              if(!packfs_ctx->disabled && res < 0)
+              {        
+                  int* ptr = packfs_find(packfs_ctx, -1, stream);
+                  res = ptr == NULL ? -1 : (*ptr);
+              }
+              
+              return res;
+          }
+          
+          int open(const char *path, int flags, ...)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  int res = packfs_open(packfs_ctx, path, NULL);
+                  if(res >= 0)
+                  { 
+                      return res;
+                  }
+              }
+              
+              int res = packfs_ctx->orig_open(path, flags);
+              return res;
+          }
+          
+          int close(int fd)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  int res = packfs_close(packfs_ctx, fd);
+                  if(res >= -1)
+                  {
+                      return res;
+                  }
+              }
+              
+              int res = packfs_ctx->orig_close(fd);
+              return res;
+          }
+          
+          
+          ssize_t read(int fd, void* buf, size_t count)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  ssize_t res = packfs_read(packfs_ctx, fd, buf, count);
+                  if(res >= 0)
+                  {
+                      return res;
+                  }
+              }
+          
+              ssize_t res = packfs_ctx->orig_read(fd, buf, count);
+              return res;
+          }
+          
+          off_t lseek(int fd, off_t offset, int whence)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  int res = packfs_seek(packfs_ctx, fd, (long)offset, whence);
+                  if(res >= 0)
+                  {
+                      return res;
+                  }
+              }
+          
+              off_t res = packfs_ctx->orig_lseek(fd, offset, whence);
+              return res;
+          }
+          
+          
+          int access(const char *path, int flags) 
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  int res = packfs_access(packfs_ctx, path);
+                  if(res >= -1)
+                  {
+                      return res;
+                  }
+              }
+              
+              int res = packfs_ctx->orig_access(path, flags); 
+              return res;
+          }
+          
+          int stat(const char *restrict path, struct stat *restrict statbuf)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  int res = packfs_stat(packfs_ctx, path, -1, statbuf);
+                  if(res >= -1)
+                  {
+                      return res;
+                  }
+              }
+          
+              int res = packfs_ctx->orig_stat(path, statbuf);
+              return res;
+          }
+          
+          int fstat(int fd, struct stat * statbuf)
+          {
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              if(!packfs_ctx->disabled)
+              {
+                  int res = packfs_stat(packfs_ctx, NULL, fd, statbuf);
+                  if(res >= -1)
+                  {
+                      return res;
+                  }
+              }
+              
+              int res = packfs_ctx->orig_fstat(fd, statbuf);
+              return res;
+          }
+          
+          #include <EXTERN.h>
+          #include <perl.h>
+          #include <XSUB.h>
+          
+          // #include <xsinit.c>
+          void xs_init(pTHX) //EXTERN_C 
+          {
+              static const char file[] = __FILE__;
+              dXSUB_SYS;
+              PERL_UNUSED_CONTEXT;
+              
+              extern void boot_DynaLoader(pTHX_ CV* cv); newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+             
+              extern void boot_mro(pTHX_ CV* cv); newXS("mro::bootstrap", boot_mro, file);
+              extern void boot_Devel__Peek(pTHX_ CV* cv); newXS("Devel::Peek", boot_Devel__Peek, file);
+              extern void boot_File__DosGlob(pTHX_ CV* cv); newXS("File::DosGlob::bootstrap", boot_File__DosGlob, file);
+              extern void boot_File__Glob(pTHX_ CV* cv); newXS("File::Glob::bootstrap", boot_File__Glob, file);
+              extern void boot_Sys__Syslog(pTHX_ CV* cv); newXS("Sys::Syslog::bootstrap", boot_Sys__Syslog, file);
+              extern void boot_Sys__Hostname(pTHX_ CV* cv); newXS("Sys::Hostname::bootstrap", boot_Sys__Hostname, file);
+              extern void boot_PerlIO__via(pTHX_ CV* cv); newXS("PerlIO::via::bootstrap", boot_PerlIO__via, file);
+              extern void boot_PerlIO__mmap(pTHX_ CV* cv); newXS("PerlIO::mmap::bootstrap", boot_PerlIO__mmap, file);
+              extern void boot_PerlIO__encoding(pTHX_ CV* cv); newXS("PerlIO::encoding::bootstrap", boot_PerlIO__encoding, file);
+              //extern void boot_PerlIO__scalar(pTHX_ CV* cv); newXS("PerlIO::scalar::bootstrap", boot_PerlIO__scalar, file);
+              //extern void boot_PerlIO__utf8_strict(pTHX_ CV* cv); newXS("PerlIO::utf8_strict::bootstrap", boot_PerlIO__utf8_strict, file);
+              extern void boot_B(pTHX_ CV* cv); newXS("B::bootstrap", boot_B, file);
+              extern void boot_attributes(pTHX_ CV* cv); newXS("attributes::bootstrap", boot_attributes, file);
+              extern void boot_Unicode__Normalize(pTHX_ CV* cv); newXS("Unicode::Normalize::bootstrap", boot_Unicode__Normalize, file);
+              extern void boot_Unicode__Collate(pTHX_ CV* cv); newXS("Unicode::Collate::bootstrap", boot_Unicode__Collate, file);
+              extern void boot_Unicode__LineBreak(pTHX_ CV* cv); newXS("Unicode::LineBreak::bootstrap", boot_Unicode__LineBreak, file);
+              extern void boot_threads(pTHX_ CV* cv); newXS("threads::bootstrap", boot_threads, file);
+              extern void boot_threads__shared(pTHX_ CV* cv); newXS("threads::shared::bootstrap", boot_threads__shared, file);
+              extern void boot_IPC__SysV(pTHX_ CV* cv); newXS("IPC::SysV::bootstrap", boot_IPC__SysV, file);
+              extern void boot_re(pTHX_ CV* cv); newXS("re::bootstrap", boot_re, file);
+              extern void boot_Digest__MD5(pTHX_ CV* cv); newXS("Digest::MD5::bootstrap", boot_Digest__MD5, file);
+              extern void boot_Digest__SHA(pTHX_ CV* cv); newXS("Digest::SHA::bootstrap", boot_Digest__SHA, file);
+              extern void boot_SDBM_File(pTHX_ CV* cv); newXS("SDBM_File::bootstrap", boot_SDBM_File, file);
+              extern void boot_Math__BigInt__FastCalc(pTHX_ CV* cv); newXS("Math::BigInt::FastCalc::bootstrap", boot_Math__BigInt__FastCalc, file);
+              extern void boot_Data__Dumper(pTHX_ CV* cv); newXS("Data::Dumper::bootstrap", boot_Data__Dumper, file);
+              extern void boot_I18N__Langinfo(pTHX_ CV* cv); newXS("I18N::Langinfo::bootstrap", boot_I18N__Langinfo, file);
+              extern void boot_Time__HiRes(pTHX_ CV* cv); newXS("Time::HiRes::bootstrap", boot_Time__HiRes, file);
+              extern void boot_Time__Piece(pTHX_ CV* cv); newXS("Time::Piece::bootstrap", boot_Time__Piece, file);
+              extern void boot_IO(pTHX_ CV* cv); newXS("IO::bootstrap", boot_IO, file);
+              extern void boot_Socket(pTHX_ CV* cv); newXS("Socket::bootstrap", boot_Socket, file);
+              extern void boot_Hash__Util__FieldHash(pTHX_ CV* cv); newXS("Hash::Util::FieldHash::bootstrap", boot_Hash__Util__FieldHash, file); 
+              extern void boot_Hash__Util(pTHX_ CV* cv); newXS("Hash::Util::bootstrap", boot_Hash__Util, file);
+              extern void boot_Filter__Util__Call(pTHX_ CV* cv); newXS("Filter::Util::Call::bootstrap", boot_Filter__Util__Call, file);
+              extern void boot_POSIX(pTHX_ CV* cv); newXS("POSIX::bootstrap", boot_POSIX, file);
+              extern void boot_Encode__Unicode(pTHX_ CV* cv); newXS("Encode::Unicode::bootstrap", boot_Encode__Unicode, file);
+              extern void boot_Encode(pTHX_ CV* cv); newXS("Encode::bootstrap", boot_Encode, file);
+              extern void boot_Encode__JP(pTHX_ CV* cv); newXS("Encode::JP::bootstrap", boot_Encode__JP, file);
+              extern void boot_Encode__KR(pTHX_ CV* cv); newXS("Encode::KR::bootstrap", boot_Encode__KR, file);
+              extern void boot_Encode__EBCDIC(pTHX_ CV* cv); newXS("Encode::EBCDIC::bootstrap", boot_Encode__EBCDIC, file);
+              extern void boot_Encode__CN(pTHX_ CV* cv); newXS("Encode::CN::bootstrap", boot_Encode__CN, file);
+              extern void boot_Encode__Symbol(pTHX_ CV* cv); newXS("Encode::Symbol::bootstrap", boot_Encode__Symbol, file);
+              extern void boot_Encode__Byte(pTHX_ CV* cv); newXS("Encode::Byte::bootstrap", boot_Encode__Byte, file);
+              extern void boot_Encode__TW(pTHX_ CV* cv); newXS("Encode::TW::bootstrap", boot_Encode__TW, file);
+              extern void boot_Encode__EUCJPASCII(pTHX_ CV* cv); newXS("Encode::EUCJPASCII::bootstrap", boot_Encode__EUCJPASCII, file);
+              extern void boot_Encode__JIS2K(pTHX_ CV* cv); newXS("Encode::JIS2K::bootstrap", boot_Encode__JIS2K, file);
+              extern void boot_Encode__HanExtra(pTHX_ CV* cv); newXS("Encode::HanExtra::bootstrap", boot_Encode__HanExtra, file);
+              extern void boot_Compress__Raw__Zlib(pTHX_ CV* cv); newXS("Compress::Raw::Zlib::bootstrap", boot_Compress__Raw__Zlib, file);
+              extern void boot_Compress__Raw__Bzip2(pTHX_ CV* cv); newXS("Compress::Raw::Bzip2::bootstrap", boot_Compress__Raw__Bzip2, file);
+              extern void boot_MIME__Base64(pTHX_ CV* cv); newXS("MIME::Base64::bootstrap", boot_MIME__Base64, file);
+              extern void boot_Cwd(pTHX_ CV* cv); newXS("Cwd::bootstrap", boot_Cwd, file);
+              extern void boot_Storable(pTHX_ CV* cv); newXS("Storable::bootstrap", boot_Storable, file);
+              extern void boot_List__Util(pTHX_ CV* cv); newXS("List::Util::bootstrap", boot_List__Util, file);
+              //extern void boot_List__SomeUtils(pTHX_ CV* cv); newXS("List::SomeUtils::bootstrap", boot_List__SomeUtils, file);
+              //extern void boot_List__MoreUtils(pTHX_ CV* cv); newXS("List::MoreUtils::bootstrap", boot_List__MoreUtils, file);
+              extern void boot_Fcntl(pTHX_ CV* cv); newXS("Fcntl::bootstrap", boot_Fcntl, file);
+              extern void boot_Opcode(pTHX_ CV* cv); newXS("Opcode::bootstrap", boot_Opcode, file);
+              
+              extern void boot_DateTime(pTHX_ CV* cv); newXS("DateTime::bootstrap", boot_DateTime, file);
+              extern void boot_Clone(pTHX_ CV* cv); newXS("Clone::bootstrap", boot_Clone, file);
+              extern void boot_autovivification(pTHX_ CV* cv); newXS("autovivification::bootstrap", boot_autovivification, file);
+              extern void boot_PadWalker(pTHX_ CV* cv); newXS("PadWalker::bootstrap", boot_PadWalker, file);
+          
+              extern void boot_Devel__Caller(pTHX_ CV* cv); newXS("Devel::Caller::bootstrap", boot_Devel__Caller, file);
+              extern void boot_Devel__LexAlias(pTHX_ CV* cv); newXS("Devel::LexAlias::bootstrap", boot_Devel__LexAlias, file);
+              extern void boot_Params__Util(pTHX_ CV* cv); newXS("Params::Util::bootstrap", boot_Params__Util, file);
+              extern void boot_HTML__Parser(pTHX_ CV* cv); newXS("HTML::Parser::bootstrap", boot_HTML__Parser, file);
+              extern void boot_Class__XSAccessor(pTHX_ CV* cv); newXS("Class::XSAccessor::bootstrap", boot_Class__XSAccessor, file);
+              extern void boot_Sort__Key(pTHX_ CV* cv); newXS("Sort::Key::bootstrap", boot_Sort__Key, file);
+              extern void boot_Variable__Magic(pTHX_ CV* cv); newXS("Variable::Magic::bootstrap", boot_Variable__Magic, file);
+          
+              extern void boot_XML__LibXML(pTHX_ CV* cv); newXS("XML::LibXML::bootstrap", boot_XML__LibXML, file);
+              extern void boot_XML__LibXSLT(pTHX_ CV* cv); newXS("XML::LibXSLT::bootstrap", boot_XML__LibXSLT, file);
+              extern void boot_XML__Parser__Expat(pTHX_ CV* cv); newXS("XML::Parser::Expat::bootstrap", boot_XML__Parser__Expat, file); 
+          
+              extern void boot_Text__BibTeX(pTHX_ CV* cv); newXS("Text::BibTeX::bootstrap", boot_Text__BibTeX, file);
+              // extern void boot_Text__CSV_XS(pTHX_ CV* cv); newXS("Text::CSV_XS::bootstrap", boot_Text__CSV_XS, file);
+              // extern void boot_DBI(pTHX_ CV* cv); newXS("DBI::bootstrap", boot_DBI, file);
+              // extern void boot_DBD__SQLite(pTHX_ CV* cv); newXS("DBD::SQLite::bootstrap", boot_DBD__SQLite, file);
+              // extern void boot_Net__SSLeay(pTHX_ CV* cv); newXS("Net::SSLeay::bootstrap", boot_Net__SSLeay, file);
+              // extern void boot_Package__Stash__XS(pTHX_ CV* cv); newXS("Package::Stash::XS::bootstrap", boot_Package__Stash__XS, file); 
+              // extern void boot_Params__Validate__XS(pTHX_ CV* cv); newXS("Params::Validate::XS::bootstrap", boot_Params__Validate__XS, file); 
+              // extern void boot_Filter__Util__Call(pTHX_ CV* cv); newXS("Filter::Util::Call::bootstrap", boot_Filter__Util__Call, file); 
+              // extern void boot_IO__Compress__Brotli(pTHX_ CV* cv); newXS("IO::Compress::Brotli::bootstrap", boot_IO__Compress__Brotli, file); 
+          }
+          
+          int main(int argc, char *argv[], char* envp[])
+          {
+              if(argc < 1)
+                  return -1;
+              
+              struct packfs_context* packfs_ctx = packfs_ensure_context();
+              
+              static char bin_biber[packfs_filepath_max_len];
+              static char* myperl_argv[128];
+              strcpy(bin_biber, packfs_ctx->packfs_builtin_prefix);
+              strcat(bin_biber, "/bin/biber");
+              myperl_argv[0] = argv[0];
+              myperl_argv[1] = bin_biber;
+              for(int i = 1; i < argc; i++) myperl_argv[1 + i] = argv[i];
+              int myperl_argc = argc + 1;
+              
+              PERL_SYS_INIT3(&argc, &argv, &envp);
+              PerlInterpreter* myperl = perl_alloc();
+              if(myperl == NULL)
+                  return -1;
+              perl_construct(myperl);
+              PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+          
+              int res = perl_parse(myperl, xs_init, myperl_argc, myperl_argv, envp);
+              if(res == 0)
+                  res = perl_run(myperl); // error if res != 0 (or stricter in case exit(0) was called from perl code): (res & 0xFF) != 0: 
+          
+              PL_perl_destruct_level = 0;
+              res = perl_destruct(myperl);
+              perl_free(myperl);
+              PERL_SYS_TERM();
+          
+              return res;
+          }
+          EOF
+      
+      - name: Install Perl static
+        shell: bash
+        run: |
+          cp $(cc -print-file-name=libc.a) libc_perlpack.a
+          ar x libc_perlpack.a  open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+          objcopy --redefine-sym open=orig_open     open.lo
+          objcopy --redefine-sym close=orig_close   close.lo
+          objcopy --redefine-sym read=orig_read     read.lo
+          objcopy --redefine-sym stat=orig_stat     stat.lo
+          objcopy --redefine-sym fstat=orig_fstat   fstat.lo
+          objcopy --redefine-sym lseek=orig_lseek   lseek.lo
+          objcopy --redefine-sym access=orig_access access.lo
+          objcopy --redefine-sym fopen=orig_fopen   fopen.lo
+          objcopy --redefine-sym fileno=orig_fileno fileno.lo
+          ar rs libc_perlpack.a open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
+          
+          #export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/localperlstatic
+          export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busybiber/packfs
+          export PERLPREFIX=/__w/busybiber/busybiber/packfs
+          export LD_LIBRARY_PATH=$PERLINSTALLPREFIX/lib:$LD_LIBRARY_PATH
+
+          mkdir perlsourcestatic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcestatic
+          export BUILD_ZLIB=0
+          cd perlsourcestatic && sh +x ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix="$PERLPREFIX" -Dinstallprefix="$PERLINSTALLPREFIX" -Dusedevel -Uversiononly -Dlibs="-lpthread -ldl -lm -lutil -lc /lib/libz.a" -Dstatic_ext="mro Devel/Peek File/DosGlob File/Glob Sys/Syslog Sys/Hostname PerlIO/via PerlIO/mmap PerlIO/encoding B attributes Unicode/Normalize Unicode/Collate threads threads/shared IPC/SysV re Digest/MD5 Digest/SHA SDBM_File Math/BigInt/FastCalc Data/Dumper I18N/Langinfo Time/HiRes Time/Piece IO Socket Hash/Util/FieldHash Hash/Util Filter/Util/Call POSIX Encode/Unicode Encode Encode/JP Encode/KR Encode/EBCDIC Encode/CN Encode/Symbol Encode/Byte Encode/TW Compress/Raw/Zlib Compress/Raw/Bzip2 MIME/Base64 Cwd Storable List/Util Fcntl Opcode" && cd -
+          make -C perlsourcestatic
+          make -C perlsourcestatic install
+          echo BEFORELDD && ldd $PERLINSTALLPREFIX/bin/perl
+          
+          $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf ExtUtils::LibBuilder DBI  Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder IO::String Lingua::Translit Parse::RecDescent Regexp::Common Text::Roman Class::Accessor List::AllUtils LWP::Protocol::https Business::ISBN Business::ISMN Mozilla::CA XML::SAX::Exception MIME::Charset Business::ISSN
+          # XML::Writer not installed, unneded: SDBM_File Time/Piece Storable
+
+          printf "o conf makepl_arg LINKTYPE=static\nnotest force install %s\n" Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra autovivification Devel::Caller Devel::LexAlias List::MoreUtils::XS List::SomeUtils::XS Clone PadWalker DateTime HTML::Parser Unicode::LineBreak Variable::Magic Log::Log4perl Class::XSAccessor Package::Stash::XS Params::Util Text::CSV_XS Text::CSV Net::SSLeay DBI DBD::SQLite XML::LibXML XML::LibXSLT XML::Parser::Expat XML::LibXML::Simple PerlIO::utf8_strict Sub::Identify Storable | $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan 
+          
+          mkdir -p myext/URL_Params_Validate_XS && curl -L $URL_Params_Validate_XS | tar -xzf - --strip-components=1 --directory myext/URL_Params_Validate_XS && cd myext/URL_Params_Validate_XS
+          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
+          ar crs $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/Params/Validate/XS/XS.a lib/Params/Validate/XS.o
+          cd -
+          
+          mkdir -p myext/URL_Text_BibTeX && curl -L $URL_Text_BibTeX | tar -xzf - --strip-components=1 --directory myext/URL_Text_BibTeX && cd myext/URL_Text_BibTeX
+          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
+          ar crs $PERLINSTALLPREFIX/lib/libbtparse.a btparse/src/init.o btparse/src/input.o btparse/src/bibtex.o btparse/src/err.o btparse/src/scan.o btparse/src/error.o btparse/src/lex_auxiliary.o btparse/src/parse_auxiliary.o btparse/src/bibtex_ast.o btparse/src/sym.o btparse/src/util.o btparse/src/postprocess.o btparse/src/macros.o btparse/src/traversal.o btparse/src/modify.o btparse/src/names.o btparse/src/tex_tree.o btparse/src/string_util.o btparse/src/format_name.o
+          ar crs $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/Text/BibTeX/BibTeX.a xscode/BibTeX.o xscode/btxs_support.o
+          cd -
+          
+          mkdir -p myext/URL_IO_Compress_Brotli && curl -L $URL_IO_Compress_Brotli | tar -xzf - --strip-components=1 --directory myext/URL_IO_Compress_Brotli && cd myext/URL_IO_Compress_Brotli
+          $PERLINSTALLPREFIX/bin/perl Makefile.PL LINKTYPE=static
+          # https://github.com/timlegge/perl-IO-Compress-Brotli/issues/5
+          sed -i 's/$(CP) $(MYEXTLIB) "$@"/$(CP) $(MYEXTLIB) "$(dir $@)"/' Makefile
+          make && make install
+          cd -
+          
+          mkdir -p myext/URL_Biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory myext/URL_Biber && cd myext/URL_Biber
+          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
+          cd -
+
+          ucpath="$PERLINSTALLPREFIX/lib/perl5/$PERLVER/Unicode/Collate"
+          mkdir biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biber
+          mkdir -p packfs/lib/Biber packfs/lib/Biber/LaTeX packfs/lib/Unicode/Collate packfs/lib/Mozilla/CA packfs/lib/auto packfs/lib/Business/ISBN
+          cp biber/data/biber-tool.conf biber/data/schemata/config.rnc biber/data/schemata/config.rng biber/data/schemata/bcf.rnc biber/data/schemata/bcf.rng biber/data/bcf.xsl packfs/lib/Biber
+          cp biber/lib/Biber/LaTeX/recode_data.xml packfs/lib/Biber/LaTeX
+          
+          cp -r $ucpath/Locale $ucpath/CJK $ucpath/allkeys.txt $ucpath/keys.txt packfs/lib/Unicode/Collate
+          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Mozilla/CA/cacert.pem packfs/lib/Mozilla/CA/cacert.pem
+          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/PerlIO packfs/lib/PerlIO
+          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/PerlIO packfs/lib/auto/PerlIO
+          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml packfs/lib/Business/ISBN/RangeMessage.xml
+
+          $PERLINSTALLPREFIX/bin/perl perlpack.pl -i packfs -o perlpack.h --prefix $PERLPREFIX --ld ld --skip '\.a|\.so|\.pod|\.ld|\.h'
+          cc -o busybiber busybiber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a libc_perlpack.a -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc  @perlpack.h.txt \
+            $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
+            $(printf "$PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/%s " mro/mro.a File/Glob/Glob.a File/DosGlob/DosGlob.a I18N/Langinfo/Langinfo.a SDBM_File/SDBM_File.a Compress/Raw/Zlib/Zlib.a Compress/Raw/Bzip2/Bzip2.a POSIX/POSIX.a Fcntl/Fcntl.a Data/Dumper/Dumper.a Math/BigInt/FastCalc/FastCalc.a IO/IO.a Opcode/Opcode.a Socket/Socket.a threads/shared/shared.a threads/threads.a MIME/Base64/Base64.a Time/HiRes/HiRes.a Time/Piece/Piece.a Filter/Util/Call/Call.a List/Util/Util.a Unicode/Collate/Collate.a Unicode/Normalize/Normalize.a B/B.a Devel/Peek/Peek.a Storable/Storable.a attributes/attributes.a re/re.a Hash/Util/Util.a Hash/Util/FieldHash/FieldHash.a IPC/SysV/SysV.a PerlIO/encoding/encoding.a PerlIO/mmap/mmap.a PerlIO/via/via.a Sys/Hostname/Hostname.a Sys/Syslog/Syslog.a Encode/KR/KR.a Encode/JP/JP.a Encode/Byte/Byte.a Encode/CN/CN.a Encode/Encode.a Encode/Unicode/Unicode.a Encode/Symbol/Symbol.a Encode/EBCDIC/EBCDIC.a Encode/TW/TW.a Cwd/Cwd.a Digest/MD5/MD5.a Digest/SHA/SHA.a) \
+            $PERLINSTALLPREFIX/lib/libbtparse.a \
+            $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/CORE/libperl.a \
+            /usr/lib/libxslt.a \
+            /usr/lib/libexslt.a \
+            /usr/lib/libexpat.a \
+            /usr/lib/libcrypto.a /usr/lib/libgcrypt.a /usr/lib/libgpg-error.a \
+            /usr/lib/libxml2.a \
+            /lib/libz.a \
+            /usr/lib/liblzma.a \
+            /usr/lib/libssl.a
+          ./busybiber --help
+          cd biber/testfiles && ../../busybiber --validate-datamodel --convert-control test && test -f test.bcf.html
+
+      - name: Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: busybiber
+          path: |
+            busybiber
+            perlpack.h
+            biber/testfiles/
