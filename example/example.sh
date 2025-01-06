@@ -4,6 +4,7 @@ export BUSYTEX=$1
 export ENGINES="${@:-pdflatex xelatex luahbtex}"
 
 export TEXMFLOG=$PWD/texmf.log
+# export TEXINPUTS=.:./example/
 
 if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
