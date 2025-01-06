@@ -14,16 +14,16 @@ for name in mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl; do
     mv $(basename $@)/texmf-dist/scripts/texlive/$name $(basename $@)/$BINARCH_native/$(basename $name)
 done
 
-echo selected_scheme scheme-basic                                   > texlive-basic.profile
-echo TEXDIR $(ROOT)/$(basename $@)                                 >> texlive-basic.profile 
-echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> texlive-basic.profile 
-echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> texlive-basic.profile  
-echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> texlive-basic.profile  
-echo "collection-xetex  1"                                         >> texlive-basic.profile  
-echo "collection-latex  1"                                         >> texlive-basic.profile  
-echo "collection-luatex 1"                                         >> texlive-basic.profile  
+echo selected_scheme scheme-basic                                  > texlive-dist.profile
+echo TEXDIR $(ROOT)/$(basename $@)                                 >> texlive-dist.profile 
+echo TEXMFLOCAL $(ROOT)/$(basename $@)/texmf-dist/texmf-local      >> texlive-dist.profile 
+echo TEXMFSYSVAR $(ROOT)/$(basename $@)/texmf-dist/texmf-var       >> texlive-dist.profile  
+echo TEXMFSYSCONFIG $(ROOT)/$(basename $@)/texmf-dist/texmf-config >> texlive-dist.profile  
+echo "collection-xetex  1"                                         >> texlive-dist.profile  
+echo "collection-latex  1"                                         >> texlive-dist.profile  
+echo "collection-luatex 1"                                         >> texlive-dist.profile  
 
-TEXLIVE_INSTALL_NO_RESUME=1 perl installer/install-tl --repository source/texmfrepo --profile texlive-basic.profile --custom-bin $(ROOT)/$(basename $@)/$BINARCH_native --no-doc-install --no-src-install
+TEXLIVE_INSTALL_NO_RESUME=1 perl installer/install-tl --repository source/texmfrepo --profile texlive-dist.profile --custom-bin $(ROOT)/$(basename $@)/$BINARCH_native --no-doc-install --no-src-install
 echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/texlive/texmf-dist/fonts/opentype</dir><dir>/texlive/texmf-dist/fonts/type1</dir></fontconfig>' > $(basename $@)/fonts.conf
 
 #mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
