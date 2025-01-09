@@ -474,7 +474,6 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) --no-doc-install --no-src-install # strace -f -s 128 
 	# 
 	##printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex lualatex   $$"@ > $(basename $@)/$(BINARCH_native)/luahbtex
-	##$(basename $@)/$(BINARCH_native)/fmtutil-sys --byengine luahbtex
 	echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/texlive/texmf-dist/fonts/opentype</dir><dir>/texlive/texmf-dist/fonts/type1</dir></fontconfig>' > $(basename $@)/fonts.conf
 	-mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 	ls $(basename $@)/texmf-dist/texmf-var/web2c/*/*.fmt
