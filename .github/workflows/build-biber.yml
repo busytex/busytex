@@ -198,7 +198,7 @@ jobs:
           };
           struct packfs_context
           {
-              int initialized, disabled;
+              int packfs_initialized, packfs_disabled;
               
               int (*orig_open)(const char *path, int flags);
               int (*orig_close)(int fd);
@@ -226,7 +226,7 @@ jobs:
           {
               static struct packfs_context packfs_ctx = {0};
           
-              if(packfs_ctx.initialized != 1)
+              if(packfs_ctx.packfs_initialized != 1)
               {
                   extern int orig_open(const char *path, int flags); packfs_ctx.orig_open = orig_open;
                   extern int orig_close(int fd); packfs_ctx.orig_close = orig_close;
@@ -256,11 +256,11 @@ jobs:
                   packfs_ctx.packfs_builtin_safepaths = NULL;
                   packfs_ctx.packfs_builtin_abspaths = NULL;
                   
-                  packfs_ctx.initialized = 1;
-                  packfs_ctx.disabled = 1;
+                  packfs_ctx.packfs_initialized = 1;
+                  packfs_ctx.packfs_disabled = 1;
           
           #ifdef PACKFS_BUILTIN_PREFIX
-                  packfs_ctx.disabled = 0;
+                  packfs_ctx.packfs_disabled = 0;
                   packfs_ctx.packfs_builtin_files_num = packfs_builtin_files_num;
                   packfs_ctx.packfs_builtin_starts = packfs_builtin_starts;
                   packfs_ctx.packfs_builtin_ends = packfs_builtin_ends;
@@ -457,7 +457,7 @@ jobs:
           FILE* fopen(const char *path, const char *mode)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   FILE* res = NULL;
                   if(packfs_open(packfs_ctx, path, &res) >= 0)
@@ -476,7 +476,7 @@ jobs:
               
               int res = packfs_ctx->orig_fileno(stream);
               
-              if(!packfs_ctx->disabled && res < 0)
+              if(!packfs_ctx->packfs_disabled && res < 0)
               {        
                   int* ptr = packfs_find(packfs_ctx, -1, stream);
                   res = ptr == NULL ? -1 : (*ptr);
@@ -488,7 +488,7 @@ jobs:
           int open(const char *path, int flags, ...)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   int res = packfs_open(packfs_ctx, path, NULL);
                   if(res >= 0)
@@ -504,7 +504,7 @@ jobs:
           int close(int fd)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   int res = packfs_close(packfs_ctx, fd);
                   if(res >= -1)
@@ -521,7 +521,7 @@ jobs:
           ssize_t read(int fd, void* buf, size_t count)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   ssize_t res = packfs_read(packfs_ctx, fd, buf, count);
                   if(res >= 0)
@@ -537,7 +537,7 @@ jobs:
           off_t lseek(int fd, off_t offset, int whence)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   int res = packfs_seek(packfs_ctx, fd, (long)offset, whence);
                   if(res >= 0)
@@ -554,7 +554,7 @@ jobs:
           int access(const char *path, int flags) 
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   int res = packfs_access(packfs_ctx, path);
                   if(res >= -1)
@@ -570,7 +570,7 @@ jobs:
           int stat(const char *restrict path, struct stat *restrict statbuf)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   int res = packfs_stat(packfs_ctx, path, -1, statbuf);
                   if(res >= -1)
@@ -586,7 +586,7 @@ jobs:
           int fstat(int fd, struct stat * statbuf)
           {
               struct packfs_context* packfs_ctx = packfs_ensure_context();
-              if(!packfs_ctx->disabled)
+              if(!packfs_ctx->packfs_disabled)
               {
                   int res = packfs_stat(packfs_ctx, NULL, fd, statbuf);
                   if(res >= -1)
