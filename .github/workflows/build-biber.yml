@@ -1,4 +1,4 @@
-name: biber
+name: build-biber
 
 on: workflow_dispatch
 # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
