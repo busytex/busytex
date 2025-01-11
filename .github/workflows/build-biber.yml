@@ -103,7 +103,7 @@ jobs:
       - name: Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: buildbiber
+          name: dynamicbiber
           path: biberpp/biber
 
   staticbiber:
@@ -817,7 +817,7 @@ jobs:
       - name: Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: busybiber
+          name: staticbiber
           path: |
             busybiber
             perlpack.h
