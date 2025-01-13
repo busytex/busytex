@@ -180,19 +180,6 @@ jobs:
       - name: Install Perl static
         #shell: bash
         run: |
-          cp $(cc -print-file-name=libc.a) libc_perlpack.a
-          ar x libc_perlpack.a  open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
-          objcopy --redefine-sym open=orig_open     open.lo
-          objcopy --redefine-sym close=orig_close   close.lo
-          objcopy --redefine-sym read=orig_read     read.lo
-          objcopy --redefine-sym stat=orig_stat     stat.lo
-          objcopy --redefine-sym fstat=orig_fstat   fstat.lo
-          objcopy --redefine-sym lseek=orig_lseek   lseek.lo
-          objcopy --redefine-sym access=orig_access access.lo
-          objcopy --redefine-sym fopen=orig_fopen   fopen.lo
-          objcopy --redefine-sym fileno=orig_fileno fileno.lo
-          ar rs libc_perlpack.a open.lo close.lo read.lo stat.lo fstat.lo lseek.lo access.lo fopen.lo fileno.lo
-          
           export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busytex/packfs
           export PERLPREFIX=$PERLINSTALLPREFIX
           #export PERLPREFIX=/__w/busytex/busytex/packfs
@@ -242,7 +229,7 @@ jobs:
           cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml packfs/lib/Business/ISBN/RangeMessage.xml
 
           $PERLINSTALLPREFIX/bin/perl perlpack.pl -i packfs -o perlpack.h --prefix $PERLPREFIX --ld ld --skip '\.a$|\.so$|\.pod$|\.ld$|\.h$' # |\/bin\/
-          cc -o busybiber biber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a libc_perlpack.a -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc  @perlpack.h.txt \
+          cc -o busybiber biber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc  -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @perlpack.h.txt \
             $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
             $(printf "$PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/%s " mro/mro.a File/Glob/Glob.a File/DosGlob/DosGlob.a I18N/Langinfo/Langinfo.a SDBM_File/SDBM_File.a Compress/Raw/Zlib/Zlib.a Compress/Raw/Bzip2/Bzip2.a POSIX/POSIX.a Fcntl/Fcntl.a Data/Dumper/Dumper.a Math/BigInt/FastCalc/FastCalc.a IO/IO.a Opcode/Opcode.a Socket/Socket.a threads/shared/shared.a threads/threads.a MIME/Base64/Base64.a Time/HiRes/HiRes.a Time/Piece/Piece.a Filter/Util/Call/Call.a List/Util/Util.a Unicode/Collate/Collate.a Unicode/Normalize/Normalize.a B/B.a Devel/Peek/Peek.a Storable/Storable.a attributes/attributes.a re/re.a Hash/Util/Util.a Hash/Util/FieldHash/FieldHash.a IPC/SysV/SysV.a PerlIO/encoding/encoding.a PerlIO/mmap/mmap.a PerlIO/via/via.a Sys/Hostname/Hostname.a Sys/Syslog/Syslog.a Encode/KR/KR.a Encode/JP/JP.a Encode/Byte/Byte.a Encode/CN/CN.a Encode/Encode.a Encode/Unicode/Unicode.a Encode/Symbol/Symbol.a Encode/EBCDIC/EBCDIC.a Encode/TW/TW.a Cwd/Cwd.a Digest/MD5/MD5.a Digest/SHA/SHA.a) \
             $PERLINSTALLPREFIX/lib/libbtparse.a \

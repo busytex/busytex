@@ -14,15 +14,15 @@
 #include "perlpack.h"
 // size_t packfs_builtin_files_num = 0; const char* packfs_builtin_safepaths[] = {}; const char* packfs_builtin_abspaths[] = {}; const char* packfs_builtin_starts[] = {}; const char* packfs_builtin_ends[] = {};
 
-extern int orig_open(const char *path, int flags);                              
-extern int orig_close(int fd);                                                  
-extern ssize_t orig_read(int fd, void* buf, size_t count);                      
-extern int orig_access(const char *path, int flags);                            
-extern off_t orig_lseek(int fd, off_t offset, int whence);                      
-extern int orig_stat(const char *restrict path, struct stat *restrict statbuf); 
-extern int orig_fstat(int fd, struct stat * statbuf);                           
-extern FILE* orig_fopen(const char *path, const char *mode);                    
-extern int orig_fileno(FILE* stream);                                           
+extern int      __real_open(const char *path, int flags);                               
+extern int      __real_close(int fd);                                                   
+extern ssize_t  __real_read(int fd, void* buf, size_t count);                           
+extern int      __real_access(const char *path, int flags);                             
+extern off_t    __real_lseek(int fd, off_t offset, int whence);                         
+extern int      __real_stat(const char *restrict path, struct stat *restrict statbuf);  
+extern int      __real_fstat(int fd, struct stat * statbuf);                            
+extern FILE*    __real_fopen(const char *path, const char *mode);                       
+extern int      __real_fileno(FILE* stream);                                            
     
 enum {
     packfs_filefd_min = 1000000000, 
@@ -30,7 +30,7 @@ enum {
     packfs_filepath_max_len = 128, 
 };
 
-int packfs_initialized = 1, packfs_disabled = 0;
+int packfs_enabled = 1;
 int packfs_filefd[packfs_filefd_max - packfs_filefd_min];
 FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
 size_t packfs_filesize[packfs_filefd_max - packfs_filefd_min];
@@ -224,9 +224,9 @@ int packfs_stat(const char* path, int fd, struct stat *restrict statbuf)
 
 ///////////
 
-FILE* fopen(const char *path, const char *mode)
+FILE* __wrap_fopen(const char *path, const char *mode)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         FILE* res = NULL;
         if(packfs_open(path, &res) >= 0)
@@ -235,15 +235,15 @@ FILE* fopen(const char *path, const char *mode)
         }
     }
 
-    FILE* res = orig_fopen(path, mode);
+    FILE* res = __real_fopen(path, mode);
     return res;
 }
 
-int fileno(FILE *stream)
+int __wrap_fileno(FILE *stream)
 {
-    int res = orig_fileno(stream);
+    int res = __real_fileno(stream);
     
-    if(!packfs_disabled && res < 0)
+    if(packfs_enabled && res < 0)
     {        
         int* ptr = packfs_find(-1, stream);
         res = ptr == NULL ? -1 : (*ptr);
@@ -252,9 +252,9 @@ int fileno(FILE *stream)
     return res;
 }
 
-int open(const char *path, int flags, ...)
+int __wrap_open(const char *path, int flags, ...)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         int res = packfs_open(path, NULL);
         if(res >= 0)
@@ -263,13 +263,13 @@ int open(const char *path, int flags, ...)
         }
     }
     
-    int res = orig_open(path, flags);
+    int res = __real_open(path, flags);
     return res;
 }
 
-int close(int fd)
+int __wrap_close(int fd)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         int res = packfs_close(fd);
         if(res >= -1)
@@ -278,14 +278,14 @@ int close(int fd)
         }
     }
     
-    int res = orig_close(fd);
+    int res = __real_close(fd);
     return res;
 }
 
 
-ssize_t read(int fd, void* buf, size_t count)
+ssize_t __wrap_read(int fd, void* buf, size_t count)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         ssize_t res = packfs_read(fd, buf, count);
         if(res >= 0)
@@ -294,13 +294,13 @@ ssize_t read(int fd, void* buf, size_t count)
         }
     }
 
-    ssize_t res = orig_read(fd, buf, count);
+    ssize_t res = __real_read(fd, buf, count);
     return res;
 }
 
-off_t lseek(int fd, off_t offset, int whence)
+off_t __wrap_lseek(int fd, off_t offset, int whence)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         int res = packfs_seek(fd, (long)offset, whence);
         if(res >= 0)
@@ -309,14 +309,14 @@ off_t lseek(int fd, off_t offset, int whence)
         }
     }
 
-    off_t res = orig_lseek(fd, offset, whence);
+    off_t res = __real_lseek(fd, offset, whence);
     return res;
 }
 
 
-int access(const char *path, int flags) 
+int __wrap_access(const char *path, int flags) 
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         int res = packfs_access(path);
         if(res >= -1)
@@ -325,13 +325,13 @@ int access(const char *path, int flags)
         }
     }
     
-    int res = orig_access(path, flags); 
+    int res = __real_access(path, flags); 
     return res;
 }
 
-int stat(const char *restrict path, struct stat *restrict statbuf)
+int __wrap_stat(const char *restrict path, struct stat *restrict statbuf)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         int res = packfs_stat(path, -1, statbuf);
         if(res >= -1)
@@ -340,13 +340,13 @@ int stat(const char *restrict path, struct stat *restrict statbuf)
         }
     }
 
-    int res = orig_stat(path, statbuf);
+    int res = __real_stat(path, statbuf);
     return res;
 }
 
-int fstat(int fd, struct stat * statbuf)
+int __wrap_fstat(int fd, struct stat * statbuf)
 {
-    if(!packfs_disabled)
+    if(packfs_enabled)
     {
         int res = packfs_stat(NULL, fd, statbuf);
         if(res >= -1)
@@ -355,7 +355,7 @@ int fstat(int fd, struct stat * statbuf)
         }
     }
     
-    int res = orig_fstat(fd, statbuf);
+    int res = __real_fstat(fd, statbuf);
     return res;
 }
 
