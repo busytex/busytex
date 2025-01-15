@@ -8,7 +8,9 @@ parser.add_argument('--input-path', '-i')
 parser.add_argument('--output-path', '-o')
 parser.add_argument('--prefix')
 parser.add_argument('--ld', default = 'ld')
-parser.add_argument('--skip', default = '')
+parser.add_argument('--include', default = '')
+parser.add_argument('--exclude', default = '')
+parser.add_argument('--exclude-executable', action = 'store_true')
 args = parser.parse_args()
 
 assert args.input_path and os.path.exists(args.input_path) and os.path.isdir(args.input_path), "Input path does not exist or is not a directory"
@@ -26,7 +28,15 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
         relpath = p.removeprefix(args.input_path).lstrip(os.path.sep)
         safepath = relpath.translate({ord('.') : '_', ord('-') : '_', ord('_') : '_', ord(os.path.sep) : '_'})
 
-        if not args.skip or not re.match('.+(' + args.skip + ')$', basename):
+        include = True
+        if args.inlude and re.match('.+(' + args.include + ')$', p):
+            include = True
+        elif args.exclude and re.match('.+(' + args.exclude + ')$', p):
+            include = False
+        elif args.exclude_executable and os.access(p, os.X_OK):
+            include = False
+
+        if include:
             safepaths.append(safepath)
             relpaths.append(relpath)
             objects.append(os.path.join(args.output_path + '.o', safepath + '.o'))

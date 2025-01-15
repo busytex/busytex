@@ -373,7 +373,7 @@ build/%/busytex build/%/busytex.js:
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/native/busytexextra: build/native/busytex build/native/libc_busypack.a build/texlive-extra.txt 
-	$(PYTHON) busypack.py -i build/texlive-extra/ -o busypack.h --prefix=/texlive --ld=$(LD_native) --skip '\.a|\.so|\.pod|\.ld|\.h|\.log'
+	$(PYTHON) busypack.py -i build/texlive-extra/ -o busypack.h --prefix=/texlive --ld=$(LD_native) --exclude '\.a|\.so|\.pod|\.ld|\.h|\.log' --exclude-executable
 	$(CC_native) -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 	$(CXX_native) -o $@ $<.o busypack.o build/native/libc_busypack.a  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) -Wl,--allow-multiple-definition -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt
 
@@ -460,7 +460,6 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
-	#
 	#mkdir -p $(ROOT)/source/texmfrepotmp; export TMPDIR=$(ROOT)/source/texmfrepotmp 
 	TEXLIVE_INSTALL_NO_RESUME=1 $(PERL) source/texmfrepo/install-tl --repository source/texmfrepo --profile build/texlive-$*.profile --custom-bin $(ROOT)/$(basename $@)/$(BINARCH_native) --no-doc-install --no-src-install # strace -f -s 128 
 	# 
@@ -510,7 +509,7 @@ build/native/texlivedependencies build/wasm/texlivedependencies:
 
 .PHONY: build/native/busytexapplets build/wasm/busytexapplets
 build/native/busytexapplets build/wasm/busytexapplets:
-	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a
+	$(MAKE) $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a && echo BEFORENM && $(NM_native) -D $(dir $@)texlive/texk/kpathsea/.libs/libkpathsea.a && echo AFTERNM
 	$(MAKE) $(dir $@)texlive/texk/web2c/lib/lib.a
 	#
 	$(MAKE) $(dir $@)texlive/texk/kpathsea/busytex_kpsewhich.o 
