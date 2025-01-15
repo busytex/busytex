@@ -63,7 +63,7 @@ int packfs_strncmp(const char* prefix, const char* path, size_t count)
     return (prefix != NULL && prefix[0] != '\0' && path != NULL && path[0] != '\0') ? strncmp(prefix, path, count) : 1;
 }
 
-int packfs_open(struct packfs_context* const char* path, FILE** out)
+int packfs_open(const char* path, FILE** out)
 {
     char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
 
@@ -100,7 +100,7 @@ int packfs_open(struct packfs_context* const char* path, FILE** out)
     return -1;
 }
 
-int packfs_close(struct packfs_context* int fd)
+int packfs_close(int fd)
 {
     if(fd < packfs_filefd_min || fd >= packfs_filefd_max)
         return -2;
@@ -119,7 +119,7 @@ int packfs_close(struct packfs_context* int fd)
     return -2;
 }
 
-void* packfs_find(struct packfs_context* int fd, FILE* ptr)
+void* packfs_find(int fd, FILE* ptr)
 {
     if(ptr != NULL)
     {
@@ -144,7 +144,7 @@ void* packfs_find(struct packfs_context* int fd, FILE* ptr)
     return NULL;
 }
 
-ssize_t packfs_read(struct packfs_context* int fd, void* buf, size_t count)
+ssize_t packfs_read(int fd, void* buf, size_t count)
 {
     FILE* ptr = packfs_find(fd, NULL);
     if(!ptr)
@@ -152,7 +152,7 @@ ssize_t packfs_read(struct packfs_context* int fd, void* buf, size_t count)
     return (ssize_t)fread(buf, 1, count, ptr);
 }
 
-int packfs_seek(struct packfs_context* int fd, long offset, int whence)
+int packfs_seek(int fd, long offset, int whence)
 {
     FILE* ptr = packfs_find(fd, NULL);
     if(!ptr)
@@ -160,7 +160,7 @@ int packfs_seek(struct packfs_context* int fd, long offset, int whence)
     return fseek(ptr, offset, whence);
 }
 
-int packfs_access(struct packfs_context* const char* path)
+int packfs_access(const char* path)
 {
     char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
 
@@ -177,7 +177,7 @@ int packfs_access(struct packfs_context* const char* path)
     return -2;
 }
 
-int packfs_stat(struct packfs_context* const char* path, int fd, struct stat *restrict statbuf)
+int packfs_stat(const char* path, int fd, struct stat *restrict statbuf)
 {
     char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
     
