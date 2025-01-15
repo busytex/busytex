@@ -18,14 +18,16 @@ assert args.output_path, "Output path not specified"
 os.makedirs(args.output_path + '.o', exist_ok = True)
 objects, relpaths_dirs, safepaths, relpaths = [], [], [], []
 
+# problem: can produce the same symbol name because of this mapping
+translate = {ord('.') : '_', ord('-') : '_', ord('_') : '__', ord(os.path.sep) : '_'}
+
 for (dirpath, dirnames, filenames) in os.walk(args.input_path):
     relpaths_dirs.extend(os.path.join(dirpath, basename).removeprefix(args.input_path).lstrip(os.path.sep) for basename in dirnames)
     
     for basename in filenames:
         p = os.path.join(dirpath, basename)
         relpath = p.removeprefix(args.input_path).lstrip(os.path.sep)
-        safepath = relpath.translate({ord('.') : '_', ord('-') : '_', ord('_') : '_', ord(os.path.sep) : '_'})
-        # problem: can produce the same symbol name because of this mapping
+        safepath = relpath.translate(translate)
 
         include_file = True
         if args.include and re.match('.+(' + args.include + ')$', p):

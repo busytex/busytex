@@ -12,7 +12,7 @@
 #include <sys/types.h>
 
 #include "busypack.h"
-//size_t packfs_builtin_files_num, packfs_builtin_dirs_num; const char** packfs_builtin_starts; const char** packfs_builtin_ends; const char** packfs_builtin_abspaths; const char** packfs_builtin_abspaths_dirs;
+//size_t packfs_builtin_files_num, packfs_builtin_dirs_num; const char** packfs_builtin_abspaths; const char** packfs_builtin_abspaths_dirs; const char** packfs_builtin_starts; const char** packfs_builtin_ends;
 
 extern int      __real_open(const char *path, int flags);                               
 extern int      __real_close(int fd);                                                   
