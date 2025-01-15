@@ -29,7 +29,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
         safepath = relpath.translate({ord('.') : '_', ord('-') : '_', ord('_') : '_', ord(os.path.sep) : '_'})
 
         include = True
-        if args.inlude and re.match('.+(' + args.include + ')$', p):
+        if args.include and re.match('.+(' + args.include + ')$', p):
             include = True
         elif args.exclude and re.match('.+(' + args.exclude + ')$', p):
             include = False
