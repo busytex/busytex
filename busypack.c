@@ -14,15 +14,15 @@
 #include "busypack.h"
 //size_t packfs_builtin_files_num, packfs_builtin_dirs_num; const char** packfs_builtin_starts; const char** packfs_builtin_ends; const char** packfs_builtin_abspaths; const char** packfs_builtin_abspaths_dirs;
 
-extern int __real_open(const char *path, int flags);
-extern int __real_close(int fd);
-extern ssize_t __real_read(int fd, void* buf, size_t count);
-extern int __real_access(const char *path, int flags);
-extern off_t __real_lseek(int fd, off_t offset, int whence);
-extern int __real_stat(const char *restrict path, struct stat *restrict statbuf);
-extern int __real_fstat(int fd, struct stat * statbuf);
-extern FILE* __real_fopen(const char *path, const char *mode);
-extern int __real_fileno(FILE* stream);
+extern int      __real_open(const char *path, int flags);                               
+extern int      __real_close(int fd);                                                   
+extern ssize_t  __real_read(int fd, void* buf, size_t count);                           
+extern int      __real_access(const char *path, int flags);                             
+extern off_t    __real_lseek(int fd, off_t offset, int whence);                         
+extern int      __real_stat(const char *restrict path, struct stat *restrict statbuf);  
+extern int      __real_fstat(int fd, struct stat * statbuf);                            
+extern FILE*    __real_fopen(const char *path, const char *mode);                       
+extern int      __real_fileno(FILE* stream);                                            
 
 enum {
     packfs_filefd_min = 1000000000, 

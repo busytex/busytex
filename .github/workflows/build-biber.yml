@@ -181,7 +181,7 @@ jobs:
           #include <sys/types.h>
           
           #include "perlpack.h"
-          // size_t packfs_builtin_files_num = 0; const char* packfs_builtin_safepaths[] = {}; const char* packfs_builtin_abspaths[] = {}; const char* packfs_builtin_starts[] = {}; const char* packfs_builtin_ends[] = {};
+          //size_t packfs_builtin_files_num, packfs_builtin_dirs_num; const char** packfs_builtin_starts; const char** packfs_builtin_ends; const char** packfs_builtin_abspaths; const char** packfs_builtin_abspaths_dirs;
           
           extern int      __real_open(const char *path, int flags);                               
           extern int      __real_close(int fd);                                                   
@@ -192,11 +192,11 @@ jobs:
           extern int      __real_fstat(int fd, struct stat * statbuf);                            
           extern FILE*    __real_fopen(const char *path, const char *mode);                       
           extern int      __real_fileno(FILE* stream);                                            
-              
+          
           enum {
               packfs_filefd_min = 1000000000, 
               packfs_filefd_max = 1000001000, 
-              packfs_filepath_max_len = 128, 
+              packfs_filepath_max_len = 256, 
           };
           
           int packfs_enabled = 1;
@@ -357,16 +357,18 @@ jobs:
                       if(0 == strcmp(path_sanitized, packfs_builtin_abspaths[i]))
                       {
                           *statbuf = (struct stat){0};
-                          //if(packfs_builtin[i].isdir)
-                          //{
-                          //    statbuf->st_size = 0;
-                          //    statbuf->st_mode = S_IFDIR;
-                          //}
-                          //else
-                          {
-                              statbuf->st_size = (off_t)(packfs_builtin_ends[i] - packfs_builtin_starts[i]);
-                              statbuf->st_mode = S_IFREG;
-                          }
+                          statbuf->st_size = (off_t)(packfs_builtin_ends[i] - packfs_builtin_starts[i]);
+                          statbuf->st_mode = S_IFREG;
+                          return 0;
+                      }
+                  }
+                  for(size_t i = 0; i < packfs_builtin_dirs_num; i++)
+                  {
+                      if(0 == strcmp(path_sanitized, packfs_builtin_abspaths_dirs[i]))
+                      {
+                          *statbuf = (struct stat){0};
+                          statbuf->st_size = 0;
+                          statbuf->st_mode = S_IFDIR;
                           return 0;
                       }
                   }
@@ -489,9 +491,7 @@ jobs:
               {
                   int res = packfs_access(path);
                   if(res >= -1)
-                  {
                       return res;
-                  }
               }
               
               int res = __real_access(path, flags); 
