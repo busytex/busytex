@@ -126,15 +126,13 @@ jobs:
           my $ld = 'ld';
           my $include = '';
           my $exclude = '';
-          my $exclude_executable = 0;
           Getopt::Long::GetOptions(
               'input-path|i=s'      => \$input_path,
               'output-path|o=s'     => \$output_path,
               'prefix=s'            => \$prefix,
               'ld=s'                => \$ld,
               'include=s'           => \$include,
-              'exclude=s'           => \$exclude,
-              'exclude-executable'  => \$exclude_executable
+              'exclude=s'           => \$exclude
           );
           
           die "Input path does not exist or is not a directory" unless -e $input_path && -d $input_path ;
@@ -167,8 +165,6 @@ jobs:
               } elsif ($include ne '' and $p =~ /$include/) {
                   $include_file = 1;
               } elsif ($exclude ne '' and $p =~ /$exclude/) {
-                  $include_file = 0;
-              } elsif ($exclude_executable and (-x $p)) {
                   $include_file = 0;
               } elsif (substr($relpath, -2) eq '.o') {
                   $include_file = 0;
@@ -711,7 +707,7 @@ jobs:
           $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf ExtUtils::LibBuilder DBI  Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder IO::String Lingua::Translit Parse::RecDescent Regexp::Common Text::Roman Class::Accessor List::AllUtils LWP::Protocol::https Business::ISBN Business::ISMN Mozilla::CA XML::SAX::Exception MIME::Charset Business::ISSN
           # XML::Writer not installed, unneded: SDBM_File Time/Piece Storable
 
-          printf "o conf makepl_arg LINKTYPE=static\nnotest force install %s\n" Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra autovivification Devel::Caller Devel::LexAlias List::MoreUtils::XS List::SomeUtils::XS Clone PadWalker DateTime HTML::Parser Unicode::LineBreak Variable::Magic Log::Log4perl  Log::Log4perl::DateFormat Class::XSAccessor Package::Stash::XS Params::Util Text::CSV_XS Text::CSV Net::SSLeay DBI DBD::SQLite XML::LibXML XML::LibXSLT XML::Parser::Expat XML::LibXML::Simple PerlIO::utf8_strict Sub::Identify Storable | $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan 
+          printf "o conf makepl_arg LINKTYPE=static\nnotest force install %s\n" Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra autovivification Devel::Caller Devel::LexAlias List::MoreUtils::XS List::SomeUtils::XS Clone PadWalker DateTime HTML::Parser Unicode::LineBreak Variable::Magic Log::Log4perl  Log::Log4perl::DateFormat Class::XSAccessor Package::Stash::XS Params::Util Text::CSV_XS Text::CSV Net::SSLeay DBI DBD::SQLite XML::LibXML XML::LibXSLT XML::Parser::Expat XML::LibXML::Simple XML::Writer PerlIO::utf8_strict Sub::Identify Storable | $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan 
           
           mkdir -p myext/URL_Params_Validate_XS && curl -L $URL_Params_Validate_XS | tar -xzf - --strip-components=1 --directory myext/URL_Params_Validate_XS && cd myext/URL_Params_Validate_XS
           $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
