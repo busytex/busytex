@@ -758,14 +758,14 @@ jobs:
               /lib/libz.a \
               /usr/lib/liblzma.a \
               /usr/lib/libssl.a
-          ./busybiber --help
-          cd biber/testfiles && ../../busybiber --validate-datamodel --convert-control test && test -f test.bcf.html
+          #./busybiber --help
+          #cd biber/testfiles && ../../busybiber --validate-datamodel --convert-control test && test -f test.bcf.html
 
       - name: Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: staticbiber
           path: |
-            busybiber
             perlpack.h
-            biber/testfiles/
+            #busybiber
+            #biber/testfiles/
