@@ -22,81 +22,77 @@ jobs:
       - name: Install Prerequisites
         run: sudo apt-get install libxml2-dev libz-dev libxslt-dev
       
-      - name: Install Perl and build, pack Biber
-        #shell: bash
-        # https://github.com/plk/biber/blob/dev/dist/linux_x86_64/build.sh
-        run: |
-          mkdir perlsourcedynamic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcedynamic
-          cd perlsourcedynamic && sh +x ./Configure -sde -Dprefix="$PWD/../perlprefixdynamic" && make && make install && cd ..
-          export PATH="$PWD/perlprefixdynamic/bin:$PATH"
-          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PWD/perlprefixdynamic/lib"
-          
-          mkdir biberpp && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biberpp && cd biberpp
-          ../perlprefixdynamic/bin/cpan -T Module::Build PAR::Packer
-          ../perlprefixdynamic/bin/perl   Build.PL
-          ../perlprefixdynamic/bin/perl ./Build installdeps --cpan_client "$PWD/../perlprefixdynamic/bin/cpan -T"
-          ../perlprefixdynamic/bin/perl ./Build test
-          ../perlprefixdynamic/bin/perl ./Build install
-          # bash ./dist/linux_x86_64/build.sh
-          ucpath="$PWD/../perlprefixdynamic/lib/$PERLVER/Unicode/Collate"
-          echo "USING Unicode::Collate at: ${ucpath}"
-          PAR_VERBATIM=1 $PWD/../perlprefixdynamic/bin/pp \
-            --module=deprecate \
-            --module=Biber::Input::file::bibtex \
-            --module=Biber::Input::file::biblatexml \
-            --module=Biber::Output::dot \
-            --module=Biber::Output::bbl \
-            --module=Biber::Output::bblxml \
-            --module=Biber::Output::bibtex \
-            --module=Biber::Output::biblatexml \
-            --module=Pod::Simple::TranscodeSmart \
-            --module=Pod::Simple::TranscodeDumb \
-            --module=List::MoreUtils::XS \
-            --module=List::SomeUtils::XS \
-            --module=List::MoreUtils::PP \
-            --module=HTTP::Status \
-            --module=HTTP::Date \
-            --module=Encode:: \
-            --module=File::Find::Rule \
-            --module=IO::Socket::SSL \
-            --module=IO::String \
-            --module=PerlIO::utf8_strict \
-            --module=Text::CSV_XS \
-            --module=DateTime \
-            --link=$PWD/../perlprefixdynamic/lib/libbtparse.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libxml2.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libz.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libxslt.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libexslt.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libssl.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libcrypto.so \
-            --addfile="data/biber-tool.conf;lib/Biber/biber-tool.conf" \
-            --addfile="data/schemata/config.rnc;lib/Biber/config.rnc" \
-            --addfile="data/schemata/config.rng;lib/Biber/config.rng"\
-            --addfile="data/schemata/bcf.rnc;lib/Biber/bcf.rnc" \
-            --addfile="data/schemata/bcf.rng;lib/Biber/bcf.rng" \
-            --addfile="lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml" \
-            --addfile="data/bcf.xsl;lib/Biber/bcf.xsl" \
-            --addfile="${ucpath}/Locale;lib/Unicode/Collate/Locale" \
-            --addfile="${ucpath}/CJK;lib/Unicode/Collate/CJK" \
-            --addfile="${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt" \
-            --addfile="${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt" \
-            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem" \
-            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/PerlIO;lib/PerlIO" \
-            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/auto/PerlIO;lib/auto/PerlIO" \
-            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml" \
-            --cachedeps=scancache \
-            --output=biber \
-            $PWD/../perlprefixdynamic/bin/biber
-          ./biber --help
-          unzip -l ./biber
-          cd testfiles && ../biber --validate-datamodel --convert-control test && test -f test.bcf.html
-
-      - name: Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dynamicbiber
-          path: biberpp/biber
+#      - name: Install Perl and build, pack Biber
+#        run: |
+#          mkdir perlsourcedynamic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcedynamic
+#          cd perlsourcedynamic && sh +x ./Configure -sde -Dprefix="$PWD/../perlprefixdynamic" && make && make install && cd ..
+#          export PATH="$PWD/perlprefixdynamic/bin:$PATH"
+#          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PWD/perlprefixdynamic/lib"
+#          
+#          mkdir biberpp && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biberpp && cd biberpp
+#          ../perlprefixdynamic/bin/cpan -T Module::Build PAR::Packer
+#          ../perlprefixdynamic/bin/perl   Build.PL
+#          ../perlprefixdynamic/bin/perl ./Build installdeps --cpan_client "$PWD/../perlprefixdynamic/bin/cpan -T"
+#          ../perlprefixdynamic/bin/perl ./Build test
+#          ../perlprefixdynamic/bin/perl ./Build install
+#          ucpath="$PWD/../perlprefixdynamic/lib/$PERLVER/Unicode/Collate"
+#          PAR_VERBATIM=1 $PWD/../perlprefixdynamic/bin/pp \
+#            --module=deprecate \
+#            --module=Biber::Input::file::bibtex \
+#            --module=Biber::Input::file::biblatexml \
+#            --module=Biber::Output::dot \
+#            --module=Biber::Output::bbl \
+#            --module=Biber::Output::bblxml \
+#            --module=Biber::Output::bibtex \
+#            --module=Biber::Output::biblatexml \
+#            --module=Pod::Simple::TranscodeSmart \
+#            --module=Pod::Simple::TranscodeDumb \
+#            --module=List::MoreUtils::XS \
+#            --module=List::SomeUtils::XS \
+#            --module=List::MoreUtils::PP \
+#            --module=HTTP::Status \
+#            --module=HTTP::Date \
+#            --module=Encode:: \
+#            --module=File::Find::Rule \
+#            --module=IO::Socket::SSL \
+#            --module=IO::String \
+#            --module=PerlIO::utf8_strict \
+#            --module=Text::CSV_XS \
+#            --module=DateTime \
+#            --link=$PWD/../perlprefixdynamic/lib/libbtparse.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libxml2.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libz.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libxslt.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libexslt.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libssl.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libcrypto.so \
+#            --addfile="data/biber-tool.conf;lib/Biber/biber-tool.conf" \
+#            --addfile="data/schemata/config.rnc;lib/Biber/config.rnc" \
+#            --addfile="data/schemata/config.rng;lib/Biber/config.rng"\
+#            --addfile="data/schemata/bcf.rnc;lib/Biber/bcf.rnc" \
+#            --addfile="data/schemata/bcf.rng;lib/Biber/bcf.rng" \
+#            --addfile="lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml" \
+#            --addfile="data/bcf.xsl;lib/Biber/bcf.xsl" \
+#            --addfile="${ucpath}/Locale;lib/Unicode/Collate/Locale" \
+#            --addfile="${ucpath}/CJK;lib/Unicode/Collate/CJK" \
+#            --addfile="${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt" \
+#            --addfile="${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/PerlIO;lib/PerlIO" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/auto/PerlIO;lib/auto/PerlIO" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml" \
+#            --cachedeps=scancache \
+#            --output=biber \
+#            $PWD/../perlprefixdynamic/bin/biber
+#          ./biber --help
+#          unzip -l ./biber
+#          cd testfiles && ../biber --validate-datamodel --convert-control test && test -f test.bcf.html
+#
+#      - name: Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: dynamicbiber
+#          path: biberpp/biber
 
   staticbiber:
     runs-on: ubuntu-24.04
@@ -112,6 +108,8 @@ jobs:
       - name: busybiber.c
         run: |
           cat <<'EOF' > busybiber.c
+          #include "busypack.c"
+
           #include <EXTERN.h>
           #include <perl.h>
           #include <XSUB.h>
@@ -294,7 +292,7 @@ jobs:
 
           python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
           cc -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-          cc -o busybiber busybiber.c -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc busypack.o -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
+          cc -o busybiber busybiber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
               $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
               $(printf "$PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/%s " mro/mro.a File/Glob/Glob.a File/DosGlob/DosGlob.a I18N/Langinfo/Langinfo.a SDBM_File/SDBM_File.a Compress/Raw/Zlib/Zlib.a Compress/Raw/Bzip2/Bzip2.a POSIX/POSIX.a Fcntl/Fcntl.a Data/Dumper/Dumper.a Math/BigInt/FastCalc/FastCalc.a IO/IO.a Opcode/Opcode.a Socket/Socket.a threads/shared/shared.a threads/threads.a MIME/Base64/Base64.a Time/HiRes/HiRes.a Time/Piece/Piece.a Filter/Util/Call/Call.a List/Util/Util.a Unicode/Collate/Collate.a Unicode/Normalize/Normalize.a B/B.a Devel/Peek/Peek.a Storable/Storable.a attributes/attributes.a re/re.a Hash/Util/Util.a Hash/Util/FieldHash/FieldHash.a IPC/SysV/SysV.a PerlIO/encoding/encoding.a PerlIO/mmap/mmap.a PerlIO/via/via.a Sys/Hostname/Hostname.a Sys/Syslog/Syslog.a Encode/KR/KR.a Encode/JP/JP.a Encode/Byte/Byte.a Encode/CN/CN.a Encode/Encode.a Encode/Unicode/Unicode.a Encode/Symbol/Symbol.a Encode/EBCDIC/EBCDIC.a Encode/TW/TW.a Cwd/Cwd.a Digest/MD5/MD5.a Digest/SHA/SHA.a) \
               $PERLINSTALLPREFIX/lib/libbtparse.a \
