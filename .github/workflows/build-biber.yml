@@ -96,7 +96,7 @@ jobs:
 
   staticbiber:
     runs-on: ubuntu-24.04
-    container: alpine:3.14
+    container: alpine:3.19
     steps:
       - name: Install Prerequisites
         run:  |
