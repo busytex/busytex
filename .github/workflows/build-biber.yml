@@ -248,6 +248,9 @@ jobs:
         run: |
           export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busytex/packfs
           export PERLPREFIX=$PERLINSTALLPREFIX
+          mkdir packfs && touch packfs/a.txt
+          python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
+
 #          #export PERLPREFIX=/__w/busytex/busytex/packfs
 #          export LD_LIBRARY_PATH=$PERLINSTALLPREFIX/lib:$LD_LIBRARY_PATH
 #
@@ -293,9 +296,7 @@ jobs:
 #          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/PerlIO packfs/lib/PerlIO
 #          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/PerlIO packfs/lib/auto/PerlIO
 #          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml packfs/lib/Business/ISBN/RangeMessage.xml
-
-          mkdir packfs && touch packfs/a.txt
-          python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
+#          python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
 #          cc -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 #          cc -o busybiber busybiber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc busypack.o -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
 #              $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
