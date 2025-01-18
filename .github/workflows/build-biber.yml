@@ -109,96 +109,9 @@ jobs:
 
       - uses: actions/checkout@v4
       
-      - name: perlpack.pl
-        run: |
-          cat <<'EOF' > perlpack.pl
-          use strict;
-          use warnings;
-          use Getopt::Long;
-          use File::Path;
-          use File::Find;
-          use File::Spec;
-          use Cwd;
-          
-          my $input_path = '';
-          my $output_path = '';
-          my $prefix = '';
-          my $ld = 'ld';
-          my $include = '';
-          my $exclude = '';
-          Getopt::Long::GetOptions(
-              'input-path|i=s'      => \$input_path,
-              'output-path|o=s'     => \$output_path,
-              'prefix=s'            => \$prefix,
-              'ld=s'                => \$ld,
-              'include=s'           => \$include,
-              'exclude=s'           => \$exclude
-          );
-          
-          die "Input path does not exist or is not a directory" unless -e $input_path && -d $input_path ;
-          die "Output path not specified" if $output_path eq '';
-          
-          $output_path = Cwd::abs_path($output_path);
-          my $output_path_o = $output_path . '.o';
-          File::Path::make_path($output_path_o);
-          my (@objects, @relpaths_dirs, @safepaths, @relpaths);
-              
-          # problem: can produce the same symbol name because of this mapping, ld maps only to _, so may need to rename the file before invoking ld
-          my %translate = ('.' => '_', '-' => '__', '_' => '_', '/' => '_');
-          my $translate_keys = join("", keys %translate);
-          
-          my $oldcwd = Cwd::getcwd();
-          File::Find::find(sub {
-              my $newcwd = Cwd::getcwd(); chdir($oldcwd); 
-              my $p = $File::Find::name;
-              
-              my $relpath = $p;
-              if (index($relpath, $input_path) == 0) { $relpath = substr($relpath, length($input_path)); }
-              if (index($relpath, '/') == 0) { $relpath = substr($relpath, 1); }
-              my $safepath = ''; 
-              for my $char (split //, $relpath) { $safepath .= exists $translate{$char} ? $translate{$char} : $char; }
-          
-              my $include_file = 1;
-              if (-d $p) {
-                  push @relpaths_dirs, $p;
-                  $include_file = 0;
-              } elsif ($include ne '' and $p =~ /$include/) {
-                  $include_file = 1;
-              } elsif ($exclude ne '' and $p =~ /$exclude/) {
-                  $include_file = 0;
-              } elsif (substr($relpath, -2) eq '.o') {
-                  $include_file = 0;
-              }
-              
-              if ($include_file) {
-                  push @safepaths, $safepath;
-                  push @relpaths, $relpath;
-                  push @objects, File::Spec->catfile($output_path_o, $safepath . '.o');
-                  
-                  chdir($output_path_o);
-                  symlink(File::Spec->catfile($oldcwd, $p), $safepath);
-                  system($ld, '-r', '-b', 'binary', '-o', $objects[-1], $safepath) == 0 or die "ld command failed: $?";
-                  unlink($safepath);
-              }
-              chdir($newcwd);
-          }, $input_path);
-          
-          open my $g, '>', $output_path . '.txt' or die;
-          print $g join("\n", @objects);
-          open my $f, '>', $output_path or die;
-          print $f "size_t packfs_builtin_files_num = ", scalar(@relpaths), ", packfs_builtin_dirs_num = ", scalar(@relpaths_dirs), ";\n\n";
-          print $f "const char* packfs_builtin_abspaths[] = {\n\"" , join("\",\n\"", map { File::Spec->catfile($prefix, $_) } @relpaths), "\"\n};\n\n";
-          print $f "const char* packfs_builtin_abspaths_dirs[] = {\n\"" , join("\",\n\"", map { File::Spec->catfile($prefix, $_) } @relpaths_dirs) , "\"\n};\n\n";
-          print $f join("\n", map { "extern char _binary_${_}_start[], _binary_${_}_end[];" } @safepaths), "\n\n";
-          print $f "const char* packfs_builtin_starts[] = {\n", join("\n", map { "_binary_${_}_start," } @safepaths), "\n};\n\n";
-          print $f "const char* packfs_builtin_ends[] = {\n", join("\n", map { "_binary_${_}_end," } @safepaths), "\n};\n\n";
-          EOF
-
       - name: busybiber.c
         run: |
           cat <<'EOF' > busybiber.c
-          #include "busypack.c"
-          
           #include <EXTERN.h>
           #include <perl.h>
           #include <XSUB.h>
@@ -381,8 +294,10 @@ jobs:
           cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/PerlIO packfs/lib/auto/PerlIO
           cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml packfs/lib/Business/ISBN/RangeMessage.xml
 
-          $PERLINSTALLPREFIX/bin/perl perlpack.pl -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a$|\.so$|\.pod$|\.ld$|\.h$|bin\/' --include 'bin/biber'
-          cc -o busybiber busybiber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc  -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
+          #python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a$|\.so$|\.pod$|\.ld$|\.h$|bin\/' --include 'bin/biber'
+          python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
+	  cc -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+          cc -o busybiber busybiber.c -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc busypack.o -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
               $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
               $(printf "$PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/%s " mro/mro.a File/Glob/Glob.a File/DosGlob/DosGlob.a I18N/Langinfo/Langinfo.a SDBM_File/SDBM_File.a Compress/Raw/Zlib/Zlib.a Compress/Raw/Bzip2/Bzip2.a POSIX/POSIX.a Fcntl/Fcntl.a Data/Dumper/Dumper.a Math/BigInt/FastCalc/FastCalc.a IO/IO.a Opcode/Opcode.a Socket/Socket.a threads/shared/shared.a threads/threads.a MIME/Base64/Base64.a Time/HiRes/HiRes.a Time/Piece/Piece.a Filter/Util/Call/Call.a List/Util/Util.a Unicode/Collate/Collate.a Unicode/Normalize/Normalize.a B/B.a Devel/Peek/Peek.a Storable/Storable.a attributes/attributes.a re/re.a Hash/Util/Util.a Hash/Util/FieldHash/FieldHash.a IPC/SysV/SysV.a PerlIO/encoding/encoding.a PerlIO/mmap/mmap.a PerlIO/via/via.a Sys/Hostname/Hostname.a Sys/Syslog/Syslog.a Encode/KR/KR.a Encode/JP/JP.a Encode/Byte/Byte.a Encode/CN/CN.a Encode/Encode.a Encode/Unicode/Unicode.a Encode/Symbol/Symbol.a Encode/EBCDIC/EBCDIC.a Encode/TW/TW.a Cwd/Cwd.a Digest/MD5/MD5.a Digest/SHA/SHA.a) \
               $PERLINSTALLPREFIX/lib/libbtparse.a \

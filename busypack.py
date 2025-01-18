@@ -10,17 +10,19 @@ parser.add_argument('--prefix')
 parser.add_argument('--ld', default = 'ld')
 parser.add_argument('--include', default = '')
 parser.add_argument('--exclude', default = '')
-parser.add_argument('--exclude-executable', action = 'store_true')
 args = parser.parse_args()
 
 assert args.input_path and os.path.exists(args.input_path) and os.path.isdir(args.input_path), "Input path does not exist or is not a directory"
 assert args.output_path, "Output path not specified"
-os.makedirs(args.output_path + '.o', exist_ok = True)
+
+# problem: can produce the same symbol name because of this mapping, ld maps only to _, so may need to rename the file before invoking ld
+translate = {ord('.') : '_', ord('-') : '__', ord('_') : '__', '/' : '_'}
+
+output_path_o = args.output_path + '.o'
+os.makedirs(output_path_o, exist_ok = True)
 objects, relpaths_dirs, safepaths, relpaths = [], [], [], []
 
-# problem: can produce the same symbol name because of this mapping
-translate = {ord('.') : '_', ord('-') : '_', ord('_') : '__', ord(os.path.sep) : '_'}
-
+cwd = os.getcwd()
 for (dirpath, dirnames, filenames) in os.walk(args.input_path):
     relpaths_dirs.extend(os.path.join(dirpath, basename).removeprefix(args.input_path).lstrip(os.path.sep) for basename in dirnames)
     
@@ -34,15 +36,19 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
             include_file = True
         elif args.exclude and re.match('.+(' + args.exclude + ')$', p):
             include_file = False
-        elif args.exclude_executable and os.access(p, os.X_OK):
+        elif relpath.endswith('.o'):
             include_file = False
+        
         if include_file:
             safepaths.append(safepath)
             relpaths.append(relpath)
-            objects.append(os.path.join(args.output_path + '.o', safepath + '.o'))
-            os.makedirs(os.path.dirname(objects[-1]), exist_ok = True)
-            # TODO: ln or mv the original file to makethe symbol names unique
-            subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', os.path.abspath(objects[-1]), relpaths[-1]], cwd = args.input_path)
+            objects.append(os.path.join(output_path_o, safepath + '.o'))
+            abspath_o = os.path.join(os.path.abspath(output_path_o), safepath + '.o')
+            output_path_o_safepath = os.path.join(output_path_o, safepath)
+            
+            os.symlink(os.path.abspath(p), output_path_o_safepath)
+            subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', abspath_o, safepath], cwd = output_path_o)
+            os.unlink(output_path_o_safepath)
 
 g = open(args.output_path + '.txt', 'w')
 print('\n'.join(objects), file = g)

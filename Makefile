@@ -373,7 +373,7 @@ build/%/busytex build/%/busytex.js:
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/native/busytexextra: build/native/busytex build/native/libc_busypack.a build/texlive-extra.txt 
-	$(PYTHON) busypack.py -i build/texlive-extra/ -o busypack.h --prefix=/texlive --ld=$(LD_native) --exclude '\.a|\.so|\.pod|\.ld|\.h|\.log' --exclude-executable
+	$(PYTHON) busypack.py -i build/texlive-extra/ -o busypack.h --prefix=/texlive --ld=$(LD_native) --exclude '\.a|\.so|\.pod|\.ld|\.h|\.log' #--exclude-executable
 	$(CC_native) -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 	$(CXX_native) -o $@ $<.o busypack.o build/native/libc_busypack.a  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) -Wl,--allow-multiple-definition -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt
 
