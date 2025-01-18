@@ -1,0 +1,16 @@
+name: bug
+
+on: workflow_dispatch
+jobs:
+  bug:
+    runs-on: ubuntu-24.04
+    container: python:3.11.9-alpine3.19
+    steps:
+      - name: Install Prerequisites
+        run:  |
+          apk add --update --no-cache libnsl libnsl-dev build-base coreutils gdb cmake git xz curl gperf p7zip zip autoconf automake libtool pkgconfig gnupg libxml2-dev libxslt-dev expat-dev openssl-dev openssl  zlib-static expat-static wget
+          apk add --update --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main libxml2-static libxslt-static openssl-libs-static xz-static libgcrypt-static libgpg-error-static
+
+      - name: busybiber.c
+        run: |
+          python --version
