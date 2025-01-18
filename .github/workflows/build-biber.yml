@@ -250,9 +250,6 @@ jobs:
         run: |
           export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busytex/packfs
           export PERLPREFIX=$PERLINSTALLPREFIX
-          mkdir packfs && touch packfs/a.txt
-          #echo BUSYPACK1 && python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
-
           #export PERLPREFIX=/__w/busytex/busytex/packfs
           export LD_LIBRARY_PATH=$PERLINSTALLPREFIX/lib:$LD_LIBRARY_PATH
 
@@ -263,14 +260,10 @@ jobs:
           make -C perlsourcestatic install
           echo BEFORELDD && ldd $PERLINSTALLPREFIX/bin/perl
           
-          #echo BUSYPACK2 && python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
-          
           #printf "notest force install %s\n" 
           #PERL_MM_USE_DEFAULT=1
           $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf ExtUtils::LibBuilder DBI  Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder IO::String Lingua::Translit Parse::RecDescent Regexp::Common Text::Roman Class::Accessor List::AllUtils LWP::Protocol::https Business::ISBN Business::ISMN Mozilla::CA XML::SAX::Exception MIME::Charset Business::ISSN  # unused in PAR: SDBM_File Time/Piece Storable
           printf "o conf makepl_arg LINKTYPE=static\nnotest force install %s\n" Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra autovivification Devel::Caller Devel::LexAlias List::MoreUtils::XS List::SomeUtils::XS Clone PadWalker DateTime HTML::Parser Unicode::LineBreak Variable::Magic Log::Log4perl  Log::Log4perl::DateFormat Class::XSAccessor Package::Stash::XS Params::Util Text::CSV_XS Text::CSV Net::SSLeay DBI DBD::SQLite XML::LibXML XML::LibXSLT XML::Parser::Expat XML::LibXML::Simple XML::Writer PerlIO::utf8_strict Sub::Identify Storable | $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan 
-          
-          #echo BUSYPACK3 && python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
           
           mkdir -p myext/URL_Params_Validate_XS && curl -L $URL_Params_Validate_XS | tar -xzf - --strip-components=1 --directory myext/URL_Params_Validate_XS && cd myext/URL_Params_Validate_XS
           $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
@@ -291,8 +284,6 @@ jobs:
           $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
           cd ../..
           
-          #echo BUSYPACK5 && python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
-
           ucpath="$PERLINSTALLPREFIX/lib/perl5/$PERLVER/Unicode/Collate"
           mkdir biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biber
           mkdir -p packfs/lib/Biber packfs/lib/Biber/LaTeX packfs/lib/Unicode/Collate packfs/lib/Mozilla/CA packfs/lib/auto packfs/lib/Business/ISBN
