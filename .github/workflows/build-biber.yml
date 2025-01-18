@@ -111,6 +111,8 @@ jobs:
         run: |
           cat <<'EOF' > busybiber.c
           #include "busypack.c"
+          // error: 'packfs_filepath_max_len' undeclared (first use in this function)
+          // error: 'packfs_builtin_prefix'   undeclared (first use in this function)
 
           #include <EXTERN.h>
           #include <perl.h>
