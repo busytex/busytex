@@ -16,7 +16,7 @@ assert args.input_path and os.path.exists(args.input_path) and os.path.isdir(arg
 assert args.output_path, "Output path not specified"
 
 # problem: can produce the same symbol name because of this mapping, ld maps only to _, so may need to rename the file before invoking ld
-translate = {ord('.') : '_', ord('-') : '__', ord('_') : '__', '/' : '_'}
+translate = {ord('.') : '_', ord('-') : '__', ord('_') : '__', ord('/') : '_'}
 
 output_path_o = args.output_path + '.o'
 os.makedirs(output_path_o, exist_ok = True)
@@ -46,7 +46,6 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
             abspath_o = os.path.join(os.path.abspath(output_path_o), safepath + '.o')
             output_path_o_safepath = os.path.join(output_path_o, safepath)
             
-            print('busypack:', output_path_o_safepath, safepath)
             os.symlink(os.path.abspath(p), output_path_o_safepath)
             subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', abspath_o, safepath], cwd = output_path_o)
             os.unlink(output_path_o_safepath)
