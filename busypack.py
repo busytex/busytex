@@ -46,6 +46,7 @@ for (dirpath, dirnames, filenames) in os.walk(args.input_path):
             abspath_o = os.path.join(os.path.abspath(output_path_o), safepath + '.o')
             output_path_o_safepath = os.path.join(output_path_o, safepath)
             
+            print('busypack:', output_path_o_safepath, safepath)
             os.symlink(os.path.abspath(p), output_path_o_safepath)
             subprocess.check_call([args.ld, '-r', '-b', 'binary', '-o', abspath_o, safepath], cwd = output_path_o)
             os.unlink(output_path_o_safepath)
