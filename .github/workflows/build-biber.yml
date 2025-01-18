@@ -14,87 +14,87 @@ env:
   URL_IO_Compress_Brotli : https://cpan.metacpan.org/authors/id/T/TI/TIMLEGGE/IO-Compress-Brotli-0.017.tar.gz
   
 jobs:
-  dynamicbiber:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install Prerequisites
-        run: sudo apt-get install libxml2-dev libz-dev libxslt-dev
-      
-      - name: Install Perl and build, pack Biber
-        run: |
-          curl -L https://phoenixnap.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/development/binaries/Linux/biber-linux_x86_64.tar.gz | tar -xzf - && unzip -l biber && rm biber
-
-          mkdir perlsourcedynamic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcedynamic
-          cd perlsourcedynamic && sh +x ./Configure -sde -Dprefix="$PWD/../perlprefixdynamic" && make && make install && cd ..
-          export PATH="$PWD/perlprefixdynamic/bin:$PATH"
-          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PWD/perlprefixdynamic/lib"
-          
-          mkdir biberpp && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biberpp && cd biberpp
-          ../perlprefixdynamic/bin/cpan -T Module::Build PAR::Packer
-          ../perlprefixdynamic/bin/perl   Build.PL
-          ../perlprefixdynamic/bin/perl ./Build installdeps --cpan_client "$PWD/../perlprefixdynamic/bin/cpan -T"
-          ../perlprefixdynamic/bin/perl ./Build test
-          ../perlprefixdynamic/bin/perl ./Build install
-          ucpath="$PWD/../perlprefixdynamic/lib/$PERLVER/Unicode/Collate"
-          PAR_VERBATIM=1 $PWD/../perlprefixdynamic/bin/pp \
-            --module=deprecate \
-            --module=Biber::Input::file::bibtex \
-            --module=Biber::Input::file::biblatexml \
-            --module=Biber::Output::dot \
-            --module=Biber::Output::bbl \
-            --module=Biber::Output::bblxml \
-            --module=Biber::Output::bibtex \
-            --module=Biber::Output::biblatexml \
-            --module=Pod::Simple::TranscodeSmart \
-            --module=Pod::Simple::TranscodeDumb \
-            --module=List::MoreUtils::XS \
-            --module=List::SomeUtils::XS \
-            --module=List::MoreUtils::PP \
-            --module=HTTP::Status \
-            --module=HTTP::Date \
-            --module=Encode:: \
-            --module=File::Find::Rule \
-            --module=IO::Socket::SSL \
-            --module=IO::String \
-            --module=PerlIO::utf8_strict \
-            --module=Text::CSV_XS \
-            --module=DateTime \
-            --link=$PWD/../perlprefixdynamic/lib/libbtparse.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libxml2.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libz.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libxslt.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libexslt.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libssl.so \
-            --link=/usr/lib/$PERLPLATFORM-gnu/libcrypto.so \
-            --addfile="data/biber-tool.conf;lib/Biber/biber-tool.conf" \
-            --addfile="data/schemata/config.rnc;lib/Biber/config.rnc" \
-            --addfile="data/schemata/config.rng;lib/Biber/config.rng"\
-            --addfile="data/schemata/bcf.rnc;lib/Biber/bcf.rnc" \
-            --addfile="data/schemata/bcf.rng;lib/Biber/bcf.rng" \
-            --addfile="lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml" \
-            --addfile="data/bcf.xsl;lib/Biber/bcf.xsl" \
-            --addfile="${ucpath}/Locale;lib/Unicode/Collate/Locale" \
-            --addfile="${ucpath}/CJK;lib/Unicode/Collate/CJK" \
-            --addfile="${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt" \
-            --addfile="${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt" \
-            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem" \
-            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/PerlIO;lib/PerlIO" \
-            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/auto/PerlIO;lib/auto/PerlIO" \
-            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml" \
-            --cachedeps=scancache \
-            --output=biber \
-            $PWD/../perlprefixdynamic/bin/biber
-          ./biber --help
-          unzip -l ./biber
-          cd testfiles && ../biber --validate-datamodel --convert-control test && test -f test.bcf.html
-
-      - name: Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dynamicbiber
-          path: biberpp/biber
+#  dynamicbiber:
+#    runs-on: ubuntu-24.04
+#    steps:
+#      - uses: actions/checkout@v4
+#      
+#      - name: Install Prerequisites
+#        run: sudo apt-get install libxml2-dev libz-dev libxslt-dev
+#      
+#      - name: Install Perl and build, pack Biber
+#        run: |
+#          curl -L https://phoenixnap.dl.sourceforge.net/project/biblatex-biber/biblatex-biber/development/binaries/Linux/biber-linux_x86_64.tar.gz | tar -xzf - && unzip -l biber && rm biber
+#
+#          mkdir perlsourcedynamic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcedynamic
+#          cd perlsourcedynamic && sh +x ./Configure -sde -Dprefix="$PWD/../perlprefixdynamic" && make && make install && cd ..
+#          export PATH="$PWD/perlprefixdynamic/bin:$PATH"
+#          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PWD/perlprefixdynamic/lib"
+#          
+#          mkdir biberpp && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biberpp && cd biberpp
+#          ../perlprefixdynamic/bin/cpan -T Module::Build PAR::Packer
+#          ../perlprefixdynamic/bin/perl   Build.PL
+#          ../perlprefixdynamic/bin/perl ./Build installdeps --cpan_client "$PWD/../perlprefixdynamic/bin/cpan -T"
+#          ../perlprefixdynamic/bin/perl ./Build test
+#          ../perlprefixdynamic/bin/perl ./Build install
+#          ucpath="$PWD/../perlprefixdynamic/lib/$PERLVER/Unicode/Collate"
+#          PAR_VERBATIM=1 $PWD/../perlprefixdynamic/bin/pp \
+#            --module=deprecate \
+#            --module=Biber::Input::file::bibtex \
+#            --module=Biber::Input::file::biblatexml \
+#            --module=Biber::Output::dot \
+#            --module=Biber::Output::bbl \
+#            --module=Biber::Output::bblxml \
+#            --module=Biber::Output::bibtex \
+#            --module=Biber::Output::biblatexml \
+#            --module=Pod::Simple::TranscodeSmart \
+#            --module=Pod::Simple::TranscodeDumb \
+#            --module=List::MoreUtils::XS \
+#            --module=List::SomeUtils::XS \
+#            --module=List::MoreUtils::PP \
+#            --module=HTTP::Status \
+#            --module=HTTP::Date \
+#            --module=Encode:: \
+#            --module=File::Find::Rule \
+#            --module=IO::Socket::SSL \
+#            --module=IO::String \
+#            --module=PerlIO::utf8_strict \
+#            --module=Text::CSV_XS \
+#            --module=DateTime \
+#            --link=$PWD/../perlprefixdynamic/lib/libbtparse.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libxml2.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libz.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libxslt.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libexslt.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libssl.so \
+#            --link=/usr/lib/$PERLPLATFORM-gnu/libcrypto.so \
+#            --addfile="data/biber-tool.conf;lib/Biber/biber-tool.conf" \
+#            --addfile="data/schemata/config.rnc;lib/Biber/config.rnc" \
+#            --addfile="data/schemata/config.rng;lib/Biber/config.rng"\
+#            --addfile="data/schemata/bcf.rnc;lib/Biber/bcf.rnc" \
+#            --addfile="data/schemata/bcf.rng;lib/Biber/bcf.rng" \
+#            --addfile="lib/Biber/LaTeX/recode_data.xml;lib/Biber/LaTeX/recode_data.xml" \
+#            --addfile="data/bcf.xsl;lib/Biber/bcf.xsl" \
+#            --addfile="${ucpath}/Locale;lib/Unicode/Collate/Locale" \
+#            --addfile="${ucpath}/CJK;lib/Unicode/Collate/CJK" \
+#            --addfile="${ucpath}/allkeys.txt;lib/Unicode/Collate/allkeys.txt" \
+#            --addfile="${ucpath}/keys.txt;lib/Unicode/Collate/keys.txt" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Mozilla/CA/cacert.pem;lib/Mozilla/CA/cacert.pem" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/PerlIO;lib/PerlIO" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/$PERLVER/$PERLPLATFORM-thread-multi/auto/PerlIO;lib/auto/PerlIO" \
+#            --addfile="$PWD/../perlprefixdynamic/lib/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml;lib/Business/ISBN/RangeMessage.xml" \
+#            --cachedeps=scancache \
+#            --output=biber \
+#            $PWD/../perlprefixdynamic/bin/biber
+#          ./biber --help
+#          unzip -l ./biber
+#          cd testfiles && ../biber --validate-datamodel --convert-control test && test -f test.bcf.html
+#
+#      - name: Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: dynamicbiber
+#          path: biberpp/biber
 
   staticbiber:
     runs-on: ubuntu-24.04
@@ -107,216 +107,217 @@ jobs:
 
       - uses: actions/checkout@v4
       
-      - name: busybiber.c
-        run: |
-          cat <<'EOF' > busybiber.c
-          //#include "busypack.c"
-
-          #include <EXTERN.h>
-          #include <perl.h>
-          #include <XSUB.h>
-          
-          // #include <xsinit.c>
-          void xs_init(pTHX) //EXTERN_C 
-          {
-              static const char file[] = __FILE__;
-              dXSUB_SYS;
-              PERL_UNUSED_CONTEXT;
-              
-              extern void boot_DynaLoader(pTHX_ CV* cv); newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
-             
-              extern void boot_mro(pTHX_ CV* cv); newXS("mro::bootstrap", boot_mro, file);
-              extern void boot_Devel__Peek(pTHX_ CV* cv); newXS("Devel::Peek", boot_Devel__Peek, file);
-              extern void boot_File__DosGlob(pTHX_ CV* cv); newXS("File::DosGlob::bootstrap", boot_File__DosGlob, file);
-              extern void boot_File__Glob(pTHX_ CV* cv); newXS("File::Glob::bootstrap", boot_File__Glob, file);
-              extern void boot_Sys__Syslog(pTHX_ CV* cv); newXS("Sys::Syslog::bootstrap", boot_Sys__Syslog, file);
-              extern void boot_Sys__Hostname(pTHX_ CV* cv); newXS("Sys::Hostname::bootstrap", boot_Sys__Hostname, file);
-              extern void boot_PerlIO__via(pTHX_ CV* cv); newXS("PerlIO::via::bootstrap", boot_PerlIO__via, file);
-              extern void boot_PerlIO__mmap(pTHX_ CV* cv); newXS("PerlIO::mmap::bootstrap", boot_PerlIO__mmap, file);
-              extern void boot_PerlIO__encoding(pTHX_ CV* cv); newXS("PerlIO::encoding::bootstrap", boot_PerlIO__encoding, file);
-              //extern void boot_PerlIO__scalar(pTHX_ CV* cv); newXS("PerlIO::scalar::bootstrap", boot_PerlIO__scalar, file);
-              //extern void boot_PerlIO__utf8_strict(pTHX_ CV* cv); newXS("PerlIO::utf8_strict::bootstrap", boot_PerlIO__utf8_strict, file);
-              extern void boot_B(pTHX_ CV* cv); newXS("B::bootstrap", boot_B, file);
-              extern void boot_attributes(pTHX_ CV* cv); newXS("attributes::bootstrap", boot_attributes, file);
-              extern void boot_Unicode__Normalize(pTHX_ CV* cv); newXS("Unicode::Normalize::bootstrap", boot_Unicode__Normalize, file);
-              extern void boot_Unicode__Collate(pTHX_ CV* cv); newXS("Unicode::Collate::bootstrap", boot_Unicode__Collate, file);
-              extern void boot_Unicode__LineBreak(pTHX_ CV* cv); newXS("Unicode::LineBreak::bootstrap", boot_Unicode__LineBreak, file);
-              extern void boot_threads(pTHX_ CV* cv); newXS("threads::bootstrap", boot_threads, file);
-              extern void boot_threads__shared(pTHX_ CV* cv); newXS("threads::shared::bootstrap", boot_threads__shared, file);
-              extern void boot_IPC__SysV(pTHX_ CV* cv); newXS("IPC::SysV::bootstrap", boot_IPC__SysV, file);
-              extern void boot_re(pTHX_ CV* cv); newXS("re::bootstrap", boot_re, file);
-              extern void boot_Digest__MD5(pTHX_ CV* cv); newXS("Digest::MD5::bootstrap", boot_Digest__MD5, file);
-              extern void boot_Digest__SHA(pTHX_ CV* cv); newXS("Digest::SHA::bootstrap", boot_Digest__SHA, file);
-              extern void boot_SDBM_File(pTHX_ CV* cv); newXS("SDBM_File::bootstrap", boot_SDBM_File, file);
-              extern void boot_Math__BigInt__FastCalc(pTHX_ CV* cv); newXS("Math::BigInt::FastCalc::bootstrap", boot_Math__BigInt__FastCalc, file);
-              extern void boot_Data__Dumper(pTHX_ CV* cv); newXS("Data::Dumper::bootstrap", boot_Data__Dumper, file);
-              extern void boot_I18N__Langinfo(pTHX_ CV* cv); newXS("I18N::Langinfo::bootstrap", boot_I18N__Langinfo, file);
-              extern void boot_Time__HiRes(pTHX_ CV* cv); newXS("Time::HiRes::bootstrap", boot_Time__HiRes, file);
-              extern void boot_Time__Piece(pTHX_ CV* cv); newXS("Time::Piece::bootstrap", boot_Time__Piece, file);
-              extern void boot_IO(pTHX_ CV* cv); newXS("IO::bootstrap", boot_IO, file);
-              extern void boot_Socket(pTHX_ CV* cv); newXS("Socket::bootstrap", boot_Socket, file);
-              extern void boot_Hash__Util__FieldHash(pTHX_ CV* cv); newXS("Hash::Util::FieldHash::bootstrap", boot_Hash__Util__FieldHash, file); 
-              extern void boot_Hash__Util(pTHX_ CV* cv); newXS("Hash::Util::bootstrap", boot_Hash__Util, file);
-              extern void boot_Filter__Util__Call(pTHX_ CV* cv); newXS("Filter::Util::Call::bootstrap", boot_Filter__Util__Call, file);
-              extern void boot_POSIX(pTHX_ CV* cv); newXS("POSIX::bootstrap", boot_POSIX, file);
-              extern void boot_Encode__Unicode(pTHX_ CV* cv); newXS("Encode::Unicode::bootstrap", boot_Encode__Unicode, file);
-              extern void boot_Encode(pTHX_ CV* cv); newXS("Encode::bootstrap", boot_Encode, file);
-              extern void boot_Encode__JP(pTHX_ CV* cv); newXS("Encode::JP::bootstrap", boot_Encode__JP, file);
-              extern void boot_Encode__KR(pTHX_ CV* cv); newXS("Encode::KR::bootstrap", boot_Encode__KR, file);
-              extern void boot_Encode__EBCDIC(pTHX_ CV* cv); newXS("Encode::EBCDIC::bootstrap", boot_Encode__EBCDIC, file);
-              extern void boot_Encode__CN(pTHX_ CV* cv); newXS("Encode::CN::bootstrap", boot_Encode__CN, file);
-              extern void boot_Encode__Symbol(pTHX_ CV* cv); newXS("Encode::Symbol::bootstrap", boot_Encode__Symbol, file);
-              extern void boot_Encode__Byte(pTHX_ CV* cv); newXS("Encode::Byte::bootstrap", boot_Encode__Byte, file);
-              extern void boot_Encode__TW(pTHX_ CV* cv); newXS("Encode::TW::bootstrap", boot_Encode__TW, file);
-              extern void boot_Encode__EUCJPASCII(pTHX_ CV* cv); newXS("Encode::EUCJPASCII::bootstrap", boot_Encode__EUCJPASCII, file);
-              extern void boot_Encode__JIS2K(pTHX_ CV* cv); newXS("Encode::JIS2K::bootstrap", boot_Encode__JIS2K, file);
-              extern void boot_Encode__HanExtra(pTHX_ CV* cv); newXS("Encode::HanExtra::bootstrap", boot_Encode__HanExtra, file);
-              extern void boot_Compress__Raw__Zlib(pTHX_ CV* cv); newXS("Compress::Raw::Zlib::bootstrap", boot_Compress__Raw__Zlib, file);
-              extern void boot_Compress__Raw__Bzip2(pTHX_ CV* cv); newXS("Compress::Raw::Bzip2::bootstrap", boot_Compress__Raw__Bzip2, file);
-              extern void boot_MIME__Base64(pTHX_ CV* cv); newXS("MIME::Base64::bootstrap", boot_MIME__Base64, file);
-              extern void boot_Cwd(pTHX_ CV* cv); newXS("Cwd::bootstrap", boot_Cwd, file);
-              extern void boot_Storable(pTHX_ CV* cv); newXS("Storable::bootstrap", boot_Storable, file);
-              extern void boot_List__Util(pTHX_ CV* cv); newXS("List::Util::bootstrap", boot_List__Util, file);
-              //extern void boot_List__SomeUtils(pTHX_ CV* cv); newXS("List::SomeUtils::bootstrap", boot_List__SomeUtils, file);
-              //extern void boot_List__MoreUtils(pTHX_ CV* cv); newXS("List::MoreUtils::bootstrap", boot_List__MoreUtils, file);
-              extern void boot_Fcntl(pTHX_ CV* cv); newXS("Fcntl::bootstrap", boot_Fcntl, file);
-              extern void boot_Opcode(pTHX_ CV* cv); newXS("Opcode::bootstrap", boot_Opcode, file);
-              
-              extern void boot_DateTime(pTHX_ CV* cv); newXS("DateTime::bootstrap", boot_DateTime, file);
-              extern void boot_Clone(pTHX_ CV* cv); newXS("Clone::bootstrap", boot_Clone, file);
-              extern void boot_autovivification(pTHX_ CV* cv); newXS("autovivification::bootstrap", boot_autovivification, file);
-              extern void boot_PadWalker(pTHX_ CV* cv); newXS("PadWalker::bootstrap", boot_PadWalker, file);
-          
-              extern void boot_Devel__Caller(pTHX_ CV* cv); newXS("Devel::Caller::bootstrap", boot_Devel__Caller, file);
-              extern void boot_Devel__LexAlias(pTHX_ CV* cv); newXS("Devel::LexAlias::bootstrap", boot_Devel__LexAlias, file);
-              extern void boot_Params__Util(pTHX_ CV* cv); newXS("Params::Util::bootstrap", boot_Params__Util, file);
-              extern void boot_HTML__Parser(pTHX_ CV* cv); newXS("HTML::Parser::bootstrap", boot_HTML__Parser, file);
-              extern void boot_Class__XSAccessor(pTHX_ CV* cv); newXS("Class::XSAccessor::bootstrap", boot_Class__XSAccessor, file);
-              extern void boot_Sort__Key(pTHX_ CV* cv); newXS("Sort::Key::bootstrap", boot_Sort__Key, file);
-              extern void boot_Variable__Magic(pTHX_ CV* cv); newXS("Variable::Magic::bootstrap", boot_Variable__Magic, file);
-          
-              extern void boot_XML__LibXML(pTHX_ CV* cv); newXS("XML::LibXML::bootstrap", boot_XML__LibXML, file);
-              extern void boot_XML__LibXSLT(pTHX_ CV* cv); newXS("XML::LibXSLT::bootstrap", boot_XML__LibXSLT, file);
-              extern void boot_XML__Parser__Expat(pTHX_ CV* cv); newXS("XML::Parser::Expat::bootstrap", boot_XML__Parser__Expat, file); 
-          
-              extern void boot_Text__BibTeX(pTHX_ CV* cv); newXS("Text::BibTeX::bootstrap", boot_Text__BibTeX, file);
-              // extern void boot_Text__CSV_XS(pTHX_ CV* cv); newXS("Text::CSV_XS::bootstrap", boot_Text__CSV_XS, file);
-              // extern void boot_DBI(pTHX_ CV* cv); newXS("DBI::bootstrap", boot_DBI, file);
-              // extern void boot_DBD__SQLite(pTHX_ CV* cv); newXS("DBD::SQLite::bootstrap", boot_DBD__SQLite, file);
-              // extern void boot_Net__SSLeay(pTHX_ CV* cv); newXS("Net::SSLeay::bootstrap", boot_Net__SSLeay, file);
-              // extern void boot_Package__Stash__XS(pTHX_ CV* cv); newXS("Package::Stash::XS::bootstrap", boot_Package__Stash__XS, file); 
-              // extern void boot_Params__Validate__XS(pTHX_ CV* cv); newXS("Params::Validate::XS::bootstrap", boot_Params__Validate__XS, file); 
-              // extern void boot_Filter__Util__Call(pTHX_ CV* cv); newXS("Filter::Util::Call::bootstrap", boot_Filter__Util__Call, file); 
-              // extern void boot_IO__Compress__Brotli(pTHX_ CV* cv); newXS("IO::Compress::Brotli::bootstrap", boot_IO__Compress__Brotli, file); 
-          }
-          
-          int main(int argc, char *argv[], char* envp[])
-          {
-              if(argc < 1)
-                  return -1;
-              
-              static char bin_biber[packfs_filepath_max_len];
-              static char* myperl_argv[128];
-              strcpy(bin_biber, packfs_builtin_prefix);
-              strcat(bin_biber, "/bin/biber");
-              myperl_argv[0] = argv[0];
-              myperl_argv[1] = bin_biber;
-              for(int i = 1; i < argc; i++) myperl_argv[1 + i] = argv[i];
-              int myperl_argc = argc + 1;
-              
-              PERL_SYS_INIT3(&argc, &argv, &envp);
-              PerlInterpreter* myperl = perl_alloc();
-              if(myperl == NULL)
-                  return -1;
-              perl_construct(myperl);
-              PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
-          
-              int res = perl_parse(myperl, xs_init, myperl_argc, myperl_argv, envp);
-              if(res == 0)
-                  res = perl_run(myperl); // error if res != 0 (or stricter in case exit(0) was called from perl code): (res & 0xFF) != 0: 
-          
-              PL_perl_destruct_level = 0;
-              res = perl_destruct(myperl);
-              perl_free(myperl);
-              PERL_SYS_TERM();
-          
-              return res;
-          }
-          EOF
+#      - name: busybiber.c
+#        run: |
+#          cat <<'EOF' > busybiber.c
+#          //#include "busypack.c"
+#
+#          #include <EXTERN.h>
+#          #include <perl.h>
+#          #include <XSUB.h>
+#          
+#          // #include <xsinit.c>
+#          void xs_init(pTHX) //EXTERN_C 
+#          {
+#              static const char file[] = __FILE__;
+#              dXSUB_SYS;
+#              PERL_UNUSED_CONTEXT;
+#              
+#              extern void boot_DynaLoader(pTHX_ CV* cv); newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+#             
+#              extern void boot_mro(pTHX_ CV* cv); newXS("mro::bootstrap", boot_mro, file);
+#              extern void boot_Devel__Peek(pTHX_ CV* cv); newXS("Devel::Peek", boot_Devel__Peek, file);
+#              extern void boot_File__DosGlob(pTHX_ CV* cv); newXS("File::DosGlob::bootstrap", boot_File__DosGlob, file);
+#              extern void boot_File__Glob(pTHX_ CV* cv); newXS("File::Glob::bootstrap", boot_File__Glob, file);
+#              extern void boot_Sys__Syslog(pTHX_ CV* cv); newXS("Sys::Syslog::bootstrap", boot_Sys__Syslog, file);
+#              extern void boot_Sys__Hostname(pTHX_ CV* cv); newXS("Sys::Hostname::bootstrap", boot_Sys__Hostname, file);
+#              extern void boot_PerlIO__via(pTHX_ CV* cv); newXS("PerlIO::via::bootstrap", boot_PerlIO__via, file);
+#              extern void boot_PerlIO__mmap(pTHX_ CV* cv); newXS("PerlIO::mmap::bootstrap", boot_PerlIO__mmap, file);
+#              extern void boot_PerlIO__encoding(pTHX_ CV* cv); newXS("PerlIO::encoding::bootstrap", boot_PerlIO__encoding, file);
+#              //extern void boot_PerlIO__scalar(pTHX_ CV* cv); newXS("PerlIO::scalar::bootstrap", boot_PerlIO__scalar, file);
+#              //extern void boot_PerlIO__utf8_strict(pTHX_ CV* cv); newXS("PerlIO::utf8_strict::bootstrap", boot_PerlIO__utf8_strict, file);
+#              extern void boot_B(pTHX_ CV* cv); newXS("B::bootstrap", boot_B, file);
+#              extern void boot_attributes(pTHX_ CV* cv); newXS("attributes::bootstrap", boot_attributes, file);
+#              extern void boot_Unicode__Normalize(pTHX_ CV* cv); newXS("Unicode::Normalize::bootstrap", boot_Unicode__Normalize, file);
+#              extern void boot_Unicode__Collate(pTHX_ CV* cv); newXS("Unicode::Collate::bootstrap", boot_Unicode__Collate, file);
+#              extern void boot_Unicode__LineBreak(pTHX_ CV* cv); newXS("Unicode::LineBreak::bootstrap", boot_Unicode__LineBreak, file);
+#              extern void boot_threads(pTHX_ CV* cv); newXS("threads::bootstrap", boot_threads, file);
+#              extern void boot_threads__shared(pTHX_ CV* cv); newXS("threads::shared::bootstrap", boot_threads__shared, file);
+#              extern void boot_IPC__SysV(pTHX_ CV* cv); newXS("IPC::SysV::bootstrap", boot_IPC__SysV, file);
+#              extern void boot_re(pTHX_ CV* cv); newXS("re::bootstrap", boot_re, file);
+#              extern void boot_Digest__MD5(pTHX_ CV* cv); newXS("Digest::MD5::bootstrap", boot_Digest__MD5, file);
+#              extern void boot_Digest__SHA(pTHX_ CV* cv); newXS("Digest::SHA::bootstrap", boot_Digest__SHA, file);
+#              extern void boot_SDBM_File(pTHX_ CV* cv); newXS("SDBM_File::bootstrap", boot_SDBM_File, file);
+#              extern void boot_Math__BigInt__FastCalc(pTHX_ CV* cv); newXS("Math::BigInt::FastCalc::bootstrap", boot_Math__BigInt__FastCalc, file);
+#              extern void boot_Data__Dumper(pTHX_ CV* cv); newXS("Data::Dumper::bootstrap", boot_Data__Dumper, file);
+#              extern void boot_I18N__Langinfo(pTHX_ CV* cv); newXS("I18N::Langinfo::bootstrap", boot_I18N__Langinfo, file);
+#              extern void boot_Time__HiRes(pTHX_ CV* cv); newXS("Time::HiRes::bootstrap", boot_Time__HiRes, file);
+#              extern void boot_Time__Piece(pTHX_ CV* cv); newXS("Time::Piece::bootstrap", boot_Time__Piece, file);
+#              extern void boot_IO(pTHX_ CV* cv); newXS("IO::bootstrap", boot_IO, file);
+#              extern void boot_Socket(pTHX_ CV* cv); newXS("Socket::bootstrap", boot_Socket, file);
+#              extern void boot_Hash__Util__FieldHash(pTHX_ CV* cv); newXS("Hash::Util::FieldHash::bootstrap", boot_Hash__Util__FieldHash, file); 
+#              extern void boot_Hash__Util(pTHX_ CV* cv); newXS("Hash::Util::bootstrap", boot_Hash__Util, file);
+#              extern void boot_Filter__Util__Call(pTHX_ CV* cv); newXS("Filter::Util::Call::bootstrap", boot_Filter__Util__Call, file);
+#              extern void boot_POSIX(pTHX_ CV* cv); newXS("POSIX::bootstrap", boot_POSIX, file);
+#              extern void boot_Encode__Unicode(pTHX_ CV* cv); newXS("Encode::Unicode::bootstrap", boot_Encode__Unicode, file);
+#              extern void boot_Encode(pTHX_ CV* cv); newXS("Encode::bootstrap", boot_Encode, file);
+#              extern void boot_Encode__JP(pTHX_ CV* cv); newXS("Encode::JP::bootstrap", boot_Encode__JP, file);
+#              extern void boot_Encode__KR(pTHX_ CV* cv); newXS("Encode::KR::bootstrap", boot_Encode__KR, file);
+#              extern void boot_Encode__EBCDIC(pTHX_ CV* cv); newXS("Encode::EBCDIC::bootstrap", boot_Encode__EBCDIC, file);
+#              extern void boot_Encode__CN(pTHX_ CV* cv); newXS("Encode::CN::bootstrap", boot_Encode__CN, file);
+#              extern void boot_Encode__Symbol(pTHX_ CV* cv); newXS("Encode::Symbol::bootstrap", boot_Encode__Symbol, file);
+#              extern void boot_Encode__Byte(pTHX_ CV* cv); newXS("Encode::Byte::bootstrap", boot_Encode__Byte, file);
+#              extern void boot_Encode__TW(pTHX_ CV* cv); newXS("Encode::TW::bootstrap", boot_Encode__TW, file);
+#              extern void boot_Encode__EUCJPASCII(pTHX_ CV* cv); newXS("Encode::EUCJPASCII::bootstrap", boot_Encode__EUCJPASCII, file);
+#              extern void boot_Encode__JIS2K(pTHX_ CV* cv); newXS("Encode::JIS2K::bootstrap", boot_Encode__JIS2K, file);
+#              extern void boot_Encode__HanExtra(pTHX_ CV* cv); newXS("Encode::HanExtra::bootstrap", boot_Encode__HanExtra, file);
+#              extern void boot_Compress__Raw__Zlib(pTHX_ CV* cv); newXS("Compress::Raw::Zlib::bootstrap", boot_Compress__Raw__Zlib, file);
+#              extern void boot_Compress__Raw__Bzip2(pTHX_ CV* cv); newXS("Compress::Raw::Bzip2::bootstrap", boot_Compress__Raw__Bzip2, file);
+#              extern void boot_MIME__Base64(pTHX_ CV* cv); newXS("MIME::Base64::bootstrap", boot_MIME__Base64, file);
+#              extern void boot_Cwd(pTHX_ CV* cv); newXS("Cwd::bootstrap", boot_Cwd, file);
+#              extern void boot_Storable(pTHX_ CV* cv); newXS("Storable::bootstrap", boot_Storable, file);
+#              extern void boot_List__Util(pTHX_ CV* cv); newXS("List::Util::bootstrap", boot_List__Util, file);
+#              //extern void boot_List__SomeUtils(pTHX_ CV* cv); newXS("List::SomeUtils::bootstrap", boot_List__SomeUtils, file);
+#              //extern void boot_List__MoreUtils(pTHX_ CV* cv); newXS("List::MoreUtils::bootstrap", boot_List__MoreUtils, file);
+#              extern void boot_Fcntl(pTHX_ CV* cv); newXS("Fcntl::bootstrap", boot_Fcntl, file);
+#              extern void boot_Opcode(pTHX_ CV* cv); newXS("Opcode::bootstrap", boot_Opcode, file);
+#              
+#              extern void boot_DateTime(pTHX_ CV* cv); newXS("DateTime::bootstrap", boot_DateTime, file);
+#              extern void boot_Clone(pTHX_ CV* cv); newXS("Clone::bootstrap", boot_Clone, file);
+#              extern void boot_autovivification(pTHX_ CV* cv); newXS("autovivification::bootstrap", boot_autovivification, file);
+#              extern void boot_PadWalker(pTHX_ CV* cv); newXS("PadWalker::bootstrap", boot_PadWalker, file);
+#          
+#              extern void boot_Devel__Caller(pTHX_ CV* cv); newXS("Devel::Caller::bootstrap", boot_Devel__Caller, file);
+#              extern void boot_Devel__LexAlias(pTHX_ CV* cv); newXS("Devel::LexAlias::bootstrap", boot_Devel__LexAlias, file);
+#              extern void boot_Params__Util(pTHX_ CV* cv); newXS("Params::Util::bootstrap", boot_Params__Util, file);
+#              extern void boot_HTML__Parser(pTHX_ CV* cv); newXS("HTML::Parser::bootstrap", boot_HTML__Parser, file);
+#              extern void boot_Class__XSAccessor(pTHX_ CV* cv); newXS("Class::XSAccessor::bootstrap", boot_Class__XSAccessor, file);
+#              extern void boot_Sort__Key(pTHX_ CV* cv); newXS("Sort::Key::bootstrap", boot_Sort__Key, file);
+#              extern void boot_Variable__Magic(pTHX_ CV* cv); newXS("Variable::Magic::bootstrap", boot_Variable__Magic, file);
+#          
+#              extern void boot_XML__LibXML(pTHX_ CV* cv); newXS("XML::LibXML::bootstrap", boot_XML__LibXML, file);
+#              extern void boot_XML__LibXSLT(pTHX_ CV* cv); newXS("XML::LibXSLT::bootstrap", boot_XML__LibXSLT, file);
+#              extern void boot_XML__Parser__Expat(pTHX_ CV* cv); newXS("XML::Parser::Expat::bootstrap", boot_XML__Parser__Expat, file); 
+#          
+#              extern void boot_Text__BibTeX(pTHX_ CV* cv); newXS("Text::BibTeX::bootstrap", boot_Text__BibTeX, file);
+#              // extern void boot_Text__CSV_XS(pTHX_ CV* cv); newXS("Text::CSV_XS::bootstrap", boot_Text__CSV_XS, file);
+#              // extern void boot_DBI(pTHX_ CV* cv); newXS("DBI::bootstrap", boot_DBI, file);
+#              // extern void boot_DBD__SQLite(pTHX_ CV* cv); newXS("DBD::SQLite::bootstrap", boot_DBD__SQLite, file);
+#              // extern void boot_Net__SSLeay(pTHX_ CV* cv); newXS("Net::SSLeay::bootstrap", boot_Net__SSLeay, file);
+#              // extern void boot_Package__Stash__XS(pTHX_ CV* cv); newXS("Package::Stash::XS::bootstrap", boot_Package__Stash__XS, file); 
+#              // extern void boot_Params__Validate__XS(pTHX_ CV* cv); newXS("Params::Validate::XS::bootstrap", boot_Params__Validate__XS, file); 
+#              // extern void boot_Filter__Util__Call(pTHX_ CV* cv); newXS("Filter::Util::Call::bootstrap", boot_Filter__Util__Call, file); 
+#              // extern void boot_IO__Compress__Brotli(pTHX_ CV* cv); newXS("IO::Compress::Brotli::bootstrap", boot_IO__Compress__Brotli, file); 
+#          }
+#          
+#          int main(int argc, char *argv[], char* envp[])
+#          {
+#              if(argc < 1)
+#                  return -1;
+#              
+#              static char bin_biber[packfs_filepath_max_len];
+#              static char* myperl_argv[128];
+#              strcpy(bin_biber, packfs_builtin_prefix);
+#              strcat(bin_biber, "/bin/biber");
+#              myperl_argv[0] = argv[0];
+#              myperl_argv[1] = bin_biber;
+#              for(int i = 1; i < argc; i++) myperl_argv[1 + i] = argv[i];
+#              int myperl_argc = argc + 1;
+#              
+#              PERL_SYS_INIT3(&argc, &argv, &envp);
+#              PerlInterpreter* myperl = perl_alloc();
+#              if(myperl == NULL)
+#                  return -1;
+#              perl_construct(myperl);
+#              PL_exit_flags |= PERL_EXIT_DESTRUCT_END;
+#          
+#              int res = perl_parse(myperl, xs_init, myperl_argc, myperl_argv, envp);
+#              if(res == 0)
+#                  res = perl_run(myperl); // error if res != 0 (or stricter in case exit(0) was called from perl code): (res & 0xFF) != 0: 
+#          
+#              PL_perl_destruct_level = 0;
+#              res = perl_destruct(myperl);
+#              perl_free(myperl);
+#              PERL_SYS_TERM();
+#          
+#              return res;
+#          }
+#          EOF
       
       - name: Install Perl static
         run: |
           export PERLINSTALLPREFIX=$RUNNER_WORKSPACE/busytex/packfs
           export PERLPREFIX=$PERLINSTALLPREFIX
-          #export PERLPREFIX=/__w/busytex/busytex/packfs
-          export LD_LIBRARY_PATH=$PERLINSTALLPREFIX/lib:$LD_LIBRARY_PATH
+#          #export PERLPREFIX=/__w/busytex/busytex/packfs
+#          export LD_LIBRARY_PATH=$PERLINSTALLPREFIX/lib:$LD_LIBRARY_PATH
+#
+#          mkdir perlsourcestatic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcestatic
+#          export BUILD_ZLIB=0
+#          cd perlsourcestatic && sh +x ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix="$PERLPREFIX" -Dinstallprefix="$PERLINSTALLPREFIX" -Dusedevel -Uversiononly -Dlibs="-lpthread -ldl -lm -lutil -lc /lib/libz.a" -Dstatic_ext="mro Devel/Peek File/DosGlob File/Glob Sys/Syslog Sys/Hostname PerlIO/via PerlIO/mmap PerlIO/encoding B attributes Unicode/Normalize Unicode/Collate threads threads/shared IPC/SysV re Digest/MD5 Digest/SHA SDBM_File Math/BigInt/FastCalc Data/Dumper I18N/Langinfo Time/HiRes Time/Piece IO Socket Hash/Util/FieldHash Hash/Util Filter/Util/Call POSIX Encode/Unicode Encode Encode/JP Encode/KR Encode/EBCDIC Encode/CN Encode/Symbol Encode/Byte Encode/TW Compress/Raw/Zlib Compress/Raw/Bzip2 MIME/Base64 Cwd Storable List/Util Fcntl Opcode" && cd ..
+#          make -C perlsourcestatic
+#          make -C perlsourcestatic install
+#          echo BEFORELDD && ldd $PERLINSTALLPREFIX/bin/perl
+#          
+#          #printf "notest force install %s\n" 
+#          #PERL_MM_USE_DEFAULT=1
+#          $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf ExtUtils::LibBuilder DBI  Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder IO::String Lingua::Translit Parse::RecDescent Regexp::Common Text::Roman Class::Accessor List::AllUtils LWP::Protocol::https Business::ISBN Business::ISMN Mozilla::CA XML::SAX::Exception MIME::Charset Business::ISSN  # unused in PAR: SDBM_File Time/Piece Storable
+#          printf "o conf makepl_arg LINKTYPE=static\nnotest force install %s\n" Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra autovivification Devel::Caller Devel::LexAlias List::MoreUtils::XS List::SomeUtils::XS Clone PadWalker DateTime HTML::Parser Unicode::LineBreak Variable::Magic Log::Log4perl  Log::Log4perl::DateFormat Class::XSAccessor Package::Stash::XS Params::Util Text::CSV_XS Text::CSV Net::SSLeay DBI DBD::SQLite XML::LibXML XML::LibXSLT XML::Parser::Expat XML::LibXML::Simple XML::Writer PerlIO::utf8_strict Sub::Identify Storable | $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan 
+#          
+#          mkdir -p myext/URL_Params_Validate_XS && curl -L $URL_Params_Validate_XS | tar -xzf - --strip-components=1 --directory myext/URL_Params_Validate_XS && cd myext/URL_Params_Validate_XS
+#          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
+#          ar crs $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/Params/Validate/XS/XS.a lib/Params/Validate/XS.o
+#          cd ../..
+#          mkdir -p myext/URL_Text_BibTeX && curl -L $URL_Text_BibTeX | tar -xzf - --strip-components=1 --directory myext/URL_Text_BibTeX && cd myext/URL_Text_BibTeX
+#          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
+#          ar crs $PERLINSTALLPREFIX/lib/libbtparse.a btparse/src/init.o btparse/src/input.o btparse/src/bibtex.o btparse/src/err.o btparse/src/scan.o btparse/src/error.o btparse/src/lex_auxiliary.o btparse/src/parse_auxiliary.o btparse/src/bibtex_ast.o btparse/src/sym.o btparse/src/util.o btparse/src/postprocess.o btparse/src/macros.o btparse/src/traversal.o btparse/src/modify.o btparse/src/names.o btparse/src/tex_tree.o btparse/src/string_util.o btparse/src/format_name.o
+#          ar crs $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/Text/BibTeX/BibTeX.a xscode/BibTeX.o xscode/btxs_support.o
+#          cd ../..
+#          mkdir -p myext/URL_IO_Compress_Brotli && curl -L $URL_IO_Compress_Brotli | tar -xzf - --strip-components=1 --directory myext/URL_IO_Compress_Brotli && cd myext/URL_IO_Compress_Brotli
+#          $PERLINSTALLPREFIX/bin/perl Makefile.PL LINKTYPE=static
+#          # https://github.com/timlegge/perl-IO-Compress-Brotli/issues/5
+#          sed -i 's/$(CP) $(MYEXTLIB) "$@"/$(CP) $(MYEXTLIB) "$(dir $@)"/' Makefile
+#          make && make install
+#          cd ../..
+#          mkdir -p myext/URL_Biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory myext/URL_Biber && cd myext/URL_Biber
+#          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
+#          cd ../..
+#
+#          ucpath="$PERLINSTALLPREFIX/lib/perl5/$PERLVER/Unicode/Collate"
+#          mkdir biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biber
+#          mkdir -p packfs/lib/Biber packfs/lib/Biber/LaTeX packfs/lib/Unicode/Collate packfs/lib/Mozilla/CA packfs/lib/auto packfs/lib/Business/ISBN
+#          cp biber/data/biber-tool.conf biber/data/schemata/config.rnc biber/data/schemata/config.rng biber/data/schemata/bcf.rnc biber/data/schemata/bcf.rng biber/data/bcf.xsl packfs/lib/Biber
+#          cp biber/lib/Biber/LaTeX/recode_data.xml packfs/lib/Biber/LaTeX
+#          
+#          cp -r $ucpath/Locale $ucpath/CJK $ucpath/allkeys.txt $ucpath/keys.txt packfs/lib/Unicode/Collate
+#          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Mozilla/CA/cacert.pem packfs/lib/Mozilla/CA/cacert.pem
+#          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/PerlIO packfs/lib/PerlIO
+#          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/PerlIO packfs/lib/auto/PerlIO
+#          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml packfs/lib/Business/ISBN/RangeMessage.xml
 
-          mkdir perlsourcestatic && curl -L $URLPERL | tar -xzf - --strip-components=1 --directory=perlsourcestatic
-          export BUILD_ZLIB=0
-          cd perlsourcestatic && sh +x ./Configure -sde -Dman1dir=none -Dman3dir=none -Dprefix="$PERLPREFIX" -Dinstallprefix="$PERLINSTALLPREFIX" -Dusedevel -Uversiononly -Dlibs="-lpthread -ldl -lm -lutil -lc /lib/libz.a" -Dstatic_ext="mro Devel/Peek File/DosGlob File/Glob Sys/Syslog Sys/Hostname PerlIO/via PerlIO/mmap PerlIO/encoding B attributes Unicode/Normalize Unicode/Collate threads threads/shared IPC/SysV re Digest/MD5 Digest/SHA SDBM_File Math/BigInt/FastCalc Data/Dumper I18N/Langinfo Time/HiRes Time/Piece IO Socket Hash/Util/FieldHash Hash/Util Filter/Util/Call POSIX Encode/Unicode Encode Encode/JP Encode/KR Encode/EBCDIC Encode/CN Encode/Symbol Encode/Byte Encode/TW Compress/Raw/Zlib Compress/Raw/Bzip2 MIME/Base64 Cwd Storable List/Util Fcntl Opcode" && cd ..
-          make -C perlsourcestatic
-          make -C perlsourcestatic install
-          echo BEFORELDD && ldd $PERLINSTALLPREFIX/bin/perl
-          
-          #printf "notest force install %s\n" 
-          #PERL_MM_USE_DEFAULT=1
-          $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan -T Alien::Base::Wrapper Alien::Build Alien::Build::MM Alien::cmake3 Alien::Libxml2 inc::Module::Install Module::Implementation Config::AutoConf ExtUtils::LibBuilder DBI  Data::Compare Data::Dump Data::Uniqid DateTime::Calendar::Julian DateTime::Format::Builder IO::String Lingua::Translit Parse::RecDescent Regexp::Common Text::Roman Class::Accessor List::AllUtils LWP::Protocol::https Business::ISBN Business::ISMN Mozilla::CA XML::SAX::Exception MIME::Charset Business::ISSN  # unused in PAR: SDBM_File Time/Piece Storable
-          printf "o conf makepl_arg LINKTYPE=static\nnotest force install %s\n" Sort::Key Encode::EUCJPASCII Encode::JIS2K Encode::HanExtra autovivification Devel::Caller Devel::LexAlias List::MoreUtils::XS List::SomeUtils::XS Clone PadWalker DateTime HTML::Parser Unicode::LineBreak Variable::Magic Log::Log4perl  Log::Log4perl::DateFormat Class::XSAccessor Package::Stash::XS Params::Util Text::CSV_XS Text::CSV Net::SSLeay DBI DBD::SQLite XML::LibXML XML::LibXSLT XML::Parser::Expat XML::LibXML::Simple XML::Writer PerlIO::utf8_strict Sub::Identify Storable | $PERLINSTALLPREFIX/bin/perl $PERLINSTALLPREFIX/bin/cpan 
-          
-          mkdir -p myext/URL_Params_Validate_XS && curl -L $URL_Params_Validate_XS | tar -xzf - --strip-components=1 --directory myext/URL_Params_Validate_XS && cd myext/URL_Params_Validate_XS
-          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
-          ar crs $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/Params/Validate/XS/XS.a lib/Params/Validate/XS.o
-          cd ../..
-          mkdir -p myext/URL_Text_BibTeX && curl -L $URL_Text_BibTeX | tar -xzf - --strip-components=1 --directory myext/URL_Text_BibTeX && cd myext/URL_Text_BibTeX
-          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
-          ar crs $PERLINSTALLPREFIX/lib/libbtparse.a btparse/src/init.o btparse/src/input.o btparse/src/bibtex.o btparse/src/err.o btparse/src/scan.o btparse/src/error.o btparse/src/lex_auxiliary.o btparse/src/parse_auxiliary.o btparse/src/bibtex_ast.o btparse/src/sym.o btparse/src/util.o btparse/src/postprocess.o btparse/src/macros.o btparse/src/traversal.o btparse/src/modify.o btparse/src/names.o btparse/src/tex_tree.o btparse/src/string_util.o btparse/src/format_name.o
-          ar crs $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/Text/BibTeX/BibTeX.a xscode/BibTeX.o xscode/btxs_support.o
-          cd ../..
-          mkdir -p myext/URL_IO_Compress_Brotli && curl -L $URL_IO_Compress_Brotli | tar -xzf - --strip-components=1 --directory myext/URL_IO_Compress_Brotli && cd myext/URL_IO_Compress_Brotli
-          $PERLINSTALLPREFIX/bin/perl Makefile.PL LINKTYPE=static
-          # https://github.com/timlegge/perl-IO-Compress-Brotli/issues/5
-          sed -i 's/$(CP) $(MYEXTLIB) "$@"/$(CP) $(MYEXTLIB) "$(dir $@)"/' Makefile
-          make && make install
-          cd ../..
-          mkdir -p myext/URL_Biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory myext/URL_Biber && cd myext/URL_Biber
-          $PERLINSTALLPREFIX/bin/perl ./Build.PL && $PERLINSTALLPREFIX/bin/perl ./Build && $PERLINSTALLPREFIX/bin/perl ./Build install
-          cd ../..
-
-          ucpath="$PERLINSTALLPREFIX/lib/perl5/$PERLVER/Unicode/Collate"
-          mkdir biber && curl -L $URL_Biber | tar -xzf - --strip-components=1 --directory=biber
-          mkdir -p packfs/lib/Biber packfs/lib/Biber/LaTeX packfs/lib/Unicode/Collate packfs/lib/Mozilla/CA packfs/lib/auto packfs/lib/Business/ISBN
-          cp biber/data/biber-tool.conf biber/data/schemata/config.rnc biber/data/schemata/config.rng biber/data/schemata/bcf.rnc biber/data/schemata/bcf.rng biber/data/bcf.xsl packfs/lib/Biber
-          cp biber/lib/Biber/LaTeX/recode_data.xml packfs/lib/Biber/LaTeX
-          
-          cp -r $ucpath/Locale $ucpath/CJK $ucpath/allkeys.txt $ucpath/keys.txt packfs/lib/Unicode/Collate
-          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Mozilla/CA/cacert.pem packfs/lib/Mozilla/CA/cacert.pem
-          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/PerlIO packfs/lib/PerlIO
-          cp -r $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/PerlIO packfs/lib/auto/PerlIO
-          cp $PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/Business/ISBN/RangeMessage.xml packfs/lib/Business/ISBN/RangeMessage.xml
-
+          mkdir packfs && touch packfs/a.txt
           python busypack.py -i packfs -o busypack.h --prefix=$PERLPREFIX --ld=ld --exclude '\.a|\.so|\.pod|\.ld|\.h|bin\/' --include 'bin/biber'
-          cc -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-          cc -o busybiber busybiber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc busypack.o -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
-              $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
-              $(printf "$PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/%s " mro/mro.a File/Glob/Glob.a File/DosGlob/DosGlob.a I18N/Langinfo/Langinfo.a SDBM_File/SDBM_File.a Compress/Raw/Zlib/Zlib.a Compress/Raw/Bzip2/Bzip2.a POSIX/POSIX.a Fcntl/Fcntl.a Data/Dumper/Dumper.a Math/BigInt/FastCalc/FastCalc.a IO/IO.a Opcode/Opcode.a Socket/Socket.a threads/shared/shared.a threads/threads.a MIME/Base64/Base64.a Time/HiRes/HiRes.a Time/Piece/Piece.a Filter/Util/Call/Call.a List/Util/Util.a Unicode/Collate/Collate.a Unicode/Normalize/Normalize.a B/B.a Devel/Peek/Peek.a Storable/Storable.a attributes/attributes.a re/re.a Hash/Util/Util.a Hash/Util/FieldHash/FieldHash.a IPC/SysV/SysV.a PerlIO/encoding/encoding.a PerlIO/mmap/mmap.a PerlIO/via/via.a Sys/Hostname/Hostname.a Sys/Syslog/Syslog.a Encode/KR/KR.a Encode/JP/JP.a Encode/Byte/Byte.a Encode/CN/CN.a Encode/Encode.a Encode/Unicode/Unicode.a Encode/Symbol/Symbol.a Encode/EBCDIC/EBCDIC.a Encode/TW/TW.a Cwd/Cwd.a Digest/MD5/MD5.a Digest/SHA/SHA.a) \
-              $PERLINSTALLPREFIX/lib/libbtparse.a \
-              $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/CORE/libperl.a \
-              /usr/lib/libxslt.a \
-              /usr/lib/libexslt.a \
-              /usr/lib/libexpat.a \
-              /usr/lib/libcrypto.a /usr/lib/libgcrypt.a /usr/lib/libgpg-error.a \
-              /usr/lib/libxml2.a \
-              /lib/libz.a \
-              /usr/lib/liblzma.a \
-              /usr/lib/libssl.a
-          ./busybiber --help
-          cd biber/testfiles && ../../busybiber --validate-datamodel --convert-control test && test -f test.bcf.html
-
-      - name: Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: staticbiber
-          path: |
-            busypack.h
-            busybiber
-            biber/testfiles/
+#          cc -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+#          cc -o busybiber busybiber.c -DPACKFS_BUILTIN_PREFIX=$PERLPREFIX -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I$PWD/perlsourcestatic -I/usr/local/include   -Wl,-E -fstack-protector-strong -fwrapv -fno-strict-aliasing -L/usr/local/lib perlsourcestatic/libperl.a -lc -lpthread -ldl -lm -lutil   --static -static -static-libstdc++ -static-libgcc busypack.o -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @busypack.h.txt \
+#              $(printf "$PERLINSTALLPREFIX/lib/perl5/site_perl/$PERLVER/$PERLPLATFORM/auto/%s " Class/XSAccessor/XSAccessor.a Params/Util/Util.a Params/Validate/XS/XS.a XML/LibXML/LibXML.a XML/Parser/Expat/Expat.a XML/LibXSLT/LibXSLT.a DateTime/DateTime.a Text/CSV_XS/CSV_XS.a Text/BibTeX/BibTeX.a Variable/Magic/Magic.a IO/Compress/Brotli/Brotli.a IO/Compress/Brotli/libbrotlidec.a IO/Compress/Brotli/libbrotlienc.a IO/Compress/Brotli/libbrotlicommon.a HTML/Parser/Parser.a Package/Stash/XS/XS.a PadWalker/PadWalker.a Net/SSLeay/SSLeay.a List/SomeUtils/XS/XS.a List/MoreUtils/XS/XS.a Unicode/LineBreak/LineBreak.a Devel/LexAlias/LexAlias.a Devel/Caller/Caller.a Storable/Storable.a autovivification/autovivification.a DBD/SQLite/SQLite.a DBI/DBI.a Sub/Identify/Identify.a Sort/Key/Key.a PerlIO/utf8_strict/utf8_strict.a Clone/Clone.a Encode/JIS2K/JIS2K.a Encode/HanExtra/HanExtra.a Encode/EUCJPASCII/EUCJPASCII.a) \
+#              $(printf "$PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/auto/%s " mro/mro.a File/Glob/Glob.a File/DosGlob/DosGlob.a I18N/Langinfo/Langinfo.a SDBM_File/SDBM_File.a Compress/Raw/Zlib/Zlib.a Compress/Raw/Bzip2/Bzip2.a POSIX/POSIX.a Fcntl/Fcntl.a Data/Dumper/Dumper.a Math/BigInt/FastCalc/FastCalc.a IO/IO.a Opcode/Opcode.a Socket/Socket.a threads/shared/shared.a threads/threads.a MIME/Base64/Base64.a Time/HiRes/HiRes.a Time/Piece/Piece.a Filter/Util/Call/Call.a List/Util/Util.a Unicode/Collate/Collate.a Unicode/Normalize/Normalize.a B/B.a Devel/Peek/Peek.a Storable/Storable.a attributes/attributes.a re/re.a Hash/Util/Util.a Hash/Util/FieldHash/FieldHash.a IPC/SysV/SysV.a PerlIO/encoding/encoding.a PerlIO/mmap/mmap.a PerlIO/via/via.a Sys/Hostname/Hostname.a Sys/Syslog/Syslog.a Encode/KR/KR.a Encode/JP/JP.a Encode/Byte/Byte.a Encode/CN/CN.a Encode/Encode.a Encode/Unicode/Unicode.a Encode/Symbol/Symbol.a Encode/EBCDIC/EBCDIC.a Encode/TW/TW.a Cwd/Cwd.a Digest/MD5/MD5.a Digest/SHA/SHA.a) \
+#              $PERLINSTALLPREFIX/lib/libbtparse.a \
+#              $PERLINSTALLPREFIX/lib/perl5/$PERLVER/$PERLPLATFORM/CORE/libperl.a \
+#              /usr/lib/libxslt.a \
+#              /usr/lib/libexslt.a \
+#              /usr/lib/libexpat.a \
+#              /usr/lib/libcrypto.a /usr/lib/libgcrypt.a /usr/lib/libgpg-error.a \
+#              /usr/lib/libxml2.a \
+#              /lib/libz.a \
+#              /usr/lib/liblzma.a \
+#              /usr/lib/libssl.a
+#          ./busybiber --help
+#          cd biber/testfiles && ../../busybiber --validate-datamodel --convert-control test && test -f test.bcf.html
+#
+#      - name: Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: staticbiber
+#          path: |
+#            busypack.h
+#            busybiber
+#            biber/testfiles/
