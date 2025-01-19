@@ -48,15 +48,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: chown $(whoami) -R . && gh --version && gh release create build_native_${{github.sha}}_${{ github.run_id }}_${{ github.run_attempt }} -t "Native assets" build/versions.txt build/native/busytex build/native/busytexextra build/native/busytex.tar $(printf "build/native/texlive/texk/web2c/%s " $TEXBIN) build/texlive-basic.tar.gz
 
-#      - name: Archive artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: build
-#          path: |
-#            build/texlive-basic/
-#            build/texlive-extra/
-#            build/native/busytex
-#            build/native/busytexextra
-#            busypack.h
-#            busypack.h.txt
-#            busypack.h.o/
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            #build/texlive-basic/
+            #build/texlive-extra/
+            #build/native/busytex
+            #build/native/busytexextra
+            busypack.h
+            #busypack.h.txt
+            #busypack.h.o/
