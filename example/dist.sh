@@ -1,3 +1,5 @@
+set -ex
+
 curl -O https://github.com/busytex/busytex/releases/download/build_native_9b40c3ce65d39b52bc38eb4794b8f9837b956064_12299351715_1/busytex
 mkdir -p installer && curl -L https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -xzf - -C installer --strip-components 1
 
