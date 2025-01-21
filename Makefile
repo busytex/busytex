@@ -356,16 +356,6 @@ build/%/texlive/texk/bibtex-x/busytex_bibtex8.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $@) bibtex8-bibtex.o $(OPTS_BIBTEX_$*)
 	$(AR_$*) -crs $@ $(dir $@)/bibtex8-*.o
 
-build/%/libc_busypack.a:
-	cp $(shell $(CC) -print-file-name=libc.a) $@
-	$(AR_$*) x $@  getopt.lo
-	$(OBJCOPY_$*) --redefine-sym optind=orig_optind getopt.lo
-	$(OBJCOPY_$*) --redefine-sym optarg=orig_optarg getopt.lo
-	$(OBJCOPY_$*) --redefine-sym opterr=orig_opterr getopt.lo
-	$(OBJCOPY_$*) --redefine-sym optopt=orig_optopt getopt.lo
-	$(OBJCOPY_$*) --redefine-sym getopt=orig_getopt getopt.lo
-	$(AR_$*) rs $@ getopt.lo
-
 build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
 	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
@@ -373,9 +363,9 @@ build/%/busytex build/%/busytex.js:
 	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/native/busytexextra: build/native/busytex                              build/texlive-extra.txt 
-	$(PYTHON) busypack.py -i build/texlive-extra/ -o packfs.h --prefix=/texlive --ld=$(LD_native) --exclude '\.a|\.so|\.pod|\.ld|\.h|\.log'
-	$(CC_native) -o busypack.o -c busypack.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-	$(CXX_native) -o $@ $<.o busypack.o  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) -Wl,--allow-multiple-definition -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @packfs.h.txt # build/native/libc_busypack.a 
+	$(PYTHON) packfs.py -i build/texlive-extra/ -o packfs.h --prefix=/texlive --ld=$(LD_native) --exclude '\.a|\.so|\.pod|\.ld|\.h|\.log'
+	$(CC_native) -o packfs.o -c packfs.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+	$(CXX_native) -o $@ $<.o packfs.o  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) -Wl,--allow-multiple-definition -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @packfs.h.txt
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
