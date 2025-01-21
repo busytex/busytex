@@ -9,10 +9,10 @@ export TEXMFLOG=$PWD/texmf.log
 if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
     export DIST=$(dirname $(which $BUSYTEX))
-    export TEXMFDIST=$DIST/texlive/texmf-dist
-    export  TEXMFCNF=$DIST/texlive/texmf-dist/web2c
-    export  TEXMFVAR=$DIST/texlive/texmf-dist/texmf-var
-    export FONTCONFIG_PATH=$DIST/texlive
+    export TEXMFDIST=$DIST/texlive-dist/texmf-dist
+    export  TEXMFCNF=$DIST/texlive-dist/texmf-dist/web2c
+    export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
+    export FONTCONFIG_PATH=$DIST/texlive-dist
 fi
 
 if [ -d example ]; then
@@ -21,9 +21,9 @@ fi
 
 if [[ "$ENGINES" == *"pdflatex"* ]]; then
     #--fmt $TEXMFVAR/web2c/pdftex/pdflatex.fmt 
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname pdflatex example.tex
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --draftmode --halt-on-error --output-format=pdf --progname pdflatex example.tex
     $BUSYTEX bibtex8 --8bit example.aux
-    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname pdflatex example.tex
+    $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --draftmode --halt-on-error --output-format=pdf --progname pdflatex example.tex
     $BUSYTEX pdflatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname pdflatex --jobname example_pdflatex.pdf example.tex
 fi
 if [[ "$ENGINES" == *"xelatex"* ]]; then
@@ -36,8 +36,8 @@ if [[ "$ENGINES" == *"xelatex"* ]]; then
 fi
 if [[ "$ENGINES" == *"luahblatex"* ]]; then
     # --fmt $TEXMVAR/web2c/luahbtex/luahblatex.fmt
-    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname luahblatex  --nosocket example.tex
+    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --draftmode --halt-on-error --output-format=pdf --progname luahblatex  --nosocket example.tex
     $BUSYTEX bibtex8 --8bit example.aux
-    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname luahblatex --nosocket example.tex
+    $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --draftmode --halt-on-error --output-format=pdf --progname luahblatex --nosocket example.tex
     $BUSYTEX luahblatex --no-shell-escape --interaction nonstopmode --halt-on-error --output-format=pdf --progname luahblatex --jobname example_luahblatex.pdf --nosocket example.tex
 fi
