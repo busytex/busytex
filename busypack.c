@@ -11,7 +11,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 
-#include "busypack.h"
+#include "packfs.h"
 //size_t packfs_builtin_files_num, packfs_builtin_dirs_num; const char** packfs_builtin_abspaths; const char** packfs_builtin_abspaths_dirs; const char** packfs_builtin_starts; const char** packfs_builtin_ends;
 
 extern int      __real_open(const char *path, int flags);                               
@@ -23,13 +23,11 @@ extern int      __real_stat(const char *restrict path, struct stat *restrict sta
 extern int      __real_fstat(int fd, struct stat * statbuf);                            
 extern FILE*    __real_fopen(const char *path, const char *mode);                       
 extern int      __real_fileno(FILE* stream);                                            
-
 enum {
     packfs_filefd_min = 1000000000, 
     packfs_filefd_max = 1000001000, 
     packfs_filepath_max_len = 256, 
 };
-
 int packfs_enabled = 1;
 int packfs_filefd[packfs_filefd_max - packfs_filefd_min];
 FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
@@ -39,8 +37,8 @@ size_t packfs_filesize[packfs_filefd_max - packfs_filefd_min];
 #define PACKFS_STRING_VALUE(x) PACKFS_STRING_VALUE_(x)
 // TODO: append / if missing
 char packfs_builtin_prefix[] = PACKFS_STRING_VALUE(PACKFS_BUILTIN_PREFIX);
-#undef PACKFS_STRING_VALUE_
 #undef PACKFS_STRING_VALUE
+#undef PACKFS_STRING_VALUE_
 
 void packfs_sanitize_path(char* path_sanitized, const char* path)
 {
@@ -333,11 +331,8 @@ int __wrap_stat(const char *restrict path, struct stat *restrict statbuf)
     if(packfs_enabled)
     {
         int res = packfs_stat(path, -1, statbuf);
-        
         if(res >= -1)
-        {
             return res;
-        }
     }
 
     int res = __real_stat(path, statbuf);
