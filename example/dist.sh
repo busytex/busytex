@@ -18,10 +18,10 @@ curl --output-dir $DIST -O -L https://github.com/busytex/busytex/releases/downlo
 curl --output-dir $DIST -O -L https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/tex-ini-files.r68920.tar.xz   && tar -xf $DIST/tex-ini-files.r68920.tar.xz   -C $DIST
 
 for name in xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink; do
-    printf "#!/bin/sh\n$DIST/$BINARCH_native/busytex $name \$@" > $DIST/$BINARCH_native/$name && chmod +x $DIST/$BINARCH_native/$name
+    printf "#!/bin/sh\n$TEXDIR/$BINARCH_native/busytex $name \$@" > $DIST/$BINARCH_native/$name && chmod +x $DIST/$BINARCH_native/$name
 done
-for name in updmap.pl fmtutil.pl mktexlsr.pl; do
-    mv $DIST/texmf-dist/scripts/texlive/$name $DIST/$BINARCH_native/${name%.*}
+for name in updmap.pl fmtutil.pl mktexlsr.pl updmap-sys.sh updmap-user.sh fmtutil-sys.sh fmtutil-user.sh; do
+    cp $DIST/texmf-dist/scripts/texlive/$name $DIST/$BINARCH_native/${name%.*}
 done
 
 echo selected_scheme scheme-basic                    > $DIST/$DIST.profile
@@ -33,7 +33,7 @@ echo "collection-xetex  1"                          >> $DIST/$DIST.profile
 echo "collection-latex  1"                          >> $DIST/$DIST.profile  
 echo "collection-luatex 1"                          >> $DIST/$DIST.profile  
 
-TEXLIVE_INSTALL_NO_RESUME=1 perl $DIST/installer/install-tl --profile $DIST/$DIST.profile --custom-bin $TEXDIR/$BINARCH_native --no-doc-install --no-src-install --no-interaction
+TEXLIVE_INSTALL_NO_RESUME=1 strace -f -s 128 -o log.txt perl $DIST/installer/install-tl --profile $DIST/$DIST.profile --custom-bin $TEXDIR/$BINARCH_native --no-doc-install --no-src-install --no-interaction
 echo '<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/texlive/texmf-dist/fonts/opentype</dir><dir>/texlive/texmf-dist/fonts/type1</dir></fontconfig>' > $DIST/fonts.conf
 #mv $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/lualatex.fmt $(basename $@)/texmf-dist/texmf-var/web2c/luahbtex/luahblatex.fmt
 
