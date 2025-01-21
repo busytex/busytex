@@ -8,10 +8,14 @@ BINARCH_native=bin/_custom
 TEXDIR=$PWD/$DIST
 
 mkdir -p $DIST/$BINARCH_native && curl -o $DIST/$BINARCH_native/$BUSYTEX_native https://github.com/busytex/busytex/releases/download/build_native_9b40c3ce65d39b52bc38eb4794b8f9837b956064_12299351715_1/busytex && chmod +x $DIST/$BINARCH_native/$BUSYTEX_native
-mkdir -p $DIST/installer && curl -L https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar -xzf - -C $DIST/installer --strip-components 1
-curl --output-dir $DIST -O       -L https://mirror.ctan.org/systems/texlive/tlnet/archive/texlive-scripts.tar.xz && tar -xf $DIST/texlive-scripts.tar.xz     -C $DIST
-curl --output-dir $DIST -O       -L https://mirror.ctan.org/systems/texlive/tlnet/archive/latexconfig.tar.xz     && tar -xf installer/latexconfig.tar.xz     -C $DIST
-curl --output-dir $DIST -O       -L https://mirror.ctan.org/systems/texlive/tlnet/archive/tex-ini-files.tar.xz   && tar -xf installer/tex-ini-files.tar.xz   -C $DIST
+# https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/install-tl-unx.tar.gz
+mkdir -p $DIST/installer && curl -L https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/install-tl-unx.tar.gz | tar -xzf - --strip-components=1 -C $DIST/installer 
+# https://mirror.ctan.org/systems/texlive/tlnet/archive/texlive-scripts.r73538.tar.xz
+curl --output-dir $DIST -O       -L https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive-scripts.r73538.tar.xz && tar -xf $DIST/texlive-scripts.r73538.tar.xz     -C $DIST
+# https://mirror.ctan.org/systems/texlive/tlnet/archive/latexconfig.r68923.tar.xz
+curl --output-dir $DIST -O       -L https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/latexconfig.r68923.tar.xz     && tar -xf installer/latexconfig.r68923.tar.xz     -C $DIST
+# https://mirror.ctan.org/systems/texlive/tlnet/archive/tex-ini-files.r68920.tar.xz
+curl --output-dir $DIST -O       -L https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/tex-ini-files.r68920.tar.xz   && tar -xf installer/tex-ini-files.r68920.tar.xz   -C $DIST
 
 for name in xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink; do
     printf "#!/bin/sh\n$DIST/$BINARCH_native/busytex $name \$@" > $DIST/$BINARCH_native/$name && chmod +x $DIST/$BINARCH_native/$name
