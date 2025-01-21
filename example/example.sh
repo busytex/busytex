@@ -1,6 +1,8 @@
+#!/bin/bash
+
 set -e
 
-export BUSYTEX=$1
+export BUSYTEX=${1:-busytex}
 export ENGINES="${@:-pdflatex xelatex luahbtex}"
 
 export TEXMFLOG=$PWD/texmf.log
@@ -18,6 +20,8 @@ fi
 if [ -d example ]; then
     cd example
 fi
+
+echo $BUSYTEX $ENGINES
 
 if [[ "$ENGINES" == *"pdflatex"* ]]; then
     #--fmt $TEXMFVAR/web2c/pdftex/pdflatex.fmt 
