@@ -6,7 +6,7 @@ export ENGINES="${@:-pdflatex xelatex luahbtex}"
 export TEXMFLOG=$PWD/texmf.log
 # export TEXINPUTS=.:./example/
 
-if [[ "$BUSYTEX" == *"busytex" ]]; then
+if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
     export DIST=$(dirname $(which $BUSYTEX))
     echo EXAMPLE1: $(dirname $(which $BUSYTEX)) $(realpath $(dirname $BUSYTEX)) 
