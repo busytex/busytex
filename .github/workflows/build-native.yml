@@ -38,15 +38,15 @@ jobs:
             make source/texmfrepo.txt
             make build/texlive-basic.txt
             mkdir dist-native && ln -s $PWD/build/native/busytex dist-native && ln -s $PWD/build/texlive-basic dist-native/texlive-dist
-            PATH=$PWD/dist-native:$PATH sh example/example.sh busytex      pdflatex xelatex luahblatex           
+            PATH=$PWD/dist-native:$PATH bash example/example.sh busytex      pdflatex xelatex luahblatex           
             make build/texlive-extra.txt
             make build/native/busytexextra
-            PATH=$PWD/build/native:$PATH sh example/example.sh busytexextra pdflatex xelatex luahblatex
+            PATH=$PWD/build/native:$PATH bash example/example.sh busytexextra pdflatex xelatex luahblatex
       
       - name: Test native script
         run: |
-            sh example/dist.sh
-            sh example/example.sh ./busytex pdflatex xelatex luahblatex
+            bash example/dist.sh
+            bash example/example.sh ./busytex pdflatex xelatex luahblatex
 
       #- name: Create Release
       #  env:
