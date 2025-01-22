@@ -1,5 +1,3 @@
-#!/bin/bash
-
 set -e
 
 export BUSYTEX=${1:-busytex}
