@@ -43,10 +43,10 @@ jobs:
             make build/native/busytexextra
             PATH=$PWD/build/native:$PATH sh example/example.sh busytexextra pdflatex xelatex luahblatex
       
-      #- name: Test native script
-      #  run: |
-      #      sh example/dist.sh
-      #      sh example/example.sh ./busytex pdflatex xelatex luahblatex
+      - name: Test native script
+        run: |
+            sh example/dist.sh
+            #sh example/example.sh ./busytex pdflatex xelatex luahblatex
 
       #- name: Create Release
       #  env:
