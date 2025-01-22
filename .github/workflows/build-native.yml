@@ -45,7 +45,7 @@ jobs:
       
       - name: Test native script
         run: |
-            bash example/dist.sh
+            cp build/native/busytex ./busytex && bash example/dist.sh
             bash example/example.sh ./busytex pdflatex xelatex luahblatex
 
       #- name: Create Release
