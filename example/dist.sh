@@ -9,7 +9,7 @@ TEXDIR=$PWD/$DIST
 
 [ ! -e $BUSYTEX_native ] && curl -o $BUSYTEX_native -L https://github.com/busytex/busytex/releases/download/build_native_9b40c3ce65d39b52bc38eb4794b8f9837b956064_12299351715_1/busytex && chmod +x $BUSYTEX_native
 
-mkdir $DIST/$BINARCH_native && ln -s $PWD/busytex $TEXDIR/$BINARCH_native/$BUSYTEX_native
+mkdir -p $DIST/$BINARCH_native && ln -s $PWD/busytex $TEXDIR/$BINARCH_native/$BUSYTEX_native
 
 # https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/install-tl-unx.tar.gz
 mkdir -p $DIST/installer && curl -L https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/install-tl-unx.tar.gz    | tar -xzf - --strip-components=1             -C $DIST/installer 
