@@ -15,6 +15,8 @@ if [[ "$BUSYTEX" == *"busytex"* ]]; then
     export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
     export FONTCONFIG_PATH=$DIST/texlive-dist
     echo EXAMPLE2: $DIST $TEXMFDIST
+    find $TEXMFDIST -name '*.cnf'
+    echo EXAMPLE3
 fi
 
 if [ -d example ]; then
