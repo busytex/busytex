@@ -1,6 +1,6 @@
 set -e
 
-export BUSYTEX=${1:-busytex}
+export BUSYTEX=$1
 export ENGINES="${@:-pdflatex xelatex luahbtex}"
 
 export TEXMFLOG=$PWD/texmf.log
@@ -8,8 +8,7 @@ export TEXMFLOG=$PWD/texmf.log
 
 if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
-    #export DIST=$(dirname $(which $BUSYTEX))
-    export DIST=$(realpath $(dirname $BUSYTEX))
+    export DIST=$(dirname $(which $BUSYTEX))
     export TEXMFDIST=$DIST/texlive-dist/texmf-dist
     export  TEXMFCNF=$DIST/texlive-dist/texmf-dist/web2c
     export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
@@ -19,8 +18,6 @@ fi
 if [ -d example ]; then
     cd example
 fi
-
-echo $BUSYTEX $ENGINES
 
 if [[ "$ENGINES" == *"pdflatex"* ]]; then
     #--fmt $TEXMFVAR/web2c/pdftex/pdflatex.fmt 
