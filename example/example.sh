@@ -10,13 +10,14 @@ if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
     #export DIST=$(dirname $(which $BUSYTEX))
     export DIST=$(realpath $(dirname $BUSYTEX)) 
-    echo EXAMPLE1: $(realpath $(dirname $BUSYTEX)) 
+    echo EXAMPLE1: $DIST 
     export TEXMFDIST=$DIST/texlive-dist/texmf-dist
     export  TEXMFCNF=$DIST/texlive-dist/texmf-dist/web2c
     export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
     export FONTCONFIG_PATH=$DIST/texlive-dist
     echo EXAMPLE2: $DIST $TEXMFDIST
-    find $TEXMFDIST -name '*.cnf'
+    find $DIST -name '*.cnf'
+    ls $DIST
     echo EXAMPLE3
 fi
 
