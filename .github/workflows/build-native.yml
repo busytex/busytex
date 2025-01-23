@@ -43,7 +43,7 @@ jobs:
             
             make build/texlive-extra.txt
             make build/native/busytexextra && build/native/busytexextra
-            PATH=$PWD/build/native:$PATH  bash example/example.sh busytexextra pdflatex xelatex luahblatex
+            PATH=$PWD/build/native:$PATH  sh example/example.sh busytexextra pdflatex xelatex luahblatex
       
       #- name: Test native script
       #  run: |
