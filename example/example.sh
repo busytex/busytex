@@ -7,11 +7,14 @@ export TEXMFLOG=$PWD/texmf.log
 # export TEXINPUTS=.:./example/
 
 if [[ "$BUSYTEX" == "busytex" ]]; then
-    if [[ -z "$(which $BUSYTEX)" ]]; then
-        export DIST=$(realpath $(dirname $BUSYTEX))
-    else
-        export DIST=$(dirname $(which $BUSYTEX))
-    fi
+    #if [[ -z "$(which $BUSYTEX)" ]]; then
+    #    export DIST=$(realpath $(dirname $BUSYTEX))
+    #else
+    #    export DIST=$(dirname $(which $BUSYTEX))
+    #fi
+    
+    export DIST=$(dirname $(which $BUSYTEX))
+    
     export TEXMFDIST=$DIST/texlive-dist/texmf-dist
     export  TEXMFCNF=$DIST/texlive-dist/texmf-dist/web2c
     export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
