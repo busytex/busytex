@@ -8,9 +8,10 @@ export TEXMFLOG=$PWD/texmf.log
 
 if [[ "$BUSYTEX" == "busytex" ]]; then
     export TEXMFLOG=$PWD/texmf.log
-    #export DIST=$(dirname $(which $BUSYTEX))
+    export DIST1=$(dirname $(which $BUSYTEX))
     export DIST=$(realpath $(dirname $BUSYTEX)) 
-    echo EXAMPLE1: $DIST 
+    ls -la $BUSYTEX
+    echo EXAMPLE1: $DIST $DIST1 $(which $BUSYTEX)
     export TEXMFDIST=$DIST/texlive-dist/texmf-dist
     export  TEXMFCNF=$DIST/texlive-dist/texmf-dist/web2c
     export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
