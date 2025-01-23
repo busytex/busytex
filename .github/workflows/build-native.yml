@@ -49,7 +49,7 @@ jobs:
         run: |
             bash example/dist.sh
             find ./texlive-dist/ -name '*.fmt'
-            #PATH=$PWD:$PATH bash example/example.sh busytex pdflatex xelatex luahblatex
+            PATH=$PWD:$PATH bash example/example.sh busytex pdflatex xelatex luahblatex
 
       #- name: Create Release
       #  env:
