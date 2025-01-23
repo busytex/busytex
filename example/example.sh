@@ -1,28 +1,17 @@
 set -e
 
-export BUSYTEX=$1
+export BUSYTEX=$(which $1)
 export ENGINES="${@:-pdflatex xelatex luahbtex}"
 
 export TEXMFLOG=$PWD/texmf.log
 # export TEXINPUTS=.:./example/
 
-if [[ "$BUSYTEX" == "busytex" ]]; then
-    #if [[ -z "$(which $BUSYTEX)" ]]; then
-    #    export DIST=$(realpath $(dirname $BUSYTEX))
-    #else
-    #    export DIST=$(dirname $(which $BUSYTEX))
-    #fi
-    
-    export DIST=$(dirname $(which $BUSYTEX))
-    
+if [[ "$1" == "busytex" ]]; then
+    export DIST=$(dirname $BUSYTEX)
     export TEXMFDIST=$DIST/texlive-dist/texmf-dist
     export  TEXMFCNF=$DIST/texlive-dist/texmf-dist/web2c
     export  TEXMFVAR=$DIST/texlive-dist/texmf-dist/texmf-var
     export FONTCONFIG_PATH=$DIST/texlive-dist
-    echo EXAMPLE2: $DIST $TEXMFDIST
-    find $DIST -name '*.cnf'
-    ls $DIST
-    echo EXAMPLE3
 fi
 
 if [ -d example ]; then
