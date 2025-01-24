@@ -67,11 +67,13 @@ int main(int argc, char* argv[])
     fprintf(stderr, "busytex before: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/texmf-dist", &statbuf));
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/texmf-dist", &statbuf) == 0)
     {
+        fprintf(stderr, "busytex inside before '%s'\n", getenv("TEXMFDIST"));
         putenvjoin("TEXMFDIST", "/texlive/texmf-dist");
         putenvjoin("TEXMFVAR",  "/texlive/texmf-dist/texmf-var");
         putenvjoin("TEXMFCNF",  "/texlive/texmf-dist/web2c");
         putenvjoin("FONTCONFIG_PATH", "/texlive/");
         //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
+        fprintf(stderr, "busytex inside after '%s'\n", getenv("TEXMFDIST"));
     }
     fprintf(stderr, "busytex after: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/texmf-dist", &statbuf));
 
