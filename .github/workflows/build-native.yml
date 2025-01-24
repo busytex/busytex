@@ -63,6 +63,6 @@ jobs:
             #build/texlive-extra/
             #build/native/busytex
             #build/native/busytexextra
-            #busypack.h.txt
-            #busypack.h.o/
-            busypack.h
+            #packfs.h.txt
+            #packfs.h.o/
+            packfs.h

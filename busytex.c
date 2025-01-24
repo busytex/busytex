@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 
     if(argc < 2)
     {
-        fprintf(stderr, "busytex: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/", &statbuf));
+        fprintf(stderr, "busytex: '%s' %d %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/", &statbuf), (int)stat("/texlive", &statbuf));
 
         printf("\n"
 #ifdef BUSYTEX_PDFTEX
