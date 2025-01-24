@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     fprintf(stderr, "\nENDBUSYTEX\n");*/
 
     struct stat statbuf;
-    fprintf(stderr, "busytex before: '%s' %d %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/", &statbuf), (int)stat("/texlive/texmf-dist", &statbuf));
+    fprintf(stderr, "busytex before: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/texmf-dist", &statbuf));
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/texmf-dist", &statbuf) == 0)
     {
         putenvjoin("TEXMFDIST", "/texlive/texmf-dist");
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
         putenvjoin("FONTCONFIG_PATH", "/texlive/");
         //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
     }
-    fprintf(stderr, "busytex after: '%s' %d %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/", &statbuf), (int)stat("/texlive/texmf-dist", &statbuf));
+    fprintf(stderr, "busytex after: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/texmf-dist", &statbuf));
 
     if(argc < 2)
     {
