@@ -64,7 +64,6 @@ int main(int argc, char* argv[])
     fprintf(stderr, "\nENDBUSYTEX\n");*/
 
     struct stat statbuf;
-    fprintf(stderr, "busytex: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/", &statbuf));
 
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/", &statbuf) == 0)
     {
@@ -77,7 +76,8 @@ int main(int argc, char* argv[])
 
     if(argc < 2)
     {
-        fprintf(stderr, "TEXMFDIST: '%s'\n", getenv("TEXMFDIST"));
+        fprintf(stderr, "busytex: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/", &statbuf));
+
         printf("\n"
 #ifdef BUSYTEX_PDFTEX
             "pdftex\n"
