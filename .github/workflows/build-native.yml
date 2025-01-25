@@ -38,18 +38,18 @@ jobs:
             make source/texmfrepo.txt
             
             make build/texlive-basic.txt
-            mkdir dist-native && ln -s $PWD/build/native/busytex dist-native && ln -s $PWD/build/texlive-basic dist-native/texlive-dist
-            PATH=$PWD/dist-native:$PATH bash example/example.sh busytex      pdflatex xelatex luahblatex
+            mkdir dist-native && ln -s $PWD/build/native/busytex dist-native/busytex && ln -s $PWD/build/texlive-basic dist-native/texlive-dist
+            PATH=$PWD/dist-native:$PATH   bash example/example.sh busytex      pdflatex xelatex luahblatex
             
             make build/texlive-extra.txt
-            make build/native/busytexextra && build/native/busytexextra
+            make build/native/busytexextra
             PATH=$PWD/build/native:$PATH  bash example/example.sh busytexextra pdflatex xelatex luahblatex
       
-      #- name: Test native script
-      #  run: |
-      #      bash example/dist.sh
-      #      find ./texlive-dist/ -name '*.fmt'
-      #      PATH=$PWD:$PATH bash example/example.sh busytex pdflatex xelatex luahblatex
+      - name: Test native script
+        run: |
+            bash example/dist.sh
+            find ./texlive-dist/ -name '*.fmt'
+            PATH=$PWD:$PATH bash example/example.sh busytex pdflatex xelatex luahblatex
       #- name: Create Release
       #  env:
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
