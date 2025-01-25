@@ -44,13 +44,14 @@ void flush_streams()
     fflush(NULL);
 }
 
-void putenvjoin(const char* name, const char* value)
+void setenvjoin(const char* name, const char* value)
 {
-    enum {putenvjoinsize = 65536};
-    static char tmp[putenvjoinsize];
+    enum {setenvjoinsize = 65536};
+    char tmp[setenvjoinsize];
     const char* cur = getenv(name);
-    snprintf(tmp, putenvjoinsize, (cur == NULL || cur[0] == '\0') ? "%s=%s" : "%s=%s:%s", name, value, cur);
+    snprintf(tmp, setenvjoinsize, (cur == NULL || cur[0] == '\0') ? "%s" : "%s:%s", value, cur);
     putenv(tmp);
+    setenv(name, value, 1);
 }
 
 int main(int argc, char* argv[])
@@ -68,10 +69,10 @@ int main(int argc, char* argv[])
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/texmf-dist", &statbuf) == 0)
     {
         fprintf(stderr, "busytex inside before '%s'\n", getenv("TEXMFDIST"));
-        putenvjoin("TEXMFDIST", "/texlive/texmf-dist");
-        putenvjoin("TEXMFVAR",  "/texlive/texmf-dist/texmf-var");
-        putenvjoin("TEXMFCNF",  "/texlive/texmf-dist/web2c");
-        putenvjoin("FONTCONFIG_PATH", "/texlive/");
+        setenvjoin("TEXMFDIST", "/texlive/texmf-dist");
+        setenvjoin("TEXMFVAR",  "/texlive/texmf-dist/texmf-var");
+        setenvjoin("TEXMFCNF",  "/texlive/texmf-dist/web2c");
+        setenvjoin("FONTCONFIG_PATH", "/texlive/");
         //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
         fprintf(stderr, "busytex inside after '%s'\n", getenv("TEXMFDIST"));
     }
