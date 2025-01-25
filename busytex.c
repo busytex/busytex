@@ -8,9 +8,6 @@
 #define extern  extern "C"
 #endif
 
-extern int optind;
-extern char **environ;
-
 #ifdef BUSYTEX_PDFTEX 
 extern int busymain_pdftex(int argc, char* argv[]);
 #endif
@@ -46,12 +43,11 @@ void flush_streams()
 
 void setenvjoin(const char* name, const char* value)
 {
-    enum {setenvjoinsize = 65536};
+    enum {setenvjoinsize = 65536, joinsep = ':'};
     char tmp[setenvjoinsize];
     const char* cur = getenv(name);
-    snprintf(tmp, setenvjoinsize, (cur == NULL || cur[0] == '\0') ? "%s" : "%s:%s", value, cur);
-    putenv(tmp);
-    setenv(name, value, 1);
+    snprintf(tmp, setenvjoinsize, (cur == NULL || cur[0] == '\0') ? "%s" : "%s%c%s", value, joinsep, cur);
+    setenv(name, tmp, 1);
 }
 
 int main(int argc, char* argv[])
@@ -60,23 +56,20 @@ int main(int argc, char* argv[])
     for(int i = 0; i < argc; i++)
         fprintf(stderr, "%s ", argv[i]);
     fprintf(stderr, "\n");
+    extern char **environ;
     for(int i = 0; environ[i] != NULL; i++)
         fprintf(stderr, "%s\n", environ[i]);
     fprintf(stderr, "\nENDBUSYTEX\n");*/
 
     struct stat statbuf;
-    fprintf(stderr, "busytex before: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/texmf-dist", &statbuf));
     if(getenv("TEXMFDIST") == NULL && stat("/texlive/texmf-dist", &statbuf) == 0)
     {
-        fprintf(stderr, "busytex inside before '%s'\n", getenv("TEXMFDIST"));
         setenvjoin("TEXMFDIST", "/texlive/texmf-dist");
         setenvjoin("TEXMFVAR",  "/texlive/texmf-dist/texmf-var");
         setenvjoin("TEXMFCNF",  "/texlive/texmf-dist/web2c");
         setenvjoin("FONTCONFIG_PATH", "/texlive/");
         //putenv("PDFLATEXFMT=/texlive/texmf-dist/texmf-var/web2c/pdftex/pdflatex.fmt");
-        fprintf(stderr, "busytex inside after '%s'\n", getenv("TEXMFDIST"));
     }
-    fprintf(stderr, "busytex after: '%s' %d\n", getenv("TEXMFDIST"), (int)stat("/texlive/texmf-dist", &statbuf));
 
     if(argc < 2)
     {
@@ -110,6 +103,7 @@ int main(int argc, char* argv[])
         return 0;
     }
 
+    extern int optind;
 #ifdef BUSYTEX_PDFTEX
     if(0 == strcmp("pdftex", argv[1]) || 0 == strcmp("pdflatex", argv[1]))     { argv[1] = argv[0]; optind = 1; return busymain_pdftex  (argc - 1, argv + 1); }
 #endif
