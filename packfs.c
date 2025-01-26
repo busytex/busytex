@@ -63,7 +63,7 @@ void packfs_sanitize_path(char* path_sanitized, const char* path)
     }
     
     size_t path_sanitized_len = strlen(path_sanitized);
-    if(path_sanitized_len >= 3 && path_sanitized[path_sanitized_len - 1] == '.' && path_sanitized[path_sanitized_len - 2] == '.'  && path_sanitized[patn_sanitized_len - 3] == packfs_sep)
+    if(path_sanitized_len >= 3 && path_sanitized[path_sanitized_len - 1] == '.' && path_sanitized[path_sanitized_len - 2] == '.'  && path_sanitized[path_sanitized_len - 3] == packfs_sep)
     {
         path_sanitized[path_sanitized_len - 3] = '\0';
         char* last_slash = strrchr(path_sanitized, packfs_sep);
