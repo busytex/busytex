@@ -14,6 +14,29 @@
 #include "packfs.h"
 //size_t packfs_builtin_files_num, packfs_builtin_dirs_num; const char** packfs_builtin_abspaths; const char** packfs_builtin_abspaths_dirs; const char** packfs_builtin_starts; const char** packfs_builtin_ends;
 
+enum {
+    packfs_filefd_min = 1000000000, 
+    packfs_filefd_max = 1000001000, 
+    packfs_filepath_max_len = 256, 
+    packfs_sep = '/',
+    packfs_pathsep = ':'
+};
+int packfs_filefd[packfs_filefd_max - packfs_filefd_min];
+FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
+size_t packfs_filesize[packfs_filefd_max - packfs_filefd_min];
+
+int packfs_enabled = 
+#ifdef PACKFS_DISABLE
+0
+#else
+1
+#endif
+;
+
+#define PACKFS_STRING_VALUE_(x) #x
+#define PACKFS_STRING_VALUE(x) PACKFS_STRING_VALUE_(x)
+char packfs_builtin_prefix[] = PACKFS_STRING_VALUE(PACKFS_BUILTIN_PREFIX);
+
 extern int      __real_open(const char *path, int flags);                               
 extern int      __real_close(int fd);                                                   
 extern ssize_t  __real_read(int fd, void* buf, size_t count);                           
@@ -23,22 +46,6 @@ extern int      __real_stat(const char *restrict path, struct stat *restrict sta
 extern int      __real_fstat(int fd, struct stat * statbuf);                            
 extern FILE*    __real_fopen(const char *path, const char *mode);                       
 extern int      __real_fileno(FILE* stream);                                            
-enum {
-    packfs_filefd_min = 1000000000, 
-    packfs_filefd_max = 1000001000, 
-    packfs_filepath_max_len = 256, 
-};
-int packfs_enabled = 1;
-int packfs_filefd[packfs_filefd_max - packfs_filefd_min];
-FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
-size_t packfs_filesize[packfs_filefd_max - packfs_filefd_min];
-
-#define PACKFS_STRING_VALUE_(x) #x
-#define PACKFS_STRING_VALUE(x) PACKFS_STRING_VALUE_(x)
-// TODO: append / if missing
-char packfs_builtin_prefix[] = PACKFS_STRING_VALUE(PACKFS_BUILTIN_PREFIX);
-#undef PACKFS_STRING_VALUE
-#undef PACKFS_STRING_VALUE_
 
 void packfs_sanitize_path(char* path_sanitized, const char* path)
 {
@@ -46,19 +53,38 @@ void packfs_sanitize_path(char* path_sanitized, const char* path)
     if(len == 0)
         path_sanitized[0] = '\0';
 
-    for(int i = (path != NULL && len > 2 && path[0] == '.' && path[1] == '/') ? 2 : 0, k = 0; len > 0 && i < len; i++)
+    // lstrips ./ in the beginning; collapses double consecutive slashes; and rstrips abc/asd/..
+    for(int i = (path != NULL && len > 2 && path[0] == '.' && path[1] == packfs_sep) ? 2 : 0, k = 0; len > 0 && i < len; i++)
     {
-        if(!(i > 1 && path[i] == '/' && path[i - 1] == '/'))
+        if(!(i > 1 && path[i] == packfs_sep && path[i - 1] == packfs_sep))
         {
             path_sanitized[k++] = path[i];
             path_sanitized[k] = '\0';
         }
     }
+    
+    size_t path_sanitized_len = strlen(path_sanitized);
+    if(path_sanitized_len >= 3 && path_sanitized[path_sanitized_len - 1] == '.' && path_sanitized[path_sanitized_len - 2] == '.'  && newpath[patn_sanitized_len - 3] == packfs_sep)
+    {
+        path_sanitized[path_sanitized_len - 3] = '\0';
+        char* last_slash = strrchr(path_sanitized, packfs_sep);
+        if(last_slash != NULL)
+            *last_slash = '\0';
+    }
 }
 
-int packfs_strncmp(const char* prefix, const char* path, size_t count)
+int packfs_path_in_range(const char* prefix, const char* path)
 {
-    return (prefix != NULL && prefix[0] != '\0' && path != NULL && path[0] != '\0') ? strncmp(prefix, path, count) : 1;
+    if(prefix == NULL || prefix[0] == '\0' || path == NULL || path[0] == '\0')
+        return 0;
+
+    size_t prefix_len = strlen(prefix);
+    size_t path_len = strlen(path);
+    int prefix_endswith_slash = prefix[prefix_len - 1] == packfs_sep;
+    int prefix_ok = 0 == strncmp(prefix, path, prefix_len - (prefix_endswith_slash ? 1 : 0));
+    size_t prefix_len_m1 = prefix_endswith_slash ? (prefix_len - 1) : prefix_len;
+
+    return prefix_ok && ((path_len == prefix_len_m1) || (path_len >= prefix_len && path[prefix_len_m1] == packfs_sep));
 }
 
 int packfs_open(const char* path, FILE** out)
@@ -68,7 +94,7 @@ int packfs_open(const char* path, FILE** out)
     FILE* fileptr = NULL;
     size_t filesize = 0;
     
-    if(packfs_builtin_files_num > 0 && 0 == packfs_strncmp(packfs_builtin_prefix, path_sanitized, strlen(packfs_builtin_prefix)))
+    if(packfs_builtin_files_num > 0 && packfs_path_in_range(packfs_builtin_prefix, path_sanitized))
     {
         for(size_t i = 0; i < packfs_builtin_files_num; i++)
         {
@@ -162,7 +188,7 @@ int packfs_access(const char* path)
 {
     char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
 
-    if(0 == packfs_strncmp(packfs_builtin_prefix, path_sanitized, strlen(packfs_builtin_prefix)))
+    if(packfs_path_in_range(packfs_builtin_prefix, path_sanitized))
     {
         for(size_t i = 0; i < packfs_builtin_files_num; i++)
         {
@@ -179,7 +205,7 @@ int packfs_stat(const char* path, int fd, struct stat *restrict statbuf)
 {
     char path_sanitized[packfs_filepath_max_len]; packfs_sanitize_path(path_sanitized, path);
     
-    if(0 == packfs_strncmp(packfs_builtin_prefix, path_sanitized, strlen(packfs_builtin_prefix)))
+    if(packfs_path_in_range(packfs_builtin_prefix, path_sanitized))
     {
         for(size_t i = 0; i < packfs_builtin_files_num; i++)
         {
@@ -230,13 +256,10 @@ FILE* __wrap_fopen(const char *path, const char *mode)
     {
         FILE* res = NULL;
         if(packfs_open(path, &res) >= 0)
-        {
             return res;
-        }
     }
 
-    FILE* res = __real_fopen(path, mode);
-    return res;
+    return __real_fopen(path, mode);
 }
 
 int __wrap_fileno(FILE *stream)
@@ -258,13 +281,10 @@ int __wrap_open(const char *path, int flags, ...)
     {
         int res = packfs_open(path, NULL);
         if(res >= 0)
-        { 
             return res;
-        }
     }
     
-    int res = __real_open(path, flags);
-    return res;
+    return __real_open(path, flags);
 }
 
 int __wrap_close(int fd)
@@ -273,13 +293,10 @@ int __wrap_close(int fd)
     {
         int res = packfs_close(fd);
         if(res >= -1)
-        {
             return res;
-        }
     }
     
-    int res = __real_close(fd);
-    return res;
+    return __real_close(fd);
 }
 
 
@@ -289,13 +306,10 @@ ssize_t __wrap_read(int fd, void* buf, size_t count)
     {
         ssize_t res = packfs_read(fd, buf, count);
         if(res >= 0)
-        {
             return res;
-        }
     }
 
-    ssize_t res = __real_read(fd, buf, count);
-    return res;
+    return __real_read(fd, buf, count);
 }
 
 off_t __wrap_lseek(int fd, off_t offset, int whence)
@@ -304,13 +318,10 @@ off_t __wrap_lseek(int fd, off_t offset, int whence)
     {
         int res = packfs_seek(fd, (long)offset, whence);
         if(res >= 0)
-        {
             return res;
-        }
     }
 
-    off_t res = __real_lseek(fd, offset, whence);
-    return res;
+    return __real_lseek(fd, offset, whence);
 }
 
 int __wrap_access(const char *path, int flags) 
@@ -322,8 +333,7 @@ int __wrap_access(const char *path, int flags)
             return res;
     }
     
-    int res = __real_access(path, flags); 
-    return res;
+    return __real_access(path, flags); 
 }
 
 int __wrap_stat(const char *restrict path, struct stat *restrict statbuf)
@@ -335,8 +345,7 @@ int __wrap_stat(const char *restrict path, struct stat *restrict statbuf)
             return res;
     }
 
-    int res = __real_stat(path, statbuf);
-    return res;
+    return __real_stat(path, statbuf);
 }
 
 int __wrap_fstat(int fd, struct stat * statbuf)
@@ -345,11 +354,11 @@ int __wrap_fstat(int fd, struct stat * statbuf)
     {
         int res = packfs_stat(NULL, fd, statbuf);
         if(res >= -1)
-        {
             return res;
-        }
     }
     
-    int res = __real_fstat(fd, statbuf);
-    return res;
+    return __real_fstat(fd, statbuf);
 }
+
+// TODO: add root to dirs abspaths
+// TODO: a directory with zip archives to be read, check listing files before touching the archive
