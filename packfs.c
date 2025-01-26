@@ -18,8 +18,7 @@ enum {
     packfs_filefd_min = 1000000000, 
     packfs_filefd_max = 1000001000, 
     packfs_filepath_max_len = 256, 
-    packfs_sep = '/',
-    packfs_pathsep = ':'
+    packfs_sep = '/'
 };
 int packfs_filefd[packfs_filefd_max - packfs_filefd_min];
 FILE* packfs_fileptr[packfs_filefd_max - packfs_filefd_min];
@@ -64,7 +63,7 @@ void packfs_sanitize_path(char* path_sanitized, const char* path)
     }
     
     size_t path_sanitized_len = strlen(path_sanitized);
-    if(path_sanitized_len >= 3 && path_sanitized[path_sanitized_len - 1] == '.' && path_sanitized[path_sanitized_len - 2] == '.'  && newpath[patn_sanitized_len - 3] == packfs_sep)
+    if(path_sanitized_len >= 3 && path_sanitized[path_sanitized_len - 1] == '.' && path_sanitized[path_sanitized_len - 2] == '.'  && path_sanitized[patn_sanitized_len - 3] == packfs_sep)
     {
         path_sanitized[path_sanitized_len - 3] = '\0';
         char* last_slash = strrchr(path_sanitized, packfs_sep);
