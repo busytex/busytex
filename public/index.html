@@ -1,8 +1,6 @@
 <html>
 <head>
 <title>TexWaller</title>
-<link rel="stylesheet" type="text/css" href="/styles.css">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="busytex" type="text/javascript" id="busytex_worker_js" href="/dist/busytex_worker.js" /> 
 <link rel="busytex" type="text/javascript" id="busytex_pipeline_js" href="/dist/busytex_pipeline.js" />
 <link rel="busytex" type="text/javascript" id="busytex_js" href="/dist/busytex.js" />
@@ -11,10 +9,13 @@
 <link rel="busytex" type="text/javascript" id="texlive_ubuntu_science" href="/dist/ubuntu-texlive-science.js" />
 <link rel="busytex" type="text/javascript" id="texlive_ubuntu_recommended" href="/dist/ubuntu-texlive-latex-recommended.js" />
 <link rel="busytex" type="text/javascript" id="texlive_ubuntu_extra" href="/dist/ubuntu-texlive-latex-extra.js" />    
+<link rel="stylesheet" type="text/css" href="/styles.css">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs/editor/editor.main.min.css">
 </head>
 
-<body>
-<div class="toolbar">
+<body style="width: 100%; height: 100%; overflow: hidden">
+<div class="toolbar" style="display: none;">
 <label for="elapsed">Time:</label>
 <span id="elapsed" name="time_elapsed">0.00 sec</span>
 <button onclick="terminate()">Terminate</button>
@@ -44,29 +45,56 @@
 </div>
 <div class="container">
     <div id="editor-container">
-        <textarea id="tex">
-\documentclass[11pt]{article}
-\begin{document}
-\title{My Article}
-\author{Nobody Jr.}
-\date{Today}
-\maketitle
-Blablabla said Nobody ~\cite{Nobody06}.
-\bibliography{example}{}
-\bibliographystyle{plain}
-\end{document}
-        </textarea>
-        <textarea id="bib">
-@misc{Nobody06,
+        <div id="tex-editor" style="height: 66.67%;"></div>
+        <div id="bib-editor" style="height: 33.33%;"></div>
+    </div>
+    <iframe id="preview" style="height: 100%;"></iframe>
+</div>
+<div><button class="compile" onclick="onclick_()">Compile</button></div> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs/loader.min.js"></script>
+<script src="/main.js"></script>
+<script>
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});
+require(['vs/editor/editor.main'], function() {
+    monaco.languages.register({ id: 'latex' });
+
+    monaco.languages.setMonarchTokensProvider('latex', {
+        tokenizer: {
+            root: [
+                [/\\[a-zA-Z]+/, 'keyword'],
+                [/%.*/, 'comment'],
+                [/\{[^}]*\}/, 'string'],
+                [/\[[^\]]*\]/, 'string'],
+                [/\$[^$]*\$/, 'string'],
+            ]
+        }
+    });
+
+    monaco.editor.create(document.getElementById('tex-editor'), {
+        value: `\\documentclass[11pt]{article}
+\\begin{document}
+\\title{My Article}
+\\author{Nobody Jr.}
+\\date{Today}
+\\maketitle
+Blablabla said Nobody ~\\cite{Nobody06}.
+\\bibliography{example}{}
+\\bibliographystyle{plain}
+\\end{document}`,
+        language: 'latex',
+        theme: 'vs-dark'
+    });
+
+    monaco.editor.create(document.getElementById('bib-editor'), {
+        value: `@misc{Nobody06,
    author = "Nobody Jr",
    title = "My Article",
    year = "2006" 
-}
-        </textarea>
-    </div>
-    <iframe id="preview"></iframe>
-</div>
-<button class="compile" onclick="onclick_()">Compile</button>
-<script src="/main.js"></script>
+}`,
+        language: 'latex',
+        theme: 'vs-dark'
+    });
+});
+</script>
 </body>
 </html>

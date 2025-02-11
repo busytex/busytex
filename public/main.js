@@ -8,6 +8,16 @@ let worker = null;
 
 async function onclick_()
 {
+    const compileButton = document.querySelector('button.compile');
+    compileButton.innerText = 'Compiling...';
+    compileButton.disabled = true;
+
+    const previewElement = document.getElementById('preview');
+    previewElement.src = ''; // Clear the iframe
+    previewElement.style.backgroundImage = 'url("spinner.gif")';
+    previewElement.style.backgroundRepeat = 'no-repeat';
+    previewElement.style.backgroundPosition = 'center';
+
     const use_worker = document.getElementById('worker').checked;
     const use_preload = document.getElementById('preload').checked;
     const use_verbose = document.getElementById('verbose').value;
@@ -72,11 +82,14 @@ async function onclick_()
     {
         if(pdf)
         {
-            let previewElement = document.getElementById('preview');
+            previewElement.style.backgroundImage = ''; // Remove the spinner
             previewElement.src = URL.createObjectURL(new Blob([pdf], {type: 'application/pdf'}));
 
             let elapsedElement = document.getElementById('elapsed');
             elapsedElement.innerText = ((performance.now() - tic) / 1000).toFixed(2) + ' sec';
+
+            compileButton.innerText = 'Compile';
+            compileButton.disabled = false;
         }
 
         if(print)
@@ -90,7 +103,8 @@ async function onclick_()
         worker.postMessage({...paths, texmf_local : texmf_local, preload_data_packages_js : paths.texlive_data_packages_js.slice(0, 1), data_packages_js : paths.texlive_data_packages_js});
 
     tic = performance.now();
-    const tex = document.getElementById('tex').value, bib = document.getElementById('bib').value;
+    const tex = monaco.editor.getModels()[0].getValue();
+    const bib = monaco.editor.getModels()[1].getValue();
     const files = [{path : 'example.tex', contents : tex}, {path : 'example.bib', contents : bib}];
     worker.postMessage({files : files, main_tex_path : 'example.tex', verbose : use_verbose, bibtex : use_bibtex, driver : use_driver, data_packages_js : data_packages_js});
 }
