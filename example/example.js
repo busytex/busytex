@@ -23,7 +23,7 @@ const MIME_TYPES = {
 const requestHandler = (req, res) => {
     let filePath = path.join(__dirname, req.url);
     if (fs.statSync(filePath).isDirectory()) {
-        filePath = path.join(filePath, 'example.html'); // Serve example.html if directory
+        filePath = path.join(filePath, '../example/example.html'); // Serve example.html if directory
     }
 
     fs.readFile(filePath, (err, data) => {
