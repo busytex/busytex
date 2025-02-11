@@ -81,16 +81,7 @@ async function onclick_()
 
         if(print)
         {
-            let statusElement = document.getElementById('status');
-            const ansi_reset_sequence = '\x1bc';
-            if(print == ansi_reset_sequence)
-                statusElement.value = '';
-            else
-            {
-                statusElement.value += print;
-                statusElement.value += '\n';
-                statusElement.scrollTop = statusElement.scrollHeight;
-            }
+            console.log(print);
         }
     }
     

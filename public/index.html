@@ -1,6 +1,8 @@
 <html>
 <head>
 <title>TexWaller</title>
+<link rel="stylesheet" type="text/css" href="/styles.css">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="busytex" type="text/javascript" id="busytex_worker_js" href="/dist/busytex_worker.js" /> 
 <link rel="busytex" type="text/javascript" id="busytex_pipeline_js" href="/dist/busytex_pipeline.js" />
 <link rel="busytex" type="text/javascript" id="busytex_js" href="/dist/busytex.js" />
@@ -11,8 +13,8 @@
 <link rel="busytex" type="text/javascript" id="texlive_ubuntu_extra" href="/dist/ubuntu-texlive-latex-extra.js" />    
 </head>
 
-<body style="width: 100%; height: 100%; overflow: hidden">
-<div style="width: 98%; height: 5%;" >
+<body>
+<div class="toolbar">
 <label for="elapsed">Time:</label>
 <span id="elapsed" name="time_elapsed">0.00 sec</span>
 <button onclick="terminate()">Terminate</button>
@@ -40,9 +42,9 @@
 <input type="checkbox" id="checked_texlive_ubuntu_science" name="checked_texlive_ubuntu_science">
 <label for="checked_texlive_ubuntu_science">texlive-science</label>
 </div>
-<div><iframe style="width: 98%; height:25%" id="preview"></iframe></div>
-
-<div><textarea style="width: 98%; height: 25%" id="tex">
+<div class="container">
+    <div id="editor-container">
+        <textarea id="tex">
 \documentclass[11pt]{article}
 \begin{document}
 \title{My Article}
@@ -53,18 +55,18 @@ Blablabla said Nobody ~\cite{Nobody06}.
 \bibliography{example}{}
 \bibliographystyle{plain}
 \end{document}
-</textarea></div>
-<div><textarea style="width: 98%; height: 15%" id="bib">
+        </textarea>
+        <textarea id="bib">
 @misc{Nobody06,
    author = "Nobody Jr",
    title = "My Article",
    year = "2006" 
 }
-</textarea></div>
-
-<div><textarea style="width: 98%; height: 20%" id="status"></textarea></div>
-<div><button style="width: 98%; height: 10%; font-size: x-large" onclick="onclick_()">Compile</button></div> 
-
+        </textarea>
+    </div>
+    <iframe id="preview"></iframe>
+</div>
+<button class="compile" onclick="onclick_()">Compile</button>
 <script src="/main.js"></script>
 </body>
 </html>

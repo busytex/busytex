@@ -1,0 +1,87 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #282c34;
+    color: white;
+    overflow: hidden;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #1e1e1e;
+    border-bottom: 2px solid #444;
+    height: 5%;
+    display: none; /* Hide the toolbar */
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Layout */
+.container {
+    display: flex;
+    flex: 1;
+    height: calc(100% - 10%);
+    padding: 10px;
+    gap: 10px;
+}
+
+/* LaTeX Editor */
+#editor-container {
+    width: 50%;
+    height: 100%;
+    background: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+#tex, #bib {
+    flex: 1;
+    width: 100%;
+    resize: none;
+    background: #2e2e2e;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-family: monospace;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* PDF Preview */
+#preview {
+    width: 50%;
+    height: 100%;
+    border-left: 2px solid #444;
+    background: white;
+    border-radius: 5px;
+}
+
+/* Compile Button */
+button.compile {
+    width: 98%;
+    height: 10%;
+    font-size: x-large;
+    margin: 10px auto;
+    border-radius: 5px;
+}
