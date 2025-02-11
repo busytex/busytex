@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "minimist": "^1.2.8"
+  },
+  "name": "texwaller",
+  "version": "1.0.0",
+  "description": "Currently compiles into a **fully static binary** (via musl on Alpine Linux): - xetex - pdftex - luahbtex - bibtex8 - xdvipdfmx - kpsewhich, kpsestat, kpseaccess, kpsereadlink - makeindex",
+  "main": "busytex_pipeline.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
