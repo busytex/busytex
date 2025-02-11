@@ -1,4 +1,4 @@
-# TexWaller: texlive.js on WASM
+# TexWaller: client-side LaTex to PDF compilation on WASM
 
 Currently compiles into a **fully static binary** (via musl on Alpine Linux):
 - xetex
