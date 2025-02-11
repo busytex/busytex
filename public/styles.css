@@ -40,9 +40,9 @@ button:hover {
 .container {
     display: flex;
     flex: 1;
-    height: calc(100% - 70px); /* Adjust height to account for the compile button */
-    padding: 20px;
-    gap: 20px;
+    height: calc(100% - 90px); /* Adjust height to account for the compile button */
+    padding: 15px;
+    gap: 15px;
 }
 
 /* LaTeX Editor */
@@ -55,20 +55,25 @@ button:hover {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    gap: 10px; /* Add gap between the two text editors */
 }
 
-#tex, #bib {
-    flex: 1;
+#tex-editor, #bib-editor {
     width: 100%;
-    resize: none;
     background: #2e2e2e;
-    color: white;
     border: none;
     padding: 15px;
     font-family: 'Courier New', Courier, monospace;
     border-radius: 5px;
-    margin-bottom: 10px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#tex-editor {
+    height: calc(65% - 5px); /* Adjust height to maintain proportions */
+}
+
+#bib-editor {
+    height: calc(30% - 5px); /* Adjust height to maintain proportions */
 }
 
 /* PDF Preview */
@@ -85,10 +90,10 @@ button:hover {
 
 /* Compile Button */
 button.compile {
-    width: 98%;
-    height: 50px;
-    font-size: 18px;
-    margin: 10px auto;
+    width: calc(100% - 30px); /* Align with the left end of the editors and the right end of the preview iframe */
+    height: 40px; /* Adjust height to fit on the page */
+    font-size: 16px; /* Adjust font size to fit on the page */
+    margin: 10px 15px; /* Adjust margins to align with the container padding */
     border-radius: 10px;
     background-color: #28a745;
     transition: background-color 0.3s ease, transform 0.3s ease;
