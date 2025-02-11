@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.6",
     "minimist": "^1.2.8",
