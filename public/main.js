@@ -1,3 +1,7 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+import { getFirestore, collection, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { db } from './firebase-config.js';
+
 const texmf_local = ['./texmf', './.texmf'];
 
 const paths_list = Array.from(document.head.getElementsByTagName('link')).filter(link => link.rel == 'busytex').map(link => [link.id, link.href]);
@@ -21,6 +25,19 @@ const ubuntuPackageCheckboxes = {
     extra: document.getElementById('checked_texlive_ubuntu_extra'),
     science: document.getElementById('checked_texlive_ubuntu_science')
 };
+document.getElementById("compile-button").addEventListener("click", onclick_);
+
+async function fetchEditorContent() {
+    const docRef = doc(collection(db, 'documents'), 'default');
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        const data = docSnap.data().content;
+        return { texContent: data, bibContent: data };
+    } else {
+        console.error("No such document!");
+        return { texContent: '', bibContent: '' };
+    }
+}
 
 async function onclick_()
 {
@@ -116,7 +133,9 @@ function terminate()
 }
 
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});
-require(['vs/editor/editor.main'], function() {
+require(['vs/editor/editor.main'], async function() {
+    const { texContent, bibContent } = await fetchEditorContent();
+
     monaco.languages.register({ id: 'latex' });
 
     monaco.languages.setMonarchTokensProvider('latex', {
@@ -132,45 +151,13 @@ require(['vs/editor/editor.main'], function() {
     });
 
     texEditor = monaco.editor.create(document.getElementById('tex-editor'), {
-        value: `% This is a simple sample document.  For more complicated documents take a look in the exercise tab. Note that everything that comes after a % symbol is treated as comment and ignored when the code is compiled.
-
-\\documentclass{article} % \\documentclass{} is the first command in any LaTeX code.  It is used to define what kind of document you are creating such as an article or a book, and begins the document preamble
-
-\\usepackage{amsmath} % \\usepackage is a command that allows you to add functionality to your LaTeX code
-
-\\title{Simple Sample} % Sets article title
-\\author{My Name} % Sets authors name
-\\date{\\today} % Sets date for date compiled
-
-% The preamble ends with the command \\begin{document}
-\\begin{document} % All begin commands must be paired with an end command somewhere
-    \\maketitle % creates title using information in preamble (title, author, date)
-    
-    \\section{Hello World!} % creates a section
-    
-    \\textbf{Hello World!} Today I am learning \\LaTeX. %notice how the command will end at the first non-alphabet charecter such as the . after \\LaTeX
-     \\LaTeX{} is a great program for writing math. I can write in line math such as $a^2+b^2=c^2$ %$ tells LaTexX to compile as math
-     . I can also give equations their own space: 
-    \\begin{equation} % Creates an equation environment and is compiled as math
-    \\gamma^2+\\theta^2=\\omega^2
-    \\end{equation}
-    If I do not leave any blank lines \\LaTeX{} will continue  this text without making it into a new paragraph.  Notice how there was no indentation in the text after equation (1).  
-    Also notice how even though I hit enter after that sentence and here $\\downarrow$
-     \\LaTeX{} formats the sentence without any break.  Also   look  how      it   doesn't     matter          how    many  spaces     I put     between       my    words.
-    
-    For a new paragraph I can leave a blank space in my code. 
-
-\\end{document} % This is the end of the document`,
+        value: texContent,
         language: 'latex',
         theme: 'vs-dark'
     });
 
     bibEditor = monaco.editor.create(document.getElementById('bib-editor'), {
-        value: `@misc{Nobody06,
-   author = "Nobody Jr",
-   title = "My Article",
-   year = "2006" 
-}`,
+        value: bibContent,
         language: 'latex',
         theme: 'vs-dark'
     });
