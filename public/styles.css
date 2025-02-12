@@ -7,42 +7,16 @@ body {
     background: #282c34;
     color: white;
     overflow: hidden;
+    width: 100%;
 }
 
-/* Toolbar */
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background: #1e1e1e;
-    border-bottom: 2px solid #444;
-    height: 5%;
-    display: none; /* Hide the toolbar */
-}
-
-button {
-    padding: 10px 20px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-/* Layout */
 .container {
     display: flex;
     flex: 1;
     height: calc(100% - 90px); /* Adjust height to account for the compile button */
     padding: 15px;
     gap: 15px;
+    position: relative;
 }
 
 /* LaTeX Editor */
@@ -84,8 +58,41 @@ button:hover {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-repeat: no-repeat;
-    background-position: center;
+}
+
+#spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #1e1e1e;
+    border-bottom: 2px solid #444;
+    height: 5%;
+    display: none; /* Hide the toolbar */
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 /* Compile Button */
