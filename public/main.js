@@ -25,6 +25,8 @@ const ubuntuPackageCheckboxes = {
     extra: document.getElementById('checked_texlive_ubuntu_extra'),
     science: document.getElementById('checked_texlive_ubuntu_science')
 };
+const compileButton = document.getElementById("compile-button");
+const spinnerElement = document.getElementById('spinner');
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
 async function fetchEditorContent() {
@@ -39,8 +41,16 @@ async function fetchEditorContent() {
     }
 }
 
-async function onclick_()
-{
+async function onclick_() {
+    compileButton.disabled = true; // Disable compile button
+    compileButton.innerText = "Compiling ..."; // Update button label
+
+    if (spinnerElement) {
+        spinnerElement.style.display = 'block'; // Show spinner
+    } else {
+        console.error("Spinner element not found");
+    }
+
     const use_worker = workerCheckbox.checked;
     const use_preload = preloadCheckbox.checked;
     const use_verbose = verboseSelect.value;
@@ -106,6 +116,11 @@ async function onclick_()
         {
             previewElement.src = URL.createObjectURL(new Blob([pdf], {type: 'application/pdf'}));
             elapsedElement.innerText = ((performance.now() - tic) / 1000).toFixed(2) + ' sec';
+            if (spinnerElement) {
+                spinnerElement.style.display = 'none'; // Hide spinner
+            }
+            compileButton.disabled = false; // Enable compile button
+            compileButton.innerText = "Compile"; // Reset button label
         }
 
         if(print)
