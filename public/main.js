@@ -39,43 +39,66 @@ const spinnerElement = document.getElementById('spinner');
 // Store auto-save timeout
 let autoSaveTimeout;
 
+// Add these state variables at the top with other declarations
+let lastSavedContent = { tex: '', bib: '' };
+let isOffline = false;
+
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
 async function fetchEditorContent() {
-    const docRef = doc(collection(db, "documents"), "default");
-    const docSnap = await getDoc(docRef);
+    try {
+        const docRef = doc(collection(db, "documents"), "default");
+        const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-
-        return {
-            texContent: data.tex ? decodeURIComponent(escape(atob(data.tex))) : "", // Proper decoding
-            bibContent: data.bib ? decodeURIComponent(escape(atob(data.bib))) : ""
-        };
-    } else {
-        console.error("No such document! Returning default values.");
-        return { texContent: "", bibContent: "" }; // First-time default content
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            lastSavedContent = {
+                tex: data.tex || '',
+                bib: data.bib || ''
+            };
+            
+            return {
+                texContent: data.tex ? decodeURIComponent(escape(atob(data.tex))) : "",
+                bibContent: data.bib ? decodeURIComponent(escape(atob(data.bib))) : ""
+            };
+        }
+        return { texContent: "", bibContent: "" };
+    } catch (error) {
+        console.error("Failed to fetch content:", error);
+        isOffline = true;
+        return { texContent: "", bibContent: "" };
     }
 }
 
 async function saveEditorContent() {
-    if (!texEditor || !bibEditor) {
-        console.error("Editors are not initialized yet!");
+    if (!texEditor || !bibEditor || isOffline) {
         return;
     }
 
     try {
-        const texContent = btoa(unescape(encodeURIComponent(texEditor.getValue()))); // Encode safely
-        const bibContent = btoa(unescape(encodeURIComponent(bibEditor.getValue())));
+        const newTexContent = btoa(unescape(encodeURIComponent(texEditor.getValue())));
+        const newBibContent = btoa(unescape(encodeURIComponent(bibEditor.getValue())));
+
+        // Only save if content has changed
+        if (newTexContent === lastSavedContent.tex && newBibContent === lastSavedContent.bib) {
+            return;
+        }
 
         await setDoc(doc(db, "documents", "default"), {
-            tex: texContent,
-            bib: bibContent
+            tex: newTexContent,
+            bib: newBibContent,
+            lastModified: new Date().toISOString()
         });
 
-        console.log("LaTeX document saved successfully!");
+        lastSavedContent = {
+            tex: newTexContent,
+            bib: newBibContent
+        };
+
+        console.log("Document saved successfully!");
     } catch (error) {
-        console.error("Error saving LaTeX document:", error);
+        console.error("Error saving document:", error);
+        isOffline = true;
     }
 }
 
