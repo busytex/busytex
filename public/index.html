@@ -14,8 +14,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs/editor/editor.main.min.css">
 </head>
 
-<body style="width: 100%; height: 100%; overflow: hidden">
-<div class="toolbar" style="display: none;">
+<body>
+<div class="toolbar">
 <label for="elapsed">Time:</label>
 <span id="elapsed" name="time_elapsed">0.00 sec</span>
 <button onclick="terminate()">Terminate</button>
@@ -48,7 +48,7 @@
         <div id="tex-editor"></div>
         <div id="bib-editor"></div>
     </div>
-    <iframe id="preview" style="height: 100%;"></iframe>
+    <iframe id="preview"></iframe>
 </div>
 <div><button class="compile" id="compile-button">Compile</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs/loader.min.js"></script>

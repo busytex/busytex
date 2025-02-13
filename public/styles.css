@@ -1,3 +1,4 @@
+/* Base layout */
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -9,15 +10,14 @@ body {
     overflow: hidden;
 }
 
-/* Toolbar */
+/* Toolbar - keeping it hidden */
 .toolbar {
-    display: flex;
+    display: none;  /* Keep toolbar hidden */
     justify-content: space-between;
     padding: 10px;
     background: #1e1e1e;
     border-bottom: 2px solid #444;
     height: 5%;
-    display: none; /* Hide the toolbar */
 }
 
 button {
@@ -36,70 +36,62 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* Layout */
+/* Main container */
 .container {
     display: flex;
     flex: 1;
-    height: calc(100% - 90px); /* Adjust height to account for the compile button */
+    height: calc(100% - 60px); /* Account for compile button */
     padding: 15px;
     gap: 15px;
+    min-height: 0;
 }
 
-/* LaTeX Editor */
+/* Editor section */
 #editor-container {
     width: 50%;
-    height: 100%;
-    background: #1e1e1e;
     display: flex;
     flex-direction: column;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    gap: 10px; /* Add gap between the two text editors */
+    gap: 10px;
+    min-height: 0;
 }
 
 #tex-editor, #bib-editor {
-    width: 100%;
-    background: #2e2e2e;
-    border: none;
-    padding: 15px;
-    font-family: 'Courier New', Courier, monospace;
+    background: #1e1e1e;
     border-radius: 5px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #tex-editor {
-    height: calc(65% - 5px); /* Adjust height to maintain proportions */
+    height: 65%;
 }
 
 #bib-editor {
-    height: calc(30% - 5px); /* Adjust height to maintain proportions */
+    height: 35%;
 }
 
-/* PDF Preview */
+/* Preview section */
 #preview {
     width: 50%;
-    height: 100%; /* Make the height match the editor container */
-    border-left: 2px solid #444;
-    background: white;
+    height: 100%;
+    border: none;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-repeat: no-repeat;
-    background-position: center;
+    background: white;
 }
 
-/* Compile Button */
-button.compile {
-    width: calc(100% - 30px); /* Align with the left end of the editors and the right end of the preview iframe */
-    height: 40px; /* Adjust height to fit on the page */
-    font-size: 16px; /* Adjust font size to fit on the page */
-    margin: 10px 15px; /* Adjust margins to align with the container padding */
+/* Compile button */
+.compile {
+    width: calc(100% - 30px);
+    height: 40px;
+    margin: 10px 15px;
+    border: none;
     border-radius: 10px;
     background-color: #28a745;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-button.compile:hover {
+.compile:hover {
     background-color: #218838;
     transform: scale(1.05);
 }
