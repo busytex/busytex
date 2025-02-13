@@ -40,6 +40,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function onclick_() {
+
+        compileButton.innerText = 'Compiling...';
+        compileButton.disabled = true;
+
+        previewElement.src = ''; // Clear the iframe
+        previewElement.style.backgroundImage = 'url("spinner.gif")';
+        previewElement.style.backgroundRepeat = 'no-repeat';
+        previewElement.style.backgroundPosition = 'center';
+
         const use_worker = workerCheckbox.checked;
         const use_preload = preloadCheckbox.checked;
         const use_verbose = verboseSelect.value;
@@ -89,8 +98,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         worker.onmessage = ({ data: { pdf, log, print } }) => {
             if (pdf) {
+                previewElement.style.backgroundImage = ''; // Remove the spinner
                 previewElement.src = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
                 elapsedElement.innerText = ((performance.now() - tic) / 1000).toFixed(2) + ' sec';
+
+                compileButton.innerText = 'Compile';
+                compileButton.disabled = false;
             }
             if (print) {
                 console.log(print);
