@@ -75,6 +75,14 @@ function startAutoSave() {
     autoSaveTimeout = setTimeout(saveEditorContent, 30000); // Auto-save after 30 seconds
 }
 
+// Debouncing function for auto-save (waits for user to stop typing)
+function startAutoSaveDebounced() {
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => {
+        startAutoSave();  // Call the actual auto-save function after a delay
+    }, 500);  // Adjust delay (500ms = waits for user to stop typing)
+}
+
 async function onclick_() {
     compileButton.disabled = true; 
     compileButton.innerText = "Compiling ...";
@@ -214,6 +222,6 @@ require(['vs/editor/editor.main'], async function() {
     });
 
     // Auto-save when users type
-    texEditor.onDidChangeModelContent(startAutoSave);
-    bibEditor.onDidChangeModelContent(startAutoSave);
+    texEditor.onDidChangeModelContent(startAutoSaveDebounced);
+    bibEditor.onDidChangeModelContent(startAutoSaveDebounced);
 });
