@@ -98,7 +98,7 @@ async function onclick_() {
     compileButton.innerText = "Compiling ...";
 
     if (spinnerElement) {
-        spinnerElement.style.display = 'block';
+        spinnerElement.style.display = 'block';  // Show spinner
     }
 
     const use_worker = workerCheckbox.checked;
@@ -155,7 +155,7 @@ async function onclick_() {
             previewElement.src = URL.createObjectURL(new Blob([pdf], {type: 'application/pdf'}));
             elapsedElement.innerText = ((performance.now() - tic) / 1000).toFixed(2) + ' sec';
             if (spinnerElement) {
-                spinnerElement.style.display = 'none';
+                spinnerElement.style.display = 'none';   // Hide spinner
             }
             compileButton.disabled = false;
             compileButton.innerText = "Compile";

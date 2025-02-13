@@ -69,11 +69,11 @@ button:hover {
     height: 35%;
 }
 
-/* Preview section */
+/* Preview container and iframe */
 #preview-container {
     width: 50%;
     height: 100%;
-    position: relative;
+    position: relative;  /* Required for absolute positioning of spinner */
 }
 
 #preview {
@@ -84,13 +84,20 @@ button:hover {
     background: white;
 }
 
+/* Spinner positioning and sizing */
 #spinner {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 1000;
-    width: 80%;
+    width: calc(100% - 10px);  /* Full width minus 5px margin on each side */
+    display: none;  /* Hidden by default */
+    z-index: 1000;  /* Ensure spinner appears above preview */
+}
+
+#spinner img {
+    width: 100%;
+    height: auto;
 }
 
 /* Compile button */
