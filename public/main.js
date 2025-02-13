@@ -44,15 +44,17 @@ document.getElementById("compile-button").addEventListener("click", onclick_);
 async function fetchEditorContent() {
     const docRef = doc(collection(db, "documents"), "default");
     const docSnap = await getDoc(docRef);
+
     if (docSnap.exists()) {
         const data = docSnap.data();
+
         return {
-            texContent: data.tex.replace(/\\n/g, "\n").replace(/\\r/g, "\r"), // Convert stored `\n` into actual newlines
-            bibContent: data.bib.replace(/\\n/g, "\n").replace(/\\r/g, "\r")
+            texContent: data.tex ? decodeURIComponent(escape(atob(data.tex))) : "", // Proper decoding
+            bibContent: data.bib ? decodeURIComponent(escape(atob(data.bib))) : ""
         };
     } else {
-        console.error("No such document!");
-        return { texContent: '', bibContent: '' };
+        console.error("No such document! Returning default values.");
+        return { texContent: "", bibContent: "" }; // First-time default content
     }
 }
 
@@ -62,15 +64,15 @@ async function saveEditorContent() {
         return;
     }
 
-    // Get content from Monaco Editor and properly escape newlines and carriage returns
-    const texContent = texEditor.getValue().replace(/\n/g, "\\n").replace(/\r/g, "\\r");
-    const bibContent = bibEditor.getValue().replace(/\n/g, "\\n").replace(/\r/g, "\\r");
-
     try {
+        const texContent = btoa(unescape(encodeURIComponent(texEditor.getValue()))); // Encode safely
+        const bibContent = btoa(unescape(encodeURIComponent(bibEditor.getValue())));
+
         await setDoc(doc(db, "documents", "default"), {
             tex: texContent,
             bib: bibContent
         });
+
         console.log("LaTeX document saved successfully!");
     } catch (error) {
         console.error("Error saving LaTeX document:", error);
@@ -80,7 +82,7 @@ async function saveEditorContent() {
 // Auto-save function (waits 30 seconds after last change)
 function startAutoSave() {
     clearTimeout(autoSaveTimeout); // Prevent multiple saves
-    autoSaveTimeout = setTimeout(saveEditorContent, 30000); // Auto-save after 30 seconds
+    autoSaveTimeout = setTimeout(saveEditorContent, 5000); // Auto-save after 5 seconds
 }
 
 // Debouncing function for auto-save (waits for user to stop typing)
