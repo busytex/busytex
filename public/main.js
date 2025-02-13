@@ -161,6 +161,7 @@ async function onclick_() {
             }
             compileButton.disabled = false;
             compileButton.innerText = "Compile";
+            console.log('Compilation successful');
         }
 
         if(print)
