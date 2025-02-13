@@ -205,20 +205,29 @@ require(['vs/editor/editor.main'], async function() {
         }
     });
 
+    // Initialize Monaco Editor
     texEditor = monaco.editor.create(document.getElementById('tex-editor'), {
         value: texContent,
         language: 'latex',
         theme: 'vs-dark',
-        wordWrap: "on",
-        automaticLayout: true
+        wordWrap: "on"
     });
 
     bibEditor = monaco.editor.create(document.getElementById('bib-editor'), {
         value: bibContent,
         language: 'latex',
         theme: 'vs-dark',
-        wordWrap: "on",
-        automaticLayout: true
+        wordWrap: "on"
+    });
+
+    // ✅ Add Debounced ResizeObserver to Prevent Loops
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            texEditor.layout();
+            bibEditor.layout();
+        }, 300);  // Adjust delay as needed (300ms is a good default)
     });
 
     // Auto-save when users type
