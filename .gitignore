@@ -52,4 +52,5 @@ build/
 # Jest / Testing
 coverage/
 
+# Firebase
 .firebase/
