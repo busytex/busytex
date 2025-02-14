@@ -140,7 +140,15 @@ button:hover {
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
+.compile.compiling {
+    background-color: #dc3545;  /* Bootstrap's danger red */
+}
+
 .compile:hover {
     background-color: #218838;
     transform: translateX(-50%) scale(1.05); /* Keep centered while scaling */
+}
+
+.compile.compiling:hover {
+    background-color: #c82333;  /* Darker red on hover */
 }

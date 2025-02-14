@@ -117,11 +117,23 @@ function startAutoSaveDebounced() {
 }
 
 async function onclick_() {
-    compileButton.disabled = true; 
-    compileButton.innerText = "Compiling ...";
+    if (compileButton.classList.contains('compiling')) {
+        // Handle stop compilation
+        terminate();
+        compileButton.classList.remove('compiling');
+        compileButton.innerText = "Compile";
+        if (spinnerElement) {
+            spinnerElement.style.display = 'none';
+        }
+        return;
+    }
 
+    // Start compilation
+    compileButton.classList.add('compiling');
+    compileButton.innerText = "Stop compilation";
+    
     if (spinnerElement) {
-        spinnerElement.style.display = 'block';  // Show spinner
+        spinnerElement.style.display = 'block';
     }
 
     const use_worker = workerCheckbox.checked;
@@ -180,7 +192,7 @@ async function onclick_() {
             if (spinnerElement) {
                 spinnerElement.style.display = 'none';   // Hide spinner
             }
-            compileButton.disabled = false;
+            compileButton.classList.remove('compiling');
             compileButton.innerText = "Compile";
             console.log('Compilation successful');
         }
