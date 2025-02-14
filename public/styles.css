@@ -115,9 +115,12 @@ button:hover {
 }
 
 #spinner img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;  /* Maintain aspect ratio while fitting within bounds */
+    width: calc(100% - 20px); /* Subtract padding from both sides */
+    height: calc(100% - 20px); /* Subtract padding from both top and bottom */
+    object-fit: contain; /* Maintain aspect ratio */
+    padding: 10px; /* Adds spacing */
+    display: block;
+    margin: auto; /* Centers within container */
 }
 
 /* Compile button */
