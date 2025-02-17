@@ -62,10 +62,19 @@ button:hover {
 
 #file-tree {
     list-style: none;
+    padding: 4px 0;
+    margin: 0;
+}
+
+#file-tree ul {
+    list-style: none;
     padding: 0;
+    margin: 0;
+    margin-left: 16px; /* VS Code's exact indentation */
 }
 
 #file-tree li {
+    list-style: none;
     cursor: pointer;
     padding: 5px;
     border-radius: 3px;
@@ -79,14 +88,16 @@ button:hover {
 .folder {
     font-weight: bold;
     margin-top: 5px;
+    display: flex;
+    flex-direction: column;  /* Stack folder and its contents vertically */
 }
 
-.folder::before {
-    content: "📁 ";
+.folder > .file-item {
+    order: -1;  /* Place folder item before its contents */
 }
 
-.file::before {
-    content: "📄 ";
+.folder > ul {
+    margin-left: 8px;  /* Indent folder contents */
 }
 
 /* Editor section */
@@ -271,18 +282,32 @@ button:hover {
 }
 
 .file-tree {
-    padding: 4px 12px; /* Add left padding to match header */
+    list-style: none;
+    padding: 4px 0;
+    margin: 0;
+}
+
+.file-tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-left: 16px; /* VS Code's exact indentation */
+}
+
+.file-tree li {
+    list-style: none;
 }
 
 .file-item {
-    padding: 0;  /* Remove existing left padding since it's now on the parent */
-    font-size: 11px;  /* Reduced from 13px */
-    height: 20px;     /* Slightly reduced height to match VS Code */
-    line-height: 20px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #cccccc;  /* VS Code's default text color */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 16px; /* VS Code's horizontal padding */
+    height: 22px;
+    font-size: 11px;
+    line-height: 22px;
+    color: #cccccc;
+    cursor: pointer;
 }
 
 .file-item:hover {
@@ -308,4 +333,30 @@ button:hover {
 .codicon-chevron-right {
     font-size: 12px;  /* Smaller chevron size */
     color: #808080;  /* VS Code's chevron color */
+}
+
+.folder .codicon-chevron-right {
+    font-size: 12px;
+    color: #808080;
+    min-width: 16px;
+    transform: rotate(0deg);
+    transition: transform 0.1s ease;
+}
+
+.folder.expanded .codicon-chevron-right {
+    transform: rotate(90deg);
+}
+
+.file-item .codicon {
+    font-size: 16px;
+    color: #c5c5c5;
+    margin-right: 6px;
+    min-width: 16px;
+    display: flex;
+    align-items: center;
+}
+
+/* Remove any leftover file-icon class styles */
+.file-icon {
+    display: none;
 }
