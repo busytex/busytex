@@ -211,6 +211,7 @@ button:hover {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe WPC', 'Segoe UI Variable', sans-serif;
     font-size: 13px;
     letter-spacing: -0.15px;
+    color: #cccccc;  /* VS Code's default text color */
 }
 
 .file-explorer.visible {
@@ -223,7 +224,7 @@ button:hover {
     letter-spacing: 0.1px;
     text-transform: uppercase;
     font-weight: 600;
-    color: #bbbbbb;
+    color: #bbbbbb;  /* VS Code's slightly dimmer header color */
     background: #2d2d2d;
     border-bottom: 1px solid #3c3c3c;
     display: flex;
@@ -280,7 +281,7 @@ button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #cccccc;
+    color: #cccccc;  /* VS Code's default text color */
 }
 
 .file-item:hover {
@@ -291,9 +292,18 @@ button:hover {
     background-color: #37373d;
 }
 
+.folder-name, .file-name {
+    color: #cccccc;  /* VS Code's default text color */
+}
+
 .codicon {
     font-size: 16px;
     margin-right: 4px;
     position: relative;
     top: 3px;
+    color: #c5c5c5;  /* VS Code's icon color */
+}
+
+.codicon-chevron-right {
+    color: #808080;  /* VS Code's chevron color */
 }
