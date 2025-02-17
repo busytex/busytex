@@ -43,19 +43,29 @@
 <input type="checkbox" id="checked_texlive_ubuntu_science" name="checked_texlive_ubuntu_science">
 <label for="checked_texlive_ubuntu_science">texlive-science</label>
 </div>
-<div class="container">
-    <div id="editor-container">
-        <div id="tex-editor"></div>
-        <div id="bib-editor"></div>
+<div class="workspace">
+    <div class="hover-trigger"></div>
+    <div id="file-explorer" class="file-explorer">
+        <div class="file-explorer-header">
+            <span class="codicon codicon-files"></span>
+            EXPLORER
+        </div>
+        <div id="file-tree" class="file-tree"></div>
     </div>
-    <div id="preview-container">
-        <iframe id="preview"></iframe>
-        <div id="spinner">
-            <img src="spinner.gif" alt="Loading...">
+    <div class="container">
+        <div id="editor-container">
+            <div id="tex-editor"></div>
+            <div id="bib-editor"></div>
+        </div>
+        <div id="preview-container">
+            <iframe id="preview"></iframe>
+            <div id="spinner">
+                <img src="spinner.gif" alt="Loading...">
+            </div>
         </div>
     </div>
+    <div><button class="compile" id="compile-button">Compile</button></div>
 </div>
-<div><button class="compile" id="compile-button">Compile</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs/loader.min.js"></script>
 <script type="module" src="main.js"></script>
 </body>

@@ -42,9 +42,51 @@ button:hover {
 .container {
     position: relative;
     display: flex;
+    flex: 1;
     height: calc(100vh - 65px); /* Reduced space */
     padding: 10px 10px 0 10px; /* Reduced padding */
     min-height: 0;
+}
+
+/* File Explorer */
+#file-explorer {
+    width: 250px;
+    background: #1e1e1e;
+    color: white;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    border-right: 2px solid #444;
+    overflow-y: auto;
+    height: 100vh;
+}
+
+#file-tree {
+    list-style: none;
+    padding: 0;
+}
+
+#file-tree li {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+#file-tree li:hover {
+    background: #333;
+}
+
+/* Folder Styling */
+.folder {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.folder::before {
+    content: "📁 ";
+}
+
+.file::before {
+    content: "📄 ";
 }
 
 /* Editor section */
@@ -151,4 +193,73 @@ button:hover {
 
 .compile.compiling:hover {
     background-color: #c82333;  /* Darker red on hover */
+}
+
+/* File explorer overlay styles */
+.file-explorer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: rgba(37, 37, 38, 0.95); /* Slightly transparent background */
+    border-right: 1px solid #3c3c3c;
+    z-index: 3; /* Higher than editor and preview */
+    overflow-y: auto;
+    transform: translateX(-250px); /* Hide by default */
+    transition: transform 0.3s ease;
+}
+
+.file-explorer.visible {
+    transform: translateX(0);
+}
+
+.file-explorer-header {
+    padding: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #bbbbbb;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3c3c3c;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Add a toggle button */
+.explorer-toggle {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 4;
+    background: none;
+    border: none;
+    color: #cccccc;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Hover trigger area */
+.hover-trigger {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 15px;
+    height: 100%;
+    z-index: 2;
+}
+
+/* Show explorer on hover */
+.hover-trigger:hover + .file-explorer,
+.file-explorer:hover {
+    transform: translateX(0);
+}
+
+/* Update workspace to handle hover area */
+.workspace {
+    position: relative;
+    display: flex;
+    height: calc(100vh - 65px);
+    overflow: hidden;
 }

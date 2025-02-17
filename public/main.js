@@ -43,6 +43,8 @@ let autoSaveTimeout;
 let lastSavedContent = { tex: '', bib: '' };
 let isOffline = false;
 
+let currentFile = "main.tex";
+
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
 async function fetchEditorContent() {
@@ -114,6 +116,23 @@ function startAutoSaveDebounced() {
     autoSaveTimeout = setTimeout(() => {
         startAutoSave();  // Call the actual auto-save function after a delay
     }, 500);  // Adjust delay (500ms = waits for user to stop typing)
+}
+
+async function loadFile(filename, content) {
+    try {
+        if (filename.endsWith(".tex")) {
+            texEditor.setValue(content);
+            currentFile = filename;
+            // Save to Firebase
+            await saveEditorContent();
+        } else if (filename.endsWith(".bib")) {
+            bibEditor.setValue(content);
+            // Save to Firebase
+            await saveEditorContent();
+        }
+    } catch (error) {
+        console.error("Error loading file:", error);
+    }
 }
 
 async function onclick_() {
@@ -218,6 +237,47 @@ async function onclick_() {
         worker = null;
     }
 
+function renderFileExplorer(container, structure) {
+    container.innerHTML = "";
+    const ul = document.createElement("ul");
+    ul.className = "file-tree";
+
+    function createTree(obj, parentUl) {
+        for (const key in obj) {
+            const li = document.createElement("li");
+            const itemContent = document.createElement("div");
+            itemContent.className = "file-item";
+
+            if (typeof obj[key] === "object") {
+                itemContent.className = "folder";
+                itemContent.textContent = key;
+                const subUl = document.createElement("ul");
+                subUl.style.display = "none";
+                li.appendChild(itemContent);
+                li.appendChild(subUl);
+                
+                itemContent.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    subUl.style.display = subUl.style.display === "none" ? "block" : "none";
+                    itemContent.classList.toggle("expanded");
+                });
+                
+                createTree(obj[key], subUl);
+            } else {
+                itemContent.className = "file";
+                itemContent.textContent = key;
+                itemContent.addEventListener("click", () => loadFile(key, obj[key]));
+                li.appendChild(itemContent);
+            }
+
+            parentUl.appendChild(li);
+        }
+    }
+
+    createTree(structure, ul);
+    container.appendChild(ul);
+}
+
 // Initialize Monaco Editor with Firebase content
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});
 require(['vs/editor/editor.main'], async function() {
@@ -236,6 +296,18 @@ require(['vs/editor/editor.main'], async function() {
             ]
         }
     });
+
+    // Initialize file structure with fetched content
+    const fileStructure = {
+        "Project": {
+            "main.tex": texContent || "% Your LaTeX content here",
+            "references.bib": bibContent || "@article{example}",
+            "chapters": {
+                "chapter1.tex": "\\section{Chapter 1}",
+                "chapter2.tex": "\\section{Chapter 2}"
+            }
+        }
+    };
 
     // Create editors with automaticLayout: true
     texEditor = monaco.editor.create(document.getElementById('tex-editor'), {
@@ -276,4 +348,23 @@ require(['vs/editor/editor.main'], async function() {
 
     // Set initial focus to editor
     texEditor.focus();
+
+    // Initialize file explorer after editors are created
+    const explorerContainer = document.getElementById("file-tree");
+    renderFileExplorer(explorerContainer, fileStructure);
+
+    // Update file content when editor content changes
+    texEditor.onDidChangeModelContent(() => {
+        if (currentFile.endsWith(".tex")) {
+            fileStructure.Project[currentFile] = texEditor.getValue();
+        }
+        startAutoSaveDebounced();
+    });
+
+    bibEditor.onDidChangeModelContent(() => {
+        if (currentFile.endsWith(".bib")) {
+            fileStructure.Project[currentFile] = bibEditor.getValue();
+        }
+        startAutoSaveDebounced();
+    });
 });
