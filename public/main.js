@@ -276,6 +276,10 @@ function renderFileExplorer(container, structure) {
                 });
                 
                 createTree(obj[key], subUl);
+
+                itemContent.addEventListener("contextmenu", (e) => {
+                    showContextMenu(e, true);
+                });
             } else {
                 // File structure with proper VS Code codicon
                 const itemContent = document.createElement("div");
@@ -308,6 +312,72 @@ function renderFileExplorer(container, structure) {
     createTree(structure, ul);
     container.appendChild(ul);
 }
+
+// Add this function after your existing code
+function showContextMenu(e, isFolder) {
+    e.preventDefault();
+    
+    // Add active class to keep explorer visible
+    const explorer = document.querySelector('.file-explorer');
+    explorer.classList.add('context-active');
+    
+    // Remove any existing context menus
+    const existingMenu = document.querySelector('.context-menu');
+    if (existingMenu) {
+        existingMenu.remove();
+    }
+
+    if (isFolder) {
+        const menu = document.createElement('div');
+        menu.className = 'context-menu';
+        
+        const uploadItem = document.createElement('div');
+        uploadItem.className = 'context-menu-item';
+        uploadItem.innerHTML = '<span class="codicon codicon-cloud-upload"></span>Upload File';
+        uploadItem.onclick = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Add the file to the file structure (simulated)
+                    const folderPath = e.target.closest('.folder').querySelector('.file-item span:last-child').textContent;
+                    fileStructure.Project[folderPath][file.name] = "// New file content";
+                    
+                    // Re-render the file explorer
+                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                }
+                // Remove active class after operation is complete
+                explorer.classList.remove('context-active');
+            };
+            input.click();
+        };
+        
+        menu.appendChild(uploadItem);
+        menu.style.left = `${e.pageX}px`;
+        menu.style.top = `${e.pageY}px`;
+        document.body.appendChild(menu);
+    }
+}
+
+// Update the click handler to remove active class when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.context-menu')) {
+        const menu = document.querySelector('.context-menu');
+        const explorer = document.querySelector('.file-explorer');
+        if (menu) {
+            menu.remove();
+            explorer.classList.remove('context-active');
+        }
+    }
+});
+
+// Add handler to remove active class when mouse leaves explorer
+document.querySelector('.file-explorer').addEventListener('mouseleave', (e) => {
+    if (!document.querySelector('.context-menu')) {
+        e.currentTarget.classList.remove('context-active');
+    }
+});
 
 // Initialize Monaco Editor with Firebase content
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});

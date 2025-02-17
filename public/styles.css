@@ -269,7 +269,8 @@ button:hover {
 
 /* Show explorer on hover */
 .hover-trigger:hover + .file-explorer,
-.file-explorer:hover {
+.file-explorer:hover,
+.file-explorer.context-active {
     transform: translateX(0);
 }
 
@@ -359,4 +360,32 @@ button:hover {
 /* Remove any leftover file-icon class styles */
 .file-icon {
     display: none;
+}
+
+/* Add these styles for the context menu */
+.context-menu {
+    position: fixed;
+    background: #252526;
+    border: 1px solid #454545;
+    padding: 4px 0;
+    min-width: 150px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+}
+
+.context-menu-item {
+    padding: 0 12px;
+    height: 22px;
+    line-height: 22px;
+    color: #cccccc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.context-menu-item:hover {
+    background-color: #2a2d2e;
 }
