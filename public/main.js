@@ -324,6 +324,19 @@ function renderFileExplorer(container, structure) {
                 itemContent.appendChild(label);
                 itemContent.addEventListener("click", () => loadFile(key, obj[key]));
                 
+                // Add context menu for files
+                itemContent.addEventListener("contextmenu", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showContextMenu(e, false);
+                });
+                
+                li.addEventListener("contextmenu", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showContextMenu(e, false);
+                });
+                
                 li.appendChild(itemContent);
             }
             
@@ -339,33 +352,8 @@ function renderFileExplorer(container, structure) {
 function showContextMenu(e, isFolder) {
     e.preventDefault();
     
-    console.log('Right-clicked element:', e.target);
-    console.log('Parent elements:', e.target.parentElement);
-    
     const explorer = document.querySelector('.file-explorer');
     explorer.classList.add('context-active');
-    
-    // Try to find folder element more reliably
-    const folderElement = e.target.closest('.folder') || 
-                         e.target.parentElement.closest('.folder') ||
-                         e.composedPath().find(el => el.classList?.contains('folder'));
-                         
-    console.log('Found folder element:', folderElement);
-    
-    if (!folderElement) {
-        console.error('Could not find folder element');
-        return;
-    }
-    
-    const folderItemSpan = folderElement.querySelector('.file-item span:last-child');
-    
-    if (!folderItemSpan) {
-        console.error('Could not find folder label');
-        return;
-    }
-    
-    const folderPath = folderItemSpan.textContent;
-    console.log('Folder path:', folderPath);
     
     // Remove any existing context menus
     const existingMenu = document.querySelector('.context-menu');
@@ -373,37 +361,72 @@ function showContextMenu(e, isFolder) {
         existingMenu.remove();
     }
 
+    // Find the clicked element
+    const targetElement = e.target.closest('.file-item');
+    const folderElement = e.target.closest('.folder');
+    
+    if (!targetElement) return;
+
+    const menu = document.createElement('div');
+    menu.className = 'context-menu';
+
     if (isFolder) {
-        const menu = document.createElement('div');
-        menu.className = 'context-menu';
+        const folderPath = targetElement.querySelector('span:last-child').textContent;
         
+        // Add upload option for folders
         const uploadItem = document.createElement('div');
         uploadItem.className = 'context-menu-item';
         uploadItem.innerHTML = '<span class="codicon codicon-cloud-upload"></span>Upload File';
         
-        uploadItem.onclick = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            
-            // Use the captured folderPath in the onchange handler
-            input.onchange = (inputEvent) => {
-                const file = inputEvent.target.files[0];
-                if (file) {
-                    // Now we can safely use the captured folderPath
-                    fileStructure.Project[folderPath][file.name] = "// New file content";
-                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
-                }
-                explorer.classList.remove('context-active');
-                menu.remove();
-            };
-            input.click();
-        };
+        // Add delete option for folders
+        const deleteItem = document.createElement('div');
+        deleteItem.className = 'context-menu-item';
+        deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
         
+        deleteItem.onclick = () => {
+            // Check if folder is empty
+            const folderContent = fileStructure.Project[folderPath];
+            if (Object.keys(folderContent).length === 0) {
+                // Delete empty folder
+                delete fileStructure.Project[folderPath];
+                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            } else {
+                // Show error for non-empty folder
+                alert(`Folder "${folderPath}" is not empty`);
+            }
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
+
         menu.appendChild(uploadItem);
-        menu.style.left = `${e.pageX}px`;
-        menu.style.top = `${e.pageY}px`;
-        document.body.appendChild(menu);
+        menu.appendChild(deleteItem);
+    } else {
+        // File context menu
+        const fileName = targetElement.querySelector('span:last-child').textContent;
+        const deleteItem = document.createElement('div');
+        deleteItem.className = 'context-menu-item';
+        deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete File';
+        
+        deleteItem.onclick = () => {
+            // Find and delete the file
+            for (const folder in fileStructure.Project) {
+                if (typeof fileStructure.Project[folder] === 'object' && 
+                    fileStructure.Project[folder].hasOwnProperty(fileName)) {
+                    delete fileStructure.Project[folder][fileName];
+                    break;
+                }
+            }
+            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
+
+        menu.appendChild(deleteItem);
     }
+
+    menu.style.left = `${e.pageX}px`;
+    menu.style.top = `${e.pageY}px`;
+    document.body.appendChild(menu);
 }
 
 // Update the click handler to remove active class when clicking outside
