@@ -45,6 +45,18 @@ let isOffline = false;
 
 let currentFile = "main.tex";
 
+// Keep only the global declaration at the top of the file
+let fileStructure = {
+    "Project": {
+        "main.tex": "% Your LaTeX content here",
+        "references.bib": "@article{example}",
+        "chapters": {
+            "chapter1.tex": "\\section{Chapter 1}",
+            "chapter2.tex": "\\section{Chapter 2}"
+        }
+    }
+};
+
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
 async function fetchEditorContent() {
@@ -278,8 +290,18 @@ function renderFileExplorer(container, structure) {
                 createTree(obj[key], subUl);
 
                 itemContent.addEventListener("contextmenu", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     showContextMenu(e, true);
                 });
+                
+                li.addEventListener("contextmenu", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showContextMenu(e, true);
+                });
+                
+                li.className = "folder";  // Make sure folder class is on the li
             } else {
                 // File structure with proper VS Code codicon
                 const itemContent = document.createElement("div");
@@ -317,9 +339,33 @@ function renderFileExplorer(container, structure) {
 function showContextMenu(e, isFolder) {
     e.preventDefault();
     
-    // Add active class to keep explorer visible
+    console.log('Right-clicked element:', e.target);
+    console.log('Parent elements:', e.target.parentElement);
+    
     const explorer = document.querySelector('.file-explorer');
     explorer.classList.add('context-active');
+    
+    // Try to find folder element more reliably
+    const folderElement = e.target.closest('.folder') || 
+                         e.target.parentElement.closest('.folder') ||
+                         e.composedPath().find(el => el.classList?.contains('folder'));
+                         
+    console.log('Found folder element:', folderElement);
+    
+    if (!folderElement) {
+        console.error('Could not find folder element');
+        return;
+    }
+    
+    const folderItemSpan = folderElement.querySelector('.file-item span:last-child');
+    
+    if (!folderItemSpan) {
+        console.error('Could not find folder label');
+        return;
+    }
+    
+    const folderPath = folderItemSpan.textContent;
+    console.log('Folder path:', folderPath);
     
     // Remove any existing context menus
     const existingMenu = document.querySelector('.context-menu');
@@ -334,21 +380,21 @@ function showContextMenu(e, isFolder) {
         const uploadItem = document.createElement('div');
         uploadItem.className = 'context-menu-item';
         uploadItem.innerHTML = '<span class="codicon codicon-cloud-upload"></span>Upload File';
+        
         uploadItem.onclick = () => {
             const input = document.createElement('input');
             input.type = 'file';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
+            
+            // Use the captured folderPath in the onchange handler
+            input.onchange = (inputEvent) => {
+                const file = inputEvent.target.files[0];
                 if (file) {
-                    // Add the file to the file structure (simulated)
-                    const folderPath = e.target.closest('.folder').querySelector('.file-item span:last-child').textContent;
+                    // Now we can safely use the captured folderPath
                     fileStructure.Project[folderPath][file.name] = "// New file content";
-                    
-                    // Re-render the file explorer
                     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
                 }
-                // Remove active class after operation is complete
                 explorer.classList.remove('context-active');
+                menu.remove();
             };
             input.click();
         };
@@ -384,6 +430,10 @@ require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-e
 require(['vs/editor/editor.main'], async function() {
     const { texContent, bibContent } = await fetchEditorContent();
 
+    // Update the global fileStructure with fetched content
+    fileStructure.Project["main.tex"] = texContent || "% Your LaTeX content here";
+    fileStructure.Project["references.bib"] = bibContent || "@article{example}";
+
     monaco.languages.register({ id: 'latex' });
 
     monaco.languages.setMonarchTokensProvider('latex', {
@@ -397,18 +447,6 @@ require(['vs/editor/editor.main'], async function() {
             ]
         }
     });
-
-    // Initialize file structure with fetched content
-    const fileStructure = {
-        "Project": {
-            "main.tex": texContent || "% Your LaTeX content here",
-            "references.bib": bibContent || "@article{example}",
-            "chapters": {
-                "chapter1.tex": "\\section{Chapter 1}",
-                "chapter2.tex": "\\section{Chapter 2}"
-            }
-        }
-    };
 
     // Create editors with automaticLayout: true
     texEditor = monaco.editor.create(document.getElementById('tex-editor'), {
