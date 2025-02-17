@@ -209,7 +209,7 @@ button:hover {
     transform: translateX(-250px); /* Hide by default */
     transition: transform 0.3s ease;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe WPC', 'Segoe UI Variable', sans-serif;
-    font-size: 13px;
+    font-size: 11px;  /* Reduced from 13px */
     letter-spacing: -0.15px;
     color: #cccccc;  /* VS Code's default text color */
 }
@@ -220,7 +220,7 @@ button:hover {
 
 .file-explorer-header {
     padding: 8px 12px;
-    font-size: 11px;
+    font-size: 10px;  /* Reduced from 11px */
     letter-spacing: 0.1px;
     text-transform: uppercase;
     font-weight: 600;
@@ -276,8 +276,9 @@ button:hover {
 
 .file-item {
     padding: 0;  /* Remove existing left padding since it's now on the parent */
-    height: 22px;
-    line-height: 22px;
+    font-size: 11px;  /* Reduced from 13px */
+    height: 20px;     /* Slightly reduced height to match VS Code */
+    line-height: 20px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -297,7 +298,7 @@ button:hover {
 }
 
 .codicon {
-    font-size: 16px;
+    font-size: 14px;  /* Reduced from 16px */
     margin-right: 4px;
     position: relative;
     top: 3px;
@@ -305,5 +306,6 @@ button:hover {
 }
 
 .codicon-chevron-right {
+    font-size: 12px;  /* Smaller chevron size */
     color: #808080;  /* VS Code's chevron color */
 }
