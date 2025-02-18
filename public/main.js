@@ -386,8 +386,6 @@ function showContextMenu(e, isFolder) {
         uploadItem.onclick = () => {
             const input = document.createElement('input');
             input.type = 'file';
-            // Fix the accept attribute format
-            // if you want to constrain it: input.accept = '.tex,.bib,text/x-tex,text/x-bibtex';
             input.accept = '*';
 
             input.onchange = (inputEvent) => {
@@ -402,7 +400,10 @@ function showContextMenu(e, isFolder) {
                         fileStructure.Project[folderPath][file.name] = "// Empty file content";
                     }
                     
-                    // Re-render and restore states
+                    // Ensure the target folder is expanded in the states
+                    states.set(folderPath, true);
+                    
+                    // Re-render and restore states with the target folder expanded
                     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
                     applyFolderStates(states);
                 }
