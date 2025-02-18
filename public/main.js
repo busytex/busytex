@@ -575,8 +575,10 @@ function showContextMenu(e, isFolder) {
             
             if (!isCurrentMain) {
                 setMainTexItem.onclick = () => {
+                    const states = getFolderStates();  // Capture states before changing
                     mainTexFile = fileName;
                     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    applyFolderStates(states);  // Restore states after re-render
                     explorer.classList.remove('context-active');
                     menu.remove();
                 };
@@ -667,7 +669,7 @@ function getFolderStates() {
     
     folders.forEach(folder => {
         const folderName = folder.querySelector('.file-item span:last-child').textContent;
-        const isExpanded = folder.querySelector('.file-item').classList.contains('expanded');
+        const isExpanded = folder.querySelector('ul').style.display === 'block';
         states.set(folderName, isExpanded);
     });
     
@@ -679,7 +681,9 @@ function applyFolderStates(states) {
     
     folders.forEach(folder => {
         const folderName = folder.querySelector('.file-item span:last-child').textContent;
-        if (states.get(folderName)) {
+        const shouldBeExpanded = states.get(folderName);
+        
+        if (shouldBeExpanded) {
             const itemContent = folder.querySelector('.file-item');
             const subUl = folder.querySelector('ul');
             const chevron = folder.querySelector('.codicon-chevron-right');
