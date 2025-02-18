@@ -255,91 +255,96 @@ function renderFileExplorer(container, structure) {
     ul.className = "file-tree";
 
     function createTree(obj, parentUl) {
-        for (const key in obj) {
+        // Separate folders and files
+        const entries = Object.entries(obj);
+        const folders = entries.filter(([_, value]) => typeof value === 'object');
+        const files = entries.filter(([_, value]) => typeof value !== 'object');
+        
+        // Process folders first
+        for (const [key, value] of folders) {
             const li = document.createElement("li");
-
-            if (typeof obj[key] === "object") {
-                // Folder structure remains the same with just chevron
-                const itemContent = document.createElement("div");
-                itemContent.className = "file-item";
-                
-                const chevron = document.createElement("span");
-                chevron.className = "codicon codicon-chevron-right";
-                
-                const label = document.createElement("span");
-                label.textContent = key;
-                
-                itemContent.appendChild(chevron);
-                itemContent.appendChild(label);
-                
-                const subUl = document.createElement("ul");
-                subUl.style.display = "none";
-                
-                li.appendChild(itemContent);
-                li.appendChild(subUl);
-                
-                itemContent.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    subUl.style.display = subUl.style.display === "none" ? "block" : "none";
-                    itemContent.classList.toggle("expanded");
-                    chevron.style.transform = itemContent.classList.contains("expanded")
-                        ? "rotate(90deg)"
-                        : "rotate(0)";
-                });
-                
-                createTree(obj[key], subUl);
-
-                itemContent.addEventListener("contextmenu", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showContextMenu(e, true);
-                });
-                
-                li.addEventListener("contextmenu", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showContextMenu(e, true);
-                });
-                
-                li.className = "folder";  // Make sure folder class is on the li
+            li.className = "folder";
+            
+            const itemContent = document.createElement("div");
+            itemContent.className = "file-item";
+            
+            const chevron = document.createElement("span");
+            chevron.className = "codicon codicon-chevron-right";
+            
+            const label = document.createElement("span");
+            label.textContent = key;
+            
+            itemContent.appendChild(chevron);
+            itemContent.appendChild(label);
+            
+            const subUl = document.createElement("ul");
+            subUl.style.display = "none";
+            
+            li.appendChild(itemContent);
+            li.appendChild(subUl);
+            
+            itemContent.addEventListener("click", (e) => {
+                e.stopPropagation();
+                subUl.style.display = subUl.style.display === "none" ? "block" : "none";
+                itemContent.classList.toggle("expanded");
+                chevron.style.transform = itemContent.classList.contains("expanded")
+                    ? "rotate(90deg)"
+                    : "rotate(0)";
+            });
+            
+            // Add context menu for folders
+            itemContent.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, true);
+            });
+            
+            li.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, true);
+            });
+            
+            createTree(value, subUl);
+            parentUl.appendChild(li);
+        }
+        
+        // Then process files
+        for (const [key, value] of files) {
+            const li = document.createElement("li");
+            const itemContent = document.createElement("div");
+            itemContent.className = "file-item";
+            
+            const fileIcon = document.createElement("span");
+            if (key.endsWith('.tex')) {
+                fileIcon.className = "codicon codicon-file-code";
+            } else if (key.endsWith('.bib')) {
+                fileIcon.className = "codicon codicon-references";
             } else {
-                // File structure with proper VS Code codicon
-                const itemContent = document.createElement("div");
-                itemContent.className = "file-item";
-                
-                const fileIcon = document.createElement("span");
-                // Use proper VS Code file icons based on extension
-                if (key.endsWith('.tex')) {
-                    fileIcon.className = "codicon codicon-file-code";
-                } else if (key.endsWith('.bib')) {
-                    fileIcon.className = "codicon codicon-references";
-                } else {
-                    fileIcon.className = "codicon codicon-file";
-                }
-                
-                const label = document.createElement("span");
-                label.textContent = key;
-                
-                itemContent.appendChild(fileIcon);
-                itemContent.appendChild(label);
-                itemContent.addEventListener("click", () => loadFile(key, obj[key]));
-                
-                // Add context menu for files
-                itemContent.addEventListener("contextmenu", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showContextMenu(e, false);
-                });
-                
-                li.addEventListener("contextmenu", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showContextMenu(e, false);
-                });
-                
-                li.appendChild(itemContent);
+                fileIcon.className = "codicon codicon-file";
             }
             
+            const label = document.createElement("span");
+            label.textContent = key;
+            
+            itemContent.appendChild(fileIcon);
+            itemContent.appendChild(label);
+            itemContent.addEventListener("click", () => loadFile(key, value));
+            
+            // Add context menu for files
+            itemContent.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, false);
+            });
+            
+            li.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, false);
+            });
+            
+            li.appendChild(itemContent);
             parentUl.appendChild(li);
         }
     }
