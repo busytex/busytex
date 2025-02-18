@@ -414,45 +414,40 @@ function showContextMenu(e, isFolder) {
         
         menu.appendChild(uploadItem);
         
-        // Only add delete option if not root folder
-        if (folderPath !== "Project") {
-            const deleteItem = document.createElement('div');
-            deleteItem.className = 'context-menu-item';
-            deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
-            
-            deleteItem.onclick = () => {
-                const folderContent = fileStructure.Project[folderPath];
-                if (Object.keys(folderContent).length === 0) {
-                    const states = getFolderStates();
-                    delete fileStructure.Project[folderPath];
-                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
-                    applyFolderStates(states);
-                } else {
-                    alert(`Folder "${folderPath}" is not empty`);
-                }
-                explorer.classList.remove('context-active');
-                menu.remove();
-            };
+        const deleteItem = document.createElement('div');
+        deleteItem.className = 'context-menu-item';
+        deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
+        
+        deleteItem.onclick = () => {
+            const folderContent = fileStructure.Project[folderPath];
+            if (Object.keys(folderContent).length === 0) {
+                const states = getFolderStates();
+                delete fileStructure.Project[folderPath];
+                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                applyFolderStates(states);
+            } else {
+                alert(`Folder "${folderPath}" is not empty`);
+            }
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
 
-            menu.appendChild(deleteItem);
-        }
+        menu.appendChild(deleteItem);
 
-        if (folderPath !== "Project") {  // Don't allow renaming root folder
-            const renameItem = document.createElement('div');
-            renameItem.className = 'context-menu-item';
-            renameItem.innerHTML = '<span class="codicon codicon-edit"></span>Rename';
-            
-            renameItem.onclick = () => {
-                const newName = prompt("Enter new folder name:", folderPath);
-                if (newName && newName !== folderPath) {
-                    renameFileOrFolder(folderPath, newName, true);
-                }
-                explorer.classList.remove('context-active');
-                menu.remove();
-            };
-            
-            menu.appendChild(renameItem);
-        }
+        const renameItem = document.createElement('div');
+        renameItem.className = 'context-menu-item';
+        renameItem.innerHTML = '<span class="codicon codicon-edit"></span>Rename';
+        
+        renameItem.onclick = () => {
+            const newName = prompt("Enter new folder name:", folderPath);
+            if (newName && newName !== folderPath) {
+                renameFileOrFolder(folderPath, newName, true);
+            }
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
+        
+        menu.appendChild(renameItem);
     } else {
         // File context menu
         const fileName = targetElement.querySelector('span:last-child').textContent;
