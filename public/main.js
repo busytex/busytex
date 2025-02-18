@@ -432,7 +432,7 @@ function showContextMenu(e, isFolder) {
     const menu = document.createElement('div');
     menu.className = 'context-menu';
 
-    // Update the upload item section in showContextMenu
+    // Update the folder handling section in showContextMenu
     if (isFolder) {
         const folderPath = targetElement.querySelector('span:last-child').textContent;
         
@@ -472,15 +472,20 @@ function showContextMenu(e, isFolder) {
         
         menu.appendChild(uploadItem);
         
+        // Add delete option for all folders (including root)
         const deleteItem = document.createElement('div');
         deleteItem.className = 'context-menu-item';
         deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
         
         deleteItem.onclick = () => {
-            const folderContent = fileStructure.Project[folderPath];
+            const folderContent = fileStructure[folderPath];
             if (Object.keys(folderContent).length === 0) {
                 const states = getFolderStates();
-                delete fileStructure.Project[folderPath];
+                delete fileStructure[folderPath];
+                // If root folder was deleted, create a new empty root
+                if (folderPath === "Project") {
+                    fileStructure["New Project"] = {};
+                }
                 renderFileExplorer(document.getElementById('file-tree'), fileStructure);
                 applyFolderStates(states);
             } else {
@@ -489,9 +494,9 @@ function showContextMenu(e, isFolder) {
             explorer.classList.remove('context-active');
             menu.remove();
         };
-
         menu.appendChild(deleteItem);
 
+        // Add rename option for all folders (including root)
         const renameItem = document.createElement('div');
         renameItem.className = 'context-menu-item';
         renameItem.innerHTML = '<span class="codicon codicon-edit"></span>Rename';
@@ -499,12 +504,16 @@ function showContextMenu(e, isFolder) {
         renameItem.onclick = () => {
             const newName = prompt("Enter new folder name:", folderPath);
             if (newName && newName !== folderPath) {
-                renameFileOrFolder(folderPath, newName, true);
+                const states = getFolderStates();
+                const folderContent = fileStructure[folderPath];
+                delete fileStructure[folderPath];
+                fileStructure[newName] = folderContent;
+                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                applyFolderStates(states);
             }
             explorer.classList.remove('context-active');
             menu.remove();
         };
-        
         menu.appendChild(renameItem);
     } else {
         // File context menu
