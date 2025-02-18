@@ -267,6 +267,48 @@ function renderFileExplorer(container, structure) {
             
             const itemContent = document.createElement("div");
             itemContent.className = "file-item";
+            itemContent.draggable = true;
+            
+            // Add drag event listeners for folders
+            itemContent.addEventListener('dragstart', (e) => {
+                e.stopPropagation();
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    path: getItemPath(itemContent),
+                    isFolder: true
+                }));
+                itemContent.classList.add('dragging');
+            });
+            
+            itemContent.addEventListener('dragend', () => {
+                itemContent.classList.remove('dragging');
+            });
+            
+            itemContent.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                itemContent.classList.add('drag-over');
+            });
+            
+            itemContent.addEventListener('dragleave', () => {
+                itemContent.classList.remove('drag-over');
+            });
+            
+            itemContent.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                itemContent.classList.remove('drag-over');
+                
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const targetPath = getItemPath(itemContent);
+                
+                // Prevent dropping into descendant
+                if (data.isFolder && isDescendant(data.path, targetPath)) {
+                    return;
+                }
+                
+                // Move the item
+                moveItem(data.path, targetPath, data.isFolder);
+            });
             
             const chevron = document.createElement("span");
             chevron.className = "codicon codicon-chevron-right";
@@ -314,6 +356,21 @@ function renderFileExplorer(container, structure) {
             const li = document.createElement("li");
             const itemContent = document.createElement("div");
             itemContent.className = "file-item";
+            itemContent.draggable = true;
+            
+            // Add drag event listeners for files
+            itemContent.addEventListener('dragstart', (e) => {
+                e.stopPropagation();
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    path: getItemPath(itemContent),
+                    isFolder: false
+                }));
+                itemContent.classList.add('dragging');
+            });
+            
+            itemContent.addEventListener('dragend', () => {
+                itemContent.classList.remove('dragging');
+            });
             
             const fileIcon = document.createElement("span");
             if (key.endsWith('.tex')) {
@@ -568,6 +625,66 @@ function renameFileOrFolder(oldPath, newName, isFolder) {
         }
     }
     
+    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+    applyFolderStates(states);
+}
+
+// Add these helper functions first
+function isDescendant(draggedPath, targetPath) {
+    return targetPath.startsWith(draggedPath + '/');
+}
+
+function getItemPath(element) {
+    const pathParts = [];
+    let current = element;
+    
+    while (current && !current.classList.contains('file-tree')) {
+        if (current.classList.contains('file-item')) {
+            pathParts.unshift(current.querySelector('span:last-child').textContent);
+        }
+        current = current.parentElement;
+    }
+    
+    return pathParts.join('/');
+}
+
+// Add the moveItem function
+function moveItem(sourcePath, targetPath, isFolder) {
+    const states = getFolderStates();
+    
+    if (isFolder) {
+        // Move folder
+        const sourceContent = fileStructure.Project[sourcePath];
+        delete fileStructure.Project[sourcePath];
+        
+        if (!fileStructure.Project[targetPath]) {
+            fileStructure.Project[targetPath] = {};
+        }
+        fileStructure.Project[targetPath][sourcePath] = sourceContent;
+    } else {
+        // Move file
+        let sourceContent;
+        // Find and remove file from source
+        for (const folder in fileStructure.Project) {
+            if (fileStructure.Project[folder].hasOwnProperty(sourcePath)) {
+                sourceContent = fileStructure.Project[folder][sourcePath];
+                delete fileStructure.Project[folder][sourcePath];
+                break;
+            }
+        }
+        
+        // Add file to target
+        if (targetPath === "Project") {
+            fileStructure.Project[sourcePath] = sourceContent;
+        } else {
+            if (!fileStructure.Project[targetPath]) {
+                fileStructure.Project[targetPath] = {};
+            }
+            fileStructure.Project[targetPath][sourcePath] = sourceContent;
+        }
+    }
+    
+    // Re-render and restore states
     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
     applyFolderStates(states);
 }
