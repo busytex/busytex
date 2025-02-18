@@ -319,6 +319,40 @@ button:hover {
     background-color: #37373d;
 }
 
+.file-item.drag-over {
+    background-color: #2a2d2e;
+    position: relative;
+    border: none;  /* Remove any border */
+}
+
+.file-item.drag-over::before {
+    content: "\eab6"; /* codicon-arrow-small-right */
+    font-family: 'codicon';
+    position: absolute;
+    left: -16px;
+    color: #75beff;
+    font-size: 14px;
+}
+
+/* Override any other potential pseudo-elements */
+.file-item.drag-over::after {
+    display: none;
+}
+
+.file-item.drag-over {
+    background-color: #2a2d2e;
+    position: relative;
+}
+
+.file-item.drag-over::before {
+    content: "\eab6"; /* codicon-arrow-small-right */
+    font-family: 'codicon';
+    position: absolute;
+    left: -16px;
+    color: #75beff;
+    font-size: 14px;
+}
+
 .folder-name, .file-name {
     color: #cccccc;  /* VS Code's default text color */
 }
