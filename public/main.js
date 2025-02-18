@@ -436,6 +436,36 @@ function showContextMenu(e, isFolder) {
     if (isFolder) {
         const folderPath = targetElement.querySelector('span:last-child').textContent;
         
+        // Add create folder option
+        const createFolderItem = document.createElement('div');
+        createFolderItem.className = 'context-menu-item';
+        createFolderItem.innerHTML = '<span class="codicon codicon-new-folder"></span>Create Folder';
+        
+        createFolderItem.onclick = () => {
+            const newFolderName = prompt("Enter folder name:");
+            if (newFolderName) {
+                const states = getFolderStates();
+                
+                // Add new folder to the structure
+                if (folderPath === "Project") {
+                    fileStructure.Project[newFolderName] = {};
+                } else if (fileStructure.Project[folderPath]) {
+                    fileStructure.Project[folderPath][newFolderName] = {};
+                }
+                
+                // Ensure parent folder is expanded
+                states.set(folderPath, true);
+                
+                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                applyFolderStates(states);
+            }
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
+        
+        menu.appendChild(createFolderItem);
+        
+        // Add existing upload item after create folder
         const uploadItem = document.createElement('div');
         uploadItem.className = 'context-menu-item';
         uploadItem.innerHTML = '<span class="codicon codicon-cloud-upload"></span>Upload File';

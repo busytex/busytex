@@ -397,3 +397,11 @@ button:hover {
 .context-menu-item:hover .codicon-trash {
     color: #ff6b6b;
 }
+
+.context-menu-item .codicon-new-folder {
+    color: #75beff;
+}
+
+.context-menu-item:hover .codicon-new-folder {
+    color: #9dceff;
+}
