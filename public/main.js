@@ -378,13 +378,8 @@ function renderFileExplorer(container, structure) {
             const fileIcon = document.createElement("span");
             if (key.endsWith('.tex')) {
                 fileIcon.className = "codicon codicon-file-code";
-                // Add star indicator for main tex file
                 if (key === mainTexFile && fileStructure.Project.hasOwnProperty(key)) {
-                    const mainIndicator = document.createElement("span");
-                    mainIndicator.className = "codicon codicon-star-full";
-                    mainIndicator.style.color = "#ffcb6b";
-                    mainIndicator.style.marginLeft = "4px";
-                    itemContent.appendChild(mainIndicator);
+                    itemContent.classList.add('main-tex');
                 }
             } else if (key.endsWith('.bib')) {
                 fileIcon.className = "codicon codicon-references";
@@ -565,11 +560,11 @@ function showContextMenu(e, isFolder) {
         // Add "Set as Main Tex File" option only for root .tex files
         if (isRootTexFile) {
             const setMainTexItem = document.createElement('div');
-            setMainTexItem.className = 'context-menu-item';
+            setMainTexItem.className = 'context-menu-item main-tex-option';
             const isCurrentMain = fileName === mainTexFile;
             
             setMainTexItem.innerHTML = `
-                <span class="codicon codicon-star${isCurrentMain ? '-full' : '-empty'}"></span>
+                <span class="codicon codicon-file-code"></span>
                 ${isCurrentMain ? 'Main Tex File' : 'Set as Main Tex File'}
             `;
             

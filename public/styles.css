@@ -440,15 +440,24 @@ button:hover {
     color: #9dceff;
 }
 
-/* Add styles for the main tex file indicator */
-.context-menu-item .codicon-star-full {
+/* Remove the star-related styles */
+.context-menu-item .codicon-star-full,
+.context-menu-item .codicon-star-empty {
+    display: none;
+}
+
+/* Add main tex file styling */
+.file-item.main-tex,
+.file-item.main-tex .codicon,
+.file-item.main-tex span {
+    color: #ffcb6b !important;
+}
+
+/* Style for the "Set as Main Tex File" menu item */
+.context-menu-item.main-tex-option {
     color: #ffcb6b;
 }
 
-.context-menu-item .codicon-star-empty {
-    color: #75beff;
-}
-
-.context-menu-item:hover .codicon-star-empty {
-    color: #9dceff;
+.context-menu-item.main-tex-option .codicon {
+    color: inherit;
 }
