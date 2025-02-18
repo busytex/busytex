@@ -57,6 +57,9 @@ let fileStructure = {
     }
 };
 
+// Add this near the top with other global variables
+let mainTexFile = "main.tex";  // Default main tex file
+
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
 async function fetchEditorContent() {
@@ -375,6 +378,14 @@ function renderFileExplorer(container, structure) {
             const fileIcon = document.createElement("span");
             if (key.endsWith('.tex')) {
                 fileIcon.className = "codicon codicon-file-code";
+                // Add star indicator for main tex file
+                if (key === mainTexFile && fileStructure.Project.hasOwnProperty(key)) {
+                    const mainIndicator = document.createElement("span");
+                    mainIndicator.className = "codicon codicon-star-full";
+                    mainIndicator.style.color = "#ffcb6b";
+                    mainIndicator.style.marginLeft = "4px";
+                    itemContent.appendChild(mainIndicator);
+                }
             } else if (key.endsWith('.bib')) {
                 fileIcon.className = "codicon codicon-references";
             } else {
@@ -548,7 +559,32 @@ function showContextMenu(e, isFolder) {
     } else {
         // File context menu
         const fileName = targetElement.querySelector('span:last-child').textContent;
+        const isRootTexFile = fileName.endsWith('.tex') && 
+                             fileStructure.Project.hasOwnProperty(fileName);
         
+        // Add "Set as Main Tex File" option only for root .tex files
+        if (isRootTexFile) {
+            const setMainTexItem = document.createElement('div');
+            setMainTexItem.className = 'context-menu-item';
+            const isCurrentMain = fileName === mainTexFile;
+            
+            setMainTexItem.innerHTML = `
+                <span class="codicon codicon-star${isCurrentMain ? '-full' : '-empty'}"></span>
+                ${isCurrentMain ? 'Main Tex File' : 'Set as Main Tex File'}
+            `;
+            
+            if (!isCurrentMain) {
+                setMainTexItem.onclick = () => {
+                    mainTexFile = fileName;
+                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    explorer.classList.remove('context-active');
+                    menu.remove();
+                };
+                menu.appendChild(setMainTexItem);
+            }
+        }
+        
+        // Add existing menu items (rename, delete, etc.)
         const renameItem = document.createElement('div');
         renameItem.className = 'context-menu-item';
         renameItem.innerHTML = '<span class="codicon codicon-edit"></span>Rename';

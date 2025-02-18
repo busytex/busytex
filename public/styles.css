@@ -439,3 +439,16 @@ button:hover {
 .context-menu-item:hover .codicon-new-folder {
     color: #9dceff;
 }
+
+/* Add styles for the main tex file indicator */
+.context-menu-item .codicon-star-full {
+    color: #ffcb6b;
+}
+
+.context-menu-item .codicon-star-empty {
+    color: #75beff;
+}
+
+.context-menu-item:hover .codicon-star-empty {
+    color: #9dceff;
+}
