@@ -255,78 +255,96 @@ function renderFileExplorer(container, structure) {
     ul.className = "file-tree";
 
     function createTree(obj, parentUl) {
-        for (const key in obj) {
+        // Separate folders and files
+        const entries = Object.entries(obj);
+        const folders = entries.filter(([_, value]) => typeof value === 'object');
+        const files = entries.filter(([_, value]) => typeof value !== 'object');
+        
+        // Process folders first
+        for (const [key, value] of folders) {
             const li = document.createElement("li");
-
-            if (typeof obj[key] === "object") {
-                // Folder structure remains the same with just chevron
-                const itemContent = document.createElement("div");
-                itemContent.className = "file-item";
-                
-                const chevron = document.createElement("span");
-                chevron.className = "codicon codicon-chevron-right";
-                
-                const label = document.createElement("span");
-                label.textContent = key;
-                
-                itemContent.appendChild(chevron);
-                itemContent.appendChild(label);
-                
-                const subUl = document.createElement("ul");
-                subUl.style.display = "none";
-                
-                li.appendChild(itemContent);
-                li.appendChild(subUl);
-                
-                itemContent.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    subUl.style.display = subUl.style.display === "none" ? "block" : "none";
-                    itemContent.classList.toggle("expanded");
-                    chevron.style.transform = itemContent.classList.contains("expanded")
-                        ? "rotate(90deg)"
-                        : "rotate(0)";
-                });
-                
-                createTree(obj[key], subUl);
-
-                itemContent.addEventListener("contextmenu", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showContextMenu(e, true);
-                });
-                
-                li.addEventListener("contextmenu", (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showContextMenu(e, true);
-                });
-                
-                li.className = "folder";  // Make sure folder class is on the li
+            li.className = "folder";
+            
+            const itemContent = document.createElement("div");
+            itemContent.className = "file-item";
+            
+            const chevron = document.createElement("span");
+            chevron.className = "codicon codicon-chevron-right";
+            
+            const label = document.createElement("span");
+            label.textContent = key;
+            
+            itemContent.appendChild(chevron);
+            itemContent.appendChild(label);
+            
+            const subUl = document.createElement("ul");
+            subUl.style.display = "none";
+            
+            li.appendChild(itemContent);
+            li.appendChild(subUl);
+            
+            itemContent.addEventListener("click", (e) => {
+                e.stopPropagation();
+                subUl.style.display = subUl.style.display === "none" ? "block" : "none";
+                itemContent.classList.toggle("expanded");
+                chevron.style.transform = itemContent.classList.contains("expanded")
+                    ? "rotate(90deg)"
+                    : "rotate(0)";
+            });
+            
+            // Add context menu for folders
+            itemContent.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, true);
+            });
+            
+            li.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, true);
+            });
+            
+            createTree(value, subUl);
+            parentUl.appendChild(li);
+        }
+        
+        // Then process files
+        for (const [key, value] of files) {
+            const li = document.createElement("li");
+            const itemContent = document.createElement("div");
+            itemContent.className = "file-item";
+            
+            const fileIcon = document.createElement("span");
+            if (key.endsWith('.tex')) {
+                fileIcon.className = "codicon codicon-file-code";
+            } else if (key.endsWith('.bib')) {
+                fileIcon.className = "codicon codicon-references";
             } else {
-                // File structure with proper VS Code codicon
-                const itemContent = document.createElement("div");
-                itemContent.className = "file-item";
-                
-                const fileIcon = document.createElement("span");
-                // Use proper VS Code file icons based on extension
-                if (key.endsWith('.tex')) {
-                    fileIcon.className = "codicon codicon-file-code";
-                } else if (key.endsWith('.bib')) {
-                    fileIcon.className = "codicon codicon-references";
-                } else {
-                    fileIcon.className = "codicon codicon-file";
-                }
-                
-                const label = document.createElement("span");
-                label.textContent = key;
-                
-                itemContent.appendChild(fileIcon);
-                itemContent.appendChild(label);
-                itemContent.addEventListener("click", () => loadFile(key, obj[key]));
-                
-                li.appendChild(itemContent);
+                fileIcon.className = "codicon codicon-file";
             }
             
+            const label = document.createElement("span");
+            label.textContent = key;
+            
+            itemContent.appendChild(fileIcon);
+            itemContent.appendChild(label);
+            itemContent.addEventListener("click", () => loadFile(key, value));
+            
+            // Add context menu for files
+            itemContent.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, false);
+            });
+            
+            li.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, false);
+            });
+            
+            li.appendChild(itemContent);
             parentUl.appendChild(li);
         }
     }
@@ -339,33 +357,8 @@ function renderFileExplorer(container, structure) {
 function showContextMenu(e, isFolder) {
     e.preventDefault();
     
-    console.log('Right-clicked element:', e.target);
-    console.log('Parent elements:', e.target.parentElement);
-    
     const explorer = document.querySelector('.file-explorer');
     explorer.classList.add('context-active');
-    
-    // Try to find folder element more reliably
-    const folderElement = e.target.closest('.folder') || 
-                         e.target.parentElement.closest('.folder') ||
-                         e.composedPath().find(el => el.classList?.contains('folder'));
-                         
-    console.log('Found folder element:', folderElement);
-    
-    if (!folderElement) {
-        console.error('Could not find folder element');
-        return;
-    }
-    
-    const folderItemSpan = folderElement.querySelector('.file-item span:last-child');
-    
-    if (!folderItemSpan) {
-        console.error('Could not find folder label');
-        return;
-    }
-    
-    const folderPath = folderItemSpan.textContent;
-    console.log('Folder path:', folderPath);
     
     // Remove any existing context menus
     const existingMenu = document.querySelector('.context-menu');
@@ -373,9 +366,18 @@ function showContextMenu(e, isFolder) {
         existingMenu.remove();
     }
 
+    // Find the clicked element
+    const targetElement = e.target.closest('.file-item');
+    const folderElement = e.target.closest('.folder');
+    
+    if (!targetElement) return;
+
+    const menu = document.createElement('div');
+    menu.className = 'context-menu';
+
+    // Update the upload item section in showContextMenu
     if (isFolder) {
-        const menu = document.createElement('div');
-        menu.className = 'context-menu';
+        const folderPath = targetElement.querySelector('span:last-child').textContent;
         
         const uploadItem = document.createElement('div');
         uploadItem.className = 'context-menu-item';
@@ -384,14 +386,25 @@ function showContextMenu(e, isFolder) {
         uploadItem.onclick = () => {
             const input = document.createElement('input');
             input.type = 'file';
-            
-            // Use the captured folderPath in the onchange handler
+            // Fix the accept attribute format
+            // if you want to constrain it: input.accept = '.tex,.bib,text/x-tex,text/x-bibtex';
+            input.accept = '*';
+
             input.onchange = (inputEvent) => {
                 const file = inputEvent.target.files[0];
                 if (file) {
-                    // Now we can safely use the captured folderPath
-                    fileStructure.Project[folderPath][file.name] = "// New file content";
+                    const states = getFolderStates();
+                    
+                    // Update the file structure at the correct path
+                    if (folderPath === "Project") {
+                        fileStructure.Project[file.name] = "// Empty file content";
+                    } else if (fileStructure.Project[folderPath]) {
+                        fileStructure.Project[folderPath][file.name] = "// Empty file content";
+                    }
+                    
+                    // Re-render and restore states
                     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    applyFolderStates(states);
                 }
                 explorer.classList.remove('context-active');
                 menu.remove();
@@ -400,10 +413,57 @@ function showContextMenu(e, isFolder) {
         };
         
         menu.appendChild(uploadItem);
-        menu.style.left = `${e.pageX}px`;
-        menu.style.top = `${e.pageY}px`;
-        document.body.appendChild(menu);
+        
+        // Only add delete option if not root folder
+        if (folderPath !== "Project") {
+            const deleteItem = document.createElement('div');
+            deleteItem.className = 'context-menu-item';
+            deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
+            
+            deleteItem.onclick = () => {
+                const folderContent = fileStructure.Project[folderPath];
+                if (Object.keys(folderContent).length === 0) {
+                    const states = getFolderStates();
+                    delete fileStructure.Project[folderPath];
+                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    applyFolderStates(states);
+                } else {
+                    alert(`Folder "${folderPath}" is not empty`);
+                }
+                explorer.classList.remove('context-active');
+                menu.remove();
+            };
+
+            menu.appendChild(deleteItem);
+        }
+    } else {
+        // File context menu
+        const fileName = targetElement.querySelector('span:last-child').textContent;
+        const deleteItem = document.createElement('div');
+        deleteItem.className = 'context-menu-item';
+        deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete File';
+        
+        deleteItem.onclick = () => {
+            const states = getFolderStates();
+            for (const folder in fileStructure.Project) {
+                if (typeof fileStructure.Project[folder] === 'object' && 
+                    fileStructure.Project[folder].hasOwnProperty(fileName)) {
+                    delete fileStructure.Project[folder][fileName];
+                    break;
+                }
+            }
+            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            applyFolderStates(states);
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
+
+        menu.appendChild(deleteItem);
     }
+
+    menu.style.left = `${e.pageX}px`;
+    menu.style.top = `${e.pageY}px`;
+    document.body.appendChild(menu);
 }
 
 // Update the click handler to remove active class when clicking outside
@@ -424,6 +484,38 @@ document.querySelector('.file-explorer').addEventListener('mouseleave', (e) => {
         e.currentTarget.classList.remove('context-active');
     }
 });
+
+// Add these functions before renderFileExplorer
+
+function getFolderStates() {
+    const states = new Map();
+    const folders = document.querySelectorAll('.folder');
+    
+    folders.forEach(folder => {
+        const folderName = folder.querySelector('.file-item span:last-child').textContent;
+        const isExpanded = folder.querySelector('.file-item').classList.contains('expanded');
+        states.set(folderName, isExpanded);
+    });
+    
+    return states;
+}
+
+function applyFolderStates(states) {
+    const folders = document.querySelectorAll('.folder');
+    
+    folders.forEach(folder => {
+        const folderName = folder.querySelector('.file-item span:last-child').textContent;
+        if (states.get(folderName)) {
+            const itemContent = folder.querySelector('.file-item');
+            const subUl = folder.querySelector('ul');
+            const chevron = folder.querySelector('.codicon-chevron-right');
+            
+            itemContent.classList.add('expanded');
+            subUl.style.display = 'block';
+            chevron.style.transform = 'rotate(90deg)';
+        }
+    });
+}
 
 // Initialize Monaco Editor with Firebase content
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});

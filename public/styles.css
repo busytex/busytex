@@ -389,3 +389,11 @@ button:hover {
 .context-menu-item:hover {
     background-color: #2a2d2e;
 }
+
+.context-menu-item .codicon-trash {
+    color: #f14c4c;
+}
+
+.context-menu-item:hover .codicon-trash {
+    color: #ff6b6b;
+}
