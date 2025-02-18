@@ -436,9 +436,42 @@ function showContextMenu(e, isFolder) {
 
             menu.appendChild(deleteItem);
         }
+
+        if (folderPath !== "Project") {  // Don't allow renaming root folder
+            const renameItem = document.createElement('div');
+            renameItem.className = 'context-menu-item';
+            renameItem.innerHTML = '<span class="codicon codicon-edit"></span>Rename';
+            
+            renameItem.onclick = () => {
+                const newName = prompt("Enter new folder name:", folderPath);
+                if (newName && newName !== folderPath) {
+                    renameFileOrFolder(folderPath, newName, true);
+                }
+                explorer.classList.remove('context-active');
+                menu.remove();
+            };
+            
+            menu.appendChild(renameItem);
+        }
     } else {
         // File context menu
         const fileName = targetElement.querySelector('span:last-child').textContent;
+        
+        const renameItem = document.createElement('div');
+        renameItem.className = 'context-menu-item';
+        renameItem.innerHTML = '<span class="codicon codicon-edit"></span>Rename';
+        
+        renameItem.onclick = () => {
+            const newName = prompt("Enter new file name:", fileName);
+            if (newName && newName !== fileName) {
+                renameFileOrFolder(fileName, newName, false);
+            }
+            explorer.classList.remove('context-active');
+            menu.remove();
+        };
+        
+        menu.appendChild(renameItem);
+
         const deleteItem = document.createElement('div');
         deleteItem.className = 'context-menu-item';
         deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete File';
@@ -515,6 +548,32 @@ function applyFolderStates(states) {
             chevron.style.transform = 'rotate(90deg)';
         }
     });
+}
+
+// Add this function after your existing code
+function renameFileOrFolder(oldPath, newName, isFolder) {
+    const states = getFolderStates();
+    
+    if (isFolder) {
+        // Rename folder
+        const folderContent = fileStructure.Project[oldPath];
+        delete fileStructure.Project[oldPath];
+        fileStructure.Project[newName] = folderContent;
+    } else {
+        // Rename file
+        for (const folder in fileStructure.Project) {
+            if (typeof fileStructure.Project[folder] === 'object' && 
+                fileStructure.Project[folder].hasOwnProperty(oldPath)) {
+                const content = fileStructure.Project[folder][oldPath];
+                delete fileStructure.Project[folder][oldPath];
+                fileStructure.Project[folder][newName] = content;
+                break;
+            }
+        }
+    }
+    
+    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+    applyFolderStates(states);
 }
 
 // Initialize Monaco Editor with Firebase content
