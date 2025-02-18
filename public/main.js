@@ -531,15 +531,28 @@ function showContextMenu(e, isFolder) {
         
         deleteItem.onclick = () => {
             const states = getFolderStates();
-            for (const folder in fileStructure.Project) {
-                if (typeof fileStructure.Project[folder] === 'object' && 
-                    fileStructure.Project[folder].hasOwnProperty(fileName)) {
-                    delete fileStructure.Project[folder][fileName];
-                    break;
+            let fileDeleted = false;
+
+            // Check if file is directly in Project folder
+            if (fileStructure.Project.hasOwnProperty(fileName)) {
+                delete fileStructure.Project[fileName];
+                fileDeleted = true;
+            } else {
+                // Check in subfolders
+                for (const folder in fileStructure.Project) {
+                    if (typeof fileStructure.Project[folder] === 'object' && 
+                        fileStructure.Project[folder].hasOwnProperty(fileName)) {
+                        delete fileStructure.Project[folder][fileName];
+                        fileDeleted = true;
+                        break;
+                    }
                 }
             }
-            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
-            applyFolderStates(states);
+
+            if (fileDeleted) {
+                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                applyFolderStates(states);
+            }
             explorer.classList.remove('context-active');
             menu.remove();
         };
