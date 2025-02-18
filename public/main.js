@@ -370,36 +370,67 @@ function showContextMenu(e, isFolder) {
     const menu = document.createElement('div');
     menu.className = 'context-menu';
 
+    // Update the upload item section in showContextMenu
     if (isFolder) {
         const folderPath = targetElement.querySelector('span:last-child').textContent;
         
-        // Add upload option for folders
         const uploadItem = document.createElement('div');
         uploadItem.className = 'context-menu-item';
         uploadItem.innerHTML = '<span class="codicon codicon-cloud-upload"></span>Upload File';
         
-        // Add delete option for folders
-        const deleteItem = document.createElement('div');
-        deleteItem.className = 'context-menu-item';
-        deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
-        
-        deleteItem.onclick = () => {
-            // Check if folder is empty
-            const folderContent = fileStructure.Project[folderPath];
-            if (Object.keys(folderContent).length === 0) {
-                // Delete empty folder
-                delete fileStructure.Project[folderPath];
-                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
-            } else {
-                // Show error for non-empty folder
-                alert(`Folder "${folderPath}" is not empty`);
-            }
-            explorer.classList.remove('context-active');
-            menu.remove();
-        };
+        uploadItem.onclick = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            // Fix the accept attribute format
+            // if you want to constrain it: input.accept = '.tex,.bib,text/x-tex,text/x-bibtex';
+            input.accept = '*';
 
+            input.onchange = (inputEvent) => {
+                const file = inputEvent.target.files[0];
+                if (file) {
+                    const states = getFolderStates();
+                    
+                    // Update the file structure at the correct path
+                    if (folderPath === "Project") {
+                        fileStructure.Project[file.name] = "// Empty file content";
+                    } else if (fileStructure.Project[folderPath]) {
+                        fileStructure.Project[folderPath][file.name] = "// Empty file content";
+                    }
+                    
+                    // Re-render and restore states
+                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    applyFolderStates(states);
+                }
+                explorer.classList.remove('context-active');
+                menu.remove();
+            };
+            input.click();
+        };
+        
         menu.appendChild(uploadItem);
-        menu.appendChild(deleteItem);
+        
+        // Only add delete option if not root folder
+        if (folderPath !== "Project") {
+            const deleteItem = document.createElement('div');
+            deleteItem.className = 'context-menu-item';
+            deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
+            
+            deleteItem.onclick = () => {
+                const folderContent = fileStructure.Project[folderPath];
+                if (Object.keys(folderContent).length === 0) {
+                    const states = getFolderStates();
+                    delete fileStructure.Project[folderPath];
+                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    applyFolderStates(states);
+                } else {
+                    alert(`Folder "${folderPath}" is not empty`);
+                }
+                explorer.classList.remove('context-active');
+                menu.remove();
+            };
+
+            menu.appendChild(deleteItem);
+        }
     } else {
         // File context menu
         const fileName = targetElement.querySelector('span:last-child').textContent;
@@ -408,7 +439,7 @@ function showContextMenu(e, isFolder) {
         deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete File';
         
         deleteItem.onclick = () => {
-            // Find and delete the file
+            const states = getFolderStates();
             for (const folder in fileStructure.Project) {
                 if (typeof fileStructure.Project[folder] === 'object' && 
                     fileStructure.Project[folder].hasOwnProperty(fileName)) {
@@ -417,6 +448,7 @@ function showContextMenu(e, isFolder) {
                 }
             }
             renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            applyFolderStates(states);
             explorer.classList.remove('context-active');
             menu.remove();
         };
@@ -447,6 +479,38 @@ document.querySelector('.file-explorer').addEventListener('mouseleave', (e) => {
         e.currentTarget.classList.remove('context-active');
     }
 });
+
+// Add these functions before renderFileExplorer
+
+function getFolderStates() {
+    const states = new Map();
+    const folders = document.querySelectorAll('.folder');
+    
+    folders.forEach(folder => {
+        const folderName = folder.querySelector('.file-item span:last-child').textContent;
+        const isExpanded = folder.querySelector('.file-item').classList.contains('expanded');
+        states.set(folderName, isExpanded);
+    });
+    
+    return states;
+}
+
+function applyFolderStates(states) {
+    const folders = document.querySelectorAll('.folder');
+    
+    folders.forEach(folder => {
+        const folderName = folder.querySelector('.file-item span:last-child').textContent;
+        if (states.get(folderName)) {
+            const itemContent = folder.querySelector('.file-item');
+            const subUl = folder.querySelector('ul');
+            const chevron = folder.querySelector('.codicon-chevron-right');
+            
+            itemContent.classList.add('expanded');
+            subUl.style.display = 'block';
+            chevron.style.transform = 'rotate(90deg)';
+        }
+    });
+}
 
 // Initialize Monaco Editor with Firebase content
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});
