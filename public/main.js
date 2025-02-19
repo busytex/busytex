@@ -1,7 +1,7 @@
 // Ensure this file is imported as type="module" in index.html
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { db } from './firebase-config.js';
 
 const texmf_local = ['./texmf', './.texmf'];
@@ -45,20 +45,10 @@ let isOffline = false;
 
 let currentFile = "main.tex";
 
-// Keep only the global declaration at the top of the file
-let fileStructure = {
-    "Project": {
-        "main.tex": "% Your LaTeX content here",
-        "references.bib": "@article{example}",
-        "chapters": {
-            "chapter1.tex": "\\section{Chapter 1}",
-            "chapter2.tex": "\\section{Chapter 2}"
-        }
-    }
-};
-
-// Add this near the top with other global variables
-let mainTexFile = "main.tex";  // Default main tex file
+// Update the initial structure declaration
+let fileStructure = { Projects: {} };  // Change from Project to Projects
+let mainTexFile = "";
+let currentProject = null;  // Add this to track the current project
 
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
@@ -80,10 +70,52 @@ async function createProjectInFirestore(projectName) {
         fileStructure: {},  // Empty project initially
         currentTex: "\\documentclass{article}\n\\begin{document}\n\\end{document}", // Default LaTeX
         currentBib: "", // Empty .bib file
+        mainTexFile: "main.tex"  // Default main tex file
     };
 
     await setDoc(projectRef, projectData);
     console.log(`Project '${projectName}' saved in Firestore`);
+}
+
+// Update loadProjectsFromFirestore to properly load everything
+async function loadProjectsFromFirestore() {
+    try {
+        const projectsRef = collection(db, "projects");
+        const querySnapshot = await getDocs(projectsRef);
+
+        fileStructure = {}; // Clear the current structure
+
+        querySnapshot.forEach((doc) => {
+            const project = doc.data();
+            fileStructure[project.name] = project.fileStructure || {};
+            
+            // If this is a newly loaded project, set it as current
+            if (!currentProject) {
+                currentProject = project.name;
+                mainTexFile = project.mainTexFile || "";
+            }
+        });
+
+        // Render the file explorer with the loaded structure
+        renderFileExplorer(document.getElementById("file-tree"), fileStructure);
+        
+    } catch (error) {
+        console.error("Error loading projects:", error);
+        alert("Failed to load projects from Firestore");
+    }
+}
+
+// Add this new function to update mainTexFile in Firestore
+async function updateMainTexFileInFirestore(projectName, newMainTexFile) {
+    try {
+        const projectRef = doc(collection(db, "projects"), projectName);
+        await updateDoc(projectRef, {
+            mainTexFile: newMainTexFile
+        });
+        console.log(`Main tex file updated to ${newMainTexFile} in project ${projectName}`);
+    } catch (error) {
+        console.error("Error updating main tex file:", error);
+    }
 }
 
 async function fetchEditorContent() {
@@ -164,6 +196,7 @@ async function loadFile(filename, content) {
             currentFile = filename;
             // Save to Firebase
             await saveEditorContent();
+            fileStructure.Projects[currentFile] = texEditor.getValue();  // Changed from Project
         } else if (filename.endsWith(".bib")) {
             bibEditor.setValue(content);
             // Save to Firebase
@@ -271,10 +304,10 @@ async function onclick_() {
     worker.postMessage({files : files, main_tex_path : 'example.tex', verbose : use_verbose, bibtex : use_bibtex, driver : use_driver, data_packages_js : data_packages_js});
 }
 
-    function terminate() {
-        if (worker !== null) worker.terminate();
-        worker = null;
-    }
+function terminate() {
+    if (worker !== null) worker.terminate();
+    worker = null;
+}
 
 function renderFileExplorer(container, structure) {
     container.innerHTML = "";
@@ -402,7 +435,7 @@ function renderFileExplorer(container, structure) {
             const fileIcon = document.createElement("span");
             if (key.endsWith('.tex')) {
                 fileIcon.className = "codicon codicon-file-code";
-                if (key === mainTexFile && fileStructure.Project.hasOwnProperty(key)) {
+                if (key === mainTexFile && fileStructure.Projects.hasOwnProperty(key)) {
                     itemContent.classList.add('main-tex');
                 }
             } else if (key.endsWith('.bib')) {
@@ -508,10 +541,10 @@ function showContextMenu(e, isFolder) {
                 const states = getFolderStates();
                 
                 // Add new folder to the structure
-                if (folderPath === "Project") {
-                    fileStructure.Project[newFolderName] = {};
-                } else if (fileStructure.Project[folderPath]) {
-                    fileStructure.Project[folderPath][newFolderName] = {};
+                if (folderPath === "Projects") {  // Changed from Project
+                    fileStructure.Projects[newFolderName] = {};  // Changed from Project
+                } else if (fileStructure.Projects[folderPath]) {  // Changed from Project
+                    fileStructure.Projects[folderPath][newFolderName] = {};
                 }
                 
                 // Ensure parent folder is expanded
@@ -542,10 +575,10 @@ function showContextMenu(e, isFolder) {
                     const states = getFolderStates();
                     
                     // Update the file structure at the correct path
-                    if (folderPath === "Project") {
-                        fileStructure.Project[file.name] = "// Empty file content";
-                    } else if (fileStructure.Project[folderPath]) {
-                        fileStructure.Project[folderPath][file.name] = "// Empty file content";
+                    if (folderPath === "Projects") {  // Changed from Project
+                        fileStructure.Projects[file.name] = "// Empty file content";  // Changed from Project
+                    } else if (fileStructure.Projects[folderPath]) {  // Changed from Project
+                        fileStructure.Projects[folderPath][file.name] = "// Empty file content";
                     }
                     
                     // Ensure the target folder is expanded in the states
@@ -574,7 +607,7 @@ function showContextMenu(e, isFolder) {
                 const states = getFolderStates();
                 delete fileStructure[folderPath];
                 // If root folder was deleted, create a new empty root
-                if (folderPath === "Project") {
+                if (folderPath === "Projects") {  // Changed from Project
                     fileStructure["New Project"] = {};
                 }
                 renderFileExplorer(document.getElementById('file-tree'), fileStructure);
@@ -610,7 +643,7 @@ function showContextMenu(e, isFolder) {
         // File context menu
         const fileName = targetElement.querySelector('span:last-child').textContent;
         const isRootTexFile = fileName.endsWith('.tex') && 
-                             fileStructure.Project.hasOwnProperty(fileName);
+                             fileStructure.Projects.hasOwnProperty(fileName);  // Changed from Project
         
         // Add "Set as Main Tex File" option only for root .tex files
         if (isRootTexFile) {
@@ -624,9 +657,10 @@ function showContextMenu(e, isFolder) {
             `;
             
             if (!isCurrentMain) {
-                setMainTexItem.onclick = () => {
-                    const states = getFolderStates();  // Capture states before changing
+                setMainTexItem.onclick = async () => {
+                    const states = getFolderStates();
                     mainTexFile = fileName;
+                    await updateMainTexFileInFirestore(currentProject, fileName);  // Add this line
                     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
                     applyFolderStates(states);  // Restore states after re-render
                     explorer.classList.remove('context-active');
@@ -660,16 +694,16 @@ function showContextMenu(e, isFolder) {
             const states = getFolderStates();
             let fileDeleted = false;
 
-            // Check if file is directly in Project folder
-            if (fileStructure.Project.hasOwnProperty(fileName)) {
-                delete fileStructure.Project[fileName];
+            // Check if file is directly in Projects folder
+            if (fileStructure.Projects.hasOwnProperty(fileName)) {  // Changed from Project
+                delete fileStructure.Projects[fileName];  // Changed from Project
                 fileDeleted = true;
             } else {
                 // Check in subfolders
-                for (const folder in fileStructure.Project) {
-                    if (typeof fileStructure.Project[folder] === 'object' && 
-                        fileStructure.Project[folder].hasOwnProperty(fileName)) {
-                        delete fileStructure.Project[folder][fileName];
+                for (const folder in fileStructure.Projects) {  // Changed from Project
+                    if (typeof fileStructure.Projects[folder] === 'object' &&  // Changed from Project
+                        fileStructure.Projects[folder].hasOwnProperty(fileName)) {  // Changed from Project
+                        delete fileStructure.Projects[folder][fileName];  // Changed from Project
                         fileDeleted = true;
                         break;
                     }
@@ -751,17 +785,17 @@ function renameFileOrFolder(oldPath, newName, isFolder) {
     
     if (isFolder) {
         // Rename folder
-        const folderContent = fileStructure.Project[oldPath];
-        delete fileStructure.Project[oldPath];
-        fileStructure.Project[newName] = folderContent;
+        const folderContent = fileStructure.Projects[oldPath];  // Changed from Project
+        delete fileStructure.Projects[oldPath];  // Changed from Project
+        fileStructure.Projects[newName] = folderContent;  // Changed from Project
     } else {
         // Rename file
-        for (const folder in fileStructure.Project) {
-            if (typeof fileStructure.Project[folder] === 'object' && 
-                fileStructure.Project[folder].hasOwnProperty(oldPath)) {
-                const content = fileStructure.Project[folder][oldPath];
-                delete fileStructure.Project[folder][oldPath];
-                fileStructure.Project[folder][newName] = content;
+        for (const folder in fileStructure.Projects) {  // Changed from Project
+            if (typeof fileStructure.Projects[folder] === 'object' &&  // Changed from Project
+                fileStructure.Projects[folder].hasOwnProperty(oldPath)) {  // Changed from Project
+                const content = fileStructure.Projects[folder][oldPath];  // Changed from Project
+                delete fileStructure.Projects[folder][oldPath];  // Changed from Project
+                fileStructure.Projects[folder][newName] = content;  // Changed from Project
                 break;
             }
         }
@@ -796,33 +830,33 @@ function moveItem(sourcePath, targetPath, isFolder) {
     
     if (isFolder) {
         // Move folder
-        const sourceContent = fileStructure.Project[sourcePath];
-        delete fileStructure.Project[sourcePath];
+        const sourceContent = fileStructure.Projects[sourcePath];  // Changed from Project
+        delete fileStructure.Projects[sourcePath];  // Changed from Project
         
-        if (!fileStructure.Project[targetPath]) {
-            fileStructure.Project[targetPath] = {};
+        if (!fileStructure.Projects[targetPath]) {  // Changed from Project
+            fileStructure.Projects[targetPath] = {};  // Changed from Project
         }
-        fileStructure.Project[targetPath][sourcePath] = sourceContent;
+        fileStructure.Projects[targetPath][sourcePath] = sourceContent;  // Changed from Project
     } else {
         // Move file
         let sourceContent;
         // Find and remove file from source
-        for (const folder in fileStructure.Project) {
-            if (fileStructure.Project[folder].hasOwnProperty(sourcePath)) {
-                sourceContent = fileStructure.Project[folder][sourcePath];
-                delete fileStructure.Project[folder][sourcePath];
+        for (const folder in fileStructure.Projects) {  // Changed from Project
+            if (fileStructure.Projects[folder].hasOwnProperty(sourcePath)) {  // Changed from Project
+                sourceContent = fileStructure.Projects[folder][sourcePath];  // Changed from Project
+                delete fileStructure.Projects[folder][sourcePath];  // Changed from Project
                 break;
             }
         }
         
         // Add file to target
-        if (targetPath === "Project") {
-            fileStructure.Project[sourcePath] = sourceContent;
+        if (targetPath === "Projects") {  // Changed from Project
+            fileStructure.Projects[sourcePath] = sourceContent;  // Changed from Project
         } else {
-            if (!fileStructure.Project[targetPath]) {
-                fileStructure.Project[targetPath] = {};
+            if (!fileStructure.Projects[targetPath]) {  // Changed from Project
+                fileStructure.Projects[targetPath] = {};  // Changed from Project
             }
-            fileStructure.Project[targetPath][sourcePath] = sourceContent;
+            fileStructure.Projects[targetPath][sourcePath] = sourceContent;  // Changed from Project
         }
     }
     
@@ -834,82 +868,112 @@ function moveItem(sourcePath, targetPath, isFolder) {
 // Initialize Monaco Editor with Firebase content
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs' }});
 require(['vs/editor/editor.main'], async function() {
-    const { texContent, bibContent } = await fetchEditorContent();
+    try {
+        // Load projects first
+        await loadProjectsFromFirestore();
 
-    // Update the global fileStructure with fetched content
-    fileStructure.Project["main.tex"] = texContent || "% Your LaTeX content here";
-    fileStructure.Project["references.bib"] = bibContent || "@article{example}";
+        // Initialize content variables
+        const defaultTexContent = "\\documentclass{article}\n\\begin{document}\n\\end{document}";
+        const defaultBibContent = "@article{example,\n  author = {Author},\n  title = {Title},\n  year = {2024}\n}";
 
-    monaco.languages.register({ id: 'latex' });
+        let texContent = defaultTexContent;
+        let bibContent = defaultBibContent;
 
-    monaco.languages.setMonarchTokensProvider('latex', {
-        tokenizer: {
-            root: [
-                [/\\[a-zA-Z]+/, 'keyword'],
-                [/%.*/, 'comment'],
-                [/\{[^}]*\}/, 'string'],
-                [/\[[^\]]*\]/, 'string'],
-                [/\$[^$]*\$/, 'string'],
-            ]
+        // Try to load content from current project
+        if (currentProject && fileStructure[currentProject]) {
+            if (mainTexFile && fileStructure[currentProject][mainTexFile]) {
+                texContent = fileStructure[currentProject][mainTexFile];
+            }
+            
+            // Find the first .bib file in the project
+            const bibFile = Object.entries(fileStructure[currentProject])
+                .find(([key, _]) => key.endsWith('.bib'));
+            if (bibFile) {
+                bibContent = bibFile[1];
+            }
         }
-    });
 
-    // Create editors with automaticLayout: true
-    texEditor = monaco.editor.create(document.getElementById('tex-editor'), {
-        value: texContent,
-        language: 'latex',
-        theme: 'vs-dark',
-        wordWrap: 'on',
-        automaticLayout: true  // Enable automatic layout updates
-    });
-
-    bibEditor = monaco.editor.create(document.getElementById('bib-editor'), {
-        value: bibContent,
-        language: 'bibtex',
-        theme: 'vs-dark',
-        wordWrap: 'on',
-        automaticLayout: true  // Enable automatic layout updates
-    });
-
-    // Auto-save when users type
-    texEditor.onDidChangeModelContent(startAutoSaveDebounced);
-    bibEditor.onDidChangeModelContent(startAutoSaveDebounced);
-
-    // Add after editor initialization
-    const editorContainer = document.getElementById('editor-container');
-    const previewContainer = document.getElementById('preview-container');
-
-    // Handle editor focus
-    editorContainer.addEventListener('mouseenter', () => {
-        editorContainer.style.zIndex = '2';
-        previewContainer.style.zIndex = '1';
-    });
-
-    // Handle preview focus
-    previewContainer.addEventListener('mouseenter', () => {
-        previewContainer.style.zIndex = '2';
-        editorContainer.style.zIndex = '1';
-    });
-
-    // Set initial focus to editor
-    texEditor.focus();
-
-    // Initialize file explorer after editors are created
-    const explorerContainer = document.getElementById("file-tree");
-    renderFileExplorer(explorerContainer, fileStructure);
-
-    // Update file content when editor content changes
-    texEditor.onDidChangeModelContent(() => {
-        if (currentFile.endsWith(".tex")) {
-            fileStructure.Project[currentFile] = texEditor.getValue();
+        // Update the file structure with initial content
+        if (!fileStructure.Projects) {  // Changed from Project
+            fileStructure.Projects = {};  // Changed from Project
         }
-        startAutoSaveDebounced();
-    });
-
-    bibEditor.onDidChangeModelContent(() => {
-        if (currentFile.endsWith(".bib")) {
-            fileStructure.Project[currentFile] = bibEditor.getValue();
+        
+        if (!fileStructure.Projects[mainTexFile || "main.tex"]) {  // Changed from Project
+            fileStructure.Projects[mainTexFile || "main.tex"] = texContent;  // Changed from Project
         }
-        startAutoSaveDebounced();
-    });
+        
+        if (!fileStructure.Projects["references.bib"]) {  // Changed from Project
+            fileStructure.Projects["references.bib"] = bibContent;  // Changed from Project
+        }
+
+        // Register LaTeX language
+        monaco.languages.register({ id: 'latex' });
+        monaco.languages.setMonarchTokensProvider('latex', {
+            tokenizer: {
+                root: [
+                    [/\\[a-zA-Z]+/, 'keyword'],
+                    [/%.*/, 'comment'],
+                    [/\{[^}]*\}/, 'string'],
+                    [/\[[^\]]*\]/, 'string'],
+                    [/\$[^$]*\$/, 'string'],
+                ]
+            }
+        });
+
+        // Create editors - only once
+        texEditor = monaco.editor.create(document.getElementById('tex-editor'), {
+            value: texContent,
+            language: 'latex',
+            theme: 'vs-dark',
+            wordWrap: 'on',
+            automaticLayout: true
+        });
+
+        bibEditor = monaco.editor.create(document.getElementById('bib-editor'), {
+            value: bibContent,
+            language: 'bibtex',
+            theme: 'vs-dark',
+            wordWrap: 'on',
+            automaticLayout: true
+        });
+
+        // Set up event listeners
+        texEditor.onDidChangeModelContent(() => {
+            if (currentFile.endsWith(".tex")) {
+                fileStructure.Projects[currentFile] = texEditor.getValue();  // Changed from Project
+            }
+            startAutoSaveDebounced();
+        });
+
+        bibEditor.onDidChangeModelContent(() => {
+            if (currentFile.endsWith(".bib")) {
+                fileStructure.Projects[currentFile] = bibEditor.getValue();  // Changed from Project
+            }
+            startAutoSaveDebounced();
+        });
+
+        // Handle container z-index
+        const editorContainer = document.getElementById('editor-container');
+        const previewContainer = document.getElementById('preview-container');
+
+        editorContainer.addEventListener('mouseenter', () => {
+            editorContainer.style.zIndex = '2';
+            previewContainer.style.zIndex = '1';
+        });
+
+        previewContainer.addEventListener('mouseenter', () => {
+            previewContainer.style.zIndex = '2';
+            editorContainer.style.zIndex = '1';
+        });
+
+        // Initialize file explorer
+        const explorerContainer = document.getElementById("file-tree");
+        renderFileExplorer(explorerContainer, fileStructure);
+
+        // Set initial focus
+        texEditor.focus();
+
+    } catch (error) {
+        console.error("Error initializing editors:", error);
+    }
 });
