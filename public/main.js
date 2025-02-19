@@ -413,7 +413,28 @@ function renderFileExplorer(container, structure) {
     }
 
     createTree(structure, ul);
+
+    // Add Create Project item after the tree
+    const createProjectItem = document.createElement("div");
+    createProjectItem.className = "create-project-item";
+    createProjectItem.innerHTML = `
+        <span class="codicon codicon-new-folder"></span>
+        <span>Create Project</span>
+    `;
+    
+    createProjectItem.addEventListener("click", () => {
+        const newProjectName = prompt("Enter project name:");
+        if (newProjectName) {
+            const states = getFolderStates();
+            fileStructure[newProjectName] = {};
+            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            applyFolderStates(states);
+        }
+    });    
+
     container.appendChild(ul);
+    container.appendChild(createProjectItem);
+
 }
 
 // Add this function after your existing code

@@ -461,3 +461,27 @@ button:hover {
 .context-menu-item.main-tex-option .codicon {
     color: inherit;
 }
+
+/* Add these styles after the existing file-explorer styles */
+
+.create-project-item {
+    padding: 0 16px;
+    height: 22px;
+    line-height: 22px;
+    color: #75beff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-style: italic;
+    margin-top: 8px;
+    border-top: 1px solid #3c3c3c;
+}
+
+.create-project-item:hover {
+    background-color: #2a2d2e;
+}
+
+.create-project-item .codicon {
+    color: #75beff;
+}
