@@ -62,6 +62,30 @@ let mainTexFile = "main.tex";  // Default main tex file
 
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
+async function createProjectInFirestore(projectName) {
+    const projectRef = doc(collection(db, "projects"), projectName);
+
+    // Check if the project already exists
+    const projectSnap = await getDoc(projectRef);
+    if (projectSnap.exists()) {
+        alert("A project with this name already exists!");
+        return;
+    }
+
+    // Default project metadata
+    const projectData = {
+        name: projectName,
+        createdAt: new Date().toISOString(),
+        gitPath: `TexWaller-Projects/${projectName}`,
+        fileStructure: {},  // Empty project initially
+        currentTex: "\\documentclass{article}\n\\begin{document}\n\\end{document}", // Default LaTeX
+        currentBib: "", // Empty .bib file
+    };
+
+    await setDoc(projectRef, projectData);
+    console.log(`Project '${projectName}' saved in Firestore`);
+}
+
 async function fetchEditorContent() {
     try {
         const docRef = doc(collection(db, "documents"), "default");
@@ -422,16 +446,26 @@ function renderFileExplorer(container, structure) {
         <span>Create Project</span>
     `;
     
-    createProjectItem.addEventListener("click", () => {
+    createProjectItem.addEventListener("click", async () => {
         const newProjectName = prompt("Enter project name:");
-        if (newProjectName) {
+        if (!newProjectName || newProjectName.trim() === "") return;
+    
+        try {
+            await createProjectInFirestore(newProjectName.trim()); // Save to Firestore
             const states = getFolderStates();
+            
+            // Update local file structure (in-memory representation)
             fileStructure[newProjectName] = {};
             renderFileExplorer(document.getElementById('file-tree'), fileStructure);
             applyFolderStates(states);
+    
+            alert(`Project '${newProjectName}' created successfully!`);
+        } catch (error) {
+            console.error("Error creating project:", error);
+            alert("Failed to create project. Please try again.");
         }
-    });    
-
+    });
+    
     container.appendChild(ul);
     container.appendChild(createProjectItem);
 
