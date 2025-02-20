@@ -46,12 +46,14 @@ let isOffline = false;
 let currentFile = "main.tex";
 
 // Update the initial structure declaration
-let fileStructure = { Projects: {} };  // Change from Project to Projects
+let projectStructure = { Projects: {} }; // Holds all projects
+let fileStructure = {};  // Holds individual project file mappings
 let mainTexFile = "";
 let currentProject = null;  // Add this to track the current project
 
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
+// Update createProjectInFirestore function
 async function createProjectInFirestore(projectName) {
     const projectRef = doc(collection(db, "projects"), projectName);
 
@@ -67,14 +69,17 @@ async function createProjectInFirestore(projectName) {
         name: projectName,
         createdAt: new Date().toISOString(),
         gitPath: `TexWaller-Projects/${projectName}`,
-        fileStructure: {},  // Empty project initially
-        currentTex: "\\documentclass{article}\n\\begin{document}\n\\end{document}", // Default LaTeX
-        currentBib: "", // Empty .bib file
-        mainTexFile: "main.tex"  // Default main tex file
+        fileStructure: {}, // Empty project initially
+        mainTexFile: "main.tex"
     };
 
     await setDoc(projectRef, projectData);
     console.log(`Project '${projectName}' saved in Firestore`);
+
+    // Update local structure
+    projectStructure.Projects[projectName] = {};
+    fileStructure[projectName] = {};  // Ensure it's added
+    renderFileExplorer(document.getElementById("file-tree"), projectStructure);
 }
 
 // Update loadProjectsFromFirestore to properly load everything
@@ -83,22 +88,22 @@ async function loadProjectsFromFirestore() {
         const projectsRef = collection(db, "projects");
         const querySnapshot = await getDocs(projectsRef);
 
-        fileStructure = {}; // Clear the current structure
-
         querySnapshot.forEach((doc) => {
             const project = doc.data();
+            
+            // Ensure project structure exists
+            projectStructure.Projects[project.name] = project.fileStructure || {};
             fileStructure[project.name] = project.fileStructure || {};
             
-            // If this is a newly loaded project, set it as current
+            // Set initial project
             if (!currentProject) {
                 currentProject = project.name;
-                mainTexFile = project.mainTexFile || "";
+                mainTexFile = project.mainTexFile || "main.tex";
             }
         });
 
         // Render the file explorer with the loaded structure
-        renderFileExplorer(document.getElementById("file-tree"), fileStructure);
-        
+        renderFileExplorer(document.getElementById("file-tree"), projectStructure);
     } catch (error) {
         console.error("Error loading projects:", error);
         alert("Failed to load projects from Firestore");
@@ -479,16 +484,26 @@ function renderFileExplorer(container, structure) {
         <span>Create Project</span>
     `;
     
+    // Update the create project click handler
     createProjectItem.addEventListener("click", async () => {
         const newProjectName = prompt("Enter project name:");
         if (!newProjectName || newProjectName.trim() === "") return;
     
         try {
-            await createProjectInFirestore(newProjectName.trim()); // Save to Firestore
+            await createProjectInFirestore(newProjectName.trim());
             const states = getFolderStates();
             
-            // Update local file structure (in-memory representation)
-            fileStructure[newProjectName] = {};
+            // Initialize the Projects root if it doesn't exist
+            if (!fileStructure.Projects) {
+                fileStructure.Projects = {};
+            }
+            
+            // Add new project as a folder under Projects
+            fileStructure.Projects[newProjectName] = {};
+            
+            // Make sure the Projects folder is expanded
+            states.set('Projects', true);
+            
             renderFileExplorer(document.getElementById('file-tree'), fileStructure);
             applyFolderStates(states);
     
@@ -898,14 +913,6 @@ require(['vs/editor/editor.main'], async function() {
             fileStructure.Projects = {};  // Changed from Project
         }
         
-        if (!fileStructure.Projects[mainTexFile || "main.tex"]) {  // Changed from Project
-            fileStructure.Projects[mainTexFile || "main.tex"] = texContent;  // Changed from Project
-        }
-        
-        if (!fileStructure.Projects["references.bib"]) {  // Changed from Project
-            fileStructure.Projects["references.bib"] = bibContent;  // Changed from Project
-        }
-
         // Register LaTeX language
         monaco.languages.register({ id: 'latex' });
         monaco.languages.setMonarchTokensProvider('latex', {
