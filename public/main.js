@@ -53,7 +53,6 @@ let currentProject = null;  // Add this to track the current project
 
 document.getElementById("compile-button").addEventListener("click", onclick_);
 
-// Update createProjectInFirestore function
 async function createProjectInFirestore(projectName) {
     const projectRef = doc(collection(db, "projects"), projectName);
 
@@ -64,46 +63,39 @@ async function createProjectInFirestore(projectName) {
         return;
     }
 
-    // Default project metadata
     const projectData = {
         name: projectName,
         createdAt: new Date().toISOString(),
         gitPath: `TexWaller-Projects/${projectName}`,
-        fileStructure: {}, // Empty project initially
+        fileStructure: {},
+        currentTex: "\\documentclass{article}\n\\begin{document}\n\\end{document}",
+        currentBib: "",
         mainTexFile: "main.tex"
     };
 
     await setDoc(projectRef, projectData);
     console.log(`Project '${projectName}' saved in Firestore`);
-
-    // Update local structure
-    projectStructure.Projects[projectName] = {};
-    fileStructure[projectName] = {};  // Ensure it's added
-    renderFileExplorer(document.getElementById("file-tree"), projectStructure);
 }
 
-// Update loadProjectsFromFirestore to properly load everything
 async function loadProjectsFromFirestore() {
     try {
         const projectsRef = collection(db, "projects");
         const querySnapshot = await getDocs(projectsRef);
 
+        // Initialize the structure with Projects object first
+        fileStructure = { Projects: {} };
+
         querySnapshot.forEach((doc) => {
             const project = doc.data();
-            
-            // Ensure project structure exists
-            projectStructure.Projects[project.name] = project.fileStructure || {};
-            fileStructure[project.name] = project.fileStructure || {};
-            
-            // Set initial project
+            // Now we can safely set properties on fileStructure.Projects
+            fileStructure.Projects[project.name] = project.fileStructure || {};
             if (!currentProject) {
                 currentProject = project.name;
                 mainTexFile = project.mainTexFile || "main.tex";
             }
         });
 
-        // Render the file explorer with the loaded structure
-        renderFileExplorer(document.getElementById("file-tree"), projectStructure);
+        renderFileExplorer(document.getElementById("file-tree"), fileStructure);
     } catch (error) {
         console.error("Error loading projects:", error);
         alert("Failed to load projects from Firestore");
@@ -316,6 +308,12 @@ function terminate() {
 
 function renderFileExplorer(container, structure) {
     container.innerHTML = "";
+
+    // Ensure "Projects" root exists before rendering
+    if (!structure.Projects) {
+        structure.Projects = {};
+    }
+
     const ul = document.createElement("ul");
     ul.className = "file-tree";
 
@@ -493,14 +491,9 @@ function renderFileExplorer(container, structure) {
             await createProjectInFirestore(newProjectName.trim());
             const states = getFolderStates();
             
-            // Initialize the Projects root if it doesn't exist
-            if (!fileStructure.Projects) {
-                fileStructure.Projects = {};
-            }
-            
             // Add new project as a folder under Projects
-            fileStructure.Projects[newProjectName] = {};
-            
+            fileStructure.Projects[newProjectName] = fileStructure.Projects[newProjectName] || {};            
+
             // Make sure the Projects folder is expanded
             states.set('Projects', true);
             
