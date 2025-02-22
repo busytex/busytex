@@ -1,3 +1,5 @@
+import { fileStructure } from './projectManager.js';
+
 // Add these functions before renderFileExplorer
 
 function getFolderStates() {

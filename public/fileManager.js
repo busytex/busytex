@@ -1,3 +1,9 @@
+import { fileStructure } from './projectManager.js';
+import { getEditors } from './editorManager.js';
+
+const { texEditor, bibEditor } = getEditors();
+import { renderFileExplorer } from './uiManager.js';
+
 async function loadFile(filename, content) {
     try {
         if (filename.endsWith(".tex")) {
