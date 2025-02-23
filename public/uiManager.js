@@ -145,8 +145,38 @@ export function renderFileExplorer(container, structure) {
             const itemContent = document.createElement("div");
             itemContent.className = "file-item";
             
-            // Only make draggable if not the Projects root
+            const chevron = document.createElement("span");
+            // Only add chevron if not Projects root
             if (key !== 'Projects') {
+                chevron.className = "codicon codicon-chevron-right";
+                itemContent.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    subUl.style.display = subUl.style.display === "none" ? "block" : "none";
+                    itemContent.classList.toggle("expanded");
+                    chevron.style.transform = itemContent.classList.contains("expanded")
+                        ? "rotate(90deg)"
+                        : "rotate(0)";
+                });
+            }
+            
+            const label = document.createElement("span");
+            label.textContent = key;
+            
+            if (key !== 'Projects') {
+                itemContent.appendChild(chevron);
+            }
+            itemContent.appendChild(label);
+            
+            const subUl = document.createElement("ul");
+            // Keep Projects expanded by default
+            subUl.style.display = key === 'Projects' ? "block" : "none";
+            
+            li.appendChild(itemContent);
+            li.appendChild(subUl);
+            
+            // Only add these listeners for non-Projects folders
+            if (key !== 'Projects') {
+                // Only make draggable if not the Projects root
                 itemContent.draggable = true;
                 
                 // Add drag event listeners only for non-Projects folders
@@ -188,43 +218,6 @@ export function renderFileExplorer(container, structure) {
                     moveItem(data.path, targetPath, data.isFolder);
                 });
             }
-            
-            const chevron = document.createElement("span");
-            chevron.className = "codicon codicon-chevron-right";
-            
-            const label = document.createElement("span");
-            label.textContent = key;
-            
-            itemContent.appendChild(chevron);
-            itemContent.appendChild(label);
-            
-            const subUl = document.createElement("ul");
-            subUl.style.display = "none";
-            
-            li.appendChild(itemContent);
-            li.appendChild(subUl);
-            
-            itemContent.addEventListener("click", (e) => {
-                e.stopPropagation();
-                subUl.style.display = subUl.style.display === "none" ? "block" : "none";
-                itemContent.classList.toggle("expanded");
-                chevron.style.transform = itemContent.classList.contains("expanded")
-                    ? "rotate(90deg)"
-                    : "rotate(0)";
-            });
-            
-            // Add context menu for folders
-            itemContent.addEventListener("contextmenu", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                showContextMenu(e, true);
-            });
-            
-            li.addEventListener("contextmenu", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                showContextMenu(e, true);
-            });
             
             createTree(value, subUl);
             parentUl.appendChild(li);
