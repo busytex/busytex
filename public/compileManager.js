@@ -1,14 +1,77 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const compileButton = document.getElementById("compile-button");
+import { getEditors } from './editorManager.js';
+
+// Module-level variables and constants
+const paths_list = Array.from(document.head.getElementsByTagName('link'))
+    .filter(link => link.rel === 'busytex')
+    .map(link => [link.id, link.href]);
+
+const texlive_data_packages_js = paths_list
+    .filter(([id, href]) => id.startsWith('texlive_'))
+    .map(([id, href]) => href);
+
+const paths = { ...Object.fromEntries(paths_list), texlive_data_packages_js };
+const texmf_local = ['./texmf', './.texmf'];
+
+let texEditor = null;
+let bibEditor = null;
+let worker = null;
+let compileButton = null;
+let spinnerElement = null;
+let workerCheckbox = null;
+let preloadCheckbox = null;
+let verboseSelect = null;
+let driverSelect = null;
+let bibtexCheckbox = null;
+let autoCheckbox = null;
+let previewElement = null;
+let elapsedElement = null;
+let ubuntuPackageCheckboxes = null;
+
+// Initialize all UI elements first
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for editors to be initialized
+    const checkEditors = setInterval(() => {
+        const editors = getEditors();
+        if (editors.texEditor && editors.bibEditor) {
+            clearInterval(checkEditors);
+            texEditor = editors.texEditor;
+            bibEditor = editors.bibEditor;
+            
+            // Initialize UI elements
+            compileButton = document.getElementById("compile-button");
+            spinnerElement = document.getElementById("spinner");
+            workerCheckbox = document.getElementById('worker');
+            preloadCheckbox = document.getElementById('preload');
+            verboseSelect = document.getElementById('verbose');
+            driverSelect = document.getElementById('tex_driver');
+            bibtexCheckbox = document.getElementById('bibtex');
+            autoCheckbox = document.getElementById('checked_texlive_auto');
+            previewElement = document.getElementById('preview');
+            elapsedElement = document.getElementById('elapsed');
+            ubuntuPackageCheckboxes = {
+                recommended: document.getElementById('checked_texlive_ubuntu_recommended'),
+                extra: document.getElementById('checked_texlive_ubuntu_extra'),
+                science: document.getElementById('checked_texlive_ubuntu_science')
+            };
+
+            if (!compileButton || !texEditor || !bibEditor) {
+                console.error("Required elements or editors not initialized!");
+                return;
+            }
+
+            // Add click listener only after everything is initialized
+            compileButton.addEventListener("click", onclick_);
+        }
+    }, 100);
+});
+
+// Export the necessary functions
+export async function onclick_() {
     if (!compileButton) {
-        console.error("Compile button not found!");
+        console.error("Compile button not initialized!");
         return;
     }
 
-    compileButton.addEventListener("click", onclick_);
-});
-
-async function onclick_() {
     if (compileButton.classList.contains('compiling')) {
         // Handle stop compilation
         terminate();
@@ -105,7 +168,7 @@ async function onclick_() {
     worker.postMessage({files : files, main_tex_path : 'example.tex', verbose : use_verbose, bibtex : use_bibtex, driver : use_driver, data_packages_js : data_packages_js});
 }
 
-function terminate() {
+export function terminate() {
     if (worker !== null) worker.terminate();
     worker = null;
 }
