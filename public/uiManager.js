@@ -144,48 +144,50 @@ export function renderFileExplorer(container, structure) {
             
             const itemContent = document.createElement("div");
             itemContent.className = "file-item";
-            itemContent.draggable = true;
             
-            // Add drag event listeners for folders
-            itemContent.addEventListener('dragstart', (e) => {
-                e.stopPropagation();
-                e.dataTransfer.setData('text/plain', JSON.stringify({
-                    path: getItemPath(itemContent),
-                    isFolder: true
-                }));
-                itemContent.classList.add('dragging');
-            });
-            
-            itemContent.addEventListener('dragend', () => {
-                itemContent.classList.remove('dragging');
-            });
-            
-            itemContent.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                itemContent.classList.add('drag-over');
-            });
-            
-            itemContent.addEventListener('dragleave', () => {
-                itemContent.classList.remove('drag-over');
-            });
-            
-            itemContent.addEventListener('drop', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                itemContent.classList.remove('drag-over');
+            // Only make draggable if not the Projects root
+            if (key !== 'Projects') {
+                itemContent.draggable = true;
                 
-                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-                const targetPath = getItemPath(itemContent);
+                // Add drag event listeners only for non-Projects folders
+                itemContent.addEventListener('dragstart', (e) => {
+                    e.stopPropagation();
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
+                        path: getItemPath(itemContent),
+                        isFolder: true
+                    }));
+                    itemContent.classList.add('dragging');
+                });
                 
-                // Prevent dropping into descendant
-                if (data.isFolder && isDescendant(data.path, targetPath)) {
-                    return;
-                }
+                itemContent.addEventListener('dragend', () => {
+                    itemContent.classList.remove('dragging');
+                });
                 
-                // Move the item
-                moveItem(data.path, targetPath, data.isFolder);
-            });
+                itemContent.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    itemContent.classList.add('drag-over');
+                });
+                
+                itemContent.addEventListener('dragleave', () => {
+                    itemContent.classList.remove('drag-over');
+                });
+                
+                itemContent.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    itemContent.classList.remove('drag-over');
+                    
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const targetPath = getItemPath(itemContent);
+                    
+                    if (data.isFolder && isDescendant(data.path, targetPath)) {
+                        return;
+                    }
+                    
+                    moveItem(data.path, targetPath, data.isFolder);
+                });
+            }
             
             const chevron = document.createElement("span");
             chevron.className = "codicon codicon-chevron-right";
@@ -343,6 +345,10 @@ function showContextMenu(e, isFolder) {
     const folderElement = e.target.closest('.folder');
     
     if (!targetElement) return;
+
+    // Skip context menu for Projects root
+    const folderName = targetElement.querySelector('span:last-child').textContent;
+    if (folderName === 'Projects') return;
 
     const menu = document.createElement('div');
     menu.className = 'context-menu';
