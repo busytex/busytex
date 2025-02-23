@@ -1,4 +1,12 @@
-document.getElementById("compile-button").addEventListener("click", onclick_);
+document.addEventListener('DOMContentLoaded', () => {
+    const compileButton = document.getElementById("compile-button");
+    if (!compileButton) {
+        console.error("Compile button not found!");
+        return;
+    }
+
+    compileButton.addEventListener("click", onclick_);
+});
 
 async function onclick_() {
     if (compileButton.classList.contains('compiling')) {

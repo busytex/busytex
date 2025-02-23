@@ -1,7 +1,13 @@
 import { loadProjectsFromFirestore, fileStructure, currentProject, mainTexFile } from './projectManager.js';
 import { renderFileExplorer } from './uiManager.js';
+import { collection, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { db } from './firebase-config.js';
 
 let texEditor, bibEditor;
+let currentFile = mainTexFile;  // Initialize with mainTexFile as default
+let autoSaveTimeout;
+let isOffline = false;  // Add this line to declare and initialize isOffline
+let lastSavedContent = { tex: '', bib: '' };  // Add this line to declare and initialize lastSavedContent
 
 export function getEditors() {
     return { texEditor, bibEditor };
