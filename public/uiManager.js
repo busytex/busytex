@@ -163,6 +163,13 @@ export function renderFileExplorer(container, structure) {
             itemContent.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                
+                const targetPath = getItemPath(itemContent);
+                if (targetPath === 'Projects') {
+                    e.dataTransfer.dropEffect = 'none'; // Show 'not-allowed' cursor
+                    return; // Don't add drag-over class for Projects root
+                }
+                
                 itemContent.classList.add('drag-over');
             });
             
@@ -178,8 +185,9 @@ export function renderFileExplorer(container, structure) {
                 const data = JSON.parse(e.dataTransfer.getData('text/plain'));
                 const targetPath = getItemPath(itemContent);
                 
-                // Prevent dropping into descendant
-                if (data.isFolder && isDescendant(data.path, targetPath)) {
+                // Prevent dropping into descendant or directly under Projects
+                if ((data.isFolder && isDescendant(data.path, targetPath)) || 
+                    targetPath === 'Projects') {
                     return;
                 }
                 
