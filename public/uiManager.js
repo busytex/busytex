@@ -1,26 +1,28 @@
-import { fileStructure } from './projectManager.js';
+import { fileStructure, saveFileStructure } from './projectManager.js';
 
-// Add these functions before renderFileExplorer
-
-function getFolderStates() {
-    const states = new Map();
+// Keep only this one definition of getFolderStates at the top level
+export function getFolderStates() {
+    const states = {};  // Changed from new Map()
     const folders = document.querySelectorAll('.folder');
     
     folders.forEach(folder => {
         const folderName = folder.querySelector('.file-item span:last-child').textContent;
         const isExpanded = folder.querySelector('ul').style.display === 'block';
-        states.set(folderName, isExpanded);
+        states[folderName] = isExpanded;  // Changed from states.set()
     });
     
     return states;
 }
 
+// Add these functions before renderFileExplorer
+
+// Update applyFolderStates to work with plain object
 function applyFolderStates(states) {
     const folders = document.querySelectorAll('.folder');
     
     folders.forEach(folder => {
         const folderName = folder.querySelector('.file-item span:last-child').textContent;
-        const shouldBeExpanded = states.get(folderName);
+        const shouldBeExpanded = states[folderName];  // Changed from states.get()
         
         if (shouldBeExpanded) {
             const itemContent = folder.querySelector('.file-item');
@@ -120,7 +122,8 @@ function moveItem(sourcePath, targetPath, isFolder) {
     applyFolderStates(states);
 }
 
-export function renderFileExplorer(container, structure) {
+// Modify the renderFileExplorer function to handle UI state
+export function renderFileExplorer(container, structure, savedState = {}) {
     container.innerHTML = "";
 
     // Ensure "Projects" root exists before rendering
@@ -210,13 +213,24 @@ export function renderFileExplorer(container, structure) {
             li.appendChild(itemContent);
             li.appendChild(subUl);
             
-            itemContent.addEventListener("click", (e) => {
+            // When creating folder items, check saved state
+            const folderPath = getItemPath(itemContent);
+            if (savedState[folderPath]) {
+                subUl.style.display = "block";
+                itemContent.classList.add("expanded");
+                chevron.style.transform = "rotate(90deg)";
+            }
+
+            itemContent.addEventListener("click", async (e) => {
                 e.stopPropagation();
-                subUl.style.display = subUl.style.display === "none" ? "block" : "none";
+                const isExpanded = subUl.style.display !== "none";
+                subUl.style.display = isExpanded ? "none" : "block";
                 itemContent.classList.toggle("expanded");
-                chevron.style.transform = itemContent.classList.contains("expanded")
-                    ? "rotate(90deg)"
-                    : "rotate(0)";
+                chevron.style.transform = isExpanded ? "rotate(0)" : "rotate(90deg)";
+                
+                // Use the exported getFolderStates
+                const folderStates = getFolderStates();
+                await saveFileStructure(folderStates);
             });
             
             // Add context menu for folders
@@ -316,7 +330,7 @@ export function renderFileExplorer(container, structure) {
             fileStructure.Projects[newProjectName] = fileStructure.Projects[newProjectName] || {};            
 
             // Make sure the Projects folder is expanded
-            states.set('Projects', true);
+            states['Projects'] = true;
             
             renderFileExplorer(document.getElementById('file-tree'), fileStructure);
             applyFolderStates(states);
@@ -407,6 +421,9 @@ const folderElement = e.target.closest('.folder');
                 if (file) {
                     const states = getFolderStates();
                     
+                    // Ensure the target folder is expanded in the states
+                    states[folderPath] = true;
+                    
                     // Update the file structure at the correct path
                     if (folderPath === "Projects") {  // Changed from Project
                         fileStructure.Projects[file.name] = "// Empty file content";  // Changed from Project
@@ -415,7 +432,7 @@ const folderElement = e.target.closest('.folder');
                     }
                     
                     // Ensure the target folder is expanded in the states
-                    states.set(folderPath, true);
+                    states[folderPath] = true;
                     
                     // Re-render and restore states with the target folder expanded
                     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
@@ -557,4 +574,25 @@ const folderElement = e.target.closest('.folder');
     menu.style.left = `${e.pageX}px`;
     menu.style.top = `${e.pageY}px`;
     document.body.appendChild(menu);
+}
+
+// In the file upload handler
+function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const content = e.target.result;
+            const states = getFolderStates();  // This now returns a plain object
+            
+            // Update this line to use object property assignment instead of Map.set
+            states['Projects'] = true;  // Changed from states.set('Projects', true)
+            
+            // Continue with existing code...
+            await loadFile(file.name, content);
+            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            applyFolderStates(states);
+        };
+        reader.readAsText(file);
+    }
 }

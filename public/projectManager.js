@@ -32,24 +32,28 @@ export async function createProjectInFirestore(projectName) {
     console.log(`Project '${projectName}' saved in Firestore`);
 }
 
+// Modify the existing load function to restore UI state
 export async function loadProjectsFromFirestore() {
     try {
         const projectsRef = collection(db, "projects");
         const querySnapshot = await getDocs(projectsRef);
-
-        // Initialize the structure with Projects object first
+        
         fileStructure = { Projects: {} };
+        let uiState = {};
 
         querySnapshot.forEach((doc) => {
             const project = doc.data();
             fileStructure.Projects[project.name] = project.fileStructure || {};
+            if (project.uiState) {
+                uiState = { ...uiState, ...project.uiState };
+            }
             if (!currentProject) {
                 currentProject = project.name;
                 mainTexFile = project.mainTexFile || "main.tex";
             }
         });
 
-        renderFileExplorer(document.getElementById("file-tree"), fileStructure);
+        return uiState; // Return UI state to restore folder states
     } catch (error) {
         console.error("Error loading projects:", error);
         alert("Failed to load projects from Firestore");
@@ -69,22 +73,39 @@ export async function updateMainTexFileInFirestore(projectName, newMainTexFile) 
     }
 }
 
-// Add this new function to save file structure
-export async function saveFileStructure() {
+// Save both file structure and UI state
+export async function saveFileStructure(uiState = {}) {
     try {
-        if (!currentProject) {
-            console.warn("No project selected, cannot save file structure");
-            return;
+        // Save project-specific structure and state
+        if (currentProject) {
+            const projectRef = doc(db, "projects", currentProject);
+            await setDoc(projectRef, {
+                fileStructure: fileStructure.Projects[currentProject],
+                uiState: uiState,
+                lastModified: new Date().toISOString()
+            }, { merge: true });
         }
 
-        const projectRef = doc(db, "projects", currentProject);
-        await updateDoc(projectRef, {
-            fileStructure: fileStructure.Projects[currentProject],
-            lastModified: new Date().toISOString()
-        });
+        // Save global settings
+        const globalRef = doc(db, "global", "settings");
+        
+        // Check if document exists, if not create it
+        const globalDoc = await getDoc(globalRef);
+        if (!globalDoc.exists()) {
+            // Create the document if it doesn't exist
+            await setDoc(globalRef, {
+                projectStructure: fileStructure,
+                lastModified: new Date().toISOString()
+            });
+        } else {
+            // Update existing document
+            await setDoc(globalRef, {
+                projectStructure: fileStructure,
+                lastModified: new Date().toISOString()
+            }, { merge: true });
+        }
 
-        console.log("File structure saved successfully");
     } catch (error) {
-        console.error("Error saving file structure:", error);
+        console.error("Error saving structure:", error);
     }
 }

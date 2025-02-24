@@ -54,7 +54,7 @@ async function saveEditorContent() {
     }
 }
 
-function renameFileOrFolder(oldPath, newName, isFolder) {
+async function renameFileOrFolder(oldPath, newName, isFolder) {
     const states = getFolderStates();
 
     if (isFolder) {
@@ -75,7 +75,10 @@ function renameFileOrFolder(oldPath, newName, isFolder) {
         }
     }
 
-    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+    // Save both structure and state
+    await saveFileStructure(states);
+
+    renderFileExplorer(document.getElementById('file-tree'), fileStructure, states);
     applyFolderStates(states);
 }
 
@@ -97,7 +100,7 @@ function getItemPath(element) {
     return pathParts.join('/');
 }
 
-function moveItem(sourcePath, targetPath, isFolder) {
+async function moveItem(sourcePath, targetPath, isFolder) {
     const states = getFolderStates();
 
     if (isFolder) {
@@ -132,8 +135,11 @@ function moveItem(sourcePath, targetPath, isFolder) {
         }
     }
 
+    // Save both structure and state
+    await saveFileStructure(states);
+
     // Re-render and restore states
-    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+    renderFileExplorer(document.getElementById('file-tree'), fileStructure, states);
     applyFolderStates(states);
 }
 

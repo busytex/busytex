@@ -13,9 +13,9 @@ import { onclick_, terminate } from './compileManager.js';
 // Load projects and initialize UI
 async function initApp() {
     try {
-        await loadProjectsFromFirestore();
+        const uiState = await loadProjectsFromFirestore();
         initializeEditor();
-        renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+        renderFileExplorer(document.getElementById('file-tree'), fileStructure, uiState);
     } catch (error) {
         console.error("Error initializing app:", error);
     }
