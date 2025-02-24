@@ -4,7 +4,7 @@ import { renderFileExplorer } from './uiManager.js';
 
 // Update the initial structure declaration
 export let projectStructure = { Projects: {} }; // Holds all projects
-export let fileStructure = {};  // Holds individual project file mappings
+export let fileStructure = { Projects: {} };  // Holds individual project file mappings
 export let currentProject = null;  // Add this to track the current project
 export let mainTexFile = "main.tex";
 
@@ -66,5 +66,25 @@ export async function updateMainTexFileInFirestore(projectName, newMainTexFile) 
         console.log(`Main tex file updated to ${newMainTexFile} in project ${projectName}`);
     } catch (error) {
         console.error("Error updating main tex file:", error);
+    }
+}
+
+// Add this new function to save file structure
+export async function saveFileStructure() {
+    try {
+        if (!currentProject) {
+            console.warn("No project selected, cannot save file structure");
+            return;
+        }
+
+        const projectRef = doc(db, "projects", currentProject);
+        await updateDoc(projectRef, {
+            fileStructure: fileStructure.Projects[currentProject],
+            lastModified: new Date().toISOString()
+        });
+
+        console.log("File structure saved successfully");
+    } catch (error) {
+        console.error("Error saving file structure:", error);
     }
 }

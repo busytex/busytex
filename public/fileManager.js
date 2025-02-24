@@ -1,4 +1,4 @@
-import { fileStructure } from './projectManager.js';
+import { fileStructure, currentProject, saveFileStructure } from './projectManager.js';
 import { getEditors } from './editorManager.js';
 
 const { texEditor, bibEditor } = getEditors();
@@ -135,4 +135,22 @@ function moveItem(sourcePath, targetPath, isFolder) {
     // Re-render and restore states
     renderFileExplorer(document.getElementById('file-tree'), fileStructure);
     applyFolderStates(states);
+}
+
+async function createNewFile(filename, content = '') {
+    fileStructure.Projects[currentProject][filename] = content;
+    await saveFileStructure();
+}
+
+async function deleteFile(filename) {
+    delete fileStructure.Projects[currentProject][filename];
+    await saveFileStructure();
+}
+
+async function moveFile(filename, targetFolder) {
+    const content = fileStructure.Projects[currentProject][filename];
+    const newPath = `${targetFolder}/${filename}`;
+    fileStructure.Projects[currentProject][newPath] = content;
+    delete fileStructure.Projects[currentProject][filename];
+    await saveFileStructure();
 }

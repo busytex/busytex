@@ -144,80 +144,85 @@ export function renderFileExplorer(container, structure) {
             
             const itemContent = document.createElement("div");
             itemContent.className = "file-item";
+            itemContent.draggable = true;
+            
+            // Add drag event listeners for folders
+            itemContent.addEventListener('dragstart', (e) => {
+                e.stopPropagation();
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    path: getItemPath(itemContent),
+                    isFolder: true
+                }));
+                itemContent.classList.add('dragging');
+            });
+            
+            itemContent.addEventListener('dragend', () => {
+                itemContent.classList.remove('dragging');
+            });
+            
+            itemContent.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                itemContent.classList.add('drag-over');
+            });
+            
+            itemContent.addEventListener('dragleave', () => {
+                itemContent.classList.remove('drag-over');
+            });
+            
+            itemContent.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                itemContent.classList.remove('drag-over');
+                
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const targetPath = getItemPath(itemContent);
+                
+                // Prevent dropping into descendant
+                if (data.isFolder && isDescendant(data.path, targetPath)) {
+                    return;
+                }
+                
+                // Move the item
+                moveItem(data.path, targetPath, data.isFolder);
+            });
             
             const chevron = document.createElement("span");
-            // Only add chevron if not Projects root
-            if (key !== 'Projects') {
-                chevron.className = "codicon codicon-chevron-right";
-                itemContent.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    subUl.style.display = subUl.style.display === "none" ? "block" : "none";
-                    itemContent.classList.toggle("expanded");
-                    chevron.style.transform = itemContent.classList.contains("expanded")
-                        ? "rotate(90deg)"
-                        : "rotate(0)";
-                });
-            }
+            chevron.className = "codicon codicon-chevron-right";
             
             const label = document.createElement("span");
             label.textContent = key;
             
-            if (key !== 'Projects') {
-                itemContent.appendChild(chevron);
-            }
+            itemContent.appendChild(chevron);
             itemContent.appendChild(label);
             
             const subUl = document.createElement("ul");
-            // Keep Projects expanded by default
-            subUl.style.display = key === 'Projects' ? "block" : "none";
+            subUl.style.display = "none";
             
             li.appendChild(itemContent);
             li.appendChild(subUl);
             
-            // Only add these listeners for non-Projects folders
-            if (key !== 'Projects') {
-                // Only make draggable if not the Projects root
-                itemContent.draggable = true;
-                
-                // Add drag event listeners only for non-Projects folders
-                itemContent.addEventListener('dragstart', (e) => {
-                    e.stopPropagation();
-                    e.dataTransfer.setData('text/plain', JSON.stringify({
-                        path: getItemPath(itemContent),
-                        isFolder: true
-                    }));
-                    itemContent.classList.add('dragging');
-                });
-                
-                itemContent.addEventListener('dragend', () => {
-                    itemContent.classList.remove('dragging');
-                });
-                
-                itemContent.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    itemContent.classList.add('drag-over');
-                });
-                
-                itemContent.addEventListener('dragleave', () => {
-                    itemContent.classList.remove('drag-over');
-                });
-                
-                itemContent.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    itemContent.classList.remove('drag-over');
-                    
-                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-                    const targetPath = getItemPath(itemContent);
-                    
-                    if (data.isFolder && isDescendant(data.path, targetPath)) {
-                        return;
-                    }
-                    
-                    moveItem(data.path, targetPath, data.isFolder);
-                });
-            }
+            itemContent.addEventListener("click", (e) => {
+                e.stopPropagation();
+                subUl.style.display = subUl.style.display === "none" ? "block" : "none";
+                itemContent.classList.toggle("expanded");
+                chevron.style.transform = itemContent.classList.contains("expanded")
+                    ? "rotate(90deg)"
+                    : "rotate(0)";
+            });
+            
+            // Add context menu for folders
+            itemContent.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, true);
+            });
+            
+            li.addEventListener("contextmenu", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showContextMenu(e, true);
+            });
             
             createTree(value, subUl);
             parentUl.appendChild(li);
@@ -335,7 +340,7 @@ function showContextMenu(e, isFolder) {
 
     // Find the clicked element
     const targetElement = e.target.closest('.file-item');
-    const folderElement = e.target.closest('.folder');
+const folderElement = e.target.closest('.folder');
     
     if (!targetElement) return;
 
