@@ -3,8 +3,8 @@ import { db } from './firebase-config.js';
 import { renderFileExplorer } from './uiManager.js';
 
 // Update the initial structure declaration
-export let projectStructure = { Projects: {} }; // Holds all projects
-export let fileStructure = { Projects: {} };  // Holds individual project file mappings
+export let projectStructure = []; // Holds all projects
+export let fileStructure = {};  // Holds individual project file mappings
 export let currentProject = null;  // Add this to track the current project
 export let mainTexFile = "main.tex";
 
@@ -32,54 +32,46 @@ export async function createProjectInFirestore(projectName) {
     console.log(`Project '${projectName}' saved in Firestore`);
 }
 
-// Modify the existing load function to restore UI state
 export async function loadProjectsFromFirestore() {
     try {
-        const projectsRef = collection(db, "projects");
+        const projectsRef = await collection(db, "projects");
+        const uiStateRef = await getDoc(db, "global", "uiState");
         const querySnapshot = await getDocs(projectsRef);
+        const currentProjectRef = await getDoc(db, "global", "currentProject");
         
-        fileStructure = [];  // ✅ Projects is now an array
-        let uiState = {};
-        
+        projectStructure = [];  // Reset the array of project names
+        fileStructure = {};     // Reset the object mapping projects to file structures
+
+        // Retrieve the current project name from Firestore
+        currentProject = currentProjectRef.exists() ? currentProjectRef.data().name : "";
+        // Retrieve UI state from Firestore
+        uiState = uiStateRef.exists() ? uiStateRef.data() : {};
+
         querySnapshot.forEach((doc) => {
             const project = doc.data();
-        
-            // ✅ Push each project as an object into the array
-            fileStructure.push({
-                name: project.name,
-                fileStructure: project.fileStructure || {},  // Keep the project's file structure
-            });
-        
+
+            mainTexFile = project.mainTexFile || "main.tex";
+            fileStructure = firstProject.fileStructure || {};
+
+            // Store project names in projectStructure
+            projectStructure.push(project.name);
+            
+            // Merge each project's UI state into the global uiState object
             if (project.uiState) {
                 uiState = { ...uiState, ...project.uiState };
             }
-        
-            if (!currentProject) {
-                currentProject = project.name;
-                mainTexFile = project.mainTexFile || "main.tex";
-            }
         });
-        
-        return uiState; // Return UI state to restore folder states
+       
+        console.log("Loaded projects:", projectStructure);
+        console.log("File structure:", fileStructure);
+
+        return uiState;
+ 
     } catch (error) {
         console.error("Error loading projects:", error);
         alert("Failed to load projects from Firestore");
     }
 }
-
-// Add this new function to update mainTexFile in Firestore
-export async function updateMainTexFileInFirestore(projectName, newMainTexFile) {
-    try {
-        const projectRef = doc(collection(db, "projects"), projectName);
-        await updateDoc(projectRef, {
-            mainTexFile: newMainTexFile
-        });
-        console.log(`Main tex file updated to ${newMainTexFile} in project ${projectName}`);
-    } catch (error) {
-        console.error("Error updating main tex file:", error);
-    }
-}
-
 
 // Save both file structure and UI state
 export async function saveFileStructure(uiState = {}) {
