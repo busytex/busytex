@@ -7,6 +7,7 @@ export let projectStructure = []; // Holds all projects
 export let fileStructure = {};  // Holds individual project file mappings
 export let currentProject = null;  // Add this to track the current project
 export let mainTexFile = "main.tex";
+export let explorerTree = { Projects: {} };  // For overall explorer structure
 
 export async function createProjectInFirestore(projectName) {
     const projectRef = doc(collection(db, "projects"), projectName);
@@ -60,7 +61,8 @@ export async function loadProjectsFromFirestore() {
         const currentProjectSnap = await getDoc(currentProjectRef);  // Get the snapshot
 
         projectStructure = [];  // Reset the array of project names
-        fileStructure = {};     // Reset the object mapping projects to file structures
+        explorerTree = { Projects: {} };  // Initialize explorer structure
+        fileStructure = {};     // Initialize project files
 
         // Use currentProjectSnap instead of currentProjectRef
         currentProject = currentProjectSnap.exists() ? currentProjectSnap.data().name : "";
@@ -68,20 +70,30 @@ export async function loadProjectsFromFirestore() {
         querySnapshot.forEach((doc) => {
             const project = doc.data();
 
-            mainTexFile = project.mainTexFile || "main.tex";
-            fileStructure = project.fileStructure || {};
+            // Don't override fileStructure for each project
+            if (!currentProject) {
+                mainTexFile = project.mainTexFile || "main.tex";
+                currentProject = project.name;
+            }
 
-            // Store project names in projectStructure
+            // Store project names in projectStructure array
             projectStructure.push(project.name);
             
-            // Merge each project's UI state into the global uiState object
+            // Store project in explorer tree (just the name)
+            explorerTree.Projects[project.name] = project.fileStructure || {};
+            
+            // Store actual file structure separately
+            fileStructure[project.name] = project.fileStructure || {};
+            
+            // Merge UI states
             if (project.uiState) {
                 uiState = { ...uiState, ...project.uiState };
             }
         });
-       
+
         console.log("Loaded projects:", projectStructure);
         console.log("File structure:", fileStructure);
+        console.log("Explorer tree:", explorerTree);
 
         return uiState;
  
@@ -94,11 +106,10 @@ export async function loadProjectsFromFirestore() {
 // Save both file structure and UI state
 export async function persistCurrentProjectToFirestore(uiState = {}) {
     try {
-        // Save project-specific structure and state
         if (currentProject) {
             const projectRef = doc(db, "projects", currentProject);
             await setDoc(projectRef, {
-                fileStructure: fileStructure.Projects[currentProject],
+                fileStructure: fileStructure[currentProject], // Changed from fileStructure.Projects
                 uiState: uiState,
                 lastModified: new Date().toISOString()
             }, { merge: true });
@@ -106,22 +117,11 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
 
         // Save global settings
         const globalRef = doc(db, "global", "settings");
-        
-        // Check if document exists, if not create it
-        const globalDoc = await getDoc(globalRef);
-        if (!globalDoc.exists()) {
-            // Create the document if it doesn't exist
-            await setDoc(globalRef, {
-                projectStructure: fileStructure,
-                lastModified: new Date().toISOString()
-            });
-        } else {
-            // Update existing document
-            await setDoc(globalRef, {
-                projectStructure: fileStructure,
-                lastModified: new Date().toISOString()
-            }, { merge: true });
-        }
+        await setDoc(globalRef, {
+            projectStructure: projectStructure, // Save just the array of project names
+            explorerTree: explorerTree,        // Save the explorer structure
+            lastModified: new Date().toISOString()
+        }, { merge: true });
 
     } catch (error) {
         console.error("Error saving structure:", error);

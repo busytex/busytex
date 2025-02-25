@@ -3,7 +3,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { db } from './firebase-config.js';
-import { loadProjectsFromFirestore, fileStructure } from './projectManager.js';
+import { loadProjectsFromFirestore, explorerTree } from './projectManager.js';
 import { initializeEditor } from './editorManager.js';
 import { renderFileExplorer } from './uiManager.js';
 import { onclick_, terminate } from './compileManager.js';
@@ -15,7 +15,7 @@ async function initApp() {
     try {
         const uiState = await loadProjectsFromFirestore();
         initializeEditor();
-        renderFileExplorer(document.getElementById('file-tree'), fileStructure, uiState);
+        renderFileExplorer(document.getElementById('file-tree'), explorerTree, uiState);
     } catch (error) {
         console.error("Error initializing app:", error);
     }
