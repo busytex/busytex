@@ -80,6 +80,7 @@ export async function updateMainTexFileInFirestore(projectName, newMainTexFile) 
     }
 }
 
+
 // Save both file structure and UI state
 export async function saveFileStructure(uiState = {}) {
     try {
