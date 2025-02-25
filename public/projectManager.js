@@ -38,21 +38,28 @@ export async function loadProjectsFromFirestore() {
         const projectsRef = collection(db, "projects");
         const querySnapshot = await getDocs(projectsRef);
         
-        fileStructure = { Projects: {} };
+        fileStructure = [];  // ✅ Projects is now an array
         let uiState = {};
-
+        
         querySnapshot.forEach((doc) => {
             const project = doc.data();
-            fileStructure.Projects[project.name] = project.fileStructure || {};
+        
+            // ✅ Push each project as an object into the array
+            fileStructure.push({
+                name: project.name,
+                fileStructure: project.fileStructure || {},  // Keep the project's file structure
+            });
+        
             if (project.uiState) {
                 uiState = { ...uiState, ...project.uiState };
             }
+        
             if (!currentProject) {
                 currentProject = project.name;
                 mainTexFile = project.mainTexFile || "main.tex";
             }
         });
-
+        
         return uiState; // Return UI state to restore folder states
     } catch (error) {
         console.error("Error loading projects:", error);
