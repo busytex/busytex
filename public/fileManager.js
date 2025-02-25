@@ -1,4 +1,4 @@
-import { fileStructure, currentProject, saveFileStructure } from './projectManager.js';
+import { fileStructure, currentProject, saveFileStructure, persistCurrentProjectToFirestore } from './projectManager.js';
 import { getEditors } from './editorManager.js';
 
 const { texEditor, bibEditor } = getEditors();
@@ -137,9 +137,10 @@ async function moveItem(sourcePath, targetPath, isFolder) {
 
     // Save both structure and state
     await saveFileStructure(states);
+    await persistCurrentProjectToFirestore(states);
 
     // Re-render and restore states
-    renderFileExplorer(document.getElementById('file-tree'), fileStructure, states);
+    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
     applyFolderStates(states);
 }
 

@@ -34,24 +34,42 @@ export async function createProjectInFirestore(projectName) {
 
 export async function loadProjectsFromFirestore() {
     try {
-        const projectsRef = await collection(db, "projects");
-        const uiStateRef = await getDoc(db, "global", "uiState");
+        const projectsRef = collection(db, "projects");
+        let uiState = {}; // Default UI state
+
+        try {
+            const uiStateRef = doc(db, "global", "uiState");
+            const uiStateDoc = await getDoc(uiStateRef);
+            
+            if (!uiStateDoc.exists()) {
+                // Create default UI state if it doesn't exist
+                await setDoc(uiStateRef, {
+                    currentProject: null,
+                    lastModified: new Date().toISOString()
+                });
+            } else {
+                uiState = uiStateDoc.data();
+            }
+        } catch (dbError) {
+            console.warn("Could not access UI state:", dbError);
+            // Continue with default UI state
+        }
+
         const querySnapshot = await getDocs(projectsRef);
-        const currentProjectRef = await getDoc(db, "global", "currentProject");
-        
+        const currentProjectRef = doc(db, "global", "currentProject");
+        const currentProjectSnap = await getDoc(currentProjectRef);  // Get the snapshot
+
         projectStructure = [];  // Reset the array of project names
         fileStructure = {};     // Reset the object mapping projects to file structures
 
-        // Retrieve the current project name from Firestore
-        currentProject = currentProjectRef.exists() ? currentProjectRef.data().name : "";
-        // Retrieve UI state from Firestore
-        uiState = uiStateRef.exists() ? uiStateRef.data() : {};
+        // Use currentProjectSnap instead of currentProjectRef
+        currentProject = currentProjectSnap.exists() ? currentProjectSnap.data().name : "";
 
         querySnapshot.forEach((doc) => {
             const project = doc.data();
 
             mainTexFile = project.mainTexFile || "main.tex";
-            fileStructure = firstProject.fileStructure || {};
+            fileStructure = project.fileStructure || {};
 
             // Store project names in projectStructure
             projectStructure.push(project.name);
@@ -74,7 +92,7 @@ export async function loadProjectsFromFirestore() {
 }
 
 // Save both file structure and UI state
-export async function saveFileStructure(uiState = {}) {
+export async function persistCurrentProjectToFirestore(uiState = {}) {
     try {
         // Save project-specific structure and state
         if (currentProject) {

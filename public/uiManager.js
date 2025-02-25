@@ -1,4 +1,4 @@
-import { fileStructure, saveFileStructure } from './projectManager.js';
+import { fileStructure, persistCurrentProjectToFirestore } from './projectManager.js';
 
 // Keep only this one definition of getFolderStates at the top level
 export function getFolderStates() {
@@ -228,9 +228,8 @@ export function renderFileExplorer(container, structure, savedState = {}) {
                 itemContent.classList.toggle("expanded");
                 chevron.style.transform = isExpanded ? "rotate(0)" : "rotate(90deg)";
                 
-                // Use the exported getFolderStates
                 const folderStates = getFolderStates();
-                await saveFileStructure(folderStates);
+                await persistCurrentProjectToFirestore(folderStates);
             });
             
             // Add context menu for folders
