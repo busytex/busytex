@@ -6,6 +6,8 @@ import {
     currentProject,
     mainTexFile 
 } from './projectManager.js';
+import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { db } from './firebase-config.js';
 
 // Keep only this one definition of getFolderStates at the top level
 export function getFolderStates() {
@@ -276,16 +278,7 @@ export function renderFileExplorer(container, structure, savedState = {}) {
                 chevron.style.transform = "rotate(90deg)";
             }
 
-            itemContent.addEventListener("click", async (e) => {
-                e.stopPropagation();
-                const isExpanded = subUl.style.display !== "none";
-                subUl.style.display = isExpanded ? "none" : "block";
-                itemContent.classList.toggle("expanded");
-                chevron.style.transform = isExpanded ? "rotate(0)" : "rotate(90deg)";
-                
-                const folderStates = getFolderStates();
-                await persistCurrentProjectToFirestore(folderStates);
-            });
+            addFolderClickHandler(itemContent, subUl, chevron);
             
             // Add context menu for folders
             itemContent.addEventListener("contextmenu", (e) => {
@@ -651,4 +644,31 @@ function handleFileUpload(e) {
         };
         reader.readAsText(file);
     }
+}
+
+async function saveFolderStates(states) {
+    if (!currentProject) return;
+    
+    const projectRef = doc(db, "projects", currentProject);
+    await setDoc(projectRef, {
+        uiState: {
+            expandedFolders: Object.entries(states)
+                .filter(([_, expanded]) => expanded)
+                .map(([name]) => name)
+        }
+    }, { merge: true });
+}
+
+// Update folder click handler
+function addFolderClickHandler(content, subUl, chevron) {
+    content.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const isExpanded = subUl.style.display !== "none";
+        subUl.style.display = isExpanded ? "none" : "block";
+        content.classList.toggle("expanded");
+        chevron.style.transform = isExpanded ? "rotate(0)" : "rotate(90deg)";
+        
+        const states = getFolderStates();
+        await saveFolderStates(states);
+    });
 }
