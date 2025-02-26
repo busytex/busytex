@@ -4,7 +4,8 @@ import {
     getCurrentProjectFiles,
     projectStructure,
     currentProject,
-    mainTexFile 
+    mainTexFile,
+    createProjectInFirestore  // Add this import
 } from './projectManager.js';
 import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { db } from './firebase-config.js';
