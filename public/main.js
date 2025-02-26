@@ -28,8 +28,6 @@ let autoSaveTimeout;
 let lastSavedContent = { tex: '', bib: '' };
 let isOffline = false;
 
-let currentFile = "main.tex";
-
 // Update the click handler to remove active class when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.context-menu')) {
