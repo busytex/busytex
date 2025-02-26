@@ -1,14 +1,12 @@
 // Ensure this file is imported as type="module" in index.html
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { db } from './firebase-config.js';
 import { loadProjectsFromFirestore, explorerTree } from './projectManager.js';
 import { initializeEditor } from './editorManager.js';
 import { renderFileExplorer } from './uiManager.js';
 import { onclick_, terminate } from './compileManager.js';
-
-// Store project structure
 
 // Load projects and initialize UI
 async function initApp() {
@@ -21,14 +19,7 @@ async function initApp() {
     }
 }
 
-// Store auto-save timeout
-let autoSaveTimeout;
-
-// Add these state variables at the top with other declarations
-let lastSavedContent = { tex: '', bib: '' };
-let isOffline = false;
-
-// Update the click handler to remove active class when clicking outside
+// Handle context menu cleanup
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.context-menu')) {
         const menu = document.querySelector('.context-menu');
