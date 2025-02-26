@@ -43,6 +43,7 @@ export async function loadProjectsFromFirestore() {
         const projectsRef = collection(db, "projects");
         let uiState = {}; // Default UI state
 
+        // Load UI state from global collection
         try {
             const uiStateRef = doc(db, "global", "uiState");
             const uiStateDoc = await getDoc(uiStateRef);
@@ -51,6 +52,7 @@ export async function loadProjectsFromFirestore() {
                 // Create default UI state if it doesn't exist
                 await setDoc(uiStateRef, {
                     currentProject: null,
+                    expandedFolders: ['Projects'],
                     lastModified: new Date().toISOString()
                 });
             } else {
@@ -58,7 +60,6 @@ export async function loadProjectsFromFirestore() {
             }
         } catch (dbError) {
             console.warn("Could not access UI state:", dbError);
-            // Continue with default UI state
         }
 
         const querySnapshot = await getDocs(projectsRef);
@@ -98,11 +99,6 @@ export async function loadProjectsFromFirestore() {
                     explorerTree.Projects[project.name][fileName] = content;
                 });
             }
-
-            // Merge UI states
-            if (project.uiState) {
-                uiState = { ...uiState, ...project.uiState };
-            }
         });
 
         console.log("Loaded projects:", projectStructure);
@@ -119,18 +115,26 @@ export async function loadProjectsFromFirestore() {
 // Save both file structure and UI state
 export async function persistCurrentProjectToFirestore(uiState = {}) {
     try {
+        // Save project data without UI state
         if (currentProject) {
             const projectRef = doc(db, "projects", currentProject);
             await setDoc(projectRef, {
                 name: currentProject,
                 fileStructure: fileStructure[currentProject],
-                uiState: uiState,
                 lastModified: new Date().toISOString(),
                 mainTexFile: mainTexFile
             }, { merge: true });
         }
 
-        // Save global settings with only project names
+        // Save UI state separately in global collection
+        const uiStateRef = doc(db, "global", "uiState");
+        await setDoc(uiStateRef, {
+            currentProject,
+            expandedFolders: uiState.expandedFolders || [],
+            lastModified: new Date().toISOString()
+        }, { merge: true });
+
+        // Save other global settings
         const globalRef = doc(db, "global", "settings");
         await setDoc(globalRef, {
             projectStructure: projectStructure,
