@@ -10,27 +10,32 @@ export let mainTexFile = "main.tex";
 let fileStructure = {};  // Make this private to the module - internal project files
 
 export async function createProjectInFirestore(projectName) {
-    const projectRef = doc(collection(db, "projects"), projectName);
-
-    // Check if the project already exists
-    const projectSnap = await getDoc(projectRef);
-    if (projectSnap.exists()) {
-        alert("A project with this name already exists!");
-        return;
+    // Validate project name
+    if (!projectName?.trim() || projectStructure.includes(projectName)) {
+        throw new Error('Invalid or duplicate project name');
     }
 
+    const projectRef = doc(db, "projects", projectName);
+    
     const projectData = {
         name: projectName,
         createdAt: new Date().toISOString(),
-        gitPath: `TexWaller-Projects/${projectName}`,
-        fileStructure: {},
-        currentTex: "\\documentclass{article}\n\\begin{document}\n\\end{document}",
-        currentBib: "",
-        mainTexFile: "main.tex"
+        fileStructure: {
+            [mainTexFile]: "\\documentclass{article}\n\\begin{document}\n\\end{document}"
+        },
+        mainTexFile,
+        uiState: {
+            expandedFolders: ['Projects']
+        }
     };
 
     await setDoc(projectRef, projectData);
-    console.log(`Project '${projectName}' saved in Firestore`);
+    
+    // Update local structures
+    projectStructure.push(projectName);
+    explorerTree.Projects[projectName] = {};
+
+    return projectData;
 }
 
 export async function loadProjectsFromFirestore() {

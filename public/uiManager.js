@@ -145,6 +145,38 @@ function moveItem(sourcePath, targetPath, isFolder) {
     persistCurrentProjectToFirestore();
 }
 
+// Add the moveFile function
+function moveFile(sourcePath, targetPath, currentFiles) {
+    // Parse paths
+    const sourcePathParts = sourcePath.split('/').filter(Boolean);
+    const fileName = sourcePathParts.pop();
+    const sourceFolder = sourcePathParts.join('/');
+    
+    // Get content and remove from source
+    let fileContent = null;
+    
+    if (sourceFolder) {
+        if (explorerTree.Projects[sourceFolder]?.[fileName]) {
+            fileContent = explorerTree.Projects[sourceFolder][fileName];
+            delete explorerTree.Projects[sourceFolder][fileName];
+            
+            // Clean up empty folders
+            if (Object.keys(explorerTree.Projects[sourceFolder]).length === 0) {
+                delete explorerTree.Projects[sourceFolder];
+            }
+        }
+    } else {
+        if (explorerTree.Projects[fileName]) {
+            fileContent = explorerTree.Projects[fileName];
+            delete explorerTree.Projects[fileName];
+        }
+    }
+
+    // Add to target
+    explorerTree.Projects[targetPath] = explorerTree.Projects[targetPath] || {};
+    explorerTree.Projects[targetPath][fileName] = fileContent;
+}
+
 // Modify the renderFileExplorer function to handle UI state
 export function renderFileExplorer(container, structure, savedState = {}) {
     container.innerHTML = "";
