@@ -52,13 +52,16 @@ export async function loadProjectsFromFirestore() {
         if (uiStateDoc.exists()) {
             uiState = uiStateDoc.data();
             currentProject = uiState.currentProject || null;
+            // Ensure expandedFolders exists
+            uiState.expandedFolders = uiState.expandedFolders || ['Projects'];
         } else {
             // Create default UI state if it doesn't exist
-            await setDoc(doc(db, "global", "uiState"), {
+            uiState = {
                 currentProject: null,
                 expandedFolders: ['Projects'],
                 lastModified: new Date().toISOString()
-            });
+            };
+            await setDoc(doc(db, "global", "uiState"), uiState);
         }
 
         // Reset data structures
@@ -114,18 +117,18 @@ export async function loadProjectsFromFirestore() {
 // Save both file structure and UI state
 export async function persistCurrentProjectToFirestore(uiState = {}) {
     try {
-        // Save project data without UI state
+        // Save project data
         if (currentProject) {
             const projectRef = doc(db, "projects", currentProject);
             await setDoc(projectRef, {
                 name: currentProject,
-                fileStructure: explorerTree.Projects[currentProject], // Use explorerTree instead
+                fileStructure: explorerTree.Projects[currentProject],
                 lastModified: new Date().toISOString(),
                 mainTexFile: mainTexFile
             }, { merge: true });
         }
 
-        // Save UI state separately in global collection
+        // Save global UI state with expanded folders
         const uiStateRef = doc(db, "global", "uiState");
         await setDoc(uiStateRef, {
             currentProject,
@@ -133,10 +136,10 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
             lastModified: new Date().toISOString()
         }, { merge: true });
 
-        // Save other global settings
+        // Save other global settings (without UI state)
         const globalRef = doc(db, "global", "settings");
         await setDoc(globalRef, {
-            projectStructure: projectStructure,
+            projectStructure,
             explorerTree: { Projects: Object.fromEntries(
                 projectStructure.map(name => [name, {}])
             )},
