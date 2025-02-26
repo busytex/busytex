@@ -1,4 +1,11 @@
-import { fileStructure, persistCurrentProjectToFirestore } from './projectManager.js';
+import { 
+    explorerTree, 
+    persistCurrentProjectToFirestore, 
+    getCurrentProjectFiles,
+    projectStructure,
+    currentProject,
+    mainTexFile 
+} from './projectManager.js';
 
 // Keep only this one definition of getFolderStates at the top level
 export function getFolderStates() {
@@ -39,27 +46,25 @@ function applyFolderStates(states) {
 // Add this function after your existing code
 function renameFileOrFolder(oldPath, newName, isFolder) {
     const states = getFolderStates();
+    const currentFiles = getCurrentProjectFiles();
     
     if (isFolder) {
-        // Rename folder
-        const folderContent = fileStructure.Projects[oldPath];  // Changed from Project
-        delete fileStructure.Projects[oldPath];  // Changed from Project
-        fileStructure.Projects[newName] = folderContent;  // Changed from Project
+        // Rename folder in explorer tree
+        const folderContent = explorerTree.Projects[oldPath];
+        delete explorerTree.Projects[oldPath];
+        explorerTree.Projects[newName] = folderContent;
     } else {
-        // Rename file
-        for (const folder in fileStructure.Projects) {  // Changed from Project
-            if (typeof fileStructure.Projects[folder] === 'object' &&  // Changed from Project
-                fileStructure.Projects[folder].hasOwnProperty(oldPath)) {  // Changed from Project
-                const content = fileStructure.Projects[folder][oldPath];  // Changed from Project
-                delete fileStructure.Projects[folder][oldPath];  // Changed from Project
-                fileStructure.Projects[folder][newName] = content;  // Changed from Project
-                break;
-            }
+        // Rename file in current project
+        if (currentFiles) {
+            const content = currentFiles[oldPath];
+            delete currentFiles[oldPath];
+            currentFiles[newName] = content;
         }
     }
     
-    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+    renderFileExplorer(document.getElementById('file-tree'), explorerTree);
     applyFolderStates(states);
+    persistCurrentProjectToFirestore();
 }
 
 // Add these helper functions first
@@ -84,42 +89,37 @@ function getItemPath(element) {
 // Add the moveItem function
 function moveItem(sourcePath, targetPath, isFolder) {
     const states = getFolderStates();
+    const currentFiles = getCurrentProjectFiles();
     
     if (isFolder) {
-        // Move folder
-        const sourceContent = fileStructure.Projects[sourcePath];  // Changed from Project
-        delete fileStructure.Projects[sourcePath];  // Changed from Project
+        // Move folder in explorer tree
+        const sourceContent = explorerTree.Projects[sourcePath];
+        delete explorerTree.Projects[sourcePath];
         
-        if (!fileStructure.Projects[targetPath]) {  // Changed from Project
-            fileStructure.Projects[targetPath] = {};  // Changed from Project
+        if (!explorerTree.Projects[targetPath]) {
+            explorerTree.Projects[targetPath] = {};
         }
-        fileStructure.Projects[targetPath][sourcePath] = sourceContent;  // Changed from Project
+        explorerTree.Projects[targetPath][sourcePath] = sourceContent;
     } else {
-        // Move file
-        let sourceContent;
-        // Find and remove file from source
-        for (const folder in fileStructure.Projects) {  // Changed from Project
-            if (fileStructure.Projects[folder].hasOwnProperty(sourcePath)) {  // Changed from Project
-                sourceContent = fileStructure.Projects[folder][sourcePath];  // Changed from Project
-                delete fileStructure.Projects[folder][sourcePath];  // Changed from Project
-                break;
+        if (currentFiles) {
+            // Move file within current project
+            const sourceContent = currentFiles[sourcePath];
+            delete currentFiles[sourcePath];
+            
+            if (targetPath === "Projects") {
+                currentFiles[sourcePath] = sourceContent;
+            } else {
+                if (!currentFiles[targetPath]) {
+                    currentFiles[targetPath] = {};
+                }
+                currentFiles[targetPath][sourcePath] = sourceContent;
             }
-        }
-        
-        // Add file to target
-        if (targetPath === "Projects") {  // Changed from Project
-            fileStructure.Projects[sourcePath] = sourceContent;  // Changed from Project
-        } else {
-            if (!fileStructure.Projects[targetPath]) {  // Changed from Project
-                fileStructure.Projects[targetPath] = {};  // Changed from Project
-            }
-            fileStructure.Projects[targetPath][sourcePath] = sourceContent;  // Changed from Project
         }
     }
     
-    // Re-render and restore states
-    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+    renderFileExplorer(document.getElementById('file-tree'), explorerTree);
     applyFolderStates(states);
+    persistCurrentProjectToFirestore();
 }
 
 // Modify the renderFileExplorer function to handle UI state
@@ -273,7 +273,7 @@ export function renderFileExplorer(container, structure, savedState = {}) {
             const fileIcon = document.createElement("span");
             if (key.endsWith('.tex')) {
                 fileIcon.className = "codicon codicon-file-code";
-                if (key === mainTexFile && fileStructure.Projects.hasOwnProperty(key)) {
+                if (key === mainTexFile && key in (getCurrentProjectFiles() || {})) {
                     itemContent.classList.add('main-tex');
                 }
             } else if (key.endsWith('.bib')) {
@@ -326,12 +326,12 @@ export function renderFileExplorer(container, structure, savedState = {}) {
             const states = getFolderStates();
             
             // Add new project as a folder under Projects
-            fileStructure.Projects[newProjectName] = fileStructure.Projects[newProjectName] || {};            
+            explorerTree.Projects[newProjectName] = explorerTree.Projects[newProjectName] || {};            
 
             // Make sure the Projects folder is expanded
             states['Projects'] = true;
             
-            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            renderFileExplorer(document.getElementById('file-tree'), explorerTree);
             applyFolderStates(states);
     
             alert(`Project '${newProjectName}' created successfully!`);
@@ -388,15 +388,15 @@ const folderElement = e.target.closest('.folder');
                 
                 // Add new folder to the structure
                 if (folderPath === "Projects") {  // Changed from Project
-                    fileStructure.Projects[newFolderName] = {};  // Changed from Project
-                } else if (fileStructure.Projects[folderPath]) {  // Changed from Project
-                    fileStructure.Projects[folderPath][newFolderName] = {};
+                    explorerTree.Projects[newFolderName] = {};  // Changed from Project
+                } else if (explorerTree.Projects[folderPath]) {  // Changed from Project
+                    explorerTree.Projects[folderPath][newFolderName] = {};
                 }
                 
                 // Ensure parent folder is expanded
                 states.set(folderPath, true);
                 
-                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                renderFileExplorer(document.getElementById('file-tree'), explorerTree);
                 applyFolderStates(states);
             }
             explorer.classList.remove('context-active');
@@ -425,16 +425,16 @@ const folderElement = e.target.closest('.folder');
                     
                     // Update the file structure at the correct path
                     if (folderPath === "Projects") {  // Changed from Project
-                        fileStructure.Projects[file.name] = "// Empty file content";  // Changed from Project
-                    } else if (fileStructure.Projects[folderPath]) {  // Changed from Project
-                        fileStructure.Projects[folderPath][file.name] = "// Empty file content";
+                        explorerTree.Projects[file.name] = "// Empty file content";  // Changed from Project
+                    } else if (explorerTree.Projects[folderPath]) {  // Changed from Project
+                        explorerTree.Projects[folderPath][file.name] = "// Empty file content";
                     }
                     
                     // Ensure the target folder is expanded in the states
                     states[folderPath] = true;
                     
                     // Re-render and restore states with the target folder expanded
-                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    renderFileExplorer(document.getElementById('file-tree'), explorerTree);
                     applyFolderStates(states);
                 }
                 explorer.classList.remove('context-active');
@@ -451,15 +451,15 @@ const folderElement = e.target.closest('.folder');
         deleteItem.innerHTML = '<span class="codicon codicon-trash"></span>Delete Folder';
         
         deleteItem.onclick = () => {
-            const folderContent = fileStructure[folderPath];
+            const folderContent = explorerTree[folderPath];
             if (Object.keys(folderContent).length === 0) {
                 const states = getFolderStates();
-                delete fileStructure[folderPath];
+                delete explorerTree[folderPath];
                 // If root folder was deleted, create a new empty root
                 if (folderPath === "Projects") {  // Changed from Project
-                    fileStructure["New Project"] = {};
+                    explorerTree["New Project"] = {};
                 }
-                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                renderFileExplorer(document.getElementById('file-tree'), explorerTree);
                 applyFolderStates(states);
             } else {
                 alert(`Folder "${folderPath}" is not empty`);
@@ -478,10 +478,10 @@ const folderElement = e.target.closest('.folder');
             const newName = prompt("Enter new folder name:", folderPath);
             if (newName && newName !== folderPath) {
                 const states = getFolderStates();
-                const folderContent = fileStructure[folderPath];
-                delete fileStructure[folderPath];
-                fileStructure[newName] = folderContent;
-                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                const folderContent = explorerTree[folderPath];
+                delete explorerTree[folderPath];
+                explorerTree[newName] = folderContent;
+                renderFileExplorer(document.getElementById('file-tree'), explorerTree);
                 applyFolderStates(states);
             }
             explorer.classList.remove('context-active');
@@ -491,8 +491,9 @@ const folderElement = e.target.closest('.folder');
     } else {
         // File context menu
         const fileName = targetElement.querySelector('span:last-child').textContent;
+        const currentFiles = getCurrentProjectFiles();
         const isRootTexFile = fileName.endsWith('.tex') && 
-                             fileStructure.Projects.hasOwnProperty(fileName);  // Changed from Project
+                             fileName in (currentFiles || {});
         
         // Add "Set as Main Tex File" option only for root .tex files
         if (isRootTexFile) {
@@ -510,7 +511,7 @@ const folderElement = e.target.closest('.folder');
                     const states = getFolderStates();
                     mainTexFile = fileName;
                     await updateMainTexFileInFirestore(currentProject, fileName);  // Add this line
-                    renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                    renderFileExplorer(document.getElementById('file-tree'), explorerTree);
                     applyFolderStates(states);  // Restore states after re-render
                     explorer.classList.remove('context-active');
                     menu.remove();
@@ -544,15 +545,15 @@ const folderElement = e.target.closest('.folder');
             let fileDeleted = false;
 
             // Check if file is directly in Projects folder
-            if (fileStructure.Projects.hasOwnProperty(fileName)) {  // Changed from Project
-                delete fileStructure.Projects[fileName];  // Changed from Project
+            if (explorerTree.Projects.hasOwnProperty(fileName)) {  // Changed from Project
+                delete explorerTree.Projects[fileName];  // Changed from Project
                 fileDeleted = true;
             } else {
                 // Check in subfolders
-                for (const folder in fileStructure.Projects) {  // Changed from Project
-                    if (typeof fileStructure.Projects[folder] === 'object' &&  // Changed from Project
-                        fileStructure.Projects[folder].hasOwnProperty(fileName)) {  // Changed from Project
-                        delete fileStructure.Projects[folder][fileName];  // Changed from Project
+                for (const folder in explorerTree.Projects) {  // Changed from Project
+                    if (typeof explorerTree.Projects[folder] === 'object' &&  // Changed from Project
+                        explorerTree.Projects[folder].hasOwnProperty(fileName)) {  // Changed from Project
+                        delete explorerTree.Projects[folder][fileName];  // Changed from Project
                         fileDeleted = true;
                         break;
                     }
@@ -560,7 +561,7 @@ const folderElement = e.target.closest('.folder');
             }
 
             if (fileDeleted) {
-                renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+                renderFileExplorer(document.getElementById('file-tree'), explorerTree);
                 applyFolderStates(states);
             }
             explorer.classList.remove('context-active');
@@ -589,8 +590,9 @@ function handleFileUpload(e) {
             
             // Continue with existing code...
             await loadFile(file.name, content);
-            renderFileExplorer(document.getElementById('file-tree'), fileStructure);
+            renderFileExplorer(document.getElementById('file-tree'), explorerTree);
             applyFolderStates(states);
+            persistCurrentProjectToFirestore();
         };
         reader.readAsText(file);
     }

@@ -1,4 +1,11 @@
-import { loadProjectsFromFirestore, fileStructure, currentProject, mainTexFile } from './projectManager.js';
+import { 
+    loadProjectsFromFirestore, 
+    mainTexFile,
+    getCurrentProjectFiles,
+    persistCurrentProjectToFirestore,
+    currentProject,
+    explorerTree 
+} from './projectManager.js';
 import { renderFileExplorer } from './uiManager.js';
 import { collection, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { db } from './firebase-config.js';
@@ -6,8 +13,8 @@ import { db } from './firebase-config.js';
 let texEditor, bibEditor;
 let currentFile = mainTexFile;  // Initialize with mainTexFile as default
 let autoSaveTimeout;
-let isOffline = false;  // Add this line to declare and initialize isOffline
-let lastSavedContent = { tex: '', bib: '' };  // Add this line to declare and initialize lastSavedContent
+let isOffline = false;
+let lastSavedContent = { tex: '', bib: '' };
 
 export function getEditors() {
     return { texEditor, bibEditor };
@@ -28,24 +35,20 @@ export function initializeEditor() {
             let bibContent = defaultBibContent;
 
             // Try to load content from current project
-            if (currentProject && fileStructure[currentProject]) {
-                if (mainTexFile && fileStructure[currentProject][mainTexFile]) {
-                    texContent = fileStructure[currentProject][mainTexFile];
+            const currentProjectFiles = getCurrentProjectFiles();
+            if (currentProject && currentProjectFiles) {
+                if (mainTexFile && currentProjectFiles[mainTexFile]) {
+                    texContent = currentProjectFiles[mainTexFile];
                 }
                 
                 // Find the first .bib file in the project
-                const bibFile = Object.entries(fileStructure[currentProject])
+                const bibFile = Object.entries(currentProjectFiles)
                     .find(([key, _]) => key.endsWith('.bib'));
                 if (bibFile) {
                     bibContent = bibFile[1];
                 }
             }
 
-            // Update the file structure with initial content
-            if (!fileStructure.Projects) {  // Changed from Project
-                fileStructure.Projects = {};  // Changed from Project
-            }
-            
             // Register LaTeX language
             monaco.languages.register({ id: 'latex' });
             monaco.languages.setMonarchTokensProvider('latex', {
@@ -80,16 +83,22 @@ export function initializeEditor() {
             // Set up event listeners
             texEditor.onDidChangeModelContent(() => {
                 if (currentFile.endsWith(".tex")) {
-                    fileStructure.Projects[currentFile] = texEditor.getValue();  // Changed from Project
+                    const currentProjectFiles = getCurrentProjectFiles();
+                    if (currentProjectFiles) {
+                        currentProjectFiles[currentFile] = texEditor.getValue();
+                        startAutoSaveDebounced();
+                    }
                 }
-                startAutoSaveDebounced();
             });
 
             bibEditor.onDidChangeModelContent(() => {
                 if (currentFile.endsWith(".bib")) {
-                    fileStructure.Projects[currentFile] = bibEditor.getValue();  // Changed from Project
+                    const currentProjectFiles = getCurrentProjectFiles();
+                    if (currentProjectFiles) {
+                        currentProjectFiles[currentFile] = bibEditor.getValue();
+                        startAutoSaveDebounced();
+                    }
                 }
-                startAutoSaveDebounced();
             });
 
             // Handle container z-index
@@ -106,15 +115,16 @@ export function initializeEditor() {
                 editorContainer.style.zIndex = '1';
             });
 
-            // Initialize file explorer
+            // Initialize file explorer with explorerTree instead of fileStructure
             const explorerContainer = document.getElementById("file-tree");
-            renderFileExplorer(explorerContainer, fileStructure);
+            renderFileExplorer(explorerContainer, explorerTree);
 
             // Set initial focus
             texEditor.focus();
 
         } catch (error) {
             console.error("Error initializing editors:", error);
+            throw error;
         }
     });
 }
