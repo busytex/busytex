@@ -43,38 +43,32 @@ export async function loadProjectsFromFirestore() {
         const projectsRef = collection(db, "projects");
         let uiState = {}; // Default UI state
 
-        // Load UI state from global collection
-        try {
-            const uiStateRef = doc(db, "global", "uiState");
-            const uiStateDoc = await getDoc(uiStateRef);
-            
-            if (!uiStateDoc.exists()) {
-                // Create default UI state if it doesn't exist
-                await setDoc(uiStateRef, {
-                    currentProject: null,
-                    expandedFolders: ['Projects'],
-                    lastModified: new Date().toISOString()
-                });
-            } else {
-                uiState = uiStateDoc.data();
-            }
-        } catch (dbError) {
-            console.warn("Could not access UI state:", dbError);
-        }
+        // Load UI state and settings from global collection
+        const [uiStateDoc, settingsDoc] = await Promise.all([
+            getDoc(doc(db, "global", "uiState")),
+            getDoc(doc(db, "global", "settings"))
+        ]);
 
-        const querySnapshot = await getDocs(projectsRef);
-        const currentProjectRef = doc(db, "global", "currentProject");
-        const currentProjectSnap = await getDoc(currentProjectRef);
+        // Get saved UI state or create default
+        if (uiStateDoc.exists()) {
+            uiState = uiStateDoc.data();
+            currentProject = uiState.currentProject || null;
+        } else {
+            // Create default UI state if it doesn't exist
+            await setDoc(doc(db, "global", "uiState"), {
+                currentProject: null,
+                expandedFolders: ['Projects'],
+                lastModified: new Date().toISOString()
+            });
+        }
 
         // Reset data structures
         projectStructure = [];
         explorerTree = { Projects: {} };
         fileStructure = {};
 
-        // Set current project from global state
-        currentProject = currentProjectSnap.exists() ? currentProjectSnap.data().name : "";
-
-        // Process each project
+        // Load all projects
+        const querySnapshot = await getDocs(projectsRef);
         querySnapshot.forEach((doc) => {
             const project = doc.data();
 
@@ -101,9 +95,26 @@ export async function loadProjectsFromFirestore() {
             }
         });
 
+        // If we have saved explorer tree state in settings, restore it
+        if (settingsDoc.exists()) {
+            const settings = settingsDoc.data();
+            if (settings.explorerTree?.Projects) {
+                // Merge saved structure with loaded files
+                Object.entries(settings.explorerTree.Projects).forEach(([projectName, structure]) => {
+                    if (explorerTree.Projects[projectName]) {
+                        explorerTree.Projects[projectName] = {
+                            ...structure,
+                            ...explorerTree.Projects[projectName]
+                        };
+                    }
+                });
+            }
+        }
+
         console.log("Loaded projects:", projectStructure);
         console.log("File structure:", fileStructure);
         console.log("Explorer tree:", explorerTree);
+        console.log("UI state:", uiState);
 
         return uiState;
     } catch (error) {
