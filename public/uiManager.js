@@ -94,29 +94,52 @@ function moveItem(sourcePath, targetPath, isFolder) {
     if (isFolder) {
         // Move folder in explorer tree
         const sourceContent = explorerTree.Projects[sourcePath];
-        delete explorerTree.Projects[sourcePath];
-        
-        if (!explorerTree.Projects[targetPath]) {
-            explorerTree.Projects[targetPath] = {};
-        }
-        explorerTree.Projects[targetPath][sourcePath] = sourceContent;
-    } else {
-        if (currentFiles) {
-            // Move file within current project
-            const sourceContent = currentFiles[sourcePath];
-            delete currentFiles[sourcePath];
+        if (sourceContent) {
+            delete explorerTree.Projects[sourcePath];
             
-            if (targetPath === "Projects") {
-                currentFiles[sourcePath] = sourceContent;
+            if (!explorerTree.Projects[targetPath]) {
+                explorerTree.Projects[targetPath] = {};
+            }
+            explorerTree.Projects[targetPath][sourcePath] = sourceContent;
+        }
+    } else {
+        // Move file within current project
+        if (currentFiles) {
+            // Get source file content from current location
+            let sourceContent;
+            if (explorerTree.Projects[sourcePath]) {
+                sourceContent = explorerTree.Projects[sourcePath];
+                delete explorerTree.Projects[sourcePath];
             } else {
-                if (!currentFiles[targetPath]) {
-                    currentFiles[targetPath] = {};
+                // Look for file in subfolders
+                for (const folder in explorerTree.Projects) {
+                    if (explorerTree.Projects[folder] && 
+                        explorerTree.Projects[folder][sourcePath]) {
+                        sourceContent = explorerTree.Projects[folder][sourcePath];
+                        delete explorerTree.Projects[folder][sourcePath];
+                        break;
+                    }
                 }
-                currentFiles[targetPath][sourcePath] = sourceContent;
+            }
+
+            if (sourceContent) {
+                // Move to new location
+                if (targetPath === "Projects") {
+                    explorerTree.Projects[sourcePath] = sourceContent;
+                } else {
+                    if (!explorerTree.Projects[targetPath]) {
+                        explorerTree.Projects[targetPath] = {};
+                    }
+                    explorerTree.Projects[targetPath][sourcePath] = sourceContent;
+                }
+
+                // Update current project's file structure
+                currentFiles[sourcePath] = sourceContent;
             }
         }
     }
     
+    // Save changes and update UI
     renderFileExplorer(document.getElementById('file-tree'), explorerTree);
     applyFolderStates(states);
     persistCurrentProjectToFirestore();
