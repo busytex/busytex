@@ -11,7 +11,7 @@ import { collection, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebas
 import { db } from './firebase-config.js';
 
 let texEditor, bibEditor;
-let currentFile = mainTexFile;  // Initialize with mainTexFile as default
+let currentFile = null;  // Initialize as null and set after editors are ready
 let autoSaveTimeout;
 let isOffline = false;
 let lastSavedContent = { tex: '', bib: '' };
@@ -79,6 +79,9 @@ export function initializeEditor() {
                 wordWrap: 'on',
                 automaticLayout: true
             });
+
+            // Set current file after editors are initialized
+            currentFile = mainTexFile;
 
             // Set up event listeners
             texEditor.onDidChangeModelContent(() => {

@@ -63,43 +63,56 @@ export async function loadProjectsFromFirestore() {
 
         const querySnapshot = await getDocs(projectsRef);
         const currentProjectRef = doc(db, "global", "currentProject");
-        const currentProjectSnap = await getDoc(currentProjectRef);  // Get the snapshot
+        const currentProjectSnap = await getDoc(currentProjectRef);
 
+        // Reset data structures
         projectStructure = [];
         explorerTree = { Projects: {} };
         fileStructure = {};
 
+        // Set current project from global state
         currentProject = currentProjectSnap.exists() ? currentProjectSnap.data().name : "";
 
+        // Process each project
         querySnapshot.forEach((doc) => {
             const project = doc.data();
 
+            // Set default project if none is current
             if (!currentProject) {
                 mainTexFile = project.mainTexFile || "main.tex";
                 currentProject = project.name;
             }
 
+            // Store project name
             projectStructure.push(project.name);
             
-            // Only store file structure internally
+            // Store file structure internally
             fileStructure[project.name] = project.fileStructure || {};
-            
-            // Explorer tree only shows project names initially
-            explorerTree.Projects[project.name] = {};
 
+            // Build explorer tree from file structure
+            explorerTree.Projects[project.name] = {};  // Create project folder
+            
+            // Add files under project folder
+            if (project.fileStructure) {
+                Object.entries(project.fileStructure).forEach(([fileName, content]) => {
+                    explorerTree.Projects[project.name][fileName] = content;
+                });
+            }
+
+            // Merge UI states
             if (project.uiState) {
                 uiState = { ...uiState, ...project.uiState };
             }
         });
 
         console.log("Loaded projects:", projectStructure);
+        console.log("File structure:", fileStructure);
         console.log("Explorer tree:", explorerTree);
 
         return uiState;
- 
     } catch (error) {
         console.error("Error loading projects:", error);
-        alert("Failed to load projects from Firestore");
+        throw error;
     }
 }
 

@@ -5,10 +5,11 @@ import {
     projectStructure,
     currentProject,
     mainTexFile,
-    createProjectInFirestore  // Add this import
+    createProjectInFirestore
 } from './projectManager.js';
 import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { db } from './firebase-config.js';
+import { getEditors } from './editorManager.js';  // Add this import
 
 // Keep only this one definition of getFolderStates at the top level
 export function getFolderStates() {
@@ -336,7 +337,11 @@ export function renderFileExplorer(container, structure, savedState = {}) {
             
             itemContent.appendChild(fileIcon);
             itemContent.appendChild(label);
-            itemContent.addEventListener("click", () => loadFile(key, value));
+            itemContent.addEventListener("click", () => {
+                const folderPath = getItemPath(itemContent.parentElement.parentElement);
+                const folder = folderPath === 'Projects' ? null : folderPath;
+                handleFileClick(key, folder);
+            });
             
             // Add context menu for files
             itemContent.addEventListener("contextmenu", (e) => {
@@ -672,4 +677,33 @@ function addFolderClickHandler(content, subUl, chevron) {
         const states = getFolderStates();
         await saveFolderStates(states);
     });
+}
+
+// Add this function to handle file loading
+async function handleFileClick(fileName, folder = null) {
+    const currentFiles = getCurrentProjectFiles();
+    if (!currentFiles) return;
+
+    let content = null;
+    
+    // Check if file is in root or in a folder
+    if (folder) {
+        content = currentFiles[folder]?.[fileName];
+    } else {
+        content = currentFiles[fileName];
+    }
+
+    // If content exists, load it into the editor
+    if (content) {
+        const { texEditor, bibEditor } = getEditors();  // Get editors from editorManager
+        const editor = fileName.endsWith('.tex') ? texEditor : bibEditor;
+        if (editor) {
+            editor.setValue(content);
+            editor.focus();
+        } else {
+            console.warn(`No editor available for file type: ${fileName}`);
+        }
+    } else {
+        console.warn(`No content found for file: ${fileName}`);
+    }
 }
