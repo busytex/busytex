@@ -7,7 +7,6 @@ export let projectStructure = []; // Array of project names
 export let explorerTree = { Projects: {} };  // UI representation
 export let currentProject = null;
 export let mainTexFile = "main.tex";
-let fileStructure = {};  // Make this private to the module - internal project files
 
 export async function createProjectInFirestore(projectName) {
     // Validate project name
@@ -65,7 +64,6 @@ export async function loadProjectsFromFirestore() {
         // Reset data structures
         projectStructure = [];
         explorerTree = { Projects: {} };
-        fileStructure = {};
 
         // Load all projects
         const querySnapshot = await getDocs(projectsRef);
@@ -81,18 +79,8 @@ export async function loadProjectsFromFirestore() {
             // Store project name
             projectStructure.push(project.name);
             
-            // Store file structure internally
-            fileStructure[project.name] = project.fileStructure || {};
-
-            // Build explorer tree from file structure
-            explorerTree.Projects[project.name] = {};  // Create project folder
-            
-            // Add files under project folder
-            if (project.fileStructure) {
-                Object.entries(project.fileStructure).forEach(([fileName, content]) => {
-                    explorerTree.Projects[project.name][fileName] = content;
-                });
-            }
+            // Store files directly in explorerTree
+            explorerTree.Projects[project.name] = project.fileStructure || {};
         });
 
         // If we have saved explorer tree state in settings, restore it
@@ -112,7 +100,7 @@ export async function loadProjectsFromFirestore() {
         }
 
         console.log("Loaded projects:", projectStructure);
-        console.log("File structure:", fileStructure);
+        console.log("File structure:", explorerTree);
         console.log("Explorer tree:", explorerTree);
         console.log("UI state:", uiState);
 
@@ -131,7 +119,7 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
             const projectRef = doc(db, "projects", currentProject);
             await setDoc(projectRef, {
                 name: currentProject,
-                fileStructure: fileStructure[currentProject],
+                fileStructure: explorerTree.Projects[currentProject], // Use explorerTree instead
                 lastModified: new Date().toISOString(),
                 mainTexFile: mainTexFile
             }, { merge: true });
@@ -162,7 +150,8 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
 
 // Add getter for file structure
 export function getCurrentProjectFiles() {
-    return currentProject ? fileStructure[currentProject] : null;
+    // Get files directly from explorerTree instead of fileStructure
+    return currentProject ? explorerTree.Projects[currentProject] : null;
 }
 
 export async function switchProject(projectName) {
