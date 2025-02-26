@@ -131,3 +131,26 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
 export function getCurrentProjectFiles() {
     return currentProject ? fileStructure[currentProject] : null;
 }
+
+export async function switchProject(projectName) {
+    if (!projectStructure.includes(projectName)) {
+        console.error(`Project ${projectName} not found`);
+        return;
+    }
+
+    currentProject = projectName;
+    const projectRef = doc(db, "projects", projectName);
+    const projectDoc = await getDoc(projectRef);
+    
+    if (projectDoc.exists()) {
+        mainTexFile = projectDoc.data().mainTexFile || "main.tex";
+    }
+
+    // Update UI state in Firestore
+    await setDoc(doc(db, "global", "uiState"), {
+        currentProject: projectName,
+        lastModified: new Date().toISOString()
+    }, { merge: true });
+
+    return getCurrentProjectFiles();
+}
