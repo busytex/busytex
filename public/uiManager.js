@@ -11,6 +11,28 @@ import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-f
 import { db } from './firebase-config.js';
 import { getEditors } from './editorManager.js';  // Add this import
 
+// Add to top-level after imports
+function setupContextMenuHandlers() {
+    // Handle context menu cleanup
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.context-menu')) {
+            const menu = document.querySelector('.context-menu');
+            const explorer = document.querySelector('.file-explorer');
+            if (menu) {
+                menu.remove();
+                explorer.classList.remove('context-active');
+            }
+        }
+    });
+
+    // Handle explorer mouse leave
+    document.querySelector('.file-explorer').addEventListener('mouseleave', (e) => {
+        if (!document.querySelector('.context-menu')) {
+            e.currentTarget.classList.remove('context-active');
+        }
+    });
+}
+
 // Keep only this one definition of getFolderStates at the top level
 export function getFolderStates() {
     const states = {};  // Changed from new Map()
@@ -713,3 +735,6 @@ async function handleCreateFolder(folderPath, newFolderName) {
     states[folderPath] = true; // Ensure parent folder stays expanded
     await updateUIAfterChange(states);
 }
+
+// Add to existing exports
+export { setupContextMenuHandlers };
