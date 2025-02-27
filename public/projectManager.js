@@ -103,7 +103,6 @@ export async function loadProjectsFromFirestore() {
         }
 
         console.log("Loaded projects:", projectStructure);
-        console.log("File structure:", explorerTree);
         console.log("Explorer tree:", explorerTree);
         console.log("UI state:", uiState);
 
