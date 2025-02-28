@@ -2,6 +2,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase
 import { loadProjectsFromFirestore, explorerTree } from './projectManager.js';
 import { initializeEditor } from './editorManager.js';
 import { renderFileExplorer, setupContextMenuHandlers } from './uiManager.js';
+import { onclick_, terminate } from './compileManager.js';  // Add this import
 
 // Load projects and initialize UI
 async function initApp() {
@@ -10,7 +11,7 @@ async function initApp() {
         initializeEditor();
         renderFileExplorer(document.getElementById('file-tree'), explorerTree, uiState);
         setupContextMenuHandlers();
-    } catch (error) {
+            } catch (error) {
         console.error("Error initializing app:", error);
     }
 }
