@@ -609,25 +609,44 @@ const folderElement = e.target.closest('.folder');
 }
 
 // In the file upload handler
-function handleFileUpload(e) {
+function handleFileUpload(e, folderPath = null) {
     const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const content = e.target.result;
-            const states = getFolderStates();  // This now returns a plain object
-            
-            // Update this line to use object property assignment instead of Map.set
-            states['Projects'] = true;  // Changed from states.set('Projects', true)
-            
-            // Continue with existing code...
-            await loadFile(file.name, content);
-            renderFileExplorer(document.getElementById('file-tree'), explorerTree);
-            applyFolderStates(states);
-            persistCurrentProjectToFirestore();
-        };
-        reader.readAsText(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const content = e.target.result || ""; // Ensure content is never undefined
+        const states = getFolderStates();
+        
+        // Get current project
+        if (!currentProject) {
+            console.warn('No project selected');
+            return;
+        }
+        
+        // Store file in correct project structure
+        if (folderPath === "Projects" || !folderPath) {
+            if (!explorerTree.Projects[currentProject]) {
+                explorerTree.Projects[currentProject] = {};
+            }
+            explorerTree.Projects[currentProject][file.name] = content;
+        } else {
+            if (!explorerTree.Projects[currentProject][folderPath]) {
+                explorerTree.Projects[currentProject][folderPath] = {};
+            }
+            explorerTree.Projects[currentProject][folderPath][file.name] = content;
+        }
+
+        // Keep folder expanded
+        states[folderPath || currentProject] = true;
+        
+        // Update UI and persist changes
+        await updateUIAfterChange(states);
+        
+        console.log(`File uploaded: ${file.name} with content length: ${content.length}`);
+    };
+    
+    reader.readAsText(file);
 }
 
 async function saveFolderStates(states) {
@@ -659,41 +678,70 @@ function addFolderClickHandler(content, subUl, chevron) {
 
 // Add this function to handle file loading
 async function handleFileClick(fileName, folder = null) {
-    const currentFiles = getCurrentProjectFiles();
-    if (!currentFiles) return;
+    if (!currentProject) {
+        console.warn('No project selected');
+        return;
+    }
 
     let content = null;
     
-    // Check if file is in root or in a folder
+    // Get file content based on location
     if (folder) {
-        content = currentFiles[folder]?.[fileName];
+        content = explorerTree.Projects[currentProject][folder]?.[fileName];
     } else {
-        content = currentFiles[fileName];
+        content = explorerTree.Projects[currentProject][fileName];
     }
 
-    // If content exists, load it into the editor
+    // Load content into appropriate editor
     if (content) {
-        const { texEditor, bibEditor } = getEditors();  // Get editors from editorManager
+        const { texEditor, bibEditor } = getEditors();
         const editor = fileName.endsWith('.tex') ? texEditor : bibEditor;
+        
         if (editor) {
-            editor.setValue(content);
+            editor.setValue(content || ""); // Ensure we never set undefined
             editor.focus();
+            
+            // Update current file indicator in UI
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('current-file');
+            });
+            const fileItem = getFileElement(fileName, folder);
+            if (fileItem) {
+                fileItem.classList.add('current-file');
+            }
         } else {
             console.warn(`No editor available for file type: ${fileName}`);
         }
     } else {
-        console.warn(`No content found for file: ${fileName}`);
+        console.warn(`No content found for file: ${fileName} in ${folder || 'root'}`);
     }
 }
 
 // Update updateUIAfterChange to include state saving
 async function updateUIAfterChange(states) {
+    // First update UI
     renderFileExplorer(document.getElementById('file-tree'), explorerTree);
     applyFolderStates(states);
-    await Promise.all([
-        persistCurrentProjectToFirestore(),
-        saveFolderStates(states)
-    ]);
+
+    // Then persist everything to Firebase
+    try {
+        await Promise.all([
+            // Save current project's data
+            persistCurrentProjectToFirestore(),
+            // Save folder states
+            saveFolderStates(states),
+            // Save explorer tree structure
+            setDoc(doc(db, "global", "settings"), {
+                projectStructure,
+                explorerTree: { Projects: Object.fromEntries(
+                    projectStructure.map(name => [name, explorerTree.Projects[name] || {}])
+                )},
+                lastModified: new Date().toISOString()
+            }, { merge: true })
+        ]);
+    } catch (error) {
+        console.error("Error persisting changes:", error);
+    }
 }
 
 // Update delete handling in context menu
@@ -701,19 +749,13 @@ async function handleDeleteFile(fileName) {
     const states = getFolderStates();
     let fileDeleted = false;
 
-    // Check if file is directly in Projects folder
-    if (explorerTree.Projects.hasOwnProperty(fileName)) {  // Changed from Project
-        delete explorerTree.Projects[fileName];  // Changed from Project
-        fileDeleted = true;
-    } else {
-        // Check in subfolders
-        for (const folder in explorerTree.Projects) {  // Changed from Project
-            if (typeof explorerTree.Projects[folder] === 'object' &&  // Changed from Project
-                explorerTree.Projects[folder].hasOwnProperty(fileName)) {  // Changed from Project
-                delete explorerTree.Projects[folder][fileName];  // Changed from Project
-                fileDeleted = true;
-                break;
-            }
+    // Check for files in folders
+    for (const folder in explorerTree.Projects) {  // Changed from Project
+        if (typeof explorerTree.Projects[folder] === 'object' &&  // Changed from Project
+            explorerTree.Projects[folder].hasOwnProperty(fileName)) {  // Changed from Project
+            delete explorerTree.Projects[folder][fileName];  // Changed from Project
+            fileDeleted = true;
+            break;
         }
     }
 
@@ -738,3 +780,24 @@ async function handleCreateFolder(folderPath, newFolderName) {
 
 // Add to existing exports
 export { setupContextMenuHandlers };
+
+// Add this helper function after other utility functions
+function getFileElement(fileName, folder = null) {
+    const files = document.querySelectorAll('.file-item');
+    return Array.from(files).find(item => {
+        const label = item.querySelector('span:last-child').textContent;
+        
+        // For files at project root level
+        if (!folder) {
+            const projectName = currentProject;
+            const parentFolder = item.closest('li').parentElement.parentElement;
+            const folderLabel = parentFolder?.querySelector('.file-item span:last-child')?.textContent;
+            return label === fileName && folderLabel === projectName;
+        }
+        
+        // For files in subfolders
+        const folderItem = item.closest('li').parentElement.parentElement;
+        const folderName = folderItem?.querySelector('.file-item span:last-child')?.textContent;
+        return label === fileName && folderName === folder;
+    });
+}

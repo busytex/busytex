@@ -124,7 +124,7 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
                 fileStructure: explorerTree.Projects[currentProject],
                 lastModified: new Date().toISOString(),
                 mainTexFile: mainTexFile
-            }, { merge: true });
+            });
         }
 
         // Save global UI state with expanded folders
