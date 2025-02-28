@@ -433,7 +433,7 @@ function showContextMenu(e, isFolder) {
 
     // Find the clicked element
     const targetElement = e.target.closest('.file-item');
-const folderElement = e.target.closest('.folder');
+    const folderElement = e.target.closest('.folder');
     
     if (!targetElement) return;
 
@@ -474,31 +474,13 @@ const folderElement = e.target.closest('.folder');
             input.type = 'file';
             input.accept = '*';
 
-            input.onchange = (inputEvent) => {
-                const file = inputEvent.target.files[0];
-                if (file) {
-                    const states = getFolderStates();
-                    
-                    // Ensure the target folder is expanded in the states
-                    states[folderPath] = true;
-                    
-                    // Update the file structure at the correct path
-                    if (folderPath === "Projects") {  // Changed from Project
-                        explorerTree.Projects[file.name] = "// Empty file content";  // Changed from Project
-                    } else if (explorerTree.Projects[folderPath]) {  // Changed from Project
-                        explorerTree.Projects[folderPath][file.name] = "// Empty file content";
-                    }
-                    
-                    // Ensure the target folder is expanded in the states
-                    states[folderPath] = true;
-                    
-                    // Re-render and restore states with the target folder expanded
-                    renderFileExplorer(document.getElementById('file-tree'), explorerTree);
-                    applyFolderStates(states);
-                }
+            // Change this part to use the proper handleFileUpload function
+            input.onchange = (e) => {
+                handleFileUpload(e, folderPath);
                 explorer.classList.remove('context-active');
                 menu.remove();
             };
+            
             input.click();
         };
         
@@ -615,30 +597,24 @@ function handleFileUpload(e, folderPath = null) {
 
     const reader = new FileReader();
     reader.onload = async function(e) {
-        const content = e.target.result || ""; // Ensure content is never undefined
+        const content = e.target.result || "";
         const states = getFolderStates();
         
-        // Get current project
         if (!currentProject) {
             console.warn('No project selected');
             return;
         }
         
-        // Store file in correct project structure
-        if (folderPath === "Projects" || !folderPath) {
-            if (!explorerTree.Projects[currentProject]) {
-                explorerTree.Projects[currentProject] = {};
-            }
-            explorerTree.Projects[currentProject][file.name] = content;
-        } else {
-            if (!explorerTree.Projects[currentProject][folderPath]) {
-                explorerTree.Projects[currentProject][folderPath] = {};
-            }
-            explorerTree.Projects[currentProject][folderPath][file.name] = content;
+        // Initialize project if it doesn't exist
+        if (!explorerTree.Projects[currentProject]) {
+            explorerTree.Projects[currentProject] = {};
         }
 
+        // Store file in correct project structure
+        explorerTree.Projects[currentProject][file.name] = content;
+
         // Keep folder expanded
-        states[folderPath || currentProject] = true;
+        states[currentProject] = true;
         
         // Update UI and persist changes
         await updateUIAfterChange(states);

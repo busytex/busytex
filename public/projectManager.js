@@ -82,8 +82,13 @@ export async function loadProjectsFromFirestore() {
             // Store project name
             projectStructure.push(project.name);
             
-            // Store files directly in explorerTree
-            explorerTree.Projects[project.name] = project.fileStructure || {};
+            // Store file content in explorerTree
+            if (project.fileStructure) {
+                explorerTree.Projects[project.name] = project.fileStructure;
+                console.log(`Loaded files for ${project.name}:`, project.fileStructure);
+            } else {
+                explorerTree.Projects[project.name] = {};
+            }
         });
 
         // If we have saved explorer tree state in settings, restore it
@@ -116,15 +121,18 @@ export async function loadProjectsFromFirestore() {
 // Save both file structure and UI state
 export async function persistCurrentProjectToFirestore(uiState = {}) {
     try {
-        // Save project data
+        // Save project data with full file content
         if (currentProject) {
             const projectRef = doc(db, "projects", currentProject);
-            await setDoc(projectRef, {
+            const projectData = {
                 name: currentProject,
                 fileStructure: explorerTree.Projects[currentProject],
                 lastModified: new Date().toISOString(),
                 mainTexFile: mainTexFile
-            });
+            };
+            
+            console.log('Saving project data:', projectData);
+            await setDoc(projectRef, projectData);
         }
 
         // Save global UI state with expanded folders
@@ -135,18 +143,19 @@ export async function persistCurrentProjectToFirestore(uiState = {}) {
             lastModified: new Date().toISOString()
         }, { merge: true });
 
-        // Save other global settings (without UI state)
+        // Save global settings with project structure
         const globalRef = doc(db, "global", "settings");
         await setDoc(globalRef, {
             projectStructure,
             explorerTree: { Projects: Object.fromEntries(
-                projectStructure.map(name => [name, {}])
+                projectStructure.map(name => [name, explorerTree.Projects[name] || {}])
             )},
             lastModified: new Date().toISOString()
         }, { merge: true });
 
     } catch (error) {
         console.error("Error saving structure:", error);
+        throw error; // Propagate error for handling
     }
 }
 
