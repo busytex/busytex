@@ -353,6 +353,41 @@ button:hover {
     font-size: 14px;
 }
 
+/* Highlight for current file in explorer */
+.file-item.current-file {
+    background-color: var(--vscode-list-activeSelectionBackground);
+    color: var(--vscode-list-activeSelectionForeground);
+    border-radius: 3px;
+}
+
+/* Optional: hover state for better UX */
+.file-item.current-file:hover {
+    background-color: var(--vscode-list-activeSelectionBackground);
+    opacity: 0.9;
+}
+
+/* Main tex file styling - base state */
+.file-item.main-tex,
+.file-item.main-tex .codicon,
+.file-item.main-tex span {
+    color: #ffcb6b !important;
+}
+
+/* Combined state: both main tex and current file */
+.file-item.main-tex.current-file,
+.file-item.main-tex.current-file .codicon,
+.file-item.main-tex.current-file span {
+    color: #ffd700 !important; /* Brighter gold color */
+    font-weight: 600;
+    text-shadow: 0 0 2px rgba(255, 215, 0, 0.3); /* Subtle glow effect */
+}
+
+/* Hover state for current main file */
+.file-item.main-tex.current-file:hover {
+    background-color: var(--vscode-list-activeSelectionBackground);
+    opacity: 0.95;
+}
+
 .folder-name, .file-name {
     color: #cccccc;  /* VS Code's default text color */
 }
