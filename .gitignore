@@ -11,7 +11,7 @@
 example/bibtex/
 build/
 source/
-dist/
+// dist/ //Commentato anche qui. Ho un po' di casini in locale con git 
 
 # Node.js dependencies
 node_modules/
