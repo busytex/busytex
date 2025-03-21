@@ -25,63 +25,6 @@ No output PDF file written.
  * from a set of data packages and local/system texmf directories. It provides methods
  * to extract, resolve, and cache LaTeX package information.
  */
-class BusytexDataPackageResolver {
-    /**
-     * Constructs a new BusytexDataPackageResolver instance.
-     * 
-     * @param {string[]} data_packages_js - Array of URLs or paths to JavaScript files containing LaTeX package data.
-     * @param {string[]} [texmf_system=[]] - Array of paths to system-level texmf directories.
-     * @param {string[]} [texmf_local=[]] - Array of paths to local texmf directories.
-     * @param {Object} [remap] - An object mapping specific LaTeX package names to alternative names.
-     * @param {string|null} [remap.config=null] - Remap for the "config" package.
-     * @param {string|null} [remap.firstaid='latex-firstaid'] - Remap for the "firstaid" package.
-     * @param {string|null} [remap.hyphen=null] - Remap for the "hyphen" package.
-     * @param {string|null} [remap.jknapltx=null] - Remap for the "jknapltx" package.
-     * @param {string|null} [remap.latexconfig=null] - Remap for the "latexconfig" package.
-     * @param {string|null} [remap.pdfwin=null] - Remap for the "pdfwin" package.
-     * @param {string|null} [remap.plweb='pl'] - Remap for the "plweb" package.
-     * @param {string|null} [remap.symbol=null] - Remap for the "symbol" package.
-     * @param {string|null} [remap.syntax=null] - Remap for the "syntax" package.
-     * @param {string|null} [remap.third=null] - Remap for the "third" package.
-     * @param {string|null} [remap.twoup=null] - Remap for the "twoup" package.
-     * @param {string|null} [remap.zapfding=null] - Remap for the "zapfding" package.
-     */
-    constructor(data_packages_js, texmf_system = [], texmf_local = [], remap = {}) {}
-
-    /**
-     * Resolves the LaTeX packages from the provided data packages.
-     * 
-     * @returns {Promise<Array<[string, string[]]>>} A promise that resolves to an array of tuples,
-     * where each tuple contains the data package path and a sorted array of LaTeX package names.
-     */
-    async resolve_data_packages() {}
-
-    /**
-     * Caches the data packages by fetching their corresponding `.data` files.
-     * 
-     * @returns {void}
-     */
-    cache_data_packages() {}
-
-    /**
-     * Extracts the LaTeX package name from a given file path and optional file contents.
-     * 
-     * @param {string} path - The file path to extract the package name from.
-     * @param {string} [contents=''] - The optional file contents to analyze for package information.
-     * @returns {string|null} The extracted LaTeX package name, or null if not applicable.
-     */
-    extract_tex_package_name(path, contents = '') {}
-
-    /**
-     * Resolves LaTeX package dependencies for a given set of files and a main `.tex` file.
-     * 
-     * @param {Array<{path: string, contents: string|Buffer}>} files - Array of file objects with `path` and `contents`.
-     * @param {string} main_tex_path - The path to the main `.tex` file.
-     * @param {Set<string>|null} [data_packages_js=null] - Optional set of data package paths to limit resolution.
-     * @returns {Promise<Object>} A promise that resolves to an object mapping LaTeX package names to their resolution status.
-     */
-    async resolve(files, main_tex_path, data_packages_js = null) {}
-}
 class BusytexDataPackageResolver
 {
     constructor(data_packages_js, texmf_system = [], texmf_local = [], remap = {
@@ -695,12 +638,12 @@ class BusytexPipeline
                 log = this.read_all_text(FS, log_path);
                 logs.push({logs:logs});
                 console.log(log);
-                return { pdf:null, log: cmd, exit_code: 1, logs: logs};
+                exit_code = 2;
+                return { pdf: null, log: cmd, exit_code: exit_code, logs: logs};
             } 
             
+            //////////////////////////////
 
-
-            
             const cmd_log_path = is_bibtex ? blg_path : log_path;
             const cmd_aux_path = is_bibtex ? bbl_path : aux_path;
 
@@ -746,6 +689,7 @@ class BusytexPipeline
 
         // Funzione per leggere ricorsivamente il contenuto di una directory
         // DA CANCELLARE
+        /*
         const readDirectoryRecursive = (FS, PATH, path) => {
             const entries = FS.readdir(path).filter(entry => entry !== '.' && entry !== '..');
             let result = [];
@@ -764,25 +708,25 @@ class BusytexPipeline
 
             return result;
         };
+        */
 
         // Legge il contenuto ricorsivo della directory /home/web_user
         // DA CANCELLARE
+        /*
         const directoryContents = readDirectoryRecursive(FS, PATH, '/home/web_user');
         console.log('Contenuto ricorsivo della directory /home/web_user:', directoryContents);
-
+        */
         // Restituisce il risultato della compilazione insieme al contenuto della directory
         const pdf = exit_code == 0 ? this.read_all_bytes(FS, pdf_path) : null;
         const logcat = logs.map(({ cmd, texmflog, missfontlog, log, exit_code, stdout, stderr }) => ([`$ ${cmd}`, `EXITCODE: ${exit_code}`, '', 'TEXMFLOG:', texmflog, '==', 'MISSFONTLOG:', missfontlog, '==', 'LOG:', log, '==', 'STDOUT:', stdout, '==', 'STDERR:', stderr, '======'].join('\n'))).join('\n\n');
 
         this.Module = this.preload == false ? null : this.Module;
 
-        return { pdf: pdf, log: logcat, exit_code: exit_code, logs: logs, directoryContents: directoryContents };
-        
         /*
-        * CORRETTO
-        
+        return { pdf: pdf, log: logcat, exit_code: exit_code, logs: logs, directoryContents: directoryContents };
+        */
+                
         return { pdf: pdf, log: logcat, exit_code: exit_code, logs: logs};
 
-        */
     }
 }

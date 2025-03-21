@@ -152,7 +152,7 @@ export async function onclick_() {
           );
         } else if (files && this.pipeline) {
           const pipeline = await this.pipeline;
-          const pdf = await self.pipeline.compile(
+          const { pdf:pdf, exit_code:exit_code, logs:logs } = await self.pipeline.compile(
             files,
             main_tex_path,
             bibtex,
@@ -160,7 +160,11 @@ export async function onclick_() {
             driver,
             data_packages_js
           );
-          this.onmessage({ data: { pdf } });
+          console.log('EXIT CODE:', exit_code);
+          console.log('LOGS:', logs.join("\n"));
+          if(exit_code != 2)
+            this.onmessage({ data: { pdf } });
+          else bibEditor.setValue(logs.join("\n"));
         }
       },
       terminate() {
@@ -169,7 +173,7 @@ export async function onclick_() {
     };
   }
 
-  worker.onmessage = ({ data: { pdf, log, print } }) => {
+  worker.onmessage = ({ data: { pdf, log, print} }) => {
     if (pdf) {
       previewElement.src = URL.createObjectURL(
         new Blob([pdf], { type: "application/pdf" })
@@ -186,6 +190,10 @@ export async function onclick_() {
 
     if (print) {
       console.log(print);
+    }
+
+    if (log) {
+      console.error(log);
     }
   };
 
