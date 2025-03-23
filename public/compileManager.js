@@ -152,7 +152,7 @@ export async function onclick_() {
           );
         } else if (files && this.pipeline) {
           const pipeline = await this.pipeline;
-          const { pdf:pdf, exit_code:exit_code, logs:logs } = await self.pipeline.compile(
+          const { pdf: pdf, exit_code: exit_code, logs: logs } = await self.pipeline.compile(
             files,
             main_tex_path,
             bibtex,
@@ -162,9 +162,12 @@ export async function onclick_() {
           );
           console.log('EXIT CODE:', exit_code);
           console.log('LOGS:', logs.join("\n"));
-          if(exit_code != 2)
+          if (exit_code != 2)
             this.onmessage({ data: { pdf } });
-          else bibEditor.setValue(logs.join("\n"));
+          else {
+            bibEditor.setValue(logs.join("\n"));
+            terminate();
+          }
         }
       },
       terminate() {
@@ -173,7 +176,7 @@ export async function onclick_() {
     };
   }
 
-  worker.onmessage = ({ data: { pdf, log, print} }) => {
+  worker.onmessage = ({ data: { pdf, log, exit_code, logs, print } }) => {
     if (pdf) {
       previewElement.src = URL.createObjectURL(
         new Blob([pdf], { type: "application/pdf" })
@@ -195,6 +198,37 @@ export async function onclick_() {
     if (log) {
       console.error(log);
     }
+
+    if (exit_code == 2) {
+      alert('Compilation failed: ' + log);
+      terminate();
+      compileButton.classList.remove("compiling");
+      compileButton.innerText = "Compile";
+      if (spinnerElement) {
+        spinnerElement.style.display = "none";
+      }
+      // Scrivo il log nella sezione di sotto
+      bibEditor.setValue(log);
+
+      // uso il parser per analizzare il log
+      const result = analyzeLatexLog(log);
+
+      // Aggiorna l'interfaccia utente con i risultati
+      if (result) {
+        result.errors.forEach((error) => {
+          console.error(`Error in file ${error.file} at line ${error.line}: ${error.message}`);
+        });
+
+        result.warnings.forEach((warning) => {
+          console.warn(`Warning in file ${warning.file} at line ${warning.line}: ${warning.message}`);
+        });
+
+        result.typesetting.forEach((issue) => {
+          console.log(`Typesetting issue: ${issue.message}`);
+        });
+      }
+    }
+
   };
 
   if (reload)
@@ -225,4 +259,30 @@ export async function onclick_() {
 export function terminate() {
   if (worker !== null) worker.terminate();
   worker = null;
+}
+
+export function analyzeLatexLog(log) {
+  // Importa latex-log-parser
+  require(['dist/latex-log-parser'], function(LatexParser) {
+    try {
+      // Opzioni per il parser
+      const options = {
+        ignoreDuplicates: true, // Ignora messaggi duplicati
+      };
+
+      // Analizza il log
+      const result = LatexParser.parse(log, options);
+
+      // Mostra i risultati nella console (o gestiscili come necessario)
+      console.log('Errors:', result.errors);
+      console.log('Warnings:', result.warnings);
+      console.log('Typesetting issues:', result.typesetting);
+      console.log('All messages:', result.all);
+
+      // Puoi restituire i risultati o usarli per aggiornare l'interfaccia utente
+      return result;
+    } catch (error) {
+      console.error('Error analyzing LaTeX log:', error);
+    }
+  });
 }

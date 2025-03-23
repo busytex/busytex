@@ -2,6 +2,8 @@
 //TODO: put texlive into /opt/texlive/2020 or ~/.texlive2020?
 //TODO: configure fontconfig to use /etc/fonts
 
+//import { terminate } from "../compileManager";
+
 /*
 xdvipdfmx:warning: Color stack underflow. Just ignore.
 xdvipdfmx:warning: Color stack underflow. Just ignore.
@@ -622,12 +624,11 @@ class BusytexPipeline
 
             /*
             * Se pdflatex ha fallito la prima volta, non genera il file .aux. 
-            * Se il file .aux non esiste bibtex non può essere eseguito.
-            * Capire meglio cosa restituisce la funzione compile in questo caso al fine di 
-            * interrompere la compilazione e di restituire l'errore preso dal log.
+            * Se il file .aux non esiste bibtex non può essere eseguito e il processo
+            * di compilazione viene interrotto.
+            * Il risultato restituito da compile viene gestito in compileManager.js
             */
 
-            
             console.log(aux_path);
             console.log(FS.analyzePath(aux_path).exists);
             console.log(log_path);
@@ -639,7 +640,9 @@ class BusytexPipeline
                 logs.push({logs:logs});
                 console.log(log);
                 exit_code = 2;
-                return { pdf: null, log: cmd, exit_code: exit_code, logs: logs};
+                //this.terminate();
+                //terminate();
+                return { pdf: null, log: log, exit_code: exit_code, logs: logs};
             } 
             
             //////////////////////////////
