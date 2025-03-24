@@ -76,13 +76,11 @@ int packfs_path_in_range(const char* prefix, const char* path)
 {
     if(prefix == NULL || prefix[0] == '\0' || path == NULL || path[0] == '\0')
         return 0;
-
     size_t prefix_len = strlen(prefix);
     size_t path_len = strlen(path);
     int prefix_endswith_slash = prefix[prefix_len - 1] == packfs_sep;
     int prefix_ok = 0 == strncmp(prefix, path, prefix_len - (prefix_endswith_slash ? 1 : 0));
     size_t prefix_len_m1 = prefix_endswith_slash ? (prefix_len - 1) : prefix_len;
-
     return prefix_ok && ((path_len == prefix_len_m1) || (path_len >= prefix_len && path[prefix_len_m1] == packfs_sep));
 }
 
@@ -359,5 +357,6 @@ int __wrap_fstat(int fd, struct stat * statbuf)
     return __real_fstat(fd, statbuf);
 }
 
-// TODO: add root to dirs abspaths
-// TODO: a directory with zip archives to be read, check listing files before touching the archive
+// TODO: - a list of listing files, or a separate directory with listing files (to be enumerated), then archive file can be checked from the listing
+// TODO: - a list of archive files, or a separate directory with archive files (to be enumerated), then a listing file can be checked if exists
+// TODO: - lazy mode of initializing index and scanning the archive files / directory

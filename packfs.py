@@ -20,7 +20,7 @@ translate = {ord('.') : '_', ord('-') : '__', ord('_') : '__', ord('/') : '_'}
 
 output_path_o = args.output_path + '.o'
 os.makedirs(output_path_o, exist_ok = True)
-objects, relpaths_dirs, safepaths, relpaths = [], [], [], []
+objects, safepaths, relpaths, relpaths_dirs  = [], [], [], ['']
 
 cwd = os.getcwd()
 for (dirpath, dirnames, filenames) in os.walk(args.input_path):
@@ -55,7 +55,7 @@ print('\n'.join(objects), file = g)
 f = open(args.output_path, 'w')
 print("size_t packfs_builtin_files_num = ", len(relpaths), ', packfs_builtin_dirs_num = ', len(relpaths_dirs), ";\n\n", file = f)
 print("const char* packfs_builtin_abspaths[] = {\n\"" , "\",\n\"".join(os.path.join(args.prefix, _) for _ in relpaths), "\"\n};\n\n", sep = '', file = f)
-print("const char* packfs_builtin_abspaths_dirs[] = {\n\"" , "\",\n\"".join(os.path.join(args.prefix, _) for _ in relpaths_dirs), "\"\n};\n\n", sep = '', file = f)
+print("const char* packfs_builtin_abspaths_dirs[] = {\n\"" , "\",\n\"".join(os.path.join(args.prefix, _).rstrip('/') for _ in relpaths_dirs), "\"\n};\n\n", sep = '', file = f)
 print("\n".join(f"extern char _binary_{_}_start[], _binary_{_}_end[];" for _ in safepaths), "\n\n", file = f)
 print("const char* packfs_builtin_starts[] = {\n", "\n".join(f"_binary_{_}_start," for _ in safepaths), "\n};\n\n", file = f)
 print("const char* packfs_builtin_ends[] = {\n", "\n".join(f"_binary_{_}_end," for _ in safepaths), "\n};\n\n", file = f)
