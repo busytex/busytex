@@ -176,7 +176,7 @@ export async function onclick_() {
     };
   }
 
-  worker.onmessage = ({ data: { pdf, log, exit_code, logs, print } }) => {
+  worker.onmessage = async ({ data: { pdf, log, exit_code, logs, print } }) => {
     if (pdf) {
       previewElement.src = URL.createObjectURL(
         new Blob([pdf], { type: "application/pdf" })
@@ -196,36 +196,46 @@ export async function onclick_() {
     }
 
     if (log) {
-      console.error(log);
+      //console.error(log);
+      // DO NOTHING
     }
 
-    if (exit_code == 2) {
-      alert('Compilation failed: ' + log);
+    if (exit_code != 0 & exit_code != undefined) {
+      //alert('Compilation failed: ' + log);
       terminate();
-      compileButton.classList.remove("compiling");
-      compileButton.innerText = "Compile";
-      if (spinnerElement) {
-        spinnerElement.style.display = "none";
-      }
-      // Scrivo il log nella sezione di sotto
+      
+      //bibEditor.setValue(logs.join("\n"));
+      //alert("Compilation failed");
+
+      // Analyze log to find errors and warnings
+
+      const pdflatex_log_index = logs.length == 2 ? 0 : logs.length - 1;
+      const log = logs[pdflatex_log_index].log;
       bibEditor.setValue(log);
 
-      // uso il parser per analizzare il log
-      const result = analyzeLatexLog(log);
+      try {
+        const result = await analyzeLatexLog(log);
 
-      // Aggiorna l'interfaccia utente con i risultati
-      if (result) {
-        result.errors.forEach((error) => {
-          console.error(`Error in file ${error.file} at line ${error.line}: ${error.message}`);
-        });
+        if (result) {
+          const resultString = result.errors
+            .map((error) => `Error in file ${error.file} at line ${error.line}: ${error.message}`)
+            .concat(
+              result.warnings.map((warning) => `Warning in file ${warning.file} at line ${warning.line}: ${warning.message}`)
+            )
+            .concat(
+              result.typesetting.map((issue) => `Typesetting issue: ${issue.message}`)
+            )
+            .join("\n");
 
-        result.warnings.forEach((warning) => {
-          console.warn(`Warning in file ${warning.file} at line ${warning.line}: ${warning.message}`);
-        });
+          console.log(resultString);
 
-        result.typesetting.forEach((issue) => {
-          console.log(`Typesetting issue: ${issue.message}`);
-        });
+          /////////////////////////////////
+          bibEditor.setValue(resultString);
+          /////////////////////////////////
+
+        }
+      } catch (error) {
+        console.error("Error analyzing LaTeX log:", error);
       }
     }
 
@@ -259,30 +269,38 @@ export async function onclick_() {
 export function terminate() {
   if (worker !== null) worker.terminate();
   worker = null;
+  compileButton.classList.remove("compiling");
+  compileButton.innerText = "Compile";
+  if (spinnerElement) {
+    spinnerElement.style.display = "none";
+  }
 }
 
 export function analyzeLatexLog(log) {
-  // Importa latex-log-parser
-  require(['dist/latex-log-parser'], function(LatexParser) {
-    try {
-      // Opzioni per il parser
-      const options = {
-        ignoreDuplicates: true, // Ignora messaggi duplicati
-      };
+  return new Promise((resolve, reject) => {
+    require(['dist/latex-log-parser'], function (LatexParser) {
+      try {
+        // Parser options
+        const options = {
+          ignoreDuplicates: true, // Ignore duplicate messages
+        };
 
-      // Analizza il log
-      const result = LatexParser.parse(log, options);
+        // Analyze the LaTeX log
+        const result = LatexParser.parse(log, options);
 
-      // Mostra i risultati nella console (o gestiscili come necessario)
-      console.log('Errors:', result.errors);
-      console.log('Warnings:', result.warnings);
-      console.log('Typesetting issues:', result.typesetting);
-      console.log('All messages:', result.all);
+        // Show the result
+        console.log("QUESTO E' IL RISULTATO DEL PARSER");
+        console.log('Errors:', result.errors);
+        console.log('Warnings:', result.warnings);
+        console.log('Typesetting issues:', result.typesetting);
+        console.log('All messages:', result.all);
 
-      // Puoi restituire i risultati o usarli per aggiornare l'interfaccia utente
-      return result;
-    } catch (error) {
-      console.error('Error analyzing LaTeX log:', error);
-    }
+        // Resolve the Promise with the result
+        resolve(result);
+      } catch (error) {
+        console.error('Error analyzing LaTeX log:', error);
+        reject(error); // Reject the Promise with the error
+      }
+    });
   });
 }

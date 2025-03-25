@@ -628,7 +628,7 @@ class BusytexPipeline
             * di compilazione viene interrotto.
             * Il risultato restituito da compile viene gestito in compileManager.js
             */
-
+/*
             console.log(aux_path);
             console.log(FS.analyzePath(aux_path).exists);
             console.log(log_path);
@@ -644,7 +644,7 @@ class BusytexPipeline
                 //terminate();
                 return { pdf: null, log: log, exit_code: exit_code, logs: logs};
             } 
-            
+*/
             //////////////////////////////
 
             const cmd_log_path = is_bibtex ? blg_path : log_path;
