@@ -21,7 +21,7 @@ Future work:
 - mktexlsr, fmtutil, updmap (perl)
 
 ### License
-MIT
+MIT - applies only to the code and scripts in the repo, not to the published binaries (on the releases page). The binaries include linked TexLive code, so the respective TexLived/dependencies licenses apply.
 
 ### Usage
 ```shell
