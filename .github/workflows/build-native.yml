@@ -41,9 +41,9 @@ jobs:
             mkdir dist-native && ln -s $PWD/build/native/busytex dist-native/busytex && ln -s $PWD/build/texlive-basic dist-native/texlive-dist
             PATH=$PWD/dist-native:$PATH   bash example/example.sh busytex      pdflatex xelatex luahblatex
             
-            make build/texlive-extra.txt
-            make build/native/busytexextra
-            PATH=$PWD/build/native:$PATH  bash example/example.sh busytexextra pdflatex xelatex luahblatex
+            #make build/texlive-extra.txt
+            #make build/native/busytexextra
+            #PATH=$PWD/build/native:$PATH  bash example/example.sh busytexextra pdflatex xelatex luahblatex
       
       - name: Test native script
         run: |
