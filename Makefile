@@ -235,7 +235,7 @@ build/%/texlive.configured: source/texlive.patched
 	echo '' > $(CACHE_TEXLIVE_$*)
 	#CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		
 	cd $(basename $@) &&                                \
-	$(CONFIGURE_$*) $(abspath source/texlive/configure) \
+	CC_BUILD=$(CC_native) BUILDCC=$(CC_native) $(CONFIGURE_$*) $(abspath source/texlive/configure) \
 	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
 	  --prefix="$(PREFIX_$*)"                           \
 	  --enable-dump-share                               \
@@ -269,7 +269,7 @@ build/%/texlive.configured: source/texlive.patched
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	  CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"                 \
 	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
-          ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes CC_BUILD=$(CC_native)
+          ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes CC_BUILD=$(CC_native) BUILDCC=$(CC_native)
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
 
@@ -277,9 +277,9 @@ build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuz
 	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
 
 build/%/texlive/libs/freetype2/libfreetype.a: build/%/texlive.configured
-	mkdir -p build/native/texlive/libs/freetype2/ft-build
+	#mkdir -p build/native/texlive/libs/freetype2/ft-build
 	#$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
-	CC_BUILD=$(CC_native) $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*) CC_BUILD=$(CC_native)
+	export CC_BUILD=$(CC_native) && $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*) CC_BUILD=$(CC_native)
 
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
