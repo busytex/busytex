@@ -592,9 +592,9 @@ dist-native-full: build/native/busytex
 
 download-native:
 	mkdir -p source build/native build/native/texlive/texk/web2c/web2c
-	curl -L --create-dirs -O --output-dir  build/native                                 $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
-	curl -L --create-dirs -O --output-dir  build/native/texlive/texk/web2c              $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
-	curl -L --create-dirs -O --output-dir  build/native/texlive/texk/web2c/web2c        $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
+	curl --remote-name -L -O --create-dirs --output-dir  build/native                                 $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
+	curl --remote-name -L -O --create-dirs --output-dir  build/native/texlive/texk/web2c              $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
+	curl --remote-name -L -O --create-dirs --output-dir  build/native/texlive/texk/web2c/web2c        $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
 	chown $(shell whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x  $(BUSYWEB2C_native) $(BUSYTEX_native); file $(BUSYWEB2C_native) $(BUSYTEX_native); $(BUSYTEX_native);
 	chown $(shell whoami) $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN)); chmod +x $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN)); file $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN))
 	#
