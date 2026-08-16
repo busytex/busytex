@@ -238,6 +238,7 @@ build/%/texlive.configured: source/texlive.patched
 	CC_BUILD=$(CC_native) BUILDCC=$(CC_native) $(CONFIGURE_$*) $(abspath source/texlive/configure) \
 	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
 	  --prefix="$(PREFIX_$*)"                           \
+	  --host=wasm32-unknown-emscripten                  \
 	  --enable-dump-share                               \
 	  --enable-static                                   \
 	  --enable-freetype2                                \
