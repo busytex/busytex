@@ -540,9 +540,9 @@ ubuntu-wasm: build/wasm/ubuntu/texlive-latex-extra.js build/wasm/ubuntu/texlive-
 example:
 	mkdir -p example/assets/large
 	echo "console.log('Hello world now')" > example/assets/test.txt
-	wget --no-clobber -O example/assets/test.png https://www.google.fr/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
-	wget --no-clobber -O example/assets/test.svg https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg
-	wget --no-clobber -O example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
+	curl -o example/assets/test.png https://www.google.fr/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+	curl -o example/assets/test.svg https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg
+	curl -o example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
 
 build/versions.txt:
 	mkdir -p build
@@ -592,9 +592,9 @@ dist-native-full: build/native/busytex
 
 download-native:
 	mkdir -p source build/native build/native/texlive/texk/web2c/web2c
-	wget  -P build/native                                 -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
-	wget  -P build/native/texlive/texk/web2c              -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
-	wget  -P build/native/texlive/texk/web2c/web2c        -nc $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
+	curl -L --create-dirs -O --output-dir  build/native                                 $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
+	curl -L --create-dirs -O --output-dir  build/native/texlive/texk/web2c              $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
+	curl -L --create-dirs -O --output-dir  build/native/texlive/texk/web2c/web2c        $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
 	chown $(shell whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x  $(BUSYWEB2C_native) $(BUSYTEX_native); file $(BUSYWEB2C_native) $(BUSYTEX_native); $(BUSYTEX_native);
 	chown $(shell whoami) $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN)); chmod +x $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN)); file $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN))
 	#
