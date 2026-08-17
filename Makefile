@@ -229,6 +229,7 @@ source/texlive.patched: source/texlive.txt
 	cp cosmo_getpass.h                    $(abspath source/texlive/texk/dvipdfm-x/cosmo_getpass.h)
 	sed -i '1i#include "cosmo_getpass.h"' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number, font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) # https://github.com/TeX-Live/texlive-source/commit/ae09e0aab3feed6ca6fb24da7ea5e19b7c65c4fa
+	cat $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) # https://github.com/TeX-Live/texlive-source/commit/ae09e0aab3feed6ca6fb24da7ea5e19b7c65c4fa
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
