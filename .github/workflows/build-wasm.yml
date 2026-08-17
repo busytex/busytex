@@ -10,7 +10,8 @@ on:
 
 env:
   UBUNTUPACKAGES: texlive-latex-extra texlive-latex-base_texlive-latex-recommended_texlive-science_texlive-fonts-recommended
-  EMSCRIPTEN_VERSION: 3.1.43
+  #EMSCRIPTEN_VERSION: 3.1.43
+  EMSCRIPTEN_VERSION: 6.0.6
   MAKE_PARALLELISM: -j2
 
 jobs:
@@ -38,7 +39,7 @@ jobs:
         run:  rm -rf source/texmfrepo
 
       - name: Setup Emscripten
-        uses: mymindstorm/setup-emsdk@v13
+        uses: emscripten-core/setup-emsdk@v15
         with:
           version: ${{env.EMSCRIPTEN_VERSION}}
 
