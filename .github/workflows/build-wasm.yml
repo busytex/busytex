@@ -11,7 +11,7 @@ on:
 env:
   UBUNTUPACKAGES: texlive-latex-extra texlive-latex-base_texlive-latex-recommended_texlive-science_texlive-fonts-recommended
   #EMSCRIPTEN_VERSION: 3.1.43
-  EMSCRIPTEN_VERSION: 5.0.0
+  EMSCRIPTEN_VERSION: 4.0.10
   MAKE_PARALLELISM: -j2
 
 jobs:
