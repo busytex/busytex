@@ -147,6 +147,7 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
+LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE
 
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
 PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
@@ -235,11 +236,9 @@ build/%/texlive.configured: source/texlive.patched
 	echo '' > $(CACHE_TEXLIVE_$*)
 	#CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		
 	cd $(basename $@) &&                                \
-	CC_BUILD=$(CC_native) BUILDCC=$(CC_native) $(CONFIGURE_$*) $(abspath source/texlive/configure) \
+	$(CONFIGURE_$*) $(abspath source/texlive/configure) \
 	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
 	  --prefix="$(PREFIX_$*)"                           \
-	  --host=wasm32-unknown-emscripten                  \
-	  --build=x86_64-linux-gnu                          \
 	  --enable-dump-share                               \
 	  --enable-static                                   \
 	  --enable-freetype2                                \
@@ -271,7 +270,7 @@ build/%/texlive.configured: source/texlive.patched
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	  CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"                 \
 	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
-          ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes CC_BUILD=$(CC_native) BUILDCC=$(CC_native)
+          ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
 	touch $@	        
 
@@ -281,7 +280,7 @@ build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuz
 build/%/texlive/libs/freetype2/libfreetype.a: build/%/texlive.configured
 	#mkdir -p build/native/texlive/libs/freetype2/ft-build
 	#$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
-	export CC_BUILD=$(CC_native) && $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*) CC_BUILD=$(CC_native)
+	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
 
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
