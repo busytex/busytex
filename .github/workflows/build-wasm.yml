@@ -10,8 +10,8 @@ on:
 
 env:
   UBUNTUPACKAGES: texlive-latex-extra texlive-latex-base_texlive-latex-recommended_texlive-science_texlive-fonts-recommended
-  EMSCRIPTEN_VERSION: 3.1.43
-  #EMSCRIPTEN_VERSION: 6.0.6
+  #EMSCRIPTEN_VERSION: 3.1.43
+  EMSCRIPTEN_VERSION: 4.0.0
   MAKE_PARALLELISM: -j2
 
 jobs:
@@ -30,13 +30,13 @@ jobs:
       - name: Download TexLive Full
         run:  make source/texmfrepo.txt
       
-      - name: Install TexLive
-        env:
-            MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
-        run: make build/texlive-basic.txt build/texlive-full.txt
-      
-      - name: Clean-up texmf sources
-        run:  rm -rf source/texmfrepo
+      #- name: Install TexLive
+      #  env:
+      #      MAKEFLAGS: ${{env.MAKE_PARALLELISM}}
+      #  run: make build/texlive-basic.txt build/texlive-full.txt
+      #
+      #- name: Clean-up texmf sources
+      #  run:  rm -rf source/texmfrepo
 
       - name: Setup Emscripten
         uses: emscripten-core/setup-emsdk@v15
