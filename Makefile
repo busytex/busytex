@@ -147,7 +147,6 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
-#LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE
 
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
 PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
