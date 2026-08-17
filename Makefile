@@ -239,6 +239,7 @@ build/%/texlive.configured: source/texlive.patched
 	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
 	  --prefix="$(PREFIX_$*)"                           \
 	  --host=wasm32-unknown-emscripten                  \
+	  --build=x86_64-linux-gnu                          \
 	  --enable-dump-share                               \
 	  --enable-static                                   \
 	  --enable-freetype2                                \
