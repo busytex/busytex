@@ -284,6 +284,14 @@ build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/freetype2/libf
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
 
+build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
+	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
+	cd                    build/$*/texlive/libs/icu && $(CONFIGURE_$*) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_$*)
+	$(MAKE_$*)         -C build/$*/texlive/libs/icu $(OPTS_ICU_configure_make_$*)
+	echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
+	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build $(OPTS_ICU_make_$*) 
+	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
+
 build/%/expat/libexpat.a: source/expat.txt
 	mkdir -p $(dir $@) && cd $(dir $@) &&        \
 	$(CMAKE_$*)                                  \
@@ -367,13 +375,6 @@ build/native/busytexextra: build/native/busytex                              bui
 	$(CC_native) -o packfs.o -c packfs.c -DPACKFS_BUILTIN_PREFIX=/texlive -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 	$(CXX_native) -o $@ $<.o packfs.o  $(addprefix build/native/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/native/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/native/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_native) -Wl,--allow-multiple-definition -Wl,--wrap=open,--wrap=close,--wrap=read,--wrap=access,--wrap=lseek,--wrap=stat,--wrap=fstat,--wrap=fopen,--wrap=fileno @packfs.h.txt
 
-build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
-	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
-	cd                    build/$*/texlive/libs/icu && $(CONFIGURE_$*) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_$*)
-	$(MAKE_$*)         -C build/$*/texlive/libs/icu $(OPTS_ICU_configure_make_$*)
-	echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
-	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build $(OPTS_ICU_make_$*) 
-	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
 
 build/%/texlive/texk/web2c/busytex_libxetex.a: build/%/texlive.configured
 	# copying generated C files from native version, since string offsets are off
