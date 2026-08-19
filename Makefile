@@ -166,6 +166,7 @@ OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CC="$
 OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
 OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
 OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
+OPTS_libfreetype_wasm    = LDFLAGS=-sEXECUTABLE
 #OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
 OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
