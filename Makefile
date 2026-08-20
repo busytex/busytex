@@ -9,8 +9,8 @@ URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-2
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2023.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 #URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
-#URL_fontconfig       = https://github.com/fontconfig/fontconfig/archive/refs/tags/2.13.96.tar.gz
-URL_fontconfig       = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/fontconfig-2.13.96.tar.gz
+URL_fontconfig       = https://github.com/fontconfig/fontconfig/archive/refs/tags/2.13.96.tar.gz
+#URL_fontconfig       = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/noble/
 URL_ubuntu_release_cache = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/
 
