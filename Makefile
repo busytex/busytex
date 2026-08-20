@@ -280,12 +280,15 @@ build/%/texlive.configured: source/texlive.patched
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
 
-build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
-	#export LDFLAGS="-sEXECUTABLE -lnoderawfs.js" && $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
-	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
+	$(MAKE_$*) -C $(dir $(subst .libs/,,$@)) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
 
-build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
-	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
+#build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
+#	#export LDFLAGS="-sEXECUTABLE -lnoderawfs.js" && $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+#	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+
+#build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
+#	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
 
 build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-build/lib/libicudata.a: build/%/texlive.configured
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
