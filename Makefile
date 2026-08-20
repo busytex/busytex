@@ -149,7 +149,7 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
-LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE -lnoderawfs.js
+#LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE -lnoderawfs.js
 
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
 PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
@@ -168,8 +168,8 @@ OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CC="$
 OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
 OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
 OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
-OPTS_libfreetype_wasm    = LDFLAGS="-sEXECUTABLE -lnoderawfs.js"
-#OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
+#OPTS_libfreetype_wasm    = LDFLAGS="-sEXECUTABLE -lnoderawfs.js"
+OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
 OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" CXX="em++          $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
@@ -279,11 +279,12 @@ build/%/texlive.configured: source/texlive.patched
 	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
           ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
-	#mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
+	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
 
 build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
-	export LDFLAGS="-sEXECUTABLE -lnoderawfs.js" && $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+	#export LDFLAGS="-sEXECUTABLE -lnoderawfs.js" && $(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
+	$(MAKE_$*) -C $(dir $@) $(OPTS_$(notdir $(basename $@))_$*) $(OPTS_LIBS_$*)
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a: build/%/texlive.configured
 	$(MAKE_$*) -C $(dir $(abspath $(dir $@)))
