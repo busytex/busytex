@@ -8,7 +8,9 @@ URL_texlive_full_iso_cache = https://github.com/busytex/busytex/releases/downloa
 URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2023.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
-URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
+#URL_fontconfig       = https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.96.tar.gz
+#URL_fontconfig       = https://github.com/fontconfig/fontconfig/archive/refs/tags/2.13.96.tar.gz
+URL_fontconfig       = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/fontconfig-2.13.96.tar.gz
 URL_ubuntu_release   = https://packages.ubuntu.com/noble/
 URL_ubuntu_release_cache = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/
 
@@ -542,9 +544,9 @@ ubuntu-wasm: build/wasm/ubuntu/texlive-latex-extra.js build/wasm/ubuntu/texlive-
 example:
 	mkdir -p example/assets/large
 	echo "console.log('Hello world now')" > example/assets/test.txt
-	curl -o example/assets/test.png https://www.google.fr/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
-	curl -o example/assets/test.svg https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg
-	curl -o example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
+	curl -L -o example/assets/test.png https://www.google.fr/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png
+	curl -L -o example/assets/test.svg https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg
+	curl -L -o example/assets/large/test.pdf https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf
 
 build/versions.txt:
 	mkdir -p build
@@ -594,9 +596,9 @@ dist-native-full: build/native/busytex
 
 download-native:
 	mkdir -p source build/native build/native/texlive/texk/web2c/web2c
-	curl --remote-name-all -L -O --create-dirs --output-dir  build/native                                 $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
-	curl --remote-name-all -L -O --create-dirs --output-dir  build/native/texlive/texk/web2c              $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
-	curl --remote-name-all -L -O --create-dirs --output-dir  build/native/texlive/texk/web2c/web2c        $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
+	curl -L --remote-name-all -O --create-dirs --output-dir  build/native                                 $(addprefix $(URLRELEASE)/,$(BUSYTEX_BIN) busytex.tar)
+	curl -L --remote-name-all -O --create-dirs --output-dir  build/native/texlive/texk/web2c              $(addprefix $(URLRELEASE)/,$(BUSYTEX_TEXBIN))
+	curl -L --remote-name-all -O --create-dirs --output-dir  build/native/texlive/texk/web2c/web2c        $(addprefix $(URLRELEASE)/,$(BUSYTEX_WEB2CBIN))
 	chown $(shell whoami) $(BUSYTEX_native) $(BUSYWEB2C_native); chmod +x  $(BUSYWEB2C_native) $(BUSYTEX_native); file $(BUSYWEB2C_native) $(BUSYTEX_native); $(BUSYTEX_native);
 	chown $(shell whoami) $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN)); chmod +x $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN)); file $(addprefix build/native/texlive/texk/web2c/,$(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/,$(BUSYTEX_WEB2CBIN))
 	#
