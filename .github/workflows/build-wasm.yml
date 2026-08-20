@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Install Prerequisites
-        run:  sudo apt-get install -y automake autoconf gettext   gperf p7zip-full strace icu-devtools libarchive-tools
+        run:  sudo apt-get install -y automake autoconf autopoint gettext   gperf p7zip-full strace icu-devtools libarchive-tools
 
       - uses: actions/checkout@v4
 
