@@ -315,7 +315,7 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.txt build/%/expa
 	echo > $(CACHE_FONTCONFIG_$*)
 	mkdir -p build/$*/fontconfig
 	cd build/$*/fontconfig && \
-	$(CONFIGURE_$*) $(abspath $(basename $<)/configure) \
+	autoreconf -i && $(CONFIGURE_$*) $(abspath $(basename $<)/configure) \
 	   --cache-file=$(CACHE_FONTCONFIG_$*)	            \
 	   --prefix=$(PREFIX_$*)                            \
 	   --host=none-none-none                            \
