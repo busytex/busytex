@@ -80,7 +80,7 @@ OBJ_DEPS_XETEX= fontconfig/src/.libs/libfontconfig.a $(addprefix texlive/libs/, 
 
 ##############################################################################################################################
 
-# redefines needed until wasm-ld supports --localize-hidden: https://bugs.llvm.org/show_bug.cgi?id=51279
+# redefines needed until wasm-ld supports --localize-hidden: https://github.com/llvm/llvm-project/issues/50623
 
 PDFTEX_EXTERN =   namelength nameoffile
 
@@ -275,7 +275,7 @@ build/%/texlive.configured: source/texlive.patched
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	  CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"                 \
 	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
-          ac_cv_func_getwd=no ax_cv_c_float_words_bigendian=no #ac_cv_namespace_ok=yes
+          ac_cv_func_getwd=no #ax_cv_c_float_words_bigendian=no #ac_cv_namespace_ok=yes
 	$(MAKE_$*) -C $(basename $@)
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
