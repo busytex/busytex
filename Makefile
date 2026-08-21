@@ -215,7 +215,7 @@ BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)
 
 source/texlive.txt source/expat.txt source/fontconfig.txt:
 	mkdir -p $(basename $@)
-	curl -L $(URL_$(notdir $(basename $@))) | tar -xzf - -C $(basename $@) --strip-components=1
+	curl -L $(URL_$(notdir $(basename $@))) | bsdtar -xzf -C $(basename $@) --strip-components=1
 	find $(basename $@) > $@
 
 source/texmfrepo.txt:
@@ -239,7 +239,6 @@ source/texlive.patched: source/texlive.txt
 build/%/texlive.configured: source/texlive.patched
 	mkdir -p $(basename $@)
 	echo '' > $(CACHE_TEXLIVE_$*)
-	#CONFIG_SITE=$(CONFIGSITE_BUSYTEX) $(CONFIGURE_$*) $(abspath source/texlive/configure)		
 	cd $(basename $@) &&                                \
 	$(CONFIGURE_$*) $(abspath source/texlive/configure) \
 	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
@@ -275,7 +274,7 @@ build/%/texlive.configured: source/texlive.patched
 	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	  CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"                 \
 	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
-          ac_cv_func_getwd=no #ax_cv_c_float_words_bigendian=no #ac_cv_namespace_ok=yes
+          ac_cv_func_getwd=no
 	$(MAKE_$*) -C $(basename $@)
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
@@ -307,9 +306,8 @@ build/%/expat/libexpat.a: source/expat.txt
 
 build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.txt build/%/expat/libexpat.a build/%/texlive/libs/freetype2/libfreetype.a
 	echo > $(CACHE_FONTCONFIG_$*)
-	mkdir -p build/$*/fontconfig
 	cd $(basename $<) && autoreconf -i
-	cd build/$*/fontconfig && \
+	mkdir -p build/$*/fontconfig && cd build/$*/fontconfig && \
 	$(CONFIGURE_$*) $(abspath $(basename $<)/configure) \
 	   --cache-file=$(CACHE_FONTCONFIG_$*)	            \
 	   --prefix=$(PREFIX_$*)                            \
@@ -368,7 +366,7 @@ build/%/busytex build/%/busytex.js:
 	mkdir -p $(dir $@)
 	$(CC_$*)  -o    $(basename $@).o -c busytex.c  $(OPTS_BUSYTEX_COMPILE_$*) $(CFLAGS_OPT_$*)
 	$(CXX_$*) -o $@ $(basename $@).o $(addprefix build/$*/texlive/texk/web2c/, $(OBJ_XETEX) $(OBJ_PDFTEX) $(OBJ_LUAHBTEX)) $(addprefix build/$*/, $(OBJ_BIBTEX) $(OBJ_DVIPDF) $(OBJ_DEPS) $(OBJ_MAKEINDEX))  $(addprefix build/$*/texlive/texk/kpathsea/, $(OBJ_KPATHSEA))   $(OPTS_BUSYTEX_LINK_$*)
-	tar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
+	bsdtar -cf $(basename $@).tar build/$*/texlive/texk/web2c/*.c
 
 build/native/busytexextra: build/native/busytex                              build/texlive-extra.txt 
 	$(PYTHON) packfs.py -i build/texlive-extra/ -o packfs.h --prefix=/texlive --ld=$(LD_native) --exclude '\.a|\.so|\.pod|\.ld|\.h|\.log'
@@ -448,7 +446,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	mkdir -p $(basename $@)/$(BINARCH_native)
 	cp $(BUSYTEX_native) $(basename $@)/$(BINARCH_native) 
 	#
-	$(foreach name,texlive-scripts latexconfig tex-ini-files,tar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
+	$(foreach name,texlive-scripts latexconfig tex-ini-files,bsdtar -xf source/texmfrepo/archive/$(name).r*.tar.xz -C $(basename $@); )
 	$(foreach name,xetex luahbtex pdftex xelatex luahblatex pdflatex kpsewhich kpseaccess kpsestat kpsereadlink,printf "#!/bin/sh\n$(ROOT)/$(basename $@)/$(BINARCH_native)/busytex $(name)   $$"@ > $(basename $@)/$(BINARCH_native)/$(name) ; chmod +x $(basename $@)/$(BINARCH_native)/$(name); )
 	$(foreach name,mktexlsr.pl updmap-sys.sh updmap.pl fmtutil-sys.sh fmtutil.pl,mv $(basename $@)/texmf-dist/scripts/texlive/$(name) $(basename $@)/$(BINARCH_native)/$(basename $(name)); )
 	#mkdir -p $(ROOT)/source/texmfrepotmp; export TMPDIR=$(ROOT)/source/texmfrepotmp 
@@ -462,7 +460,7 @@ build/texlive-%.txt: build/texlive-%.profile source/texmfrepo.txt
 	#find packfs -type f -executable -delete -o -name '*.ld' -delete -o -name '*.a' -delete -o -name '*.so' -delete -o -name '*.h' -delete -o -name '*.pod' -delete 
 	mkdir -p $(dir $@)
 	find $(basename $@) > $@
-	tar -czf $(basename $@).tar.gz $(basename $@)
+	bsdtar -czf $(basename $@).tar.gz $(basename $@)
 
 ################################################################################################################
 
