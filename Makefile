@@ -136,8 +136,7 @@ CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate -pthread
 # -pthread
 CFLAGS_BIBTEX_wasm      = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
 CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm)
-#  -sERROR_ON_UNDEFINED_SYMBOLS=0
-CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -Wno-error=unused-but-set-variable -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR
+CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -Wno-error=unused-but-set-variable -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR -sERROR_ON_UNDEFINED_SYMBOLS=0
 CXXFLAGS_TEXLIVE_wasm   = $(CFLAGS_TEXLIVE_wasm)
 CFLAGS_TEXLIVE_native   = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
 CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
@@ -273,10 +272,10 @@ build/%/texlive.configured: source/texlive.patched
 	  --enable-cxx-runtime-hack=yes                     \
 	  --enable-arm-neon=no --enable-powerpc-vsx=no      \
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
-	  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
-	  CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"                 \
-	LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                     \
+	    CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"               \
+	    LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                 \
           ac_cv_func_getwd=no
+	#  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   
 	$(MAKE_$*) -C $(basename $@)
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
@@ -310,17 +309,17 @@ build/%/fontconfig/src/.libs/libfontconfig.a: source/fontconfig.txt build/%/expa
 	echo > $(CACHE_FONTCONFIG_$*)
 	cd $(basename $<) && autoreconf -i
 	mkdir -p build/$*/fontconfig && cd build/$*/fontconfig && \
-	$(CONFIGURE_$*) $(abspath $(basename $<)/configure) \
-	   --cache-file=$(CACHE_FONTCONFIG_$*)	            \
-	   --prefix=$(PREFIX_$*)                            \
-	   --host=none-none-none                            \
-	   --sysconfdir=/etc                                \
-	   --localstatedir=/var                             \
-	   --enable-static                                  \
-	   --disable-shared                                 \
-	   --disable-docs                                   \
-	   --with-expat-includes="$(abspath source/expat/lib)" \
-	   --with-expat-lib="$(abspath build/$*/expat)"        \
+	$(CONFIGURE_$*) $(abspath $(basename $<)/configure)       \
+	   --cache-file=$(CACHE_FONTCONFIG_$*)	                  \
+	   --prefix=$(PREFIX_$*)                                  \
+	   --host=none-none-none                                  \
+	   --sysconfdir=/etc                                      \
+	   --localstatedir=/var                                   \
+	   --enable-static                                        \
+	   --disable-shared                                       \
+	   --disable-docs                                         \
+	   --with-expat-includes="$(abspath source/expat/lib)"    \
+	   --with-expat-lib="$(abspath build/$*/expat)"           \
 	   CFLAGS="$(CFLAGS_OPT_$*) $(CFLAGS_FONTCONFIG_$*) -v" FREETYPE_CFLAGS="$(addprefix -I$(ROOT)/build/$*/texlive/libs/, freetype2/ freetype2/freetype2/)" FREETYPE_LIBS="-L$(ROOT)/build/$*/texlive/libs/freetype2/ -lfreetype"
 	$(MAKE_$*) -C build/$*/fontconfig
 
