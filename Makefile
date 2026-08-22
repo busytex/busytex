@@ -244,6 +244,7 @@ build/%/texlive.configured: source/texlive.patched
 	$(CONFIGURE_$*) $(abspath source/texlive/configure) \
 	  --cache-file=$(CACHE_TEXLIVE_$*)                  \
 	  --prefix="$(PREFIX_$*)"                           \
+	  --with-banner-add="_busytex$*"                    \
 	  --enable-dump-share                               \
 	  --enable-static                                   \
 	  --enable-freetype2                                \
@@ -268,14 +269,13 @@ build/%/texlive.configured: source/texlive.patched
 	  --without-system-libpng                           \
 	  --without-system-zlib                             \
 	  --without-system-zziplib                          \
-	  --with-banner-add="_busytex$*"                    \
 	  --enable-cxx-runtime-hack=yes                     \
-	  --enable-arm-neon=no --enable-powerpc-vsx=no      \
+	  --enable-arm-neon=no                              \
+	  --enable-powerpc-vsx=no                           \
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	    CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"               \
 	    LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                 \
-        #  ac_cv_func_getwd=no
-	#  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   
+            ac_cv_func_getwd=no
 	$(MAKE_$*) -C $(basename $@)
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
