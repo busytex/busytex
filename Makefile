@@ -274,7 +274,7 @@ build/%/texlive.configured: source/texlive.patched
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	    CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"               \
 	    LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                 \
-          ac_cv_func_getwd=no
+        #  ac_cv_func_getwd=no
 	#  CPPFLAGS="$(CFLAGS_TEXLIVE_$*)"                   
 	$(MAKE_$*) -C $(basename $@)
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
