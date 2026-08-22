@@ -217,12 +217,12 @@ BUSYTEXIZE_A = find $(1) -name $(2) -exec sh -c 'mv {} `dirname {}`/$(notdir $@)
 
 source/texlive.txt source/expat.txt source/fontconfig.txt:
 	mkdir -p $(basename $@)
-	curl -L $(URL_$(notdir $(basename $@))) | bsdtar -xzf -C $(basename $@) --strip-components=1
+	curl -L $(URL_$(notdir $(basename $@))) | bsdtar -xzf - -C $(basename $@) --strip-components=1
 	find $(basename $@) > $@
 
 source/texmfrepo.txt:
 	mkdir -p $(basename $@)
-	curl -L $(URL_texlive_full_iso_cache) | bsdtar -x -C $(basename $@)
+	curl -L $(URL_texlive_full_iso_cache) | bsdtar -xf - -C $(basename $@)
 	find $(basename $@) > $@
 
 source/texlive.patched: source/texlive.txt
