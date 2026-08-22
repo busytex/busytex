@@ -4,8 +4,9 @@
 # https://www.tug.org/texlive//devsrc/Master/texmf-dist/tex/latex/
 
 #URL_texlive_full_iso = http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
+#URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
+URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2026-20260301.iso
 URL_texlive_full_iso_cache = https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.00 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.01 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.02 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.03 https://github.com/busytex/busytex/releases/download/texlive2023-20230313.iso/texlive2023-20230313.iso.04
-URL_texlive_full_iso = https://tug.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
 URL_texlive          = https://github.com/TeX-Live/texlive-source/archive/refs/heads/tags/texlive-2023.0.tar.gz
 URL_expat            = https://github.com/libexpat/libexpat/releases/download/R_2_5_0/expat-2.5.0.tar.gz
 URL_fontconfig       = https://github.com/fontconfig/fontconfig/archive/refs/tags/2.13.96.tar.gz
@@ -134,8 +135,9 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_
 CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate -pthread
 # -pthread
 CFLAGS_BIBTEX_wasm      = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
-CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0
-CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -sERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=unused-but-set-variable -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR
+# -sERROR_ON_UNDEFINED_SYMBOLS=0
+CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm)
+CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -Wno-error=unused-but-set-variable -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR -sERROR_ON_UNDEFINED_SYMBOLS=0
 CXXFLAGS_TEXLIVE_wasm   = $(CFLAGS_TEXLIVE_wasm)
 CFLAGS_TEXLIVE_native   = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
 CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)

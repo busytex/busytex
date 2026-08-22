@@ -37,6 +37,7 @@ sh example/example.sh
 ```shell
 wget http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
 split -b2G -d texlive2023-20230313.iso texlive2023-20230313.iso.
+#split -b 1024m "YourFile.iso" "YourFile.iso."
 ```
 
 ### Help needed
