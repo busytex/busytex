@@ -149,7 +149,8 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 # -fno-common 
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
-LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    -Wl,--unresolved-symbols=ignore-all
+#-Wl,--unresolved-symbols=ignore-all
+LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    
 #LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE -lnoderawfs.js
 
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
@@ -206,7 +207,6 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 
 OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK)    -ldl -lm -pthread -lpthread -Wl,--unresolved-symbols=ignore-all
-# -sERROR_ON_UNDEFINED_SYMBOLS=0 
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore-all -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
 ##############################################################################################################################
@@ -238,7 +238,6 @@ source/texlive.patched: source/texlive.txt
 	# https://github.com/TeX-Live/texlive-source/commit/ae09e0aab3feed6ca6fb24da7ea5e19b7c65c4fa
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number,font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) 
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number, font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) 
-	cat $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) # https://github.com/TeX-Live/texlive-source/commit/ae09e0aab3feed6ca6fb24da7ea5e19b7c65c4fa
 	touch $@
 
 build/%/texlive.configured: source/texlive.patched
@@ -278,8 +277,7 @@ build/%/texlive.configured: source/texlive.patched
 	  --enable-powerpc-vsx=no                           \
 	    CFLAGS="$(CFLAGS_TEXLIVE_$*)"                   \
 	    CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"               \
-	    LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"                 \
-            #ac_cv_func_getwd=no
+	    LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"
 	$(MAKE_$*) -C $(basename $@)
 	mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
