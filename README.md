@@ -40,6 +40,11 @@ split -b2G -d texlive2023-20230313.iso texlive2023-20230313.iso.
 #split -b 1024m "YourFile.iso" "YourFile.iso."
 ```
 
+### Cosmo build
+```bash
+make cosmo COSMOROOT=/path/to/cosmos/toolchain/bin
+```
+
 ### Help needed
 - single page HTML5 webapp: https://diveinto.html5doctor.com/offline.html
 - refactor data packages subsystem in Emscripten: https://github.com/emscripten-core/emscripten/issues/14385

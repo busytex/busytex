@@ -26,6 +26,7 @@ CFLAGS_OPT_wasm      = -Oz
 
 ROOT                := $(CURDIR)
 EMROOT              := $(dir $(shell which emcc))
+COSMOROOT           ?= 
 
 BUSYTEX_native       = $(abspath build/native/busytex)
 TEXMFFULL            = $(abspath build/texlive-full)
@@ -53,6 +54,7 @@ AR_native     = $(AR)
 LD_native     = $(LD)
 NM_native     = nm
 LDD_native    = ldd
+
 
 CACHE_TEXLIVE_native    = $(abspath build/native-texlive.cache)
 CACHE_TEXLIVE_wasm      = $(abspath build/wasm-texlive.cache)
@@ -135,8 +137,7 @@ CFLAGS_LUATEX       := -Dmain='__attribute__((visibility(\"default\")))busymain_
 CFLAGS_FONTCONFIG_wasm= -Duuid_generate_random=uuid_generate -pthread
 # -pthread
 CFLAGS_BIBTEX_wasm      = $(CFLAGS_BIBTEX) -sTOTAL_MEMORY=$(TOTAL_MEMORY)
-CFLAGS_ICU_wasm         = $(CFLAGS_OPT_wasm)
-#  -sERROR_ON_UNDEFINED_SYMBOLS=0
+# need upgrade fontconfig in newer TexLive
 CFLAGS_TEXLIVE_wasm     = -I$(abspath build/wasm/texlive/libs/icu/include)   -I$(abspath source/fontconfig) $(CFLAGS_OPT_wasm) -Wno-error=unused-but-set-variable -DHB_NO_PRAGMA_GCC_DIAGNOSTIC_ERROR
 CXXFLAGS_TEXLIVE_wasm   = $(CFLAGS_TEXLIVE_wasm)
 CFLAGS_TEXLIVE_native   = -I$(abspath build/native/texlive/libs/icu/include) -I$(abspath source/fontconfig) $(CFLAGS_OPT_native)
@@ -162,8 +163,8 @@ PKGDATAFLAGS_ICU_native = --without-assembly -O $(ROOT)/build/native/texlive/lib
 CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
 CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
-OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
-OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_ICU_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_ICU_wasm)"
+OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
+OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_OPT_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
 OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CC="$(CC_native) $(CFLAGS_OPT_native)"          -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(CONFIGURE_wasm) $(ROOT)/source/texlive/libs/icu'"
 OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
@@ -530,6 +531,10 @@ wasm:
 	$(MAKE) build/wasm/busytexapplets
 	$(MAKE) build/wasm/busytex.js
 
+.PHONY: cosmo
+cosmo:
+	CC="$(COSMOROOT)/cosmocc" CXX="$(COSMOROOT)/cosmoc++" AR="$(COSMOROOT)/cosmoar" INSTALL="$(COSMOROOT)/cosmoinstall" $(MAKE) native
+
 ################################################################################################################
 
 .PHONY: ubuntu-wasm
@@ -605,4 +610,3 @@ download-native:
 	-ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
 	#-$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
-
