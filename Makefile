@@ -231,7 +231,8 @@ source/texlive.patched: source/texlive.txt
 	sed -i 's@" "@""@' $(abspath source/texlive/libs/icu/icu-src/source/common/Makefile.in)
 	# https://github.com/emscripten-core/emscripten/issues/27583#issuecomment-5382966487
 	# https://github.com/TeX-Live/texlive-source/issues/87#issuecomment-5241495335
-	sed -i '1istatic char* getpass(const char*){return"";}' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
+	#sed -i '1istatic char* getpass(const char*){return"";}' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
+	sed -i 's@getpass@strdup@' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
 	# https://github.com/TeX-Live/texlive-source/commit/ae09e0aab3feed6ca6fb24da7ea5e19b7c65c4fa
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number,font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) 
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number, font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) 
