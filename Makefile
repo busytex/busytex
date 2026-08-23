@@ -149,7 +149,6 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 # -fno-common 
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
-#-Wl,--unresolved-symbols=ignore-all
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    
 #LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE -lnoderawfs.js
 
@@ -206,7 +205,8 @@ OPTS_BUSYTEX_COMPILE_wasm   = -DBUSYTEX_MAKEINDEX -DBUSYTEX_KPSE -DBUSYTEX_BIBTE
 #####COMMENT NEXT LINE TO TEST SHARED LIBRARY LOG FILE ACCESSES ON NATIVE
 OPTS_BUSYTEX_LINK = --static -static    -static-libstdc++ -static-libgcc
 
-OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK)    -ldl -lm -pthread -lpthread -Wl,--unresolved-symbols=ignore-all
+#-Wl,--unresolved-symbols=ignore-all
+OPTS_BUSYTEX_LINK_native =  $(OPTS_BUSYTEX_LINK)    -ldl -lm -pthread -lpthread 
 OPTS_BUSYTEX_LINK_wasm   =  $(OPTS_BUSYTEX_LINK) -Wl,--unresolved-symbols=ignore-all -sTOTAL_MEMORY=$(TOTAL_MEMORY) -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sASSERTIONS=1 -sFORCE_FILESYSTEM=1 -sLZ4=1 -sMODULARIZE=1 -sEXPORT_NAME=busytex -sEXPORTED_FUNCTIONS='["_main", "_flush_streams"]' -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "ENV", "LZ4", "PATH"]'
 
 ##############################################################################################################################
