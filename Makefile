@@ -229,9 +229,9 @@ source/texlive.patched: source/texlive.txt
 	# Cosmopolitan Libc doesn't support arguments with spaces; remove an extra trailing space here:
 	# https://github.com/TeX-Live/texlive-source/blob/tags/texlive-2023.0/libs/icu/icu-src/source/common/Makefile.in#L72
 	sed -i 's@" "@""@' $(abspath source/texlive/libs/icu/icu-src/source/common/Makefile.in)
-	# See the contents of `cosmo_getpass.h` for more details.
-	cp cosmo_getpass.h                    $(abspath source/texlive/texk/dvipdfm-x/cosmo_getpass.h)
-	sed -i '1i#include "cosmo_getpass.h"' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
+	# https://github.com/emscripten-core/emscripten/issues/27583#issuecomment-5382966487
+	# https://github.com/TeX-Live/texlive-source/issues/87#issuecomment-5241495335
+	sed -i '1istatic char* getpass(const char*){return"";}' $(abspath source/texlive/texk/dvipdfm-x/dvipdfmx.c)
 	# https://github.com/TeX-Live/texlive-source/commit/ae09e0aab3feed6ca6fb24da7ea5e19b7c65c4fa
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number,font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) 
 	sed -i 's@pdf_font_has_space_char:=xmalloc_array(internal_font_number, font_max)@pdf_font_has_space_char:=xmalloc_array(boolean, font_max)@' $(abspath source/texlive/texk/web2c/pdftexdir/pdftex.ch) 
