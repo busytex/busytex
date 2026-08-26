@@ -164,9 +164,11 @@ CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(RO
 CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
 #OPTS_libfreetype_wasm    = LDFLAGS="-sEXECUTABLE -lnoderawfs.js"
 OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
-OPTS_ICU_configure_wasm  = CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
-OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_OPT_wasm)" -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
-OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CC="$(CC_native) $(CFLAGS_OPT_native)"          -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+
+#CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_OPT_wasm)" 
+OPTS_ICU_configure_wasm  = CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
+OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)" -e CC="$(CCSKIP_ICU_wasm) emcc $(CFLAGS_OPT_wasm)" 
+OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)"          -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)" -e CC="$(CC_native) $(CFLAGS_OPT_native)" 
 # $(CONFIGURE_wasm) 
 OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(ROOT)/source/texlive/libs/icu'"
 OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
