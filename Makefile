@@ -152,27 +152,24 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    
 #LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE -lnoderawfs.js
 
+##############################################################################################################################
+
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
 PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
 # Cosmopolitan builds a fat multi-arch executable, so it, too, refuses to process raw `.s` files.
 PKGDATAFLAGS_ICU_native = --without-assembly -O $(ROOT)/build/native/texlive/libs/icu/icu-build/data/icupkg.inc
-
-##############################################################################################################################
-
-# EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
+OPTS_ICU_configure_wasm  = CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
+OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
+OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(ROOT)/source/texlive/libs/icu'"
+OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
+
 CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
 #OPTS_libfreetype_wasm    = LDFLAGS="-sEXECUTABLE -lnoderawfs.js"
 OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 
-OPTS_ICU_configure_wasm  = CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
-OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
-OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)"          -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
-# $(CONFIGURE_wasm) 
-OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(ROOT)/source/texlive/libs/icu'"
-OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
-
-
+# EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
 OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
