@@ -289,7 +289,7 @@ build/%/texlive/libs/icu/icu-build/lib/libicuuc.a build/%/texlive/libs/icu/icu-b
 	# WASM build depends on build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata
 	cd                    build/$*/texlive/libs/icu && $(CONFIGURE_$*) $(abspath source/texlive/libs/icu/configure) $(OPTS_ICU_configure_$*)
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu $(OPTS_ICU_configure_make_$*)
-	echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
+	#echo "all install:" > build/$*/texlive/libs/icu/icu-build/test/Makefile
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/icu-build $(OPTS_ICU_make_$*) 
 	$(MAKE_$*)         -C build/$*/texlive/libs/icu/include/unicode
 
