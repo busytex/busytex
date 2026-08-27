@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Install Prerequisites including github.com/cli/cli
         #run: sudo apt-get install xz-utils strace cmake unzip gh gperf
-        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake automake autoconf gettext gettext-dev bash git xz perl gperf p7zip python3 github-cli strace libarchive-tools curl && ln -sf python3 /usr/bin/python
+        run:  apk add --update --no-cache libnsl libnsl-dev build-base coreutils cmake automake autoconf gettext gettext-dev libtool bash git xz perl gperf p7zip python3 github-cli strace libarchive-tools curl && ln -sf python3 /usr/bin/python
 
       - uses: actions/checkout@v4
             
