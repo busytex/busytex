@@ -172,17 +172,13 @@ OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
 
-#  -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
-OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
-# CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
-OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" 
-# CXX="em++          $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
-OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" 
-#  CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
-OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)"
-# CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
-OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" 
+# CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
+OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_XETEX)    $(CFLAGS_OPT_wasm)" 
+OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_wasm)" 
+OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_wasm)"
+OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)   $(CFLAGS_OPT_wasm)" 
+OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)                   $(CFLAGS_OPT_wasm)" 
 
 
 OPTS_XDVIPDFMX_native    = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CXXFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
