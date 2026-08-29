@@ -173,7 +173,6 @@ OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
 
 OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
-# CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
 OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_XETEX)    $(CFLAGS_OPT_wasm)" 
 OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_wasm)" 
 OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_wasm)"
@@ -181,15 +180,12 @@ OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)   $(CFLA
 OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)                   $(CFLAGS_OPT_wasm)" 
 
 
-OPTS_XDVIPDFMX_native    = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CXXFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
-#  -e CXXFLAGS="$(CFLAGS_BIBTEX)       $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_BIBTEX_native       = -e CFLAGS="$(CFLAGS_BIBTEX)         $(CFLAGS_OPT_native)"
-#  CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_native)"
-#  CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)"
-OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
-OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)"
+OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX)   $(CFLAGS_OPT_native)"
+OPTS_XDVIPDFMX_native    = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)"
 
 OPTS_KPSEWHICH_native    = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_native)"
 OPTS_KPSEWHICH_wasm      = CFLAGS="$(CFLAGS_KPSEWHICH)    $(CFLAGS_OPT_wasm)"
