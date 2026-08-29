@@ -179,15 +179,19 @@ OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(C
 OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" 
 # CXX="em++          $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" 
-OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
-OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
+#  CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUAHBTEX)       $(CFLAGS_OPT_wasm)"
+OPTS_LUAHBTEX_wasm       = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUAHBTEX)   $(CFLAGS_OPT_wasm)"
+# CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)"
+OPTS_LUATEX_wasm         = CC="$(CCSKIP_TEX_wasm) emcc $(CFLAGS_LUATEX)       $(CFLAGS_OPT_wasm)" 
 
 
 OPTS_XDVIPDFMX_native    = -e CFLAGS="$(CFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_native)" -e CXXFLAGS="$(CXXFLAGS_TEXLIVE_native) $(CFLAGS_XDVIPDFMX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 #  -e CXXFLAGS="$(CFLAGS_BIBTEX)       $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_BIBTEX_native       = -e CFLAGS="$(CFLAGS_BIBTEX)         $(CFLAGS_OPT_native)"
-OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
-OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+#  CXX="$(CXX_native) $(CFLAGS_XETEX)  $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_XETEX_native        = CC="$(CC_native) $(CFLAGS_XETEX)    $(CFLAGS_OPT_native)"
+#  CXX="$(CXX_native) $(CFLAGS_PDFTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_PDFTEX_native       = CC="$(CC_native) $(CFLAGS_PDFTEX)   $(CFLAGS_OPT_native)"
 OPTS_LUAHBTEX_native     = CC="$(CC_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUAHBTEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_LUATEX_native       = CC="$(CC_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native)" CXX="$(CXX_native) $(CFLAGS_LUATEX) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 
