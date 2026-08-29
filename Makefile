@@ -171,7 +171,9 @@ OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
 
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
-OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)" -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
+
+#  -e CXXFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
+OPTS_BIBTEX_wasm         = -e CFLAGS="$(CFLAGS_OPT_wasm) $(CFLAGS_BIBTEX_wasm)"
 OPTS_XETEX_wasm          = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_XETEX)  $(CFLAGS_OPT_wasm)"
 OPTS_PDFTEX_wasm         = CC="$(CCSKIP_TEX_wasm)      emcc $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)" CXX="$(CCSKIP_TEX_wasm) em++ $(CFLAGS_PDFTEX) $(CFLAGS_OPT_wasm)"
 OPTS_XDVIPDFMX_wasm      = CC="emcc $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)" CXX="em++          $(CFLAGS_XDVIPDFMX)    $(CFLAGS_OPT_wasm)"
