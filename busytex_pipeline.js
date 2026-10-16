@@ -413,9 +413,25 @@ class BusytexPipeline
                 Module.output_stdout = '';
                 Module.output_stderr = '';
                 Module.setPrefix(args[0]);
-                const exit_code = Module.callMain(args);
-                Module._flush_streams();
-                
+
+                // Applets exit without closing their files, and the memory header restore after each run discards
+                // libc's FILE table but not FS.streams. With preload the module is reused across compiles, so open
+                // streams would pile up until Emscripten's limit (4096) and later runs fail to open fonts.
+                // Close whatever this run left open. See https://github.com/busytex/busytex/issues/13
+                const open_before = new Set(Module.FS.streams.filter(stream => stream).map(stream => stream.fd));
+                let exit_code;
+                try
+                {
+                    exit_code = Module.callMain(args);
+                    Module._flush_streams();
+                }
+                finally
+                {
+                    for(const stream of Module.FS.streams)
+                        if(stream && !open_before.has(stream.fd))
+                            Module.FS.close(stream);
+                }
+
                 return { exit_code : exit_code, stdout : Module.output_stdout, stderr : Module.output_stderr };
             }
         };
@@ -597,6 +613,8 @@ class BusytexPipeline
             this.print('$ busytex ' + cmd.join(' '));
             ({exit_code, stdout, stderr} = Module.callMainWithRedirects(cmd, verbose != BusytexPipeline.VerboseSilent));
 
+            // This resets the C heap but not FS.streams; callMainWithRedirects closes the run's leftover streams
+            // (https://github.com/busytex/busytex/issues/13)
             Module.HEAPU8.fill(0);
             Module.HEAPU8.set(mem_header);
             
