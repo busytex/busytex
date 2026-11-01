@@ -26,8 +26,7 @@ MIT - applies only to the code and scripts in the repo, not to the published bin
 ### Usage
 ```shell
 # wasm version, download latest compiled assets, launch the web server example.py and then go to http://localhost:8080/example/example.html
-mkdir -p dist
-wget -P dist --backups=1 $(printf "https://github.com/busytex/busytex/releases/latest/download/%s " busytex_pipeline.js busytex_worker.js    busytex.wasm busytex.js texlive-basic.js texlive-basic.data    ubuntu-texlive-latex-extra.data ubuntu-texlive-latex-extra.js    ubuntu-texlive-latex-recommended.data ubuntu-texlive-latex-recommended.js    ubuntu-texlive-science.data ubuntu-texlive-science.js)
+curl --remote-name-all  --create-dirs --output-dir dist -L "https://github.com/busytex/busytex/releases/latest/download/{busytex_pipeline.js,busytex_worker.js,busytex.wasm,busytex.js,texlive-basic.js,texlive-basic.data,ubuntu-texlive-latex-extra.data,ubuntu-texlive-latex-extra.js,ubuntu-texlive-latex-recommended.data,ubuntu-texlive-latex-recommended.js,ubuntu-texlive-science.data,ubuntu-texlive-science.js}"
 python3 example/example.py
 
 # native version
@@ -35,9 +34,7 @@ sh example/example.sh
 ```
 
 ```shell
-wget http://mirrors.ctan.org/systems/texlive/Images/texlive2023-20230313.iso
-split -b2G -d texlive2023-20230313.iso texlive2023-20230313.iso.
-#split -b 1024m "YourFile.iso" "YourFile.iso."
+curl -L https://mirrors.ctan.org/systems/texlive/Images/texlive2026-20260301.iso | split -b2G -d - texlive2026-20260301.iso.
 ```
 
 ### Cosmo build
@@ -68,8 +65,8 @@ make cosmo COSMOROOT=/path/to/cosmos/toolchain/bin
 
 ### Building from source
 ```shell
-# install dependencies: wget, cmake, gperf, p7zip-full, emscripten
-apt-get install wget cmake gperf p7zip-full 
+# install dependencies: cmake, gperf, p7zip-full, emscripten
+apt-get install cmake gperf p7zip-full 
 git clone https://github.com/emscripten-core/emsdk
 cd emsdk
 ./emsdk update-tags

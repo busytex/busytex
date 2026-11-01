@@ -150,9 +150,10 @@ CXXFLAGS_TEXLIVE_native = $(CFLAGS_TEXLIVE_native) $(CXXFLAGS_native)
 
 # https://www.openwall.com/lists/musl/2017/02/16/3
 LDFLAGS_TEXLIVE_native = --static -static -static-libstdc++ -static-libgcc -ldl -lm -pthread -lpthread -lc    
-#LDFLAGS_TEXLIVE_wasm = -sEXECUTABLE -lnoderawfs.js
 
 ##############################################################################################################################
+
+OPTS_libfreetype_wasm    =  CCexe_CFLAGS="-sEXECUTABLE -sNODERAWFS"
 
 # The WASM build can't assemble `.s` files when building pkgdata for obvious reasons.
 PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/icu/icu-build/data/icupkg.inc
@@ -160,15 +161,10 @@ PKGDATAFLAGS_ICU_wasm   = --without-assembly -O $(ROOT)/build/wasm/texlive/libs/
 PKGDATAFLAGS_ICU_native = --without-assembly -O $(ROOT)/build/native/texlive/libs/icu/icu-build/data/icupkg.inc
 CCSKIP_ICU_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/libs/icu/icu-build/bin/, icupkg pkgdata) --
 OPTS_ICU_configure_wasm  = CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
-OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_wasm)"   -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
-OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU_native)" -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
+OPTS_ICU_make_wasm       = -e PKGDATA_OPTS="$(PKGDATAFLAGS_IC)"   -e CXX="$(CCSKIP_ICU_wasm) em++ $(CFLAGS_OPT_wasm)"
+OPTS_ICU_make_native     = -e PKGDATA_OPTS="$(PKGDATAFLAGS_ICU)" -e CXX="$(CXX_native) $(CFLAGS_OPT_native) $(CXXFLAGS_native)"
 OPTS_ICU_configure_make_wasm   = $(OPTS_ICU_make_wasm) -e abs_srcdir="'$(ROOT)/source/texlive/libs/icu'"
 OPTS_ICU_configure_make_native = $(OPTS_ICU_make_native)
-
-CCSKIP_FREETYPE_wasm     = $(PYTHON) $(abspath emcc_wrapper.py) $(ROOT)/build/native/texlive/libs/freetype2/ft-build/apinames --
-#OPTS_libfreetype_wasm    = LDFLAGS="-sEXECUTABLE -lnoderawfs.js"
-#OPTS_libfreetype_wasm    = CC="$(CCSKIP_FREETYPE_wasm) emcc"
-OPTS_libfreetype_wasm    =  CCexe_CFLAGS="-sEXECUTABLE -sNODERAWFS"
 
 # EM_COMPILER_WRAPPER / EM_COMPILER_LAUNCHER feature request: https://github.com/emscripten-core/emscripten/issues/12340
 CCSKIP_TEX_wasm          = $(PYTHON) $(abspath emcc_wrapper.py) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix $(ROOT)/build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN)) --
@@ -284,7 +280,6 @@ build/%/texlive.configured: source/texlive.patched
 	    CXXFLAGS="$(CXXFLAGS_TEXLIVE_$*)"               \
 	    LDFLAGS="$(LDFLAGS_TEXLIVE_$*)"
 	$(MAKE_$*) -C $(basename $@)
-	#mkdir -p build/native/texlive/libs/freetype2/ft-build && $(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	touch $@
 
 build/%/texlive/libs/lua53/.libs/libtexlua53.a build/%/texlive/texk/kpathsea/.libs/libkpathsea.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/freetype2/libfreetype.a build/%/texlive/libs/teckit/libTECkit.a build/%/texlive/libs/harfbuzz/libharfbuzz.a build/%/texlive/libs/graphite2/libgraphite2.a build/%/texlive/libs/libpng/libpng.a build/%/texlive/libs/libpaper/libpaper.a build/%/texlive/libs/zlib/libz.a build/%/texlive/libs/pplib/libpplib.a build/%/texlive/libs/xpdf/libxpdf.a build/%/texlive/libs/zziplib/libzzip.a build/%/texlive/texk/web2c/lib/lib.a: build/%/texlive.configured
@@ -612,5 +607,4 @@ download-native:
 	-rm build/native/texlive/libs/icu/icu-build/bin/icupkg build/native/texlive/libs/icu/icu-build/bin/pkgdata build/native/texlive/libs/freetype2/ft-build/apinames
 	-ln -s $(shell which icupkg)  build/native/texlive/libs/icu/icu-build/bin/
 	-ln -s $(shell which pkgdata) build/native/texlive/libs/icu/icu-build/bin/
-	#-$(CC_native) source/texlive/libs/freetype2/freetype-src/src/tools/apinames.c -o build/native/texlive/libs/freetype2/ft-build/apinames
 	chmod +x $(addprefix build/native/texlive/texk/web2c/, $(BUSYTEX_TEXBIN)) $(addprefix build/native/texlive/texk/web2c/web2c/, $(BUSYTEX_WEB2CBIN))
